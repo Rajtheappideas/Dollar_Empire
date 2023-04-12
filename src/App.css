@@ -15,7 +15,13 @@ body {
   background-color: #f5f5f5 !important;
 }
 
-/* .space_for_div
-{
-  padding: ;
-} */
+@media screen and (max-width:1024px) {
+  .space_for_div {
+    padding: 0 2.5rem;
+  }
+}
+@media screen and (max-width:640px) {
+  .space_for_div {
+    padding: 0 0.75rem;
+  }
+}

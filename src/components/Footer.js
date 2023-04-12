@@ -4,6 +4,7 @@ import { GrMail } from "react-icons/gr";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
+  const toTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
   return (
     <>
       <div className="grid xl:grid-cols-4 md:grid-cols-2 text-lg font-medium place-items-start items-start bg-LIGHTGRAY xl:px-20 md:px-10 px-5 md:pt-10 md:pb-20 py-5 md:gap-10 gap-5">
@@ -36,30 +37,35 @@ const Footer = () => {
           <Link
             className="block hover:pl-2 hover:border-l-4 hover:border-PRIMARY transition-all hover:text-PRIMARY duration-300"
             to="/about-us"
+            onClick={toTop}
           >
             About us
           </Link>
           <Link
             className="block hover:pl-2 hover:border-l-4 hover:border-PRIMARY transition-all hover:text-PRIMARY duration-300"
             to="/contact-us"
+            onClick={toTop}
           >
             Contact us
           </Link>
           <Link
             className="block hover:pl-2 hover:border-l-4 hover:border-PRIMARY transition-all hover:text-PRIMARY duration-300"
             to="/shipping-&-freight"
+            onClick={toTop}
           >
             Shipping & freight
           </Link>
           <Link
             className="block hover:pl-2 hover:border-l-4 hover:border-PRIMARY transition-all hover:text-PRIMARY duration-300"
             to="/special-order"
+            onClick={toTop}
           >
             Special orders
           </Link>
           <Link
             className="block hover:pl-2 hover:border-l-4 hover:border-PRIMARY transition-all hover:text-PRIMARY duration-300"
             to="/privacy-policy"
+            onClick={toTop}
           >
             Privacy notice
           </Link>

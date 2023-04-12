@@ -1,14 +1,15 @@
 import React from "react";
 import { Helmet } from "react-helmet";
 import TItleSection from "../components/TItleSection";
+import bgImg from "../assets/images/policy.jpg";
 
 const PrivayPolicy = () => {
   return (
     <>
       <Helmet title="Privacy Policy" />
-      <div className="w-full space-y-5 md:pb-20 pb-10 text-[#272727]">
-        <TItleSection title={"Privacy NOtice "} />
-        <section className="container mx-auto space-y-5 w-full text-justify font-normal tracking-normal leading-normal text-lg">
+      <div className="w-full space-y-5 md:pb-20 pb-10 text-[#272727] ">
+        <TItleSection title={"Privacy NOtice "} image={bgImg} />
+        <section className="space_for_div container mx-auto space-y-5 w-full text-justify font-normal tracking-normal leading-normal text-lg">
           <p>Lorem Ipsum is simply dumy text printing.</p>
           <p>
             Lorem Ipsum is simply dummy text of the printing and typesetting

@@ -1,13 +1,14 @@
 import React from "react";
 import { Helmet } from "react-helmet";
 import TItleSection from "../components/TItleSection";
+import bgImg from "../assets/images/special-order.jpg";
 
 const SpecialOrder = () => {
   return (
     <>
       <Helmet title="Special Orders" />
-      <div className="w-full space-y-5 md:pb-20 pb-10">
-        <TItleSection title={"Special orders"} />
+      <div className="w-full space-y-5 md:pb-20 pb-10 ">
+        <TItleSection title={"Special orders"} image={bgImg} />
         <section className="container mx-auto md:space-y-10 space-y-5 w-full">
           <p className="text-TEXTGRAY font-normal tracking-normal leading-normal text-center lg:text-base text-sm lg:w-9/12 md:w-10/12 w-11/12 mx-auto">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do

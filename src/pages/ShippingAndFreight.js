@@ -1,14 +1,15 @@
 import React from "react";
 import { Helmet } from "react-helmet";
 import TItleSection from "../components/TItleSection";
+import bgImg from "../assets/images/shipping.jpg";
 
 const ShippingAndFreight = () => {
   return (
     <>
       <Helmet title="Shipping & Freight" />
       <div className="w-full space-y-5 md:pb-20 pb-10 text-[#272727]">
-        <TItleSection title={"Shipping & freight"} />
-        <section className="container mx-auto space-y-5 w-full text-justify font-normal tracking-normal leading-normal text-lg">
+        <TItleSection title={"Shipping & freight"} image={bgImg} />
+        <section className="space_for_div container mx-auto space-y-5 w-full text-justify font-normal tracking-normal leading-normal text-lg">
           <p>Lorem Ipsum is simply dumy text printing.</p>
           <p>
             Lorem Ipsum is simply dummy text of the printing and typesetting
