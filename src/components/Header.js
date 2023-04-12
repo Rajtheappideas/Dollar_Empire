@@ -43,15 +43,17 @@ const Header = () => {
           <button type="button">
             <Link to="/sign-in">Login / Register</Link>
           </button>
-          {/* <div className="flex items-center gap-x-2">
-            <AiOutlineUser className="w-8 h-8" />
-            <p className="text-left">
-              <span className="text-gray-300 text-sm block">Hello, john</span>
-              <span className="text-BLACK md:text-base text-sm font-bold block">
-                My Account
-              </span>
-            </p>
-          </div> */}
+          {/* <Link to="/my-account">
+            <div className="flex items-center gap-x-2">
+              <AiOutlineUser className="w-8 h-8" />
+              <p className="text-left">
+                <span className="text-gray-300 text-sm block">Hello, john</span>
+                <span className="text-BLACK md:text-base text-sm font-bold block">
+                  My Account
+                </span>
+              </p>
+            </div>
+          </Link> */}
         </div>
       </div>
       {/* second section */}
@@ -83,7 +85,7 @@ const Header = () => {
             <span className="md:mr-2">Shopping cart: </span>
             <input
               type="tel"
-              className="md:w-12 w-10 h-9 text-center rounded-md outline-none placeholder:text-black"
+              className="md:w-12 w-10 text-black h-9 p-3 text-center rounded-md outline-none placeholder:text-black"
               placeholder="0"
             />
             <span className="md:ml-2">PC</span>
@@ -93,14 +95,18 @@ const Header = () => {
             <BsCurrencyDollar className="h-5 w-5 md:mr-2 inline-block" />
             <input
               type="tel"
-              className="md:w-12 w-10 h-9 text-center rounded-md outline-none placeholder:text-black"
+              className="md:w-12 w-10 h-9 text-black p-3 text-center rounded-md outline-none placeholder:text-black"
               placeholder="0"
             />
           </p>
         </div>
       </div>
       {/* third section */}
-      <div className="xl:px-20 md:px-10 w-full flex flex-wrap md:gap-5 gap-3 items-center justify-start md:py-5 py-2 font-semibold md:text-lg px-3">
+      <div
+        className={`xl:px-20 md:px-10 w-full flex flex-wrap md:gap-5 gap-3 items-center justify-start md:py-5 py-2 font-semibold md:text-lg px-3 ${
+          window.location.pathname.includes("my-account") && "bg-BACKGROUNDGRAY"
+        }`}
+      >
         <select className="bg-black text-white lg:w-52 w-auto p-3 capitalize font-semibold">
           <option label="All Categories"></option>
           <option>opt1</option>

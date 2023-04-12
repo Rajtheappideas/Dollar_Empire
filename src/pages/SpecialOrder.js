@@ -2,6 +2,7 @@ import React from "react";
 import { Helmet } from "react-helmet";
 import TItleSection from "../components/TItleSection";
 import bgImg from "../assets/images/special-order.jpg";
+import { Link } from "react-router-dom";
 
 const SpecialOrder = () => {
   return (
@@ -26,12 +27,16 @@ const SpecialOrder = () => {
               Call Kelly at 323-268-8999 to inquire about special orders and
               private labeling.
             </p>
-            <button
-              type="button"
-              className="bg-PRIMARY hover:text-PRIMARY hover:bg-white border border-PRIMARY duration-500 p-3 text-white text-center w-40 rounded-md font-semibold"
-            >
-              Contact us
-            </button>
+            <p>
+              <Link to="/contact-us">
+                <button
+                  type="button"
+                  className="bg-PRIMARY active:translate-y-2 hover:text-PRIMARY hover:bg-white border border-PRIMARY duration-300 p-3 text-white text-center w-40 rounded-md font-semibold"
+                >
+                  Contact us
+                </button>
+              </Link>
+            </p>
           </div>
         </section>
       </div>{" "}

@@ -12,7 +12,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
 
-const TopSellers = () => {
+const TopSellers = ({ setShowProductDetailPopup }) => {
   const [slide, setSlide] = useState({ isEnd: false, isBeginning: false });
 
   const prevRef = useRef(null);
@@ -111,7 +111,10 @@ const TopSellers = () => {
         >
           {Products.map((product) => (
             <SwiperSlide key={product?.id}>
-              <ProductCard product={product} />
+              <ProductCard
+                product={product}
+                setShowProductDetailPopup={setShowProductDetailPopup}
+              />
             </SwiperSlide>
           ))}
         </Swiper>

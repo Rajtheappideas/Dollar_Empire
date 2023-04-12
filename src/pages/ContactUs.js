@@ -8,7 +8,8 @@ import ReCAPTCHA from "react-google-recaptcha";
 
 const ContactUs = () => {
   function onChange(value) {
-    console.log("Captcha value:", value);
+    // console.log("Captcha value:", value);
+    return null;
   }
   return (
     <>
@@ -131,7 +132,7 @@ const ContactUs = () => {
           />{" "}
           <button
             type="button"
-            className="bg-PRIMARY hover:text-PRIMARY hover:bg-white border border-PRIMARY duration-500 p-3 text-white text-center w-40 rounded-md uppercase font-bold"
+            className="bg-PRIMARY active:translate-y-2 hover:text-PRIMARY hover:bg-white border border-PRIMARY duration-500 p-3 text-white text-center w-40 rounded-md uppercase font-bold"
           >
             send
           </button>

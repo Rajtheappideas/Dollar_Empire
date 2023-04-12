@@ -23,7 +23,7 @@ const Home = () => {
           showProductDetailPopup={showProductDetailPopup}
           setShowProductDetailPopup={setShowProductDetailPopup}
         />
-        <TopSellers />
+        <TopSellers setShowProductDetailPopup={setShowProductDetailPopup} />
         <Categories />
       </div>
     </>

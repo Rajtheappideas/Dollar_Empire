@@ -167,7 +167,7 @@ const Signup = () => {
         {/* btn */}
         <button
           type="button"
-          className="bg-PRIMARY hover:text-PRIMARY hover:bg-white border border-PRIMARY duration-500 p-3 text-white text-center w-40 rounded-md font-semibold"
+          className="bg-PRIMARY active:translate-y-2 hover:text-PRIMARY hover:bg-white border border-PRIMARY duration-300 p-3 text-white text-center w-40 rounded-md font-semibold"
         >
           Register
         </button>

@@ -17,7 +17,10 @@ const ProductCard = ({ product, setShowProductDetailPopup }) => {
           alt={product?.title}
           className="lg:h-64 md:h-40 h-32 cursor-pointer w-full object-contain object-center"
           title={product?.title}
-          onClick={() => setShowProductDetailPopup(true)}
+          onClick={() => {
+            setShowProductDetailPopup(true);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
         />
         <p
           className="font-bold tracking-normal truncate"

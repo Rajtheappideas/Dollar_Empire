@@ -12,6 +12,7 @@ module.exports = {
         LIGHTGRAY: "#F5F5F5",
         BORDERGRAY: "#E6E6E6",
         TEXTGRAY: "#666666",
+        BACKGROUNDGRAY: "#FAFAFA",
       },
       fontFamily: {
         SFProText: ["SF Pro Text"],
