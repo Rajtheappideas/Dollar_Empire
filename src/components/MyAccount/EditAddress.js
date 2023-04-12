@@ -7,7 +7,7 @@ const EditAddress = ({ setShowEditAddres }) => {
     <div className="bg-white border border-BORDERGRAY space-y-5 p-5 w-full">
       {/* name */}
       <div className="flex items-start w-full gap-x-3">
-        <div className="w-2/5">
+        <div className="lg:w-2/5 w-1/2">
           <label className="text-black font-medium block text-left text-lg">
             First name
           </label>
@@ -17,7 +17,7 @@ const EditAddress = ({ setShowEditAddres }) => {
             placeholder="First name"
           />
         </div>
-        <div className="w-2/5">
+        <div className="lg:w-2/5 w-1/2">
           <label className="text-black font-medium block text-left text-lg">
             Last name
           </label>
@@ -35,7 +35,7 @@ const EditAddress = ({ setShowEditAddres }) => {
         </label>
         <input
           type="text"
-          className="bg-LIGHTGRAY w-[82%] text-black placeholder:text-gray-400 rounded-md p-3"
+          className="bg-LIGHTGRAY lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
           placeholder="Company name"
         />
       </>
@@ -46,7 +46,7 @@ const EditAddress = ({ setShowEditAddres }) => {
         </label>
         <input
           type="text"
-          className="bg-LIGHTGRAY w-[82%] text-black placeholder:text-gray-400 rounded-md p-3"
+          className="bg-LIGHTGRAY lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
           placeholder="Location"
         />
       </>
@@ -57,7 +57,7 @@ const EditAddress = ({ setShowEditAddres }) => {
         </label>
         <input
           type="text"
-          className="bg-LIGHTGRAY w-[82%] text-black placeholder:text-gray-400 rounded-md p-3"
+          className="bg-LIGHTGRAY lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
           placeholder="City"
         />
       </>
@@ -68,13 +68,13 @@ const EditAddress = ({ setShowEditAddres }) => {
         </label>
         <input
           type="text"
-          className="bg-LIGHTGRAY w-[82%] text-black placeholder:text-gray-400 rounded-md p-3"
+          className="bg-LIGHTGRAY lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
           placeholder="Country"
         />
       </>
       {/* phone, postal code */}
       <div className="flex items-start w-full gap-x-3">
-        <div className="w-2/5">
+        <div className="lg:w-2/5 w-full">
           <label className="text-black font-medium block text-left text-lg">
             Phone*
           </label>
@@ -96,7 +96,7 @@ const EditAddress = ({ setShowEditAddres }) => {
             buttonStyle={{ border: "0px" }}
           />
         </div>
-        <div className="w-2/5">
+        <div className="lg:w-2/5 w-full">
           <label className="text-black font-medium block text-left text-lg">
             Postal Code*
           </label>

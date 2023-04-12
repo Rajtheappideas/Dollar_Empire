@@ -81,7 +81,7 @@ const MyAccount = () => {
               <hr />
               <button
                 type="button"
-                className="text-red-400 text-left font-semibold"
+                className="text-red-500 text-left font-semibold"
               >
                 Logout
               </button>

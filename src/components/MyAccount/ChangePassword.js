@@ -10,7 +10,7 @@ const ChangePassword = () => {
         </label>
         <input
           type="password"
-          className="bg-LIGHTGRAY w-[82%] text-black placeholder:text-gray-400 rounded-md p-3"
+          className="bg-LIGHTGRAY lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
           placeholder="Company name"
         />
       </>
@@ -22,7 +22,7 @@ const ChangePassword = () => {
         </label>
         <input
           type="password"
-          className="bg-LIGHTGRAY w-[82%] text-black placeholder:text-gray-400 rounded-md p-3"
+          className="bg-LIGHTGRAY lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
           placeholder="new password"
         />
       </>
@@ -33,7 +33,7 @@ const ChangePassword = () => {
         </label>
         <input
           type="password"
-          className="bg-LIGHTGRAY w-[82%] text-black placeholder:text-gray-400 rounded-md p-3"
+          className="bg-LIGHTGRAY lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
           placeholder="Confirm New Password"
         />
       </>
