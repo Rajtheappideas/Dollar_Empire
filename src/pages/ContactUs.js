@@ -126,7 +126,7 @@ const ContactUs = () => {
           />
           <p>Please check the box below to proceed.</p>
           <ReCAPTCHA
-            sitekey="6LcwQ34lAAAAANxSaakZr9PGDSHIgcRkZzhPZqc7"
+            sitekey={process.env.REACT_APP_RECAPTCHA_KEY}
             onChange={onChange}
           />{" "}
           <button
