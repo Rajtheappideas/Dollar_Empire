@@ -1,21 +1,21 @@
 import React from "react";
 import { TiArrowBack } from "react-icons/ti";
-import { AiOutlineShoppingCart } from "react-icons/ai";
+import { AiOutlineShoppingCart, AiOutlineUser } from "react-icons/ai";
 import { BsCurrencyDollar, BsSearch } from "react-icons/bs";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { Link } from "react-router-dom";
 
 const Header = () => {
   return (
-    <>
+    <div>
       {/* first section */}
-      <div className="flex w-full justify-stretch items-center h-auto md:py-5 py-2 xl:px-20 md:px-10 px-3 md:gap-x-0 gap-x-2">
+      <div className="flex w-full justify-stretch items-center h-auto md:py-2 xl:px-20 md:px-10 px-3 md:gap-x-0 gap-x-2">
         <div className="flex-grow">
           <Link to="/" className="inline-block">
             <img
               src={require("../assets/images/dollar-empire-logo 1.png")}
               alt="logo"
-              className="h-fit w-fit object-contain object-center"
+              className="md:h-fit md:w-fit w-20 h-20 object-contain object-center"
             />
           </Link>
         </div>
@@ -40,7 +40,18 @@ const Header = () => {
               EN
             </span>
           </p>
-          <button type="button">Login / Register</button>
+          <button type="button">
+            <Link to="/sign-in">Login / Register</Link>
+          </button>
+          {/* <div className="flex items-center gap-x-2">
+            <AiOutlineUser className="w-8 h-8" />
+            <p className="text-left">
+              <span className="text-gray-300 text-sm block">Hello, john</span>
+              <span className="text-BLACK md:text-base text-sm font-bold block">
+                My Account
+              </span>
+            </p>
+          </div> */}
         </div>
       </div>
       {/* second section */}
@@ -108,7 +119,7 @@ const Header = () => {
           Minimum order $250
         </p>
       </div>
-    </>
+    </div>
   );
 };
 

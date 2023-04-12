@@ -11,13 +11,13 @@ const Footer = () => {
           <Link to="/" className="inline-block">
             <img
               src={require("../assets/images/dollar-empire-logo 1.png")}
-              className="w-44 h-fit object-contain object-center"
+              className="md:w-44 w-fit h-fit object-fill object-center"
             />
           </Link>
         </div>
         <div className="space-y-3 w-full">
-          <p>
-            <MdLocationOn className="w-5 h-5 text-black inline-block mr-2" />
+          <p className="flex items-start">
+            <MdLocationOn className="w-5 h-5 text-black inline-block mt-2 mr-2" />
             4423 E. Bandini Blvd.
             <br /> Los Angeles, CA 90058
           </p>

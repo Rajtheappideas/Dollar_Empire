@@ -3,7 +3,7 @@ import { Pagination, Autoplay } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 // Import Swiper styles
 import "swiper/css";
-import "swiper/css/navigation";
+import "swiper/css/pagination";
 
 const Herosection = () => {
   return (
@@ -20,27 +20,36 @@ const Herosection = () => {
       speed={1000}
       direction={"horizontal"}
       pagination
+      className="w-full"
     >
-      <SwiperSlide className="relative">
+      <SwiperSlide className="relative w-full">
         <img
           src={require("../../assets/images/hero-section.png")}
-          className="w-fit h-fit object-contain object-center"
+          className="w-full h-fit object-contain object-center"
         />
         <img
           src={require("../../assets/images/dollar-empire-logo 1.png")}
-          className="top-1/2 -translate-y-1/2 left-1/2 h-fit w-fit object-contain object-center"
+          className="top-1/2 -translate-y-1/2 lg:left-[60%] md:left-[55%] left-[60%] absolute lg:h-40 lg:w-40 md:h-fit md:w-fit w-14 h-14 object-fill object-center"
         />
       </SwiperSlide>
-      <SwiperSlide>
+      <SwiperSlide className="relative w-full">
         <img
           src={require("../../assets/images/hero-section.png")}
-          className="w-fit h-fit object-contain object-center"
+          className="w-full h-fit object-contain object-center"
+        />
+        <img
+          src={require("../../assets/images/dollar-empire-logo 1.png")}
+          className="top-1/2 -translate-y-1/2 lg:left-[60%] md:left-[55%] left-[60%] absolute lg:h-40 lg:w-40 md:h-fit md:w-fit w-14 h-14 object-fill object-center"
         />
       </SwiperSlide>
-      <SwiperSlide>
+      <SwiperSlide className="relative w-full">
         <img
           src={require("../../assets/images/hero-section.png")}
-          className="w-fit h-fit object-contain object-center"
+          className="w-full h-fit object-contain object-center"
+        />
+        <img
+          src={require("../../assets/images/dollar-empire-logo 1.png")}
+          className="top-1/2 -translate-y-1/2 lg:left-[60%] md:left-[55%] left-[60%] absolute lg:h-40 lg:w-40 md:h-fit md:w-fit w-14 h-14 object-fill object-center"
         />
       </SwiperSlide>
     </Swiper>
