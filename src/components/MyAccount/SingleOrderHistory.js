@@ -3,7 +3,7 @@ import { AiOutlineClose } from "react-icons/ai";
 
 const SingleOrderHistory = ({ setShowSingleOrder }) => {
   return (
-    <div className="w-full overflow-x-scroll relative z-0 bg-white border border-BORDERGRAY text-BLACK space-y-10">
+    <div className="w-full relative z-0 bg-white border border-BORDERGRAY text-BLACK space-y-10">
       <div className="p-5 md:space-y-5 space-y-3 overflow-x-hidden">
         <p className="font-semibold md:text-3xl text-lg text-PRIMARY">
           Order ID : 123456789
@@ -29,83 +29,85 @@ const SingleOrderHistory = ({ setShowSingleOrder }) => {
           <span className="font-normal">$441.60</span>
         </p>
       </div>
-      <table className="w-full table-auto overflow-x-scroll">
-        <thead>
-          <tr className=" bg-PRIMARY text-white w-full">
-            <th className="p-3 text-left">Product</th>
-            <th className="p-3 text-center">Item no.</th>
-            <th className="p-3 text-center">Price</th>
-            <th className="p-3 text-center">Quantity</th>
-            <th className="p-3 text-center">Subtotal</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr className="text-center">
-            <td className="py-5 px-3 flex gap-x-3 whitespace-normal md:w-fit w-60 items-center">
-              <img
-                src={require("../../assets/images/trimmer.png")}
-                alt="trimmer"
-                className="h-20 w-20 object-contain object-center"
-              />
-              <span className="font-semibold text-left">
-                Nose and ear portable Trimmer
-              </span>
-            </td>
-            <td className="py-5 px-3">#123456</td>
-            <td className="py-5 px-3">$2.30</td>
-            <td className="py-5 px-3">192</td>
-            <td className="py-5 px-3">$441.60</td>
-          </tr>
-          <tr className="text-center">
-            <td className="py-5 px-3 flex gap-x-3 whitespace-normal md:w-fit w-60 items-center">
-              <img
-                src={require("../../assets/images/trimmer.png")}
-                alt="trimmer"
-                className="h-20 w-20 object-contain object-center"
-              />
-              <span className="font-semibold text-left">
-                Nose and ear portable Trimmer
-              </span>
-            </td>
-            <td className="py-5 px-3">#123456</td>
-            <td className="py-5 px-3">$2.30</td>
-            <td className="py-5 px-3">192</td>
-            <td className="py-5 px-3">$441.60</td>
-          </tr>
-          <tr className="text-center">
-            <td className="py-5 px-3 flex gap-x-3 whitespace-normal md:w-fit w-60 items-center">
-              <img
-                src={require("../../assets/images/trimmer.png")}
-                alt="trimmer"
-                className="h-20 w-20 object-contain object-center"
-              />
-              <span className="font-semibold text-left">
-                Nose and ear portable Trimmer
-              </span>
-            </td>
-            <td className="py-5 px-3">#123456</td>
-            <td className="py-5 px-3">$2.30</td>
-            <td className="py-5 px-3">192</td>
-            <td className="py-5 px-3">$441.60</td>
-          </tr>
-          <tr className="text-center">
-            <td className="py-5 px-3 flex gap-x-3 whitespace-normal md:w-fit w-60 items-center">
-              <img
-                src={require("../../assets/images/trimmer.png")}
-                alt="trimmer"
-                className="h-20 w-20 object-contain object-center"
-              />
-              <span className="font-semibold text-left">
-                Nose and ear portable Trimmer
-              </span>
-            </td>
-            <td className="py-5 px-3">#123456</td>
-            <td className="py-5 px-3">$2.30</td>
-            <td className="py-5 px-3">192</td>
-            <td className="py-5 px-3">$441.60</td>
-          </tr>
-        </tbody>
-      </table>
+      <div className="w-full overflow-x-scroll">
+        <table className="w-full table-auto">
+          <thead>
+            <tr className=" bg-PRIMARY text-white w-full">
+              <th className="p-3 text-left min-w-[20rem]">Product</th>
+              <th className="p-3 text-center min-w-[8rem]">Item no.</th>
+              <th className="p-3 text-center w-28">Price</th>
+              <th className="p-3 text-center w-28">Quantity</th>
+              <th className="p-3 text-center w-28">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="text-center">
+              <td className="p-3 flex gap-x-3 whitespace-normal items-center">
+                <img
+                  src={require("../../assets/images/trimmer.png")}
+                  alt="trimmer"
+                  className="min-w-[6rem] min-h-[6rem] max-w-[6rem] max-h-[6rem] object-contain object-center"
+                />
+                <span className="font-semibold text-left">
+                  Nose and ear portable Trimmer Nose and ear portable Trimmer
+                </span>
+              </td>
+              <td className="p-3">#123456</td>
+              <td className="p-3">$2.30</td>
+              <td className="p-3">192</td>
+              <td className="p-3">$441.60</td>
+            </tr>
+            <tr className="text-center">
+              <td className="p-3 flex gap-x-3 whitespace-normal items-center">
+                <img
+                  src={require("../../assets/images/trimmer.png")}
+                  alt="trimmer"
+                  className="min-w-[6rem] min-h-[6rem] max-w-[6rem] max-h-[6rem] object-contain object-center"
+                />
+                <span className="font-semibold text-left">
+                  Nose and ear portable Trimmer Nose and ear portable Trimmer
+                </span>
+              </td>
+              <td className="p-3">#123456</td>
+              <td className="p-3">$2.30</td>
+              <td className="p-3">192</td>
+              <td className="p-3">$441.60</td>
+            </tr>
+            <tr className="text-center">
+              <td className="p-3 flex gap-x-3 whitespace-normal items-center">
+                <img
+                  src={require("../../assets/images/trimmer.png")}
+                  alt="trimmer"
+                  className="min-w-[6rem] min-h-[6rem] max-w-[6rem] max-h-[6rem] object-contain object-center"
+                />
+                <span className="font-semibold text-left">
+                  Nose and ear portable Trimmer Nose and ear portable Trimmer
+                </span>
+              </td>
+              <td className="p-3">#123456</td>
+              <td className="p-3">$2.30</td>
+              <td className="p-3">192</td>
+              <td className="p-3">$441.60</td>
+            </tr>
+            <tr className="text-center">
+              <td className="p-3 flex gap-x-3 whitespace-normal items-center">
+                <img
+                  src={require("../../assets/images/trimmer.png")}
+                  alt="trimmer"
+                  className="min-w-[6rem] min-h-[6rem] max-w-[6rem] max-h-[6rem] object-contain object-center"
+                />
+                <span className="font-semibold text-left">
+                  Nose and ear portable Trimmer Nose and ear portable Trimmer
+                </span>
+              </td>
+              <td className="p-3">#123456</td>
+              <td className="p-3">$2.30</td>
+              <td className="p-3">192</td>
+              <td className="p-3">$441.60</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <AiOutlineClose
         role="button"
         onClick={() => setShowSingleOrder(false)}

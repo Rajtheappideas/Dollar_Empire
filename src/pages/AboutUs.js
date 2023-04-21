@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import TItleSection from "../components/TItleSection";
 import { Helmet } from "react-helmet";
 import bgImg from "../assets/images/aboutus.jpg";

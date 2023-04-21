@@ -2,6 +2,41 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .scrollbar::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  .scrollbar::-webkit-scrollbar-track {
+    border-radius: 100vh;
+    background: #f7f4ed;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb {
+    background: #1b599e;
+    border-radius: 100vh;
+    border: 3px solid #f6f7ed;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #c0a0b9;
+  }
+  .submenu {
+    position: relative;
+  }
+  .submenu2 {
+    position: absolute;
+    left: 100%;
+    top: -10px;
+    background-color: white;
+    display: none;
+  }
+
+  .submenu:hover > .submenu2 {
+    display: block;
+  }
+}
+
 body {
   @font-face {
     font-family: "SF Pro Text";
@@ -15,12 +50,17 @@ body {
   background-color: #f5f5f5 !important;
 }
 
-@media screen and (max-width:1024px) {
+@media screen and (max-width: 1280px) {
+  .space_for_div {
+    padding: 0 4.5rem;
+  }
+}
+@media screen and (max-width: 1024px) {
   .space_for_div {
     padding: 0 2.5rem;
   }
 }
-@media screen and (max-width:640px) {
+@media screen and (max-width: 640px) {
   .space_for_div {
     padding: 0 0.75rem;
   }

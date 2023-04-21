@@ -22,7 +22,7 @@ const Herosection = () => {
       pagination
       className="w-full"
     >
-      <SwiperSlide className="relative w-full">
+      <SwiperSlide className="relative z-0 w-full">
         <img
           src={require("../../assets/images/hero-section.png")}
           className="w-full h-fit object-contain object-center"

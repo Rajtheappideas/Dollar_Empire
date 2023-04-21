@@ -13,23 +13,15 @@ import { Swiper, SwiperSlide } from "swiper/react";
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/navigation";
-import { useEffect } from "react";
-import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { closePopup } from "../redux/GlobalStates";
 
 const ProductDetailPopup = ({ setShowProductDetailPopup }) => {
-  const [screenHeight, setScreenHeight] = useState(0);
-
   const prevRef = useRef(null);
   const nextRef = useRef(null);
 
-  useEffect(() => {
-    window.addEventListener("scroll", () => {
-      setScreenHeight(window.scrollY);
-    });
-    //     return () => {
-    //       window.removeEventListener("scroll", () => {});
-    //     };
-  }, [window.scrollY]);
+  const dispatch = useDispatch();
+
   return (
     <div
       className={`absolute bg-black/30 z-20 w-full md:min-h-[100rem] min-h-[115rem] inset-0 backdrop-blur-sm`}
@@ -37,7 +29,7 @@ const ProductDetailPopup = ({ setShowProductDetailPopup }) => {
       <div className="absolute overflow-hidden top-10 left-1/2 -translate-x-1/2 z-30 md:p-5 py-10 px-5 bg-white text-black flex md:flex-row flex-col items-start gap-x-3 xl:w-2/3 lg:w-10/12 w-11/12 h-auto">
         <AiOutlineClose
           role="button"
-          onClick={() => setShowProductDetailPopup(false)}
+          onClick={() => dispatch(closePopup())}
           className="absolute md:top-6 top-2 md:left-[94%] left-[90%] w-7 h-7 text-black z-40"
         />
         {/* images */}
@@ -170,7 +162,7 @@ const ProductDetailPopup = ({ setShowProductDetailPopup }) => {
           <p className="flex items-center gap-x-3">
             <button
               type="button"
-              className="bg-GREEN text-white w-60 p-3 rounded-md"
+              className="bg-DARKRED text-white w-60 p-3 rounded-md"
             >
               Add to cart
               <AiOutlineShoppingCart className="h-6 w-6 ml-2 inline-block" />

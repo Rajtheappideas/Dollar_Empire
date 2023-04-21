@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import SingleOrderHistory from "./SingleOrderHistory";
 
-const OrderHIstory = () => {
+const IncompleteOrders = () => {
   const [showSingleOrder, setShowSingleOrder] = useState(false);
   return (
     <div className="w-full overflow-x-scroll">
@@ -44,4 +44,4 @@ const OrderHIstory = () => {
   );
 };
 
-export default OrderHIstory;
+export default IncompleteOrders;

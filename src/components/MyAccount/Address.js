@@ -19,15 +19,18 @@ const Address = () => {
             <p className="font-normal">+01 123456475</p>
             <p className="flex items-center gap-x-3">
               <span
+                role="button"
                 className="text-PRIMARY"
                 onClick={() => setShowEditAddres(true)}
               >
                 Edit
               </span>{" "}
-              <span className="text-red-400">Delete</span>
+              <span role="button" className="text-red-400">
+                Delete
+              </span>
             </p>
           </div>
-          <div className="border border-BORDERGRAY rounded-md text-BLACK gap-y-2 text-center md:w-2/5 w-full min-h-[13rem] flex flex-col items-center justify-center">
+          <div className="border cursor-pointer border-BORDERGRAY rounded-md text-BLACK gap-y-2 text-center md:w-2/5 w-full min-h-[13rem] flex flex-col items-center justify-center">
             <AiOutlinePlusCircle className="h-10 w-10 text-TEXTGRAY block" />
             <p className="font-semibold text-TEXTGRAY">Add new address</p>
           </div>

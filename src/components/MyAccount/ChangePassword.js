@@ -48,7 +48,7 @@ const ChangePassword = () => {
         </button>
         <button
           type="button"
-          className="w-40 font-semibold bg-gray-400 text-black rounded-md text-center p-3 active:translate-y-2 hover:text-white hover:bg-black border border-gray-400 duration-300"
+          className="w-40 font-semibold bg-gray-200 text-black rounded-md text-center p-3 active:translate-y-2 hover:text-white hover:bg-black border border-gray-400 duration-300"
         >
           Cancel
         </button>

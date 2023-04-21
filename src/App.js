@@ -8,6 +8,8 @@ import Footer from "./components/Footer";
 import ErrorFallback from "./components/ErrorFallback";
 import PageNotFound from "./pages/PageNotFound";
 import loading from "./assets/animations/loading.json";
+import { useSelector } from "react-redux";
+import ProductDetailPopup from "./components/ProductDetailPopup";
 
 const Home = lazy(() => import("./pages/Home"));
 const PrivayPolicy = lazy(() => import("./pages/PrivayPolicy"));
@@ -23,8 +25,13 @@ const ProductListing = lazy(() => import("./pages/ProductListing"));
 const ShippingAndFreight = lazy(() => import("./pages/ShippingAndFreight"));
 const MyAccount = lazy(() => import("./pages/MyAccount"));
 const SpecialOrder = lazy(() => import("./pages/SpecialOrder"));
+const Favourites = lazy(() => import("./pages/Favourites"));
 
 function App() {
+  const { showProductDetailsPopup } = useSelector(
+    (state) => state.globalStates
+  );
+
   const defaultOptions = {
     loop: true,
     autoplay: true,
@@ -48,11 +55,12 @@ function App() {
                 options={defaultOptions}
                 height={300}
                 width={300}
-                isClickToPauseDisabled={false}
+                isClickToPauseDisabled={true}
               />
             </div>
           }
         >
+          {showProductDetailsPopup && <ProductDetailPopup />}
           <Header />
           <Routes>
             <Route path="/" element={<Home />} caseSensitive />
@@ -72,10 +80,11 @@ function App() {
             <Route path="/sign-up" element={<Signup />} caseSensitive />
             <Route path="/cart" element={<Cart />} caseSensitive />
             <Route
-              path="product-listing/"
+              path="/product-listing"
               element={<ProductListing />}
               caseSensitive
             />
+            <Route path="/favourites" element={<Favourites />} caseSensitive />
             <Route
               path="/special-order"
               element={<SpecialOrder />}

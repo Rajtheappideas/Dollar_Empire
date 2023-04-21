@@ -13,6 +13,7 @@ module.exports = {
         BORDERGRAY: "#E6E6E6",
         TEXTGRAY: "#666666",
         BACKGROUNDGRAY: "#FAFAFA",
+        DARKRED: "#E30606",
       },
       fontFamily: {
         SFProText: ["SF Pro Text"],

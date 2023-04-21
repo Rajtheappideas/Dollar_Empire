@@ -12,7 +12,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
 
-const TopSellers = ({ setShowProductDetailPopup }) => {
+const TopSellers = ({}) => {
   const [slide, setSlide] = useState({ isEnd: false, isBeginning: false });
 
   const prevRef = useRef(null);
@@ -22,37 +22,37 @@ const TopSellers = ({ setShowProductDetailPopup }) => {
     {
       id: 1,
       title: "2 Liter Pressure Spray Bottle",
-      productId: "#12345677",
+      productId: "12345677",
       img: img1,
     },
     {
       id: 2,
       title: "Easter grass",
-      productId: "#12345677",
+      productId: "12345677",
       img: img2,
     },
     {
       id: 3,
       title: "Native toothpaste",
-      productId: "#12345677",
+      productId: "12345677",
       img: img3,
     },
     {
       id: 4,
       title: "Kumchun sauce",
-      productId: "#12345677",
+      productId: "12345677",
       img: img4,
     },
     {
       id: 5,
       title: "ADVIL LIQUI-GELS",
-      productId: "#12345677",
+      productId: "12345677",
       img: img5,
     },
     {
       id: 6,
       title: "Native toothpaste",
-      productId: "#12345677",
+      productId: "12345677",
       img: img3,
     },
   ];
@@ -111,10 +111,7 @@ const TopSellers = ({ setShowProductDetailPopup }) => {
         >
           {Products.map((product) => (
             <SwiperSlide key={product?.id}>
-              <ProductCard
-                product={product}
-                setShowProductDetailPopup={setShowProductDetailPopup}
-              />
+              <ProductCard product={product} />
             </SwiperSlide>
           ))}
         </Swiper>
