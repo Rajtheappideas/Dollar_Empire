@@ -76,8 +76,8 @@ const ProductListing = () => {
   return (
     <>
       <Helmet title={title} />
-      <section className="bg-BACKGROUNDGRAY space-y-5">
-        <div className="container mx-auto space_for_div space-y-5 w-full bg-BACKGROUNDGRAY lg:pb-20 pb-10">
+      <section className="bg-BACKGROUNDGRAY space-y-5  lg:pb-20 py-10">
+        <div className="container mx-auto space_for_div space-y-5 w-full bg-BACKGROUNDGRAY">
           <h1 className="block font-semibold md:text-4xl text-2xl text-left">
             {title === "Price" && title !== "" ? (
               <>

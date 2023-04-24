@@ -7,9 +7,9 @@ import "react-phone-input-2/lib/style.css";
 const EditAddressPopup = ({ setShowPopup, showPopup }) => {
   return (
     <div
-      className={`absolute bg-black/30 z-20 w-full lg:min-h-[100rem] min-h-[120rem]  inset-0 backdrop-blur-sm`}
+      className={`absolute bg-black/30 z-50 w-full lg:min-h-[100rem] min-h-[120rem]  inset-0 backdrop-blur-sm`}
     >
-      <div className="fixed overflow-hidden space-y-3 top-10 left-1/2 -translate-x-1/2 z-30 md:p-5 py-10 px-5 bg-white text-black lg:w-5/12 md:w-7/12 w-[95%] h-auto rounded-md">
+      <div className="fixed overflow-hidden space-y-3 top-10 left-1/2 -translate-x-1/2 z-50 md:p-5 py-10 px-5 bg-white text-black lg:w-5/12 md:w-7/12 w-[95%] h-auto rounded-md">
         <div className="flex items-center justify-between w-full">
           <p className="font-semibold text-2xl">Shipping Address</p>
           <AiOutlineClose

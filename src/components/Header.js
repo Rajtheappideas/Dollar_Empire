@@ -28,7 +28,7 @@ const Header = () => {
   return (
     <div>
       {/* first section */}
-      <div className="flex relative z-50 w-full justify-stretch items-center h-auto md:py-2 xl:px-20 md:px-10 px-3 md:gap-x-0 gap-x-1">
+      <div className="flex relative z-40 w-full justify-stretch items-center md:h-auto h-14 md:py-2 xl:px-20 md:px-10 px-3 md:gap-x-0 gap-x-1">
         {/* first logo */}
         <div className="flex-grow">
           <Link to="/" className="inline-block">
@@ -46,7 +46,7 @@ const Header = () => {
             <img
               src={require("../assets/images/familymaid 1.png")}
               alt="logo"
-              className="md:h-fit md:w-fit w-24 h-24 object-contain object-center"
+              className="md:h-fit md:w-fit w-20 h-20 object-contain object-center"
             />
           </Link>
         </div>
@@ -64,9 +64,9 @@ const Header = () => {
               EN
             </span>
           </p>
-          {/* <button type="button" className="md:block hidden">
+          <button type="button" className="md:block hidden">
             <Link to="/sign-in">Login / Register</Link>
-          </button> */}
+          </button>
 
           <HiOutlineBars3
             onClick={() => setOpenSidebar(true)}
@@ -74,7 +74,7 @@ const Header = () => {
             className="h-8 w-8 block md:hidden"
           />
 
-          <Link to="/my-account" className="md:block hidden">
+          {/* <Link to="/my-account" className="md:block hidden">
             <div className="flex items-center gap-x-2">
               <AiOutlineUser className="w-8 h-8" />
               <p className="text-left">
@@ -84,12 +84,12 @@ const Header = () => {
                 </span>
               </p>
             </div>
-          </Link>
+          </Link> */}
         </div>
 
         {/* sidebar for mobile */}
         <div
-          className={`absolute z-50 top-0 right-0 text-center transform duration-300 ease-in origin-top-right ${
+          className={`absolute z-40 top-0 right-0 text-center transform duration-300 ease-in origin-top-right ${
             openSidebar ? "scale-100" : "scale-0"
           } font-semibold text-xl bg-white w-full h-screen p-3 text-PRIMARY space-y-3`}
         >
@@ -100,13 +100,13 @@ const Header = () => {
               className="h-6 w-6 float-right"
             />
           </p>
-          <p className="pt-5">
+          <p className="pt-5" onClick={() => setOpenSidebar(false)}>
             <Link to="/sign-in">Login</Link>
           </p>
-          <p className="pt-5">
+          <p className="pt-5" onClick={() => setOpenSidebar(false)}>
             <Link to="/sign-up">Register</Link>
           </p>
-          <p className="pt-5">
+          <p className="pt-5" onClick={() => setOpenSidebar(false)}>
             <Link to="/my-account">My Account</Link>
           </p>
         </div>

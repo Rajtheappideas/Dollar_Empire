@@ -6,7 +6,7 @@ const ShoppingCart = ({ setActiveComponent }) => {
   const [showChangeField, setShowChangeField] = useState(false);
 
   return (
-    <div className="w-full flex xl:flex-row flex-col items-start justify-start gap-4">
+    <div className="w-full flex xl:flex-row flex-col items-start justify-start gap-4 pb-10">
       {/* table */}
       <div className="xl:w-9/12 w-full xl:overflow-hidden overflow-x-scroll scrollbar">
         <table className="w-full">
@@ -40,7 +40,7 @@ const ShoppingCart = ({ setActiveComponent }) => {
                   alt="product"
                   className="min-w-[6rem] min-h-[6rem] max-w-[6rem] max-h-[6rem] object-contain object-center"
                 />
-                <p className="font-semibold text-lg text-left">
+                <p className="font-semibold md:text-lg text-left">
                   Medium Waterfall Incense Cone Holder with 20 Incense Cones{" "}
                 </p>
               </td>
@@ -65,7 +65,7 @@ const ShoppingCart = ({ setActiveComponent }) => {
                   alt="product"
                   className="min-w-[6rem] min-h-[6rem] max-w-[6rem] max-h-[6rem] object-contain object-center"
                 />
-                <p className="font-semibold text-lg text-left">
+                <p className="font-semibold md:text-lg text-left">
                   Nose and ear portable Trimmer
                 </p>
               </td>
@@ -115,7 +115,7 @@ const ShoppingCart = ({ setActiveComponent }) => {
                   alt="product"
                   className="min-w-[6rem] min-h-[6rem] max-w-[6rem] max-h-[6rem] object-contain object-center"
                 />
-                <p className="font-semibold text-lg text-left">
+                <p className="font-semibold md:text-lg text-left">
                   Medium Waterfall Incense Cone Holder with 20 Incense Cones{" "}
                 </p>
               </td>
@@ -140,7 +140,7 @@ const ShoppingCart = ({ setActiveComponent }) => {
                   alt="product"
                   className="min-w-[6rem] min-h-[6rem] max-w-[6rem] max-h-[6rem] object-contain object-center"
                 />
-                <p className="font-semibold text-lg text-left">
+                <p className="font-semibold md:text-lg text-left">
                   Medium Waterfall Incense Cone Holder with 20 Incense Cones{" "}
                 </p>
               </td>

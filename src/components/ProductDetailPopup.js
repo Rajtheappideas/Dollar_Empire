@@ -24,7 +24,7 @@ const ProductDetailPopup = ({ setShowProductDetailPopup }) => {
 
   return (
     <div
-      className={`absolute bg-black/30 z-20 w-full md:min-h-[100rem] min-h-[115rem] inset-0 backdrop-blur-sm`}
+      className={`absolute bg-black/30 z-50 w-full md:min-h-[100rem] min-h-[115rem] inset-0 backdrop-blur-sm`}
     >
       <div className="absolute overflow-hidden top-10 left-1/2 -translate-x-1/2 z-30 md:p-5 py-10 px-5 bg-white text-black flex md:flex-row flex-col items-start gap-x-3 xl:w-2/3 lg:w-10/12 w-11/12 h-auto">
         <AiOutlineClose

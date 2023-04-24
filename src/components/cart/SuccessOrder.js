@@ -13,7 +13,7 @@ const SuccessOrder = () => {
     },
   };
   return (
-    <div className="flex w-full items-center justify-center gap-5 flex-col">
+    <div className="flex w-full items-center justify-center gap-5 flex-col py-10">
       <Lottie
         options={defaultOptions}
         height={300}

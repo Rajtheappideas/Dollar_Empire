@@ -5,7 +5,7 @@ const Checkout = ({ setActiveComponent }) => {
   const [showPopup, setShowPopup] = useState(false);
 
   return (
-    <div className="w-full flex xl:flex-row flex-col items-start justify-start gap-4">
+    <div className="w-full flex xl:flex-row flex-col items-start justify-start gap-4 pb-10">
       {showPopup && <EditAddressPopup setShowPopup={setShowPopup} showPopup={showPopup} />}
 
       {/* left side div */}
@@ -13,7 +13,7 @@ const Checkout = ({ setActiveComponent }) => {
         <p className="bg-PRIMARY text-white p-4 w-full text-left font-semibold tracking-wide">
           Shipping Method
         </p>
-        <div className="w-full border border-gray-300 rounded-md p-5">
+        <div className="w-full border border-gray-300 rounded-md md:p-5 p-2">
           <div className="w-full flex justify-start items-center gap-x-5 bg-white">
             <input name="checkout" type="radio" className="w-6 h-6" />
             <p>
@@ -25,7 +25,7 @@ const Checkout = ({ setActiveComponent }) => {
             </p>
           </div>
         </div>
-        <div className="w-full border border-gray-300 rounded-md p-5">
+        <div className="w-full border border-gray-300 rounded-md md:p-5 p-2">
           <div className="w-full flex justify-start items-center gap-x-5 bg-white">
             <input name="checkout" type="radio" className="w-6 h-6" />
             <p>

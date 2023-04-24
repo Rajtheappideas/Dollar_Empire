@@ -8,7 +8,7 @@ const PaymentInfo = ({ activeComponent, setActiveComponent }) => {
     cardDetails: true,
   });
   return (
-    <div className="w-full flex xl:flex-row flex-col items-start justify-start gap-4">
+    <div className="w-full flex xl:flex-row flex-col items-start justify-start gap-4 pb-10">
       {/* table */}
       {showCardDetails && paymentOption.cardDetails ? (
         <CardDetails />
