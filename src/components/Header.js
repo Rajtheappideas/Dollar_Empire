@@ -1,6 +1,7 @@
 import React from "react";
 import { TiArrowBack } from "react-icons/ti";
-import { AiOutlineShoppingCart } from "react-icons/ai";
+import { AiOutlineShoppingCart, AiOutlineUser } from "react-icons/ai";
+import { HiOutlineBars3, HiXMark } from "react-icons/hi2";
 import {
   BsCurrencyDollar,
   BsSearch,
@@ -8,13 +9,27 @@ import {
   BsChevronRight,
 } from "react-icons/bs";
 import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useEffect } from "react";
 
 const Header = () => {
+  const [openSidebar, setOpenSidebar] = useState(false);
+
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (openSidebar) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+  }, [openSidebar]);
+
   return (
     <div>
       {/* first section */}
-      <div className="flex w-full justify-stretch items-center h-auto md:py-2 xl:px-20 md:px-10 px-3 md:gap-x-0 gap-x-2">
+      <div className="flex relative z-50 w-full justify-stretch items-center h-auto md:py-2 xl:px-20 md:px-10 px-3 md:gap-x-0 gap-x-1">
+        {/* first logo */}
         <div className="flex-grow">
           <Link to="/" className="inline-block">
             <img
@@ -24,16 +39,18 @@ const Header = () => {
             />
           </Link>
         </div>
-        <div className="flex-grow md:block hidden">
+        {/* second logo */}
+        <div className="flex-grow">
           {" "}
           <Link to="/" className="inline-block">
             <img
               src={require("../assets/images/familymaid 1.png")}
               alt="logo"
-              className="h-fit w-fit object-contain object-center"
+              className="md:h-fit md:w-fit w-24 h-24 object-contain object-center"
             />
           </Link>
         </div>
+        {/* language + login /register */}
         <div className="flex items-center md:gap-x-8 gap-x-1 md:text-lg font-semibold ">
           <p className="text-sm text-PRIMARY" role="button">
             <span className="flex items-center">
@@ -47,10 +64,17 @@ const Header = () => {
               EN
             </span>
           </p>
-          <button type="button">
+          {/* <button type="button" className="md:block hidden">
             <Link to="/sign-in">Login / Register</Link>
-          </button>
-          {/* <Link to="/my-account">
+          </button> */}
+
+          <HiOutlineBars3
+            onClick={() => setOpenSidebar(true)}
+            role="button"
+            className="h-8 w-8 block md:hidden"
+          />
+
+          <Link to="/my-account" className="md:block hidden">
             <div className="flex items-center gap-x-2">
               <AiOutlineUser className="w-8 h-8" />
               <p className="text-left">
@@ -60,7 +84,31 @@ const Header = () => {
                 </span>
               </p>
             </div>
-          </Link> */}
+          </Link>
+        </div>
+
+        {/* sidebar for mobile */}
+        <div
+          className={`absolute z-50 top-0 right-0 text-center transform duration-300 ease-in origin-top-right ${
+            openSidebar ? "scale-100" : "scale-0"
+          } font-semibold text-xl bg-white w-full h-screen p-3 text-PRIMARY space-y-3`}
+        >
+          <p className="pt-4">
+            <HiXMark
+              role="button"
+              onClick={() => setOpenSidebar(false)}
+              className="h-6 w-6 float-right"
+            />
+          </p>
+          <p className="pt-5">
+            <Link to="/sign-in">Login</Link>
+          </p>
+          <p className="pt-5">
+            <Link to="/sign-up">Register</Link>
+          </p>
+          <p className="pt-5">
+            <Link to="/my-account">My Account</Link>
+          </p>
         </div>
       </div>
       {/* second section */}
@@ -68,7 +116,7 @@ const Header = () => {
         <div className="lg:w-1/2 w-full text-black">
           <div className="capitalize font-semibold relative z-30 flex items-center w-full bg-white rounded-md p-3">
             {/* menu */}
-            <div className="relative z-30 group md:w-40">
+            <div className="relative z-0 group md:w-40">
               <p className="cursor-pointer flex items-center justify-between flex-row text-black font-normal">
                 <span className="text-base whitespace-nowrap">
                   All Categories
@@ -76,307 +124,887 @@ const Header = () => {
                 <BsChevronDown className="h-5 w-5 ml-auto md:pl-0 pl-2" />
               </p>
               {/* menu */}
-              <div className="text-left p-2 absolute top-10 left-0 z-50 bg-white md:min-w-[14rem] min-w-[10rem] rounded-md group-hover:scale-100 scale-0 transform duration-300 ease-in origin-top-left">
-                <div className="pl-3 text-base font-normal text-gray-400 capitalize space-y-3 md:min-w-[14rem] min-w-[10rem] ">
+              <div className="text-left p-2 absolute top-9 -left-3 z-30 bg-white md:min-w-[14rem] min-w-[10rem] rounded-md group-hover:scale-100 scale-0 transform duration-300 ease-in origin-top-left">
+                <div className="pl-3 text-base font-normal text-gray-400 capitalize space-y-3 min-md:w-[14rem]  min-w-[10rem]">
                   <div
                     className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
                   >
                     Apparel (28){" "}
                     <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
-                    <p className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white md:min-w-[10rem] min-w-[8rem] ">
+                    <div className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white md:min-w-[10rem] min-w-[3rem] max-w-[14rem]">
                       <span className="font-semibold text-black text-xl">
                         Electronics
                       </span>
                       <hr />
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Audio & Video Supplies (15)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Batteries (20)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Cameras & Clocks (8)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Electric Accessories (13)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        View all (Low to high)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        View all (High to low)
-                      </span>
-                    </p>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        <span className="font-normal md:whitespace-nowrap block hover:font-semibold">
+                          Audio & Video Supplies (15)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          Batteries (20)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          Cameras & Clocks (8)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          Electric Accessories (13)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          View all (Low to high)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          View all (High to low)
+                        </span>
+                      </Link>
+                    </div>
                   </div>
                   <div
                     className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
                   >
                     Bed & Bath (38)
                     <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
-                    <p className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white min-w-[10rem]">
+                    <div className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white md:min-w-[10rem] min-w-[8rem]">
                       <span className="font-semibold text-black text-xl">
                         Electronics
                       </span>
                       <hr />
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Audio & Video Supplies (15)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Batteries (20)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Cameras & Clocks (8)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Electric Accessories (13)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        View all (Low to high)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        View all (High to low)
-                      </span>
-                    </p>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        <span className="font-normal md:whitespace-nowrap block hover:font-semibold">
+                          Audio & Video Supplies (15)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          Batteries (20)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          Cameras & Clocks (8)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          Electric Accessories (13)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          View all (Low to high)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          View all (High to low)
+                        </span>
+                      </Link>
+                    </div>
                   </div>
                   <div
                     className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
                   >
                     Camping (40)
                     <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
-                    <p className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white min-w-[10rem]">
+                    <div className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white md:min-w-[10rem] min-w-[8rem]">
                       <span className="font-semibold text-black text-xl">
                         Electronics
                       </span>
                       <hr />
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Audio & Video Supplies (15)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Batteries (20)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Cameras & Clocks (8)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Electric Accessories (13)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        View all (Low to high)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        View all (High to low)
-                      </span>
-                    </p>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        <span className="font-normal md:whitespace-nowrap block hover:font-semibold">
+                          Audio & Video Supplies (15)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          Batteries (20)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          Cameras & Clocks (8)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          Electric Accessories (13)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          View all (Low to high)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          View all (High to low)
+                        </span>
+                      </Link>
+                    </div>
                   </div>
                   <div
                     className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
                   >
                     Cosmetics (58)
                     <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
-                    <p className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white min-w-[10rem]">
+                    <div className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white md:min-w-[10rem] min-w-[8rem]">
                       <span className="font-semibold text-black text-xl">
                         Electronics
                       </span>
                       <hr />
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Audio & Video Supplies (15)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Batteries (20)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Cameras & Clocks (8)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Electric Accessories (13)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        View all (Low to high)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        View all (High to low)
-                      </span>
-                    </p>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        <span className="font-normal md:whitespace-nowrap block hover:font-semibold">
+                          Audio & Video Supplies (15)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          Batteries (20)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          Cameras & Clocks (8)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          Electric Accessories (13)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          View all (Low to high)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          View all (High to low)
+                        </span>
+                      </Link>
+                    </div>
                   </div>
                   <div
                     className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
                   >
                     Hair care (45)
                     <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
-                    <p className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white min-w-[10rem]">
+                    <div className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white md:min-w-[10rem] min-w-[8rem]">
                       <span className="font-semibold text-black text-xl">
                         Electronics
                       </span>
                       <hr />
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Audio & Video Supplies (15)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Batteries (20)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Cameras & Clocks (8)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Electric Accessories (13)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        View all (Low to high)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        View all (High to low)
-                      </span>
-                    </p>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        <span className="font-normal md:whitespace-nowrap block hover:font-semibold">
+                          Audio & Video Supplies (15)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          Batteries (20)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          Cameras & Clocks (8)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          Electric Accessories (13)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          View all (Low to high)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          View all (High to low)
+                        </span>
+                      </Link>
+                    </div>
                   </div>
                   <div
                     className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
                   >
                     Health care (58)
                     <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
-                    <p className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white min-w-[10rem]">
+                    <div className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white md:min-w-[10rem] min-w-[8rem]">
                       <span className="font-semibold text-black text-xl">
                         Electronics
                       </span>
                       <hr />
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Audio & Video Supplies (15)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Batteries (20)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Cameras & Clocks (8)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Electric Accessories (13)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        View all (Low to high)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        View all (High to low)
-                      </span>
-                    </p>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        <span className="font-normal md:whitespace-nowrap block hover:font-semibold">
+                          Audio & Video Supplies (15)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          Batteries (20)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          Cameras & Clocks (8)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          Electric Accessories (13)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          View all (Low to high)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          View all (High to low)
+                        </span>
+                      </Link>
+                    </div>
                   </div>
                   <div
                     className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
                   >
                     Jewelry (18)
                     <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
-                    <p className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white min-w-[10rem]">
+                    <div className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white md:min-w-[10rem] min-w-[8rem]">
                       <span className="font-semibold text-black text-xl">
                         Electronics
                       </span>
                       <hr />
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Audio & Video Supplies (15)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Batteries (20)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Cameras & Clocks (8)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Electric Accessories (13)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        View all (Low to high)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        View all (High to low)
-                      </span>
-                    </p>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        <span className="font-normal md:whitespace-nowrap block hover:font-semibold">
+                          Audio & Video Supplies (15)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          Batteries (20)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          Cameras & Clocks (8)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          Electric Accessories (13)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          View all (Low to high)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          View all (High to low)
+                        </span>
+                      </Link>
+                    </div>
                   </div>
                   <div
                     className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
                   >
                     Lighting (75)
                     <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
-                    <p className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white min-w-[10rem]">
+                    <div className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white md:min-w-[10rem] min-w-[8rem]">
                       <span className="font-semibold text-black text-xl">
                         Electronics
                       </span>
                       <hr />
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Audio & Video Supplies (15)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Batteries (20)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Cameras & Clocks (8)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Electric Accessories (13)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        View all (Low to high)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        View all (High to low)
-                      </span>
-                    </p>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        <span className="font-normal md:whitespace-nowrap block hover:font-semibold">
+                          Audio & Video Supplies (15)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          Batteries (20)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          Cameras & Clocks (8)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          Electric Accessories (13)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          View all (Low to high)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          View all (High to low)
+                        </span>
+                      </Link>
+                    </div>
                   </div>
                   <div
                     className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
                   >
                     View all (Low to high)
                     <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
-                    <p className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white min-w-[10rem]">
+                    <div className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white md:min-w-[10rem] min-w-[8rem]">
                       <span className="font-semibold text-black text-xl">
                         Electronics
                       </span>
                       <hr />
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Audio & Video Supplies (15)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Batteries (20)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Cameras & Clocks (8)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Electric Accessories (13)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        View all (Low to high)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        View all (High to low)
-                      </span>
-                    </p>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        <span className="font-normal md:whitespace-nowrap block hover:font-semibold">
+                          Audio & Video Supplies (15)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          Batteries (20)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          Cameras & Clocks (8)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          Electric Accessories (13)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          View all (Low to high)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          View all (High to low)
+                        </span>
+                      </Link>
+                    </div>
                   </div>
                   <div
                     className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
                   >
                     View all (High to low)
                     <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
-                    <p className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white min-w-[10rem]">
+                    <div className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white md:min-w-[10rem] min-w-[8rem]">
                       <span className="font-semibold text-black text-xl">
                         Electronics
                       </span>
                       <hr />
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Audio & Video Supplies (15)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Batteries (20)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Cameras & Clocks (8)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        Electric Accessories (13)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        View all (Low to high)
-                      </span>
-                      <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                        View all (High to low)
-                      </span>
-                    </p>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        <span className="font-normal md:whitespace-nowrap block hover:font-semibold">
+                          Audio & Video Supplies (15)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          Batteries (20)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          Cameras & Clocks (8)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          Electric Accessories (13)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          View all (Low to high)
+                        </span>
+                      </Link>
+                      <Link
+                        to="/product-listing"
+                        state={{
+                          title: "Electronic",
+                          price: null,
+                          searchQuery: "",
+                        }}
+                      >
+                        {" "}
+                        <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                          View all (High to low)
+                        </span>
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -409,7 +1037,7 @@ const Header = () => {
               <Link to="/cart">Shopping cart:</Link>
             </span>
             <input
-              type="tel"
+              type="number"
               className="md:w-12 w-10 text-black h-9 p-3 text-center rounded-md outline-none placeholder:text-black"
               placeholder="0"
             />
@@ -419,7 +1047,7 @@ const Header = () => {
           <p>
             <BsCurrencyDollar className="h-5 w-5 md:mr-2 inline-block" />
             <input
-              type="tel"
+              type="number"
               className="md:w-12 w-10 h-9 text-black p-3 text-center rounded-md outline-none placeholder:text-black"
               placeholder="0"
             />
@@ -436,8 +1064,8 @@ const Header = () => {
         }`}
       >
         {/* all categories */}
-        <div className="capitalize font-semibold relative z-10 group">
-          <p className="cursor-pointer flex items-center justify-between flex-row md:w-60 w-auto p-3 bg-black text-white ">
+        <div className="capitalize font-semibold relative z-20 group">
+          <p className="cursor-pointer flex items-center justify-between flex-row md:w-60 w-auto md:p-3 p-2 bg-black text-white ">
             <span className="md:text-xl text-lg whitespace-nowrap">
               All Categories
             </span>
@@ -445,306 +1073,886 @@ const Header = () => {
           </p>
           {/* menu */}
           <div className="text-left p-2 absolute top-14 left-0 z-30 bg-white md:min-w-[14rem] min-w-[10rem] rounded-md group-hover:scale-100 scale-0 transform duration-300 ease-in origin-top-left">
-            <div className="pl-3 text-base font-normal text-gray-400 capitalize space-y-3 min-md:w-[14rem]  min-w-[10rem">
+            <div className="pl-3 text-base font-normal text-gray-400 capitalize space-y-3 min-md:w-[14rem]  min-w-[10rem]">
               <div
                 className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
               >
                 Apparel (28){" "}
                 <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
-                <p className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white md:min-w-[10rem] min-w-[8rem]">
+                <div className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white md:min-w-[10rem] min-w-[3rem] max-w-[14rem]">
                   <span className="font-semibold text-black text-xl">
                     Electronics
                   </span>
                   <hr />
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Audio & Video Supplies (15)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Batteries (20)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Cameras & Clocks (8)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Electric Accessories (13)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    View all (Low to high)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    View all (High to low)
-                  </span>
-                </p>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    <span className="font-normal md:whitespace-nowrap block hover:font-semibold">
+                      Audio & Video Supplies (15)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      Batteries (20)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      Cameras & Clocks (8)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      Electric Accessories (13)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      View all (Low to high)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      View all (High to low)
+                    </span>
+                  </Link>
+                </div>
               </div>
               <div
                 className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
               >
                 Bed & Bath (38)
                 <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
-                <p className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white min-w-[10rem]">
+                <div className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white md:min-w-[10rem] min-w-[8rem]">
                   <span className="font-semibold text-black text-xl">
                     Electronics
                   </span>
                   <hr />
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Audio & Video Supplies (15)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Batteries (20)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Cameras & Clocks (8)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Electric Accessories (13)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    View all (Low to high)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    View all (High to low)
-                  </span>
-                </p>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    <span className="font-normal md:whitespace-nowrap block hover:font-semibold">
+                      Audio & Video Supplies (15)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      Batteries (20)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      Cameras & Clocks (8)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      Electric Accessories (13)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      View all (Low to high)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      View all (High to low)
+                    </span>
+                  </Link>
+                </div>
               </div>
               <div
                 className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
               >
                 Camping (40)
                 <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
-                <p className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white min-w-[10rem]">
+                <div className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white md:min-w-[10rem] min-w-[8rem]">
                   <span className="font-semibold text-black text-xl">
                     Electronics
                   </span>
                   <hr />
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Audio & Video Supplies (15)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Batteries (20)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Cameras & Clocks (8)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Electric Accessories (13)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    View all (Low to high)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    View all (High to low)
-                  </span>
-                </p>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    <span className="font-normal md:whitespace-nowrap block hover:font-semibold">
+                      Audio & Video Supplies (15)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      Batteries (20)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      Cameras & Clocks (8)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      Electric Accessories (13)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      View all (Low to high)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      View all (High to low)
+                    </span>
+                  </Link>
+                </div>
               </div>
               <div
                 className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
               >
                 Cosmetics (58)
                 <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
-                <p className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white min-w-[10rem]">
+                <div className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white md:min-w-[10rem] min-w-[8rem]">
                   <span className="font-semibold text-black text-xl">
                     Electronics
                   </span>
                   <hr />
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Audio & Video Supplies (15)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Batteries (20)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Cameras & Clocks (8)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Electric Accessories (13)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    View all (Low to high)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    View all (High to low)
-                  </span>
-                </p>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    <span className="font-normal md:whitespace-nowrap block hover:font-semibold">
+                      Audio & Video Supplies (15)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      Batteries (20)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      Cameras & Clocks (8)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      Electric Accessories (13)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      View all (Low to high)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      View all (High to low)
+                    </span>
+                  </Link>
+                </div>
               </div>
               <div
                 className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
               >
                 Hair care (45)
                 <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
-                <p className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white min-w-[10rem]">
+                <div className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white md:min-w-[10rem] min-w-[8rem]">
                   <span className="font-semibold text-black text-xl">
                     Electronics
                   </span>
                   <hr />
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Audio & Video Supplies (15)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Batteries (20)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Cameras & Clocks (8)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Electric Accessories (13)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    View all (Low to high)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    View all (High to low)
-                  </span>
-                </p>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    <span className="font-normal md:whitespace-nowrap block hover:font-semibold">
+                      Audio & Video Supplies (15)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      Batteries (20)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      Cameras & Clocks (8)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      Electric Accessories (13)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      View all (Low to high)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      View all (High to low)
+                    </span>
+                  </Link>
+                </div>
               </div>
               <div
                 className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
               >
                 Health care (58)
                 <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
-                <p className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white min-w-[10rem]">
+                <div className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white md:min-w-[10rem] min-w-[8rem]">
                   <span className="font-semibold text-black text-xl">
                     Electronics
                   </span>
                   <hr />
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Audio & Video Supplies (15)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Batteries (20)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Cameras & Clocks (8)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Electric Accessories (13)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    View all (Low to high)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    View all (High to low)
-                  </span>
-                </p>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    <span className="font-normal md:whitespace-nowrap block hover:font-semibold">
+                      Audio & Video Supplies (15)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      Batteries (20)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      Cameras & Clocks (8)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      Electric Accessories (13)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      View all (Low to high)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      View all (High to low)
+                    </span>
+                  </Link>
+                </div>
               </div>
               <div
                 className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
               >
                 Jewelry (18)
                 <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
-                <p className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white min-w-[10rem]">
+                <div className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white md:min-w-[10rem] min-w-[8rem]">
                   <span className="font-semibold text-black text-xl">
                     Electronics
                   </span>
                   <hr />
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Audio & Video Supplies (15)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Batteries (20)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Cameras & Clocks (8)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Electric Accessories (13)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    View all (Low to high)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    View all (High to low)
-                  </span>
-                </p>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    <span className="font-normal md:whitespace-nowrap block hover:font-semibold">
+                      Audio & Video Supplies (15)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      Batteries (20)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      Cameras & Clocks (8)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      Electric Accessories (13)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      View all (Low to high)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      View all (High to low)
+                    </span>
+                  </Link>
+                </div>
               </div>
               <div
                 className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
               >
                 Lighting (75)
                 <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
-                <p className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white min-w-[10rem]">
+                <div className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white md:min-w-[10rem] min-w-[8rem]">
                   <span className="font-semibold text-black text-xl">
                     Electronics
                   </span>
                   <hr />
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Audio & Video Supplies (15)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Batteries (20)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Cameras & Clocks (8)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Electric Accessories (13)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    View all (Low to high)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    View all (High to low)
-                  </span>
-                </p>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    <span className="font-normal md:whitespace-nowrap block hover:font-semibold">
+                      Audio & Video Supplies (15)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      Batteries (20)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      Cameras & Clocks (8)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      Electric Accessories (13)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      View all (Low to high)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      View all (High to low)
+                    </span>
+                  </Link>
+                </div>
               </div>
               <div
                 className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
               >
                 View all (Low to high)
                 <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
-                <p className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white min-w-[10rem]">
+                <div className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white md:min-w-[10rem] min-w-[8rem]">
                   <span className="font-semibold text-black text-xl">
                     Electronics
                   </span>
                   <hr />
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Audio & Video Supplies (15)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Batteries (20)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Cameras & Clocks (8)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Electric Accessories (13)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    View all (Low to high)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    View all (High to low)
-                  </span>
-                </p>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    <span className="font-normal md:whitespace-nowrap block hover:font-semibold">
+                      Audio & Video Supplies (15)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      Batteries (20)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      Cameras & Clocks (8)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      Electric Accessories (13)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      View all (Low to high)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      View all (High to low)
+                    </span>
+                  </Link>
+                </div>
               </div>
               <div
                 className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
               >
                 View all (High to low)
                 <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
-                <p className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white min-w-[10rem]">
+                <div className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white md:min-w-[10rem] min-w-[8rem]">
                   <span className="font-semibold text-black text-xl">
                     Electronics
                   </span>
                   <hr />
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Audio & Video Supplies (15)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Batteries (20)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Cameras & Clocks (8)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    Electric Accessories (13)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    View all (Low to high)
-                  </span>
-                  <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                    View all (High to low)
-                  </span>
-                </p>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    <span className="font-normal md:whitespace-nowrap block hover:font-semibold">
+                      Audio & Video Supplies (15)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      Batteries (20)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      Cameras & Clocks (8)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      Electric Accessories (13)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      View all (Low to high)
+                    </span>
+                  </Link>
+                  <Link
+                    to="/product-listing"
+                    state={{
+                      title: "Electronic",
+                      price: null,
+                      searchQuery: "",
+                    }}
+                  >
+                    {" "}
+                    <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                      View all (High to low)
+                    </span>
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
@@ -767,7 +1975,7 @@ const Header = () => {
           </Link>
         </p>
         {/* by price */}
-        <div role="button" className="group relative z-30">
+        <div role="button" className="group relative z-10">
           By Price
           <div className="text-left p-2 shadow-md absolute top-8 left-0 z-10 bg-white w-48 rounded-md group-hover:scale-100 scale-0 transform duration-300 ease-in origin-top-left">
             <ul className="pl-3 text-lg font-normal text-gray-400 capitalize space-y-2">

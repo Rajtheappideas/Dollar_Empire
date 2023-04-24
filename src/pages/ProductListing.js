@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import FilterComponent from "../components/FilterComponent";
 import { Helmet } from "react-helmet";
 import {
@@ -79,18 +79,18 @@ const ProductListing = () => {
       <section className="bg-BACKGROUNDGRAY space-y-5">
         <div className="container mx-auto space_for_div space-y-5 w-full bg-BACKGROUNDGRAY lg:pb-20 pb-10">
           <h1 className="block font-semibold md:text-4xl text-2xl text-left">
-            {title === "Price" ? (
+            {title === "Price" && title !== "" ? (
               <>
                 By Price:<span className="text-PRIMARY ml-1">"{price}"</span>
               </>
-            ) : title === "Price" ? (
+            ) : title === "Search" && title !== "" ? (
               <>
                 Search for:
                 <span className="text-PRIMARY ml-1">"{searchQuery}"</span>
               </>
-            ) : (
+            ) : title !== "" ? (
               title
-            )}
+            ) : null}
           </h1>
           <div className="w-full flex items-start justify-start gap-5 lg:flex-row flex-col">
             {/* filter */}
@@ -107,7 +107,7 @@ const ProductListing = () => {
                   <div className="flex items-center gap-4 w-full">
                     <BsGridFill
                       className={`h-6 w-6 ${
-                        selectedView == "grid"
+                        selectedView === "grid"
                           ? "text-PRIMARY"
                           : "text-gray-400"
                       }`}
@@ -121,12 +121,16 @@ const ProductListing = () => {
                     >
                       <p
                         className={`${
-                          selectedView == "grid3" ? "bg-PRIMARY" : "bg-gray-400"
+                          selectedView === "grid3"
+                            ? "bg-PRIMARY"
+                            : "bg-gray-400"
                         } h-6 rounded-sm w-2 `}
                       ></p>
                       <p
                         className={`${
-                          selectedView == "grid3" ? "bg-PRIMARY" : "bg-gray-400"
+                          selectedView === "grid3"
+                            ? "bg-PRIMARY"
+                            : "bg-gray-400"
                         } h-6 rounded-sm w-2 ml-0.5`}
                       ></p>
                     </div>

@@ -99,7 +99,7 @@ const FilterComponent = () => {
                   name="price"
                   type="radio"
                   value={activePrice}
-                  className="h-5 w-5"
+                  className="h-5 w-5 cursor-pointer"
                   defaultChecked
                 />
                 <span>Any</span>
@@ -112,7 +112,7 @@ const FilterComponent = () => {
                   name="price"
                   type="radio"
                   value={activePrice}
-                  className="h-5 w-5"
+                  className="h-5 w-5 cursor-pointer"
                 />
                 <span>Below $.70</span>
               </li>
@@ -124,7 +124,7 @@ const FilterComponent = () => {
                   name="price"
                   type="radio"
                   value={activePrice}
-                  className="h-5 w-5"
+                  className="h-5 w-5 cursor-pointer"
                 />
                 <span>$.70 ~ $.89</span>
               </li>
@@ -136,7 +136,7 @@ const FilterComponent = () => {
                   name="price"
                   type="radio"
                   value={activePrice}
-                  className="h-5 w-5"
+                  className="h-5 w-5 cursor-pointer"
                 />
                 <span>$.90 ~ $1.99</span>
               </li>
@@ -148,7 +148,7 @@ const FilterComponent = () => {
                   name="price"
                   type="radio"
                   value={activePrice}
-                  className="h-5 w-5"
+                  className="h-5 w-5 cursor-pointer"
                 />
                 <span>$2 ~ $2.99</span>
               </li>
@@ -160,7 +160,7 @@ const FilterComponent = () => {
                   name="price"
                   type="radio"
                   value={activePrice}
-                  className="h-5 w-5"
+                  className="h-5 w-5 cursor-pointer"
                 />
                 <span>Low to high</span>
               </li>
@@ -172,7 +172,7 @@ const FilterComponent = () => {
                   name="price"
                   type="radio"
                   value={activePrice}
-                  className="h-5 w-5"
+                  className="h-5 w-5 cursor-pointer"
                 />
                 <span>High to low</span>
               </li>

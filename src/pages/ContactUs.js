@@ -102,9 +102,9 @@ const ContactUs = () => {
                 Email address*
               </label>
               <input
-                type="text"
+                type="email"
                 className="bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                placeholder="First name"
+                placeholder="abc@gmail.com"
               />
             </div>
             <div className="w-1/2">
@@ -112,12 +112,13 @@ const ContactUs = () => {
                 Phone number*
               </label>
               <input
-                type="text"
+                type="number"
                 className="bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                placeholder="Last name"
+                placeholder="+1234567890"
               />
             </div>
           </div>
+          {/* message */}
           <label className="text-black font-medium block text-left text-lg">
             Comments*
           </label>

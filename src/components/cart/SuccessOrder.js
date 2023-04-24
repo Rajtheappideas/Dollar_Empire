@@ -19,6 +19,7 @@ const SuccessOrder = () => {
         height={300}
         width={300}
         isClickToPauseDisabled={true}
+        style={{ pointerEvents: "none" }}
       />
       <p className="font-bold text-2xl">Thank you for purchase !</p>
       <p className="font-semibold text-lg">Your order id : 123456789</p>

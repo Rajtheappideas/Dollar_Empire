@@ -187,7 +187,10 @@ const ShoppingCart = ({ setActiveComponent }) => {
           Proceed to checkout
         </button>
         <p>
-          <Link to="/product-listing">
+          <Link
+            to="/product-listing"
+            state={{ title: "", price: null, searchQuery: "" }}
+          >
             <button
               type="button"
               className="font-semibold bg-black text-white hover:bg-white hover:text-black border border-black duration-300 ease-in-out w-full p-3 text-center"

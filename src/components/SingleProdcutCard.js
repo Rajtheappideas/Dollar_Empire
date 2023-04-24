@@ -65,7 +65,7 @@ const SingleProdcutCard = ({ product, title }) => {
           <p className="font-bold md:text-lg">
             $0.50/PC, $12.00/PK, $72.00/CTN
           </p>
-          <p className="flex xl:w-64 w-full items-center gap-x-2 relative z-0 ml-auto">
+          <div className="flex xl:w-64 w-full items-center gap-x-2 relative z-0 ml-auto">
             <input name="quantity" type="radio" className="w-5 h-5" />
             <span className="font-semibold text-sm whitespace-nowrap pr-2">
               PC QTY
@@ -88,8 +88,8 @@ const SingleProdcutCard = ({ product, title }) => {
                 className=" text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2"
               />
             </div>
-          </p>
-          <p className="flex xl:w-64 w-full items-center gap-x-2 relative z-0 ml-auto">
+          </div>
+          <div className="flex xl:w-64 w-full items-center gap-x-2 relative z-0 ml-auto">
             <input name="quantity" type="radio" className="w-5 h-5" />
             <span className="font-semibold text-sm whitespace-nowrap">
               CTN QTY
@@ -112,7 +112,7 @@ const SingleProdcutCard = ({ product, title }) => {
                 className=" text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2"
               />
             </div>
-          </p>
+          </div>
           <p className="flex items-center gap-x-2">
             <Link to="/sign-in" className="w-11/12">
               <button

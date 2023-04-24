@@ -56,6 +56,7 @@ function App() {
                 height={300}
                 width={300}
                 isClickToPauseDisabled={true}
+                style={{ pointerEvents: "none" }}
               />
             </div>
           }
