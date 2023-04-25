@@ -13,10 +13,13 @@ import { Swiper, SwiperSlide } from "swiper/react";
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/navigation";
-import { useDispatch } from "react-redux";
-import { closePopup } from "../redux/GlobalStates";
+import { useDispatch, useSelector } from "react-redux";
+import { closePopup, showPopup } from "../redux/GlobalStates";
+import { Link } from "react-router-dom";
 
-const ProductDetailPopup = ({ setShowProductDetailPopup }) => {
+const ProductDetailPopup = ({}) => {
+  const { user } = useSelector((state) => state.Auth);
+
   const prevRef = useRef(null);
   const nextRef = useRef(null);
 
@@ -103,124 +106,154 @@ const ProductDetailPopup = ({ setShowProductDetailPopup }) => {
         </div>
         <hr className="md:hidden block my-3 bg-black w-full" />
         {/* details */}
-        <div className="md:w-7/12 w-full space-y-2">
-          <p className="text-black font-semibold">#12345677</p>
-          <p className="font-bold text-2xl">
-            Protective Face Masks with 3 sky Blue, white, pink, color
-          </p>
-          <p className="font-medium">24 PC/PK, 144 PC/CTN</p>
-          <p className="font-medium">PK volume : 0.75 CUFT</p>
-          <p className="font-medium">CTN volume : 4.5 CUFT</p>
-          <p className="font-medium">PK WT : 2 LBS</p>
-          <p className="font-medium">CTN WT : 4.5 LBS</p>
-          <p className="text-PRIMARY font-semibold text-lg">
-            $0.50/PC | $72.00/CTN
-          </p>
-          <hr />
-          <p className="flex items-center gap-x-4">
-            <input
-              name="quantity"
-              type="radio"
-              className="h-5 w-5 inline-block"
-            />
-            <span>Order By PK*</span>
-          </p>
-          <div className="flex items-center gap-x-4 ">
-            <AiOutlineMinus role="button" className="w-7 h-7" />
-            <p className="lg:w-1/3 md:w-1/2 w-10/12 relative">
-              <input
-                className="w-full p-3 rounded-md border outline-none border-BORDERGRAY text-black"
-                placeholder="48 PC"
-              />
-              <span className="absolute font-semibold top-1/2 -translate-y-1/2 right-2">
-                2 PK
-              </span>
+        {user === null ? (
+          <div className="md:w-7/12 w-full space-y-2">
+            <p className="text-black font-semibold">#12345677</p>
+
+            <p className="font-bold text-2xl">
+              Protective Face Masks with 3 sky Blue, white, pink, color
             </p>
-            <AiOutlinePlus role="button" className="w-7 h-7" />
-          </div>
-          <p className="flex items-center gap-x-4">
-            <input
-              name="quantity"
-              type="radio"
-              className="h-5 w-5 inline-block"
-            />
-            <span>Order By CTN*</span>
-          </p>
-          <div className="flex w-full items-center gap-x-4 ">
-            <AiOutlineMinus role="button" className="w-7 h-7" />
-            <p className="lg:w-1/3 md:w-1/2 w-10/12 relative">
-              <input
-                className="w-full p-3 rounded-md border outline-none border-BORDERGRAY text-black"
-                placeholder="144 PC"
-              />
-              <span className="absolute font-semibold top-1/2 -translate-y-1/2 right-2">
-                2 CTN
-              </span>
+            <p className="flex items-center gap-x-3">
+              <Link to="/sign-in">
+                <button
+                  type="button"
+                  className="bg-DARKRED text-white w-60 p-3 rounded-md hover:text-DARKRED hover:bg-white border border-DARKRED duration-300 ease-linear"
+                  onClick={() => {
+                    dispatch(closePopup());
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                >
+                  Login to order
+                </button>
+              </Link>
             </p>
-            <AiOutlinePlus role="button" className="w-7 h-7" />
           </div>
-          <p className="flex items-center gap-x-3">
-            <button
-              type="button"
-              className="bg-DARKRED text-white w-60 p-3 rounded-md"
-            >
-              Add to cart
-              <AiOutlineShoppingCart className="h-6 w-6 ml-2 inline-block" />
-            </button>
-            <AiOutlineHeart role="button" className="h-8 w-8 text-black" />
-          </p>
-          <hr />
-          <p className="text-2xl font-bold">Discription</p>
-          <p className="text-black leading-normal w-11/12">
-            Use the KN95 Disposable Mask while running essential errands,
-            picking up orders, or while at work to protect yourself and those
-            around you. There are 10 With multi-layer filtering, wear this mask
-            while practicing social distancing. The KN95 3D mask has adopted the
-            KN95 grade anti-particulate filtering technology.
-          </p>
-          <hr />
-          <p className="text-2xl font-bold">Specification</p>
-          <p className="flex items-center justify-between w-full">
-            <span className="font-normal">PK</span>
-            <span className="font-semibold">24</span>
-          </p>
-          <p className="flex items-center justify-between w-full">
-            <span className="font-normal">CTN</span>
-            <span className="font-semibold">144</span>
-          </p>
-          <p className="flex items-center justify-between w-full">
-            <span className="font-normal">CTN Dimensions</span>
-            <span className="font-semibold">18’’ x 18’’ x 24’’</span>
-          </p>
-          <p className="flex items-center justify-between w-full">
-            <span className="font-normal">PK Volume</span>
-            <span className="font-semibold">0.75 CUFT</span>
-          </p>
-          <p className="flex items-center justify-between w-full">
-            <span className="font-normal">CTN Volume</span>
-            <span className="font-semibold">4.5 CUFT</span>
-          </p>
-          <p className="flex items-center justify-between w-full">
-            <span className="font-normal">PK Weight</span>
-            <span className="font-semibold">2 LBS</span>
-          </p>
-          <p className="flex items-center justify-between w-full">
-            <span className="font-normal">CTN Weight</span>
-            <span className="font-semibold">12 LBS</span>
-          </p>
-          <p className="flex items-center justify-between w-full">
-            <span className="font-normal">Category</span>
-            <span className="font-semibold">Hardware</span>
-          </p>
-          <p className="flex items-center justify-between w-full">
-            <span className="font-normal">UPC Code</span>
-            <span className="font-semibold">6973096824116</span>
-          </p>
-          <p className="flex items-center justify-between w-full">
-            <span className="font-normal">Made by</span>
-            <span className="font-semibold">China</span>
-          </p>
-        </div>
+        ) : (
+          <div className="md:w-7/12 w-full space-y-2">
+            <p className="text-black font-semibold">#12345677</p>
+            <p className="font-bold text-2xl">
+              Protective Face Masks with 3 sky Blue, white, pink, color
+            </p>
+            <p className="font-medium">24 PC/PK, 144 PC/CTN</p>
+            <p className="font-medium">PK volume : 0.75 CUFT</p>
+            <p className="font-medium">CTN volume : 4.5 CUFT</p>
+            <p className="font-medium">PK WT : 2 LBS</p>
+            <p className="font-medium">CTN WT : 4.5 LBS</p>
+            <p className="text-PRIMARY font-semibold text-lg">
+              $0.50/PC | $72.00/CTN
+            </p>
+            <hr />
+            <p className="flex items-center gap-x-4">
+              <input
+                name="quantity"
+                type="radio"
+                className="h-5 w-5 inline-block"
+              />
+              <span>Order By PK*</span>
+            </p>
+            <div className="flex items-center gap-x-4 ">
+              <AiOutlineMinus role="button" className="w-7 h-7" />
+              <p className="lg:w-1/3 md:w-1/2 w-10/12 relative">
+                <input
+                  className="w-full p-3 rounded-md border outline-none border-BORDERGRAY text-black"
+                  placeholder="48 PC"
+                />
+                <span className="absolute font-semibold top-1/2 -translate-y-1/2 right-2">
+                  2 PK
+                </span>
+              </p>
+              <AiOutlinePlus role="button" className="w-7 h-7" />
+            </div>
+            <p className="flex items-center gap-x-4">
+              <input
+                name="quantity"
+                type="radio"
+                className="h-5 w-5 inline-block"
+              />
+              <span>Order By CTN*</span>
+            </p>
+            <div className="flex w-full items-center gap-x-4 ">
+              <AiOutlineMinus role="button" className="w-7 h-7" />
+              <p className="lg:w-1/3 md:w-1/2 w-10/12 relative">
+                <input
+                  className="w-full p-3 rounded-md border outline-none border-BORDERGRAY text-black"
+                  placeholder="144 PC"
+                />
+                <span className="absolute font-semibold top-1/2 -translate-y-1/2 right-2">
+                  2 CTN
+                </span>
+              </p>
+              <AiOutlinePlus role="button" className="w-7 h-7" />
+            </div>
+            <p className="flex items-center gap-x-3">
+              <Link to="/cart">
+                <button
+                  type="button"
+                  className="bg-DARKRED text-white w-60 p-3 rounded-md hover:text-DARKRED hover:bg-white border border-DARKRED duration-300 ease-linear"
+                  onClick={() => {
+                    dispatch(closePopup());
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                >
+                  Add to cart
+                  <AiOutlineShoppingCart className="h-6 w-6 ml-2 inline-block" />
+                </button>
+              </Link>
+              <AiOutlineHeart role="button" className="h-8 w-8 text-black" />
+            </p>
+            <hr />
+            <p className="text-2xl font-bold">Discription</p>
+            <p className="text-black leading-normal w-11/12">
+              Use the KN95 Disposable Mask while running essential errands,
+              picking up orders, or while at work to protect yourself and those
+              around you. There are 10 With multi-layer filtering, wear this
+              mask while practicing social distancing. The KN95 3D mask has
+              adopted the KN95 grade anti-particulate filtering technology.
+            </p>
+            <hr />
+            <p className="text-2xl font-bold">Specification</p>
+            <p className="flex items-center justify-between w-full">
+              <span className="font-normal">PK</span>
+              <span className="font-semibold">24</span>
+            </p>
+            <p className="flex items-center justify-between w-full">
+              <span className="font-normal">CTN</span>
+              <span className="font-semibold">144</span>
+            </p>
+            <p className="flex items-center justify-between w-full">
+              <span className="font-normal">CTN Dimensions</span>
+              <span className="font-semibold">18’’ x 18’’ x 24’’</span>
+            </p>
+            <p className="flex items-center justify-between w-full">
+              <span className="font-normal">PK Volume</span>
+              <span className="font-semibold">0.75 CUFT</span>
+            </p>
+            <p className="flex items-center justify-between w-full">
+              <span className="font-normal">CTN Volume</span>
+              <span className="font-semibold">4.5 CUFT</span>
+            </p>
+            <p className="flex items-center justify-between w-full">
+              <span className="font-normal">PK Weight</span>
+              <span className="font-semibold">2 LBS</span>
+            </p>
+            <p className="flex items-center justify-between w-full">
+              <span className="font-normal">CTN Weight</span>
+              <span className="font-semibold">12 LBS</span>
+            </p>
+            <p className="flex items-center justify-between w-full">
+              <span className="font-normal">Category</span>
+              <span className="font-semibold">Hardware</span>
+            </p>
+            <p className="flex items-center justify-between w-full">
+              <span className="font-normal">UPC Code</span>
+              <span className="font-semibold">6973096824116</span>
+            </p>
+            <p className="flex items-center justify-between w-full">
+              <span className="font-normal">Made by</span>
+              <span className="font-semibold">China</span>
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

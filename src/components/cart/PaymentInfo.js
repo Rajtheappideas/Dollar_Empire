@@ -1,12 +1,17 @@
 import React, { useState } from "react";
 import CardDetails from "./CardDetails";
+import { useDispatch } from "react-redux";
+import { handleChangeActiveComponent } from "../../redux/GlobalStates";
 
-const PaymentInfo = ({ activeComponent, setActiveComponent }) => {
+const PaymentInfo = ({}) => {
   const [showCardDetails, setShowCardDetails] = useState(false);
   const [paymentOption, setPaymentOption] = useState({
     noPayment: false,
     cardDetails: true,
   });
+
+  const dispatch = useDispatch();
+
   return (
     <div className="w-full flex xl:flex-row flex-col items-start justify-start gap-4 pb-10">
       {/* table */}
@@ -83,8 +88,9 @@ const PaymentInfo = ({ activeComponent, setActiveComponent }) => {
           type="button"
           className="font-semibold bg-PRIMARY text-white hover:bg-white hover:text-PRIMARY border border-PRIMARY duration-300 ease-in-out w-full p-3 text-center"
           onClick={() => {
-            paymentOption.cardDetails && setShowCardDetails(true);
-            setActiveComponent("Success");
+            paymentOption.cardDetails && !showCardDetails
+              ? setShowCardDetails(true)
+              : dispatch(handleChangeActiveComponent("Success"));
           }}
         >
           {!paymentOption.cardDetails || showCardDetails

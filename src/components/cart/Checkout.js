@@ -1,12 +1,18 @@
 import React, { useState } from "react";
 import EditAddressPopup from "./EditAddressPopup";
+import { handleChangeActiveComponent } from "../../redux/GlobalStates";
+import { useDispatch } from "react-redux";
 
-const Checkout = ({ setActiveComponent }) => {
+const Checkout = ({}) => {
   const [showPopup, setShowPopup] = useState(false);
+
+  const dispatch = useDispatch();
 
   return (
     <div className="w-full flex xl:flex-row flex-col items-start justify-start gap-4 pb-10">
-      {showPopup && <EditAddressPopup setShowPopup={setShowPopup} showPopup={showPopup} />}
+      {showPopup && (
+        <EditAddressPopup setShowPopup={setShowPopup} showPopup={showPopup} />
+      )}
 
       {/* left side div */}
       <div className="xl:w-9/12 w-full space-y-3">
@@ -102,7 +108,7 @@ const Checkout = ({ setActiveComponent }) => {
         <button
           type="button"
           className="font-semibold bg-PRIMARY text-white hover:bg-white hover:text-PRIMARY border border-PRIMARY duration-300 ease-in-out w-full p-3 text-center"
-          onClick={() => setActiveComponent("Payment Info")}
+          onClick={() => dispatch(handleChangeActiveComponent("Payment_Info"))}
         >
           Continue
         </button>

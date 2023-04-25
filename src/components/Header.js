@@ -11,11 +11,17 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { handleChangeActiveComponent } from "../redux/GlobalStates";
 
 const Header = () => {
   const [openSidebar, setOpenSidebar] = useState(false);
 
+  const { user } = useSelector((state) => state.Auth);
+
   const navigate = useNavigate();
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (openSidebar) {
@@ -24,7 +30,6 @@ const Header = () => {
       document.body.style.overflow = "unset";
     }
   }, [openSidebar]);
-
   return (
     <div>
       {/* first section */}
@@ -46,7 +51,7 @@ const Header = () => {
             <img
               src={require("../assets/images/familymaid 1.png")}
               alt="logo"
-              className="md:h-fit md:w-fit w-20 h-20 object-contain object-center"
+              className="md:h-fit md:w-fit w-24 h-24 object-contain object-center"
             />
           </Link>
         </div>
@@ -64,27 +69,41 @@ const Header = () => {
               EN
             </span>
           </p>
-          <button type="button" className="md:block hidden">
-            <Link to="/sign-in">Login / Register</Link>
-          </button>
 
-          <HiOutlineBars3
-            onClick={() => setOpenSidebar(true)}
-            role="button"
-            className="h-8 w-8 block md:hidden"
-          />
-
-          {/* <Link to="/my-account" className="md:block hidden">
-            <div className="flex items-center gap-x-2">
-              <AiOutlineUser className="w-8 h-8" />
-              <p className="text-left">
-                <span className="text-gray-300 text-sm block">Hello, john</span>
-                <span className="text-BLACK md:text-base text-sm font-bold block">
-                  My Account
-                </span>
-              </p>
-            </div>
-          </Link> */}
+          {user === null ? (
+            <>
+              <button type="button" className="md:block hidden">
+                <Link to="/sign-in">Login / Register</Link>
+              </button>
+              <HiOutlineBars3
+                onClick={() => setOpenSidebar(true)}
+                role="button"
+                className="h-8 w-8 block md:hidden"
+              />
+            </>
+          ) : (
+            <>
+              <Link to="/my-account" className="md:block hidden">
+                <div className="flex items-center gap-x-2">
+                  <AiOutlineUser className="w-8 h-8" />
+                  <p className="text-left">
+                    <span className="text-gray-300 text-sm block capitalize">
+                      Hello, {user?.fname}
+                    </span>
+                    <span className="text-BLACK md:text-base text-sm font-bold block">
+                      My Account
+                    </span>
+                  </p>
+                </div>
+              </Link>
+              <Link to="/my-account" className="md:hidden block">
+                <AiOutlineUser
+                  role="button"
+                  className="h-8 w-8 block md:hidden"
+                />
+              </Link>
+            </>
+          )}
         </div>
 
         {/* sidebar for mobile */}
@@ -100,15 +119,20 @@ const Header = () => {
               className="h-6 w-6 float-right"
             />
           </p>
-          <p className="pt-5" onClick={() => setOpenSidebar(false)}>
-            <Link to="/sign-in">Login</Link>
-          </p>
-          <p className="pt-5" onClick={() => setOpenSidebar(false)}>
-            <Link to="/sign-up">Register</Link>
-          </p>
-          <p className="pt-5" onClick={() => setOpenSidebar(false)}>
-            <Link to="/my-account">My Account</Link>
-          </p>
+          {user === null ? (
+            <>
+              <p className="pt-5" onClick={() => setOpenSidebar(false)}>
+                <Link to="/sign-in">Login</Link>
+              </p>
+              <p className="pt-5" onClick={() => setOpenSidebar(false)}>
+                <Link to="/sign-up">Register</Link>
+              </p>
+            </>
+          ) : (
+            <p className="pt-5" onClick={() => setOpenSidebar(false)}>
+              <Link to="/my-account">My Account</Link>
+            </p>
+          )}
         </div>
       </div>
       {/* second section */}
@@ -125,9 +149,9 @@ const Header = () => {
               </p>
               {/* menu */}
               <div className="text-left p-2 absolute top-9 -left-3 z-30 bg-white md:min-w-[14rem] min-w-[10rem] rounded-md group-hover:scale-100 scale-0 transform duration-300 ease-in origin-top-left">
-                <div className="pl-3 text-base font-normal text-gray-400 capitalize space-y-3 min-md:w-[14rem]  min-w-[10rem]">
+                <div className="pl-3 text-base font-normal text-gray-400 capitalize space-y-1 min-md:w-[14rem]  min-w-[10rem]">
                   <div
-                    className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
+                    className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
                   >
                     Apparel (28){" "}
                     <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
@@ -215,7 +239,7 @@ const Header = () => {
                     </div>
                   </div>
                   <div
-                    className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
+                    className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
                   >
                     Bed & Bath (38)
                     <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
@@ -303,7 +327,7 @@ const Header = () => {
                     </div>
                   </div>
                   <div
-                    className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
+                    className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
                   >
                     Camping (40)
                     <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
@@ -391,7 +415,7 @@ const Header = () => {
                     </div>
                   </div>
                   <div
-                    className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
+                    className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
                   >
                     Cosmetics (58)
                     <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
@@ -479,7 +503,7 @@ const Header = () => {
                     </div>
                   </div>
                   <div
-                    className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
+                    className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
                   >
                     Hair care (45)
                     <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
@@ -567,7 +591,7 @@ const Header = () => {
                     </div>
                   </div>
                   <div
-                    className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
+                    className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
                   >
                     Health care (58)
                     <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
@@ -655,7 +679,7 @@ const Header = () => {
                     </div>
                   </div>
                   <div
-                    className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
+                    className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
                   >
                     Jewelry (18)
                     <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
@@ -743,7 +767,7 @@ const Header = () => {
                     </div>
                   </div>
                   <div
-                    className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
+                    className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
                   >
                     Lighting (75)
                     <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
@@ -831,7 +855,7 @@ const Header = () => {
                     </div>
                   </div>
                   <div
-                    className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
+                    className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
                   >
                     View all (Low to high)
                     <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
@@ -919,7 +943,7 @@ const Header = () => {
                     </div>
                   </div>
                   <div
-                    className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
+                    className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
                   >
                     View all (High to low)
                     <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
@@ -1034,7 +1058,14 @@ const Header = () => {
           <AiOutlineShoppingCart className="w-7 h-7" />
           <p>
             <span className="md:mr-2 mr-1">
-              <Link to="/cart">Shopping cart:</Link>
+              <Link
+                to="/cart"
+                onClick={() =>
+                  dispatch(handleChangeActiveComponent("Shopping_Cart"))
+                }
+              >
+                Shopping cart:
+              </Link>
             </span>
             <input
               type="number"
@@ -1073,9 +1104,9 @@ const Header = () => {
           </p>
           {/* menu */}
           <div className="text-left p-2 absolute top-14 left-0 z-30 bg-white md:min-w-[14rem] min-w-[10rem] rounded-md group-hover:scale-100 scale-0 transform duration-300 ease-in origin-top-left">
-            <div className="pl-3 text-base font-normal text-gray-400 capitalize space-y-3 min-md:w-[14rem]  min-w-[10rem]">
+            <div className="pl-3 text-base font-normal text-gray-400 capitalize space-y-1 min-md:w-[14rem]  min-w-[10rem]">
               <div
-                className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
+                className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
               >
                 Apparel (28){" "}
                 <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
@@ -1163,7 +1194,7 @@ const Header = () => {
                 </div>
               </div>
               <div
-                className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
+                className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
               >
                 Bed & Bath (38)
                 <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
@@ -1251,7 +1282,7 @@ const Header = () => {
                 </div>
               </div>
               <div
-                className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
+                className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
               >
                 Camping (40)
                 <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
@@ -1339,7 +1370,7 @@ const Header = () => {
                 </div>
               </div>
               <div
-                className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
+                className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
               >
                 Cosmetics (58)
                 <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
@@ -1427,7 +1458,7 @@ const Header = () => {
                 </div>
               </div>
               <div
-                className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
+                className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
               >
                 Hair care (45)
                 <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
@@ -1515,7 +1546,7 @@ const Header = () => {
                 </div>
               </div>
               <div
-                className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
+                className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
               >
                 Health care (58)
                 <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
@@ -1603,7 +1634,7 @@ const Header = () => {
                 </div>
               </div>
               <div
-                className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
+                className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
               >
                 Jewelry (18)
                 <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
@@ -1691,7 +1722,7 @@ const Header = () => {
                 </div>
               </div>
               <div
-                className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
+                className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
               >
                 Lighting (75)
                 <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
@@ -1779,7 +1810,7 @@ const Header = () => {
                 </div>
               </div>
               <div
-                className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
+                className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
               >
                 View all (Low to high)
                 <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
@@ -1867,7 +1898,7 @@ const Header = () => {
                 </div>
               </div>
               <div
-                className={`submenu z-50 cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
+                className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
               >
                 View all (High to low)
                 <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />

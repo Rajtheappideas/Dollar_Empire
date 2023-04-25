@@ -10,6 +10,8 @@ import PageNotFound from "./pages/PageNotFound";
 import loading from "./assets/animations/loading.json";
 import { useSelector } from "react-redux";
 import ProductDetailPopup from "./components/ProductDetailPopup";
+import { Toaster } from "react-hot-toast";
+import PrivateRoute from "./pages/PrivateRoute";
 
 const Home = lazy(() => import("./pages/Home"));
 const PrivayPolicy = lazy(() => import("./pages/PrivayPolicy"));
@@ -61,6 +63,7 @@ function App() {
             </div>
           }
         >
+          <Toaster />
           {showProductDetailsPopup && <ProductDetailPopup />}
           <Header />
           <Routes>
@@ -79,13 +82,29 @@ function App() {
             />
             <Route path="/sign-in" element={<Signin />} caseSensitive />
             <Route path="/sign-up" element={<Signup />} caseSensitive />
-            <Route path="/cart" element={<Cart />} caseSensitive />
+            <Route
+              path="/cart"
+              element={
+                <PrivateRoute>
+                  <Cart />
+                </PrivateRoute>
+              }
+              caseSensitive
+            />
             <Route
               path="/product-listing"
               element={<ProductListing />}
               caseSensitive
             />
-            <Route path="/favourites" element={<Favourites />} caseSensitive />
+            <Route
+              path="/favourites"
+              element={
+                <PrivateRoute>
+                  <Favourites />
+                </PrivateRoute>
+              }
+              caseSensitive
+            />
             <Route
               path="/special-order"
               element={<SpecialOrder />}
@@ -102,7 +121,15 @@ function App() {
               caseSensitive
               loader={() => <div>Loading...</div>}
             />
-            <Route path="/my-account" element={<MyAccount />} caseSensitive />
+            <Route
+              path="/my-account"
+              element={
+                <PrivateRoute>
+                  <MyAccount />
+                </PrivateRoute>
+              }
+              caseSensitive
+            />
             <Route
               path="/shipping-&-freight"
               element={<ShippingAndFreight />}

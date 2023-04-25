@@ -4,7 +4,7 @@ import { AiOutlineClose } from "react-icons/ai";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 
-const EditAddressPopup = ({ setShowPopup, showPopup }) => {
+const EditAddressPopup = ({ setShowPopup }) => {
   return (
     <div
       className={`absolute bg-black/30 z-50 w-full lg:min-h-[100rem] min-h-[120rem]  inset-0 backdrop-blur-sm`}

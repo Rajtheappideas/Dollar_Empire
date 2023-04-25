@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { handleChangeActiveComponent } from "../../redux/GlobalStates";
 
-const ShoppingCart = ({ setActiveComponent }) => {
+const ShoppingCart = ({}) => {
   const [showChangeField, setShowChangeField] = useState(false);
+
+  const dispatch = useDispatch();
 
   return (
     <div className="w-full flex xl:flex-row flex-col items-start justify-start gap-4 pb-10">
@@ -181,7 +185,7 @@ const ShoppingCart = ({ setActiveComponent }) => {
         <hr className="w-full" />
         <button
           type="button"
-          onClick={() => setActiveComponent("Check Out")}
+          onClick={() => dispatch(handleChangeActiveComponent("Check_Out"))}
           className="font-semibold bg-PRIMARY text-white hover:bg-white hover:text-PRIMARY border border-PRIMARY duration-300 ease-in-out w-full p-3 text-center"
         >
           Proceed to checkout
