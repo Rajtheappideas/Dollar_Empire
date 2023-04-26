@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Helmet } from "react-helmet";
 import { Link, useNavigate } from "react-router-dom";
 import { useFormik, Form, FormikProvider, ErrorMessage } from "formik";
@@ -8,6 +8,7 @@ import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { handleLoginUser } from "../redux/AuthSlice";
 import { useEffect } from "react";
+import { handleSuccess } from "../redux/GlobalStates";
 
 const Signin = () => {
   const { user, loading } = useSelector((state) => state.Auth);
@@ -15,6 +16,8 @@ const Signin = () => {
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
+
+  const AbortControllerRef = useRef(null);
 
   const SigninSchema = yup.object().shape({
     email: yup.string().email().required("Email is required"),
@@ -32,12 +35,14 @@ const Signin = () => {
         handleLoginUser({
           email: values.email,
           password: values.password,
+          signal: AbortControllerRef,
         })
       );
 
       if (response) {
         response.then((res) => {
           if (res.payload.status === "success") {
+            dispatch(handleSuccess());
             navigate("/");
             toast.success("Sign In successfully.");
           } else {
@@ -55,6 +60,9 @@ const Signin = () => {
       navigate("/");
       toast.success("Already Logged in.");
     }
+    return () => {
+      AbortControllerRef.current !== null && AbortControllerRef.current.abort();
+    };
   }, []);
   return (
     <>

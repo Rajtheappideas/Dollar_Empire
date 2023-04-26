@@ -1,17 +1,21 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
-import Lottie from "react-lottie";
+import Lottie from "lottie-react";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ErrorFallback from "./components/ErrorFallback";
 import PageNotFound from "./pages/PageNotFound";
 import loading from "./assets/animations/loading.json";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ProductDetailPopup from "./components/ProductDetailPopup";
-import { Toaster } from "react-hot-toast";
+import { Toaster, toast } from "react-hot-toast";
 import PrivateRoute from "./pages/PrivateRoute";
+import {
+  loginAllTabsEventListener,
+  logoutAllTabsEventListener,
+} from "./redux/GlobalStates";
 
 const Home = lazy(() => import("./pages/Home"));
 const PrivayPolicy = lazy(() => import("./pages/PrivayPolicy"));
@@ -34,14 +38,16 @@ function App() {
     (state) => state.globalStates
   );
 
-  const defaultOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: loading,
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice",
-    },
-  };
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(loginAllTabsEventListener());
+    dispatch(logoutAllTabsEventListener());
+
+    if (!window.navigator.onLine) {
+      toast.error("Check your internet connection!!!", { duration: "5000" });
+    }
+  }, []);
   return (
     <BrowserRouter>
       <ErrorBoundary
@@ -52,15 +58,16 @@ function App() {
       >
         <Suspense
           fallback={
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-screen">
-              <Lottie
-                options={defaultOptions}
-                height={300}
-                width={300}
-                isClickToPauseDisabled={true}
-                style={{ pointerEvents: "none" }}
-              />
-            </div>
+            <Lottie
+              style={{
+                pointerEvents: "none",
+                height: "300px",
+                width: "300px",
+              }}
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-screen"
+              animationData={loading}
+              loop
+            />
           }
         >
           <Toaster />

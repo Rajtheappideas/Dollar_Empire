@@ -5,8 +5,9 @@ import Profile from "../components/MyAccount/Profile";
 import Address from "../components/MyAccount/Address";
 import ChangePassword from "../components/MyAccount/ChangePassword";
 import IncompleteOrders from "../components/MyAccount/IncompleteOrders";
-import { handleLogout } from "../redux/AuthSlice";
+import { handleLogoutReducer } from "../redux/AuthSlice";
 import { useDispatch } from "react-redux";
+import { handleLogout } from "../redux/GlobalStates";
 
 const MyAccount = () => {
   const [activeComponent, setActiveComponent] = useState("incomplete_orders");
@@ -100,7 +101,10 @@ const MyAccount = () => {
               <button
                 type="button"
                 className="text-red-500 text-left font-semibold"
-                onClick={() => dispatch(handleLogout())}
+                onClick={() => {
+                  dispatch(handleLogoutReducer());
+                  dispatch(handleLogout());
+                }}
               >
                 Logout
               </button>

@@ -8,13 +8,15 @@ import { PostUrl } from "../BaseUrl";
 
 export const handleLoginUser = createAsyncThunk(
   "auth/handleLoginUser",
-  async ({ password, email }) => {
+  async ({ password, email, signal }) => {
     toast.dismiss();
+    signal.current = new AbortController();
     const response = await PostUrl("login", {
       data: {
         email: email,
         password: password,
       },
+      signal: signal.current.signal,
     })
       .then((res) => {
         window.localStorage.setItem("user", JSON.stringify(res.data.user));
@@ -42,8 +44,11 @@ export const handleRegisterUser = createAsyncThunk(
     state,
     country,
     postalCode,
+    signal,
   }) => {
     toast.dismiss();
+    signal.current = new AbortController();
+
     const response = await PostUrl("register", {
       data: {
         fname,
@@ -58,6 +63,7 @@ export const handleRegisterUser = createAsyncThunk(
         country,
         postalCode,
       },
+      signal: signal.current.signal,
     })
       .then((res) => {
         window.localStorage.setItem("user", JSON.stringify(res.data.user));
@@ -87,10 +93,12 @@ const AuthSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    handleLogout: (state) => {
+    handleLogoutReducer: (state) => {
+      toast.dismiss();
       state.user = null;
       window.localStorage.clear();
-      window.location.replace(window.location.origin);
+      window.location.href = window.location.origin;
+      toast.success("Logout Successfully.");
     },
   },
   extraReducers: (builder) => {
@@ -149,6 +157,6 @@ const AuthSlice = createSlice({
   },
 });
 
-export const { handleLogout } = AuthSlice.actions;
+export const { handleLogoutReducer } = AuthSlice.actions;
 
 export default AuthSlice.reducer;

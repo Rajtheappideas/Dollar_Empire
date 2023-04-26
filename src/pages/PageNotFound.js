@@ -1,21 +1,13 @@
 import React from "react";
-import Lottie from "react-lottie";
+import Lottie from "lottie-react";
 import Error404 from "../assets/animations/404.json";
 import { Link } from "react-router-dom";
 
 const PageNotFound = () => {
-  const defaultOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: Error404,
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice",
-    },
-  };
   return (
     <div className="flex flex-col items-center justify-center text-center w-full h-screen">
       <Lottie
-        options={defaultOptions}
+        animationData={Error404}
         isClickToPauseDisabled={true}
         style={{
           cursor: "default",

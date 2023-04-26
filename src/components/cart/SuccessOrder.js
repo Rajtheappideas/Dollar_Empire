@@ -1,25 +1,14 @@
 import React from "react";
 import success from "../../assets/animations/success.json";
-import Lottie from "react-lottie";
+import Lottie from "lottie-react";
 import { Link } from "react-router-dom";
 
 const SuccessOrder = () => {
-  const defaultOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: success,
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice",
-    },
-  };
   return (
     <div className="flex w-full items-center justify-center gap-5 flex-col py-10">
       <Lottie
-        options={defaultOptions}
-        height={300}
-        width={300}
-        isClickToPauseDisabled={true}
-        style={{ pointerEvents: "none" }}
+        animationData={success}
+        style={{ pointerEvents: "none", width: "300px", height: "300px" }}
       />
       <p className="font-bold text-2xl">Thank you for purchase !</p>
       <p className="font-semibold text-lg">Your order id : 123456789</p>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Helmet } from "react-helmet";
 import { Link, useNavigate } from "react-router-dom";
 import PhoneInput from "react-phone-input-2";
@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { handleRegisterUser } from "../redux/AuthSlice";
 import { toast } from "react-hot-toast";
 import { useEffect } from "react";
+import { handleSuccess } from "../redux/GlobalStates";
 
 const Signup = () => {
   const { user, loading, error } = useSelector((state) => state.Auth);
@@ -21,6 +22,8 @@ const Signup = () => {
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
+
+  const AbortControllerRef = useRef(null);
 
   const SignupSchema = yup.object().shape({
     email: yup.string().required("email is required").email(),
@@ -141,11 +144,13 @@ const Signup = () => {
             state: values.state,
             country: values.country,
             postalCode: values.postalCode,
+            signal: AbortControllerRef,
           })
         );
         if (response) {
           response.then((res) => {
             if (res.payload.status === "success") {
+              dispatch(handleSuccess());
               navigate("/");
               toast.success("Sign up successfully.");
             } else {
@@ -166,6 +171,9 @@ const Signup = () => {
       navigate("/");
       toast.success("Already Logged in.");
     }
+    return () => {
+      AbortControllerRef.current !== null && AbortControllerRef.current.abort();
+    };
   }, []);
   return (
     <>
