@@ -12,7 +12,7 @@ const Favourites = () => {
   return (
     <>
       <Helmet title="Favourites" />
-      <section className="bg-BACKGROUNDGRAY w-full ">
+      <section className="bg-BACKGROUNDGRAY w-full lg:pb-20 pb-10">
         <div className="container mx-auto space_for_div space-y-5 w-full bg-BACKGROUNDGRAY lg:pb-20 pb-10">
           <h1 className="block font-semibold md:text-4xl text-2xl text-left py-1">
             Your Favourites
@@ -35,6 +35,7 @@ const Favourites = () => {
                   <th className="lg:p-3 p-2 font-semibold text-center text-base">
                     Packing
                   </th>
+                  <th className="text-left min-w-[5rem]">Remove</th>
                 </tr>
               </thead>
               <tbody>
@@ -50,13 +51,15 @@ const Favourites = () => {
                     Nose and ear portable Trimmer
                   </td>
                   <td className="lg:p-3 p-2 ">#123456</td>
-
                   <td className="lg:p-3 p-2">
                     <div className="text-right w-full flex items-center justify-start gap-x-6">
                       <p className="xl:w-4/12 w-3/12 whitespace-nowrap text-right">
                         24 PC/PK , 144 PC/CTN
                       </p>
                       <div className="xl:w-7/12 w-8/12 space-y-3">
+                        <p className="font-bold md:text-lg">
+                          $0.50/PC, $12.00/PK, $72.00/CTN
+                        </p>
                         <div className="flex w-64 items-center gap-x-2 relative z-0 ml-auto">
                           <input
                             name="quantity"
@@ -125,10 +128,10 @@ const Favourites = () => {
                           </Link>
                         </p>
                       </div>
-                      <p className="w-1/12">
-                        <AiOutlineClose role="button" className="h-6 w-6" />
-                      </p>
                     </div>
+                  </td>
+                  <td>
+                    <AiOutlineClose role="button" className="h-6 w-6 mx-auto" />
                   </td>
                 </tr>
                 <tr className="bg-white font-normal text-base border-b border-gray-200">
@@ -143,13 +146,15 @@ const Favourites = () => {
                     Nose and ear portable Trimmer
                   </td>
                   <td className="lg:p-3 p-2 ">#123456</td>
-
                   <td className="lg:p-3 p-2">
                     <div className="text-right w-full flex items-center justify-start gap-x-6">
                       <p className="xl:w-4/12 w-3/12 whitespace-nowrap text-right">
                         24 PC/PK , 144 PC/CTN
                       </p>
                       <div className="xl:w-7/12 w-8/12 space-y-3">
+                        <p className="font-bold md:text-lg">
+                          $0.50/PC, $12.00/PK, $72.00/CTN
+                        </p>
                         <div className="flex w-64 items-center gap-x-2 relative z-0 ml-auto">
                           <input
                             name="quantity"
@@ -218,10 +223,10 @@ const Favourites = () => {
                           </Link>
                         </p>
                       </div>
-                      <p className="w-1/12">
-                        <AiOutlineClose role="button" className="h-6 w-6" />
-                      </p>
                     </div>
+                  </td>
+                  <td>
+                    <AiOutlineClose role="button" className="h-6 w-6 mx-auto" />
                   </td>
                 </tr>
                 <tr className="bg-white font-normal text-base border-b border-gray-200">
@@ -236,13 +241,15 @@ const Favourites = () => {
                     Nose and ear portable Trimmer
                   </td>
                   <td className="lg:p-3 p-2 ">#123456</td>
-
                   <td className="lg:p-3 p-2">
                     <div className="text-right w-full flex items-center justify-start gap-x-6">
                       <p className="xl:w-4/12 w-3/12 whitespace-nowrap text-right">
                         24 PC/PK , 144 PC/CTN
                       </p>
                       <div className="xl:w-7/12 w-8/12 space-y-3">
+                        <p className="font-bold md:text-lg">
+                          $0.50/PC, $12.00/PK, $72.00/CTN
+                        </p>
                         <div className="flex w-64 items-center gap-x-2 relative z-0 ml-auto">
                           <input
                             name="quantity"
@@ -311,10 +318,10 @@ const Favourites = () => {
                           </Link>
                         </p>
                       </div>
-                      <p className="w-1/12">
-                        <AiOutlineClose role="button" className="h-6 w-6" />
-                      </p>
                     </div>
+                  </td>
+                  <td>
+                    <AiOutlineClose role="button" className="h-6 w-6 mx-auto" />
                   </td>
                 </tr>
               </tbody>

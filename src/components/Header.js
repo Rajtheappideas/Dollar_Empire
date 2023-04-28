@@ -87,7 +87,7 @@ const Header = () => {
                 <div className="flex items-center gap-x-2">
                   <AiOutlineUser className="w-8 h-8" />
                   <p className="text-left">
-                    <span className="text-gray-300 text-sm block capitalize">
+                    <span className="text-gray-400 font-semibold text-sm block capitalize">
                       Hello, {user?.fname}
                     </span>
                     <span className="text-BLACK md:text-base text-sm font-bold block">
@@ -1096,7 +1096,7 @@ const Header = () => {
       >
         {/* all categories */}
         <div className="capitalize font-semibold relative z-20 group">
-          <p className="cursor-pointer flex items-center justify-between flex-row md:w-60 w-auto md:p-3 p-2 bg-black text-white ">
+          <p className="cursor-pointer flex items-center justify-between flex-row md:w-56 w-auto md:p-3 p-2 bg-black text-white ">
             <span className="md:text-xl text-lg whitespace-nowrap">
               All Categories
             </span>

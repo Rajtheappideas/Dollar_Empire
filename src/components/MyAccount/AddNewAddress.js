@@ -1,8 +1,6 @@
-import React from "react";
-import { useRef } from "react";
+import React, { useRef } from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-import { useDispatch, useSelector } from "react-redux";
 import {
   isPossiblePhoneNumber,
   isValidPhoneNumber,
@@ -10,20 +8,16 @@ import {
 import { useFormik, Form, FormikProvider, ErrorMessage } from "formik";
 import * as yup from "yup";
 import styled from "styled-components";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-hot-toast";
 import { useEffect } from "react";
-import { handlePostEditAddress } from "../../redux/FeatureSlice";
+import { handlePostNewAddress } from "../../redux/FeatureSlice";
 import { handleGetAddresses } from "../../redux/GetContentSlice";
-import { useState } from "react";
 
-const EditAddress = ({ setShowEditAddres, addressId }) => {
-  const { addressList, user } = useSelector((state) => state.getContent);
-  const { loading } = useSelector((state) => state.features);
+const AddNewAddress = ({ setShowNewAddress }) => {
   const { token } = useSelector((state) => state.Auth);
+  const { loading } = useSelector((state) => state.features);
 
-  const findEditAddress = addressList.find(
-    (address) => address?._id == addressId
-  );
   const dispatch = useDispatch();
 
   const AbortControllerRef = useRef(null);
@@ -101,25 +95,24 @@ const EditAddress = ({ setShowEditAddres, addressId }) => {
 
   const formik = useFormik({
     initialValues: {
-      fname: findEditAddress?.fname,
-      lname: findEditAddress?.lname,
-      location: findEditAddress?.location,
-      companyName: findEditAddress?.companyName,
-      phone: findEditAddress?.phone,
-      city: findEditAddress?.city,
-      state: findEditAddress?.state,
-      country: findEditAddress?.country,
-      postalCode: findEditAddress?.postalCode,
+      fname: "",
+      lname: "",
+      location: "",
+      companyName: "",
+      phone: "",
+      city: "",
+      state: "",
+      country: "",
+      postalCode: "",
     },
     validationSchema: SignupSchema,
-    enableReinitialize: true,
     onSubmit: (values) => {
       if (
         isPossiblePhoneNumber(values.phone) &&
         isValidPhoneNumber(values.phone)
       ) {
         const response = dispatch(
-          handlePostEditAddress({
+          handlePostNewAddress({
             fname: values.fname,
             lname: values.lname,
             companyName: values.companyName,
@@ -131,20 +124,18 @@ const EditAddress = ({ setShowEditAddres, addressId }) => {
             location: values.location,
             signal: AbortControllerRef,
             token,
-            id: addressId,
           })
         );
         if (response) {
           response.then((res) => {
             if (res?.meta?.arg?.signal?.current?.signal?.aborted) {
               toast.error("Request Cancelled.");
-              resetForm();
             }
             if (res.payload.status === "success") {
+              toast.success("Address added successfully.");
               resetForm();
-              setShowEditAddres(false);
+              setShowNewAddress(false);
               dispatch(handleGetAddresses({ token }));
-              toast.success("Address edited successfully.");
             } else {
               toast.error(res.payload.message);
             }
@@ -343,7 +334,7 @@ const EditAddress = ({ setShowEditAddres, addressId }) => {
             onClick={() => {
               loading
                 ? AbortControllerRef.current.abort()
-                : setShowEditAddres(false);
+                : setShowNewAddress(false);
             }}
           >
             Cancel
@@ -354,8 +345,7 @@ const EditAddress = ({ setShowEditAddres, addressId }) => {
   );
 };
 
-export default EditAddress;
-
+export default AddNewAddress;
 const TextError = styled.span`
   color: red !important;
   font-weight: 600;

@@ -16,6 +16,7 @@ import img4 from "../assets/images/product-3.png";
 import img5 from "../assets/images/product-4.png";
 import SingleProdcutCard from "../components/SingleProdcutCard";
 import { useLocation } from "react-router-dom";
+import { AiOutlineShoppingCart } from "react-icons/ai";
 
 const ProductListing = () => {
   const [selectedView, setSelectedView] = useState("grid");
@@ -76,7 +77,7 @@ const ProductListing = () => {
   return (
     <>
       <Helmet title={title} />
-      <section className="bg-BACKGROUNDGRAY space-y-5  lg:pb-20 lg:py-0 py-10">
+      <section className="bg-BACKGROUNDGRAY lg:pb-20 lg:py-0 py-10">
         <div className="container mx-auto space_for_div space-y-5 w-full bg-BACKGROUNDGRAY">
           <h1 className="block font-semibold md:text-4xl text-2xl text-left">
             {title === "Price" && title !== "" ? (
@@ -173,10 +174,11 @@ const ProductListing = () => {
                 {/* add items btn */}
                 <button
                   type="button"
-                  className="xl:w-[20%] w-auto px-3 bg-PRIMARY text-white text-center xl:h-14 h-12 ml-auto"
+                  className="xl:w-[20%] w-auto text-sm px-1 bg-PRIMARY text-white text-center xl:h-14 h-12 ml-auto"
                 >
                   <BsPlus className="w-6 h-6 inline-block" />
-                  Add Selected items
+                  Add Selected items to{" "}
+                  <AiOutlineShoppingCart className="h-5 w-5 inline-block" />
                 </button>
               </div>
               {/* prodcts */}
@@ -261,10 +263,11 @@ const ProductListing = () => {
                 {/* btn */}
                 <button
                   type="button"
-                  className="xl:w-[20%] w-auto px-3 bg-PRIMARY text-white text-center xl:h-16 h-12 ml-auto"
+                  className="xl:w-[20%] w-auto text-sm px-1 bg-PRIMARY text-white text-center xl:h-14 h-12 ml-auto"
                 >
                   <BsPlus className="w-6 h-6 inline-block" />
-                  Add Selected items
+                  Add Selected items to{" "}
+                  <AiOutlineShoppingCart className="h-5 w-5 inline-block" />
                 </button>
               </div>
             </section>

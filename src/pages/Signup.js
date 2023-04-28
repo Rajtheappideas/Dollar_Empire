@@ -17,7 +17,7 @@ import { useEffect } from "react";
 import { handleSuccess } from "../redux/GlobalStates";
 
 const Signup = () => {
-  const { user, loading, error } = useSelector((state) => state.Auth);
+  const { user, loading } = useSelector((state) => state.Auth);
 
   const navigate = useNavigate();
 
@@ -96,12 +96,12 @@ const Signup = () => {
       .trim("The contact name cannot include leading and trailing spaces")
       .required("password is required")
       .min(
-        6,
-        "Password should be 8 chars minimum with at least 1 uppercase, 1 lowercase, 1 number."
+        8,
+        "Must Contain 8 Characters, 1 Uppercase, 1 Lowercase, 1 Number and 1 Special Case Character"
       )
       .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{6,})/,
-        "Password should be 8 chars minimum with at least 1 uppercase, 1 lowercase, 1 number."
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
+        "Must Contain 8 Characters, 1 Uppercase, 1 Lowercase, 1 Number and 1 Special Case Character"
       ),
     phone: yup
       .string()

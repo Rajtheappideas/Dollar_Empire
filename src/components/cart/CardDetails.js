@@ -18,6 +18,17 @@ const CardDetails = () => {
           placeholder="Name.."
         />
       </>
+      {/* billing address */}
+      <>
+        <label className="text-black font-medium block text-left text-lg">
+          Billing Address*
+        </label>
+        <input
+          type="text"
+          className="bg-LIGHTGRAY xl:w-1/2 w-full text-black placeholder:text-gray-400 rounded-md p-3"
+          placeholder="Type here.."
+        />
+      </>
       {/* number */}
       <>
         <label className="text-black font-medium block text-left text-lg">

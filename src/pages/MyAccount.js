@@ -6,13 +6,25 @@ import Address from "../components/MyAccount/Address";
 import ChangePassword from "../components/MyAccount/ChangePassword";
 import IncompleteOrders from "../components/MyAccount/IncompleteOrders";
 import { handleLogoutReducer } from "../redux/AuthSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { handleLogout } from "../redux/GlobalStates";
+import { useEffect } from "react";
+import {
+  handleGetAddresses,
+  handleGetUserProfile,
+} from "../redux/GetContentSlice";
 
 const MyAccount = () => {
   const [activeComponent, setActiveComponent] = useState("incomplete_orders");
 
+  const { token } = useSelector((state) => state.Auth);
+
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(handleGetAddresses({ token }));
+    dispatch(handleGetUserProfile({ token }));
+  }, []);
   return (
     <>
       <Helmet title="My Account" />

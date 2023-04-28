@@ -1,16 +1,113 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Helmet } from "react-helmet";
 import TItleSection from "../components/TItleSection";
 import bgImg from "../assets/images/contactus.jpg";
 import { MdCall, MdLocationOn } from "react-icons/md";
 import { GrMail } from "react-icons/gr";
 import ReCAPTCHA from "react-google-recaptcha";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+import {
+  isPossiblePhoneNumber,
+  isValidPhoneNumber,
+} from "react-phone-number-input";
+import { useFormik, Form, FormikProvider, ErrorMessage } from "formik";
+import * as yup from "yup";
+import styled from "styled-components";
+import { useDispatch, useSelector } from "react-redux";
+import { handlePostContactUs } from "../redux/BasicFeatureSlice";
+import { toast } from "react-hot-toast";
 
 const ContactUs = () => {
-  function onChange(value) {
-    // console.log("Captcha value:", value);
-    return null;
+  function handlChange(value) {
+    setFieldValue("captcha", value);
   }
+  const { loading } = useSelector((state) => state.basicFeatures);
+
+  const dispatch = useDispatch();
+
+  const AbortControllerRef = useRef(null);
+  const captchaRef = useRef(null);
+
+  const SignupSchema = yup.object().shape({
+    email: yup.string().required("email is required").email(),
+    fname: yup
+      .string()
+      .trim("The contact name cannot include leading and trailing spaces")
+      .required("firstname is required")
+      .min(3, "too short")
+      .max(30, "too long")
+      .matches(
+        /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
+        "only contain Latin letters."
+      ),
+    lname: yup
+      .string()
+      .trim("The contact name cannot include leading and trailing spaces")
+      .required("lastname is required")
+      .min(2, "too short")
+      .max(30, "too long")
+      .matches(
+        /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
+        "only contain Latin letters."
+      ),
+    comments: yup
+      .string()
+      .required("Comment is required")
+      .matches(/^[A-Za-z\s\-]+$/g, "That doesn't look Comment")
+      .trim("The contact name cannot include leading and trailing spaces"),
+    phone: yup.number().required("A phone number is required"),
+    captcha: yup.string().required("Check the captcha."),
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      fname: "",
+      lname: "",
+      email: "",
+      phone: "",
+      comments: "",
+      captcha: "",
+    },
+    validationSchema: SignupSchema,
+    onSubmit: (values) => {
+      if (
+        isPossiblePhoneNumber(values.phone) &&
+        isValidPhoneNumber(values.phone)
+      ) {
+        const response = dispatch(
+          handlePostContactUs({
+            fname: values.fname,
+            lname: values.lname,
+            email: values.email,
+            phone: values.phone,
+            comments: values.comments,
+            signal: AbortControllerRef,
+          })
+        );
+        if (response) {
+          response.then((res) => {
+            if (res.payload.status === "success") {
+              toast.success("Message sent successfully.");
+              captchaRef.current.props.grecaptcha.reset();
+              resetForm();
+            } else {
+              toast.error(res.payload.message);
+            }
+          });
+        }
+      } else {
+        toast.error("Phone number is invalid!!!");
+      }
+    },
+  });
+
+  const { getFieldProps, handleSubmit, setFieldValue, resetForm } = formik;
+  useEffect(() => {
+    return () => {
+      AbortControllerRef.current !== null && AbortControllerRef.current.abort();
+    };
+  }, []);
   return (
     <>
       <Helmet title="Contact Us" />
@@ -72,71 +169,125 @@ const ContactUs = () => {
             Get In Tocuh
           </h1>
           <hr />
-          {/* name */}
-          <div className="flex items-start w-full gap-x-3">
-            <div className="w-1/2">
+          <FormikProvider value={formik}>
+            <Form
+              onSubmit={handleSubmit}
+              autoComplete="off"
+              className="space-y-4"
+            >
+              {/* name */}
+              <div className="flex items-start w-full gap-x-3">
+                <div className="w-1/2">
+                  <label className="text-black font-medium block text-left text-lg">
+                    First name*
+                  </label>
+                  <input
+                    type="text"
+                    className="bg-LIGHTGRAY outline-none w-full text-black placeholder:text-gray-400 rounded-md p-3"
+                    placeholder="First name"
+                    name="fname"
+                    {...getFieldProps("fname")}
+                  />
+                  <ErrorMessage name="fname" component={TextError} />
+                </div>
+                <div className="w-1/2">
+                  <label className="text-black font-medium block text-left text-lg">
+                    Last name*
+                  </label>
+                  <input
+                    type="text"
+                    className="bg-LIGHTGRAY outline-none w-full text-black placeholder:text-gray-400 rounded-md p-3"
+                    placeholder="Last name"
+                    name="lname"
+                    {...getFieldProps("lname")}
+                  />
+                  <ErrorMessage name="lname" component={TextError} />
+                </div>
+              </div>
+              {/* email , phone */}
+              <div className="flex items-start w-full gap-x-3">
+                <div className="w-1/2">
+                  <label className="text-black font-medium block text-left text-lg">
+                    Email address*
+                  </label>
+                  <input
+                    type="email"
+                    className="bg-LIGHTGRAY outline-none w-full text-black placeholder:text-gray-400 rounded-md p-3"
+                    placeholder="abc@gmail.com"
+                    name="email"
+                    {...getFieldProps("email")}
+                  />
+                  <ErrorMessage name="email" component={TextError} />
+                </div>
+                <div className="w-1/2">
+                  <>
+                    <label className="text-black font-medium block text-left text-lg">
+                      Phone*
+                    </label>
+                    <PhoneInput
+                      country={"us"}
+                      countryCodeEditable={false}
+                      enableSearch={true}
+                      inputProps={{
+                        name: "phone",
+                      }}
+                      onChange={(value) =>
+                        setFieldValue("phone", "+".concat(value).trim())
+                      }
+                      value={formik.values.phone}
+                      inputStyle={{
+                        width: "100%",
+                        background: "#F5F5F5",
+                        borderRadius: "6px",
+                        border: "0px",
+                        padding: "1.6rem 0 1.6rem 3rem",
+                      }}
+                      disabled={loading}
+                      jumpCursorToEnd={true}
+                      dropdownStyle={{ background: "lightgray" }}
+                      buttonStyle={{ border: "0px" }}
+                    />
+                    <ErrorMessage name="phone" component={TextError} />
+                  </>
+                </div>
+              </div>
+              {/* message */}
               <label className="text-black font-medium block text-left text-lg">
-                First name*
+                Comments*
               </label>
-              <input
-                type="text"
-                className="bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                placeholder="First name"
+              <textarea
+                className="bg-LIGHTGRAY outline-none w-full text-black placeholder:text-gray-400 rounded-md p-3 min-h-[8rem] max-h-[10rem]"
+                placeholder="message..."
+                name="comments"
+                {...getFieldProps("comments")}
               />
-            </div>
-            <div className="w-1/2">
-              <label className="text-black font-medium block text-left text-lg">
-                Last name*
-              </label>
-              <input
-                type="text"
-                className="bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                placeholder="Last name"
+              <ErrorMessage
+                className="pb-2"
+                name="comments"
+                component={TextError}
               />
-            </div>
-          </div>
-          {/* email , phone */}
-          <div className="flex items-start w-full gap-x-3">
-            <div className="w-1/2">
-              <label className="text-black font-medium block text-left text-lg">
-                Email address*
-              </label>
-              <input
-                type="email"
-                className="bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                placeholder="abc@gmail.com"
-              />
-            </div>
-            <div className="w-1/2">
-              <label className="text-black font-medium block text-left text-lg">
-                Phone number*
-              </label>
-              <input
-                type="number"
-                className="bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                placeholder="+1234567890"
-              />
-            </div>
-          </div>
-          {/* message */}
-          <label className="text-black font-medium block text-left text-lg">
-            Comments*
-          </label>
-          <textarea
-            className="bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3 min-h-[8rem]"
-            placeholder="message..."
-          />
-          <p>Please check the box below to proceed.</p>
-          <ReCAPTCHA
-            sitekey={process.env.REACT_APP_RECAPTCHA_KEY}
-            onChange={onChange}
-          />{" "}
-          <button
-            type="button"
-            className="bg-PRIMARY active:translate-y-2 hover:text-PRIMARY hover:bg-white border border-PRIMARY duration-500 p-3 text-white text-center w-40 rounded-md uppercase font-bold"
-          >
-            send
-          </button>
+              <p>Please check the box below to proceed.</p>
+              <div>
+                <ReCAPTCHA
+                  sitekey={process.env.REACT_APP_RECAPTCHA_KEY}
+                  onChange={handlChange}
+                  ref={captchaRef}
+                />{" "}
+                <ErrorMessage
+                  className="block"
+                  name="captcha"
+                  component={TextError}
+                />
+              </div>
+              <button
+                type="submit"
+                className="bg-PRIMARY active:translate-y-2 hover:text-PRIMARY hover:bg-white border border-PRIMARY duration-500 p-3 text-white text-center w-40 rounded-md uppercase font-bold"
+                disabled={loading}
+              >
+                {loading ? "Submitting..." : "Send"}
+              </button>
+            </Form>
+          </FormikProvider>
         </div>
       </section>
     </>
@@ -144,3 +295,10 @@ const ContactUs = () => {
 };
 
 export default ContactUs;
+
+const TextError = styled.span`
+  color: red !important;
+  font-weight: 600;
+  padding-top: 10px;
+  font-size: 1rem;
+`;

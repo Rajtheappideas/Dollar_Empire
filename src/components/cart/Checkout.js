@@ -5,6 +5,10 @@ import { useDispatch } from "react-redux";
 
 const Checkout = ({}) => {
   const [showPopup, setShowPopup] = useState(false);
+  const [shipphingMethod, setShipphingMethod] = useState({
+    freight: true,
+    pickup: false,
+  });
 
   const dispatch = useDispatch();
 
@@ -21,7 +25,15 @@ const Checkout = ({}) => {
         </p>
         <div className="w-full border border-gray-300 rounded-md md:p-5 p-2">
           <div className="w-full flex justify-start items-center gap-x-5 bg-white">
-            <input name="checkout" type="radio" className="w-6 h-6" />
+            <input
+              name="checkout"
+              onChange={() =>
+                setShipphingMethod({ pickup: true, freight: false })
+              }
+              type="radio"
+              className="w-6 h-6"
+              checked={shipphingMethod.pickup}
+            />
             <p>
               <span className="font-semibold text-xl block">Pickup</span>
               <span className="font-normal text-base block">
@@ -33,7 +45,15 @@ const Checkout = ({}) => {
         </div>
         <div className="w-full border border-gray-300 rounded-md md:p-5 p-2">
           <div className="w-full flex justify-start items-center gap-x-5 bg-white">
-            <input name="checkout" type="radio" className="w-6 h-6" />
+            <input
+              name="checkout"
+              onChange={() =>
+                setShipphingMethod({ pickup: false, freight: true })
+              }
+              type="radio"
+              className="w-6 h-6"
+              checked={shipphingMethod.freight}
+            />
             <p>
               <span className="font-semibold text-xl block">Freight</span>
               <span className="font-normal text-base block">
@@ -96,7 +116,9 @@ const Checkout = ({}) => {
         </p>
         <p className="w-full flex items-center justify-between text-base">
           <span className="font-normal">Freight</span>
-          <span className="ml-auto font-semibold text-base">$10.00</span>
+          <span className="ml-auto font-semibold text-base">
+            {shipphingMethod.pickup ? "$ 0.00" : "$ 10.00"}
+          </span>
         </p>
         <hr className="w-full" />
         <p className="w-full flex items-center justify-between text-2xl font-bold">
