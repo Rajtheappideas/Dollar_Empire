@@ -16,10 +16,16 @@ import {
   loginAllTabsEventListener,
   logoutAllTabsEventListener,
 } from "./redux/GlobalStates";
+import {
+  handleGetBanners,
+  handleGetCategory,
+  handleGetNewArrivals,
+  handleGetSubCategory,
+} from "./redux/GetContentSlice";
+import { calculateTotalQuantity, handleGetCart } from "./redux/CartSlice";
 
 const Home = lazy(() => import("./pages/Home"));
 const PrivayPolicy = lazy(() => import("./pages/PrivayPolicy"));
-const TermsAndCondition = lazy(() => import("./pages/TermsAndCondition"));
 const ContactUs = lazy(() => import("./pages/ContactUs"));
 const AboutUs = lazy(() => import("./pages/AboutUs"));
 const Signin = lazy(() => import("./pages/Signin"));
@@ -38,16 +44,31 @@ function App() {
     (state) => state.globalStates
   );
 
+  const { token, user } = useSelector((state) => state.Auth);
+
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(loginAllTabsEventListener());
     dispatch(logoutAllTabsEventListener());
+    dispatch(handleGetCategory());
+    dispatch(handleGetSubCategory());
+    if (user !== null) {
+      dispatch(handleGetCart({ token }));
+      dispatch(calculateTotalQuantity());
+    }
 
     if (!window.navigator.onLine) {
       toast.error("Check your internet connection!!!", { duration: "5000" });
     }
   }, []);
+
+  // function googleTranslateElementInit() {
+  //   new google.translate.TranslateElement(
+  //     { pageLanguage: "en" },
+  //     "google_translate_element"
+  //   );
+  // }
   return (
     <BrowserRouter>
       <ErrorBoundary
@@ -82,11 +103,7 @@ function App() {
               element={<PrivayPolicy />}
               caseSensitive
             />
-            <Route
-              path="/terms-&-conditons"
-              element={<TermsAndCondition />}
-              caseSensitive
-            />
+
             <Route path="/sign-in" element={<Signin />} caseSensitive />
             <Route path="/sign-up" element={<Signup />} caseSensitive />
             <Route
@@ -99,10 +116,11 @@ function App() {
               caseSensitive
             />
             <Route
-              path="/product-listing"
+              path="/product-listing/:title"
               element={<ProductListing />}
               caseSensitive
             />
+
             <Route
               path="/favourites"
               element={
@@ -126,7 +144,6 @@ function App() {
               path="/reset-password"
               element={<ResetPassword />}
               caseSensitive
-              loader={() => <div>Loading...</div>}
             />
             <Route
               path="/my-account"

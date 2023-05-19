@@ -103,7 +103,7 @@ const ChangePassword = () => {
         {passwords?.showOldPassword ? (
           <BsEyeFill
             role="button"
-            className="h-7 w-7 absolute top-9 right-44"
+            className="h-7 w-7 absolute top-9 xl:right-44 lg:right-32 right-4"
             onClick={() =>
               setPasswords({ ...passwords, showOldPassword: false })
             }
@@ -111,7 +111,7 @@ const ChangePassword = () => {
         ) : (
           <BsEyeSlashFill
             role="button"
-            className="h-7 w-7 absolute top-9 right-44"
+            className="h-7 w-7 absolute top-9 xl:right-44 lg:right-32 right-4"
             onClick={() =>
               setPasswords({ ...passwords, showOldPassword: true })
             }
@@ -137,7 +137,7 @@ const ChangePassword = () => {
         {passwords?.showNewPassword ? (
           <BsEyeFill
             role="button"
-            className="h-7 w-7 absolute top-9 right-44"
+            className="h-7 w-7 absolute top-9 xl:right-44 lg:right-32 right-4"
             onClick={() =>
               setPasswords({ ...passwords, showNewPassword: false })
             }
@@ -145,7 +145,7 @@ const ChangePassword = () => {
         ) : (
           <BsEyeSlashFill
             role="button"
-            className="h-7 w-7 absolute top-9 right-44"
+            className="h-7 w-7 absolute top-9 xl:right-44 lg:right-32 right-4"
             onClick={() =>
               setPasswords({ ...passwords, showNewPassword: true })
             }

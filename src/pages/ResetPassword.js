@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { BsCheckCircle, BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const ResetPassword = () => {
   const [passwords, setPasswords] = useState({
@@ -13,10 +14,14 @@ const ResetPassword = () => {
     confirmPassword: "",
     showNewPassword: false,
   });
+  const [success, setSuccess] = useState(false);
 
-  const { loading, success } = useSelector((state) => state.basicFeatures);
+  const { loading } = useSelector((state) => state.basicFeatures);
 
   const dispatch = useDispatch();
+
+  const { t } = useTranslation();
+
   const AbortControllerRef = useRef(null);
 
   const handleresetPassword = () => {
@@ -47,6 +52,7 @@ const ResetPassword = () => {
     if (response) {
       response.then((res) => {
         if (res.payload.status === "success") {
+          setSuccess(true);
         } else {
           toast.error(res.payload.message);
         }
@@ -61,40 +67,40 @@ const ResetPassword = () => {
 
   return (
     <>
-      <Helmet title="Rest-password" />
+      <Helmet title={t("Rest-password")} />
       {success ? (
         <div className="p-4 mx-auto text-center xl:w-2/5 lg:w-1/2 md:w-2/3 w-11/12 h-auto space-y-4 md:my-14 my-7 rounded-lg border border-BORDERGRAY">
           <BsCheckCircle className="text-green-400 lg:h-40 h-28 lg:w-40 w-28 mx-auto" />
           <p className="font-semibold text-center md:text-lg text-base">
-            Password successfully changed.{" "}
+            {t("Password successfully changed.")}{" "}
           </p>
           <Link to="/sign-in">
             <button
               type="button"
               className="bg-PRIMARY my-2 hover:text-PRIMARY hover:bg-white border border-PRIMARY duration-500 p-3 text-white text-center w-40 rounded-md uppercase font-bold"
             >
-              login
+              {t("login")}
             </button>{" "}
           </Link>
         </div>
       ) : (
         <div className="p-4 mx-auto xl:w-2/5 lg:w-1/2 md:w-2/3 w-11/12 h-auto space-y-4 md:my-14 my-7 rounded-lg border border-BORDERGRAY">
           <h1 className="font-semibold md:text-3xl text-xl text-left">
-            New Password
+            {t("New Password")}
           </h1>
           <hr />
           <p className="font-medium">
-            The password should have atleast 6 characters.
+            {t("The password should have atleast 8 characters.")}
           </p>
 
           <div className="relative z-0 space-y-3 w-full">
             <label className="text-black font-medium block text-left text-lg">
-              Password*
+              {t("Password")}*
             </label>
             <input
               type={passwords?.showNewPassword ? "text" : "password"}
               className="bg-LIGHTGRAY outline-none w-full text-black placeholder:text-gray-400 rounded-md p-3"
-              placeholder="new password"
+              placeholder={t("new password")}
               name="new password"
               value={passwords.newPassword}
               onChange={(e) =>
@@ -122,12 +128,12 @@ const ResetPassword = () => {
           </div>
           <div className="relative z-0 space-y-3 w-full">
             <label className="text-black font-medium block text-left text-lg">
-              Confirm Password*
+              {t("Confirm Password")}*
             </label>
             <input
               type="password"
               className="bg-LIGHTGRAY outline-none w-full text-black placeholder:text-gray-400 rounded-md p-3"
-              placeholder="confirm password"
+              placeholder={t("Confirm Password")}
               name="confirm password"
               value={passwords.confirmPassword}
               onChange={(e) =>
@@ -143,7 +149,7 @@ const ResetPassword = () => {
             disabled={loading}
             onClick={() => handleresetPassword()}
           >
-            {loading ? "Submitting..." : "submit"}
+            {loading ? t("Submitting...") : t("submit")}
           </button>
         </div>
       )}

@@ -120,6 +120,50 @@ export const handlePostDeleteAddress = createAsyncThunk(
   }
 );
 
+export const handleAddProductToFavourites = createAsyncThunk(
+  "features/handleAddProductToFavourites",
+  async ({ signal, token, id }) => {
+    toast.dismiss();
+    signal.current = new AbortController();
+
+    const response = await GetUrl(`/favourite/add/${id}`, {
+      signal: signal.current.signal,
+      headers: {
+        Authorization: token,
+      },
+    })
+      .then((res) => {
+        return res.data;
+      })
+      .catch((err) => {
+        return err.response.data;
+      });
+    return response;
+  }
+);
+
+export const handleRemoveProductToFavourites = createAsyncThunk(
+  "features/handleRemoveProductToFavourites",
+  async ({ signal, token, id }) => {
+    toast.dismiss();
+    signal.current = new AbortController();
+
+    const response = await GetUrl(`/favourite/remove/${id}`, {
+      signal: signal.current.signal,
+      headers: {
+        Authorization: token,
+      },
+    })
+      .then((res) => {
+        return res.data;
+      })
+      .catch((err) => {
+        return err.response.data;
+      });
+    return response;
+  }
+);
+
 const initialState = {
   loading: false,
   success: false,
@@ -179,6 +223,44 @@ const FeatureSlice = createSlice({
       state.success = false;
       state.error = error;
     });
+    // add favourties
+    builder.addCase(handleAddProductToFavourites.pending, (state) => {
+      state.loading = true;
+      state.success = false;
+      state.error = null;
+    });
+    builder.addCase(handleAddProductToFavourites.fulfilled, (state, {}) => {
+      state.loading = false;
+      state.success = true;
+      state.error = null;
+    });
+    builder.addCase(
+      handleAddProductToFavourites.rejected,
+      (state, { error }) => {
+        state.loading = false;
+        state.success = false;
+        state.error = error;
+      }
+    );
+    // remove favourties
+    builder.addCase(handleRemoveProductToFavourites.pending, (state) => {
+      state.loading = true;
+      state.success = false;
+      state.error = null;
+    });
+    builder.addCase(handleRemoveProductToFavourites.fulfilled, (state, {}) => {
+      state.loading = false;
+      state.success = true;
+      state.error = null;
+    });
+    builder.addCase(
+      handleRemoveProductToFavourites.rejected,
+      (state, { error }) => {
+        state.loading = false;
+        state.success = false;
+        state.error = error;
+      }
+    );
   },
 });
 

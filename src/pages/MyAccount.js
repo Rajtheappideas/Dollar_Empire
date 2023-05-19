@@ -13,6 +13,7 @@ import {
   handleGetAddresses,
   handleGetUserProfile,
 } from "../redux/GetContentSlice";
+import { useTranslation } from "react-i18next";
 
 const MyAccount = () => {
   const [activeComponent, setActiveComponent] = useState("incomplete_orders");
@@ -21,17 +22,19 @@ const MyAccount = () => {
 
   const dispatch = useDispatch();
 
+  const { t } = useTranslation();
+
   useEffect(() => {
     dispatch(handleGetAddresses({ token }));
     dispatch(handleGetUserProfile({ token }));
   }, []);
   return (
     <>
-      <Helmet title="My Account" />
+      <Helmet title={t("my_account")} />
       <section className="bg-BACKGROUNDGRAY space-y-5">
         <div className="w-full container mx-auto space_for_div space-y-5">
           <h1 className="font-semibold text-left md:text-4xl text-2xl block py-1">
-            My Account
+            {t("my_account")}
           </h1>
           <div className="flex lg:flex-row flex-col items-start justify-start lg:gap-x-4 gap-y-5 min-h-screen lg:pb-40 pb-20">
             {/* left side div */}

@@ -1,66 +1,92 @@
-import React, { useRef, useState } from "react";
+import React, { Fragment, useRef, useState } from "react";
 import ProductCard from "../ProductCard";
-import img1 from "../../assets/images/product.png";
-import img2 from "../../assets/images/procuct-1.png";
-import img3 from "../../assets/images/product-2.png";
-import img4 from "../../assets/images/product-3.png";
-import img5 from "../../assets/images/product-4.png";
 import { Autoplay, Navigation } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/navigation";
 import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
+import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-hot-toast";
+import {
+  handleAddProductToFavourites,
+  handleRemoveProductToFavourites,
+} from "../../redux/FeatureSlice";
+import { handleGetNewArrivals } from "../../redux/GetContentSlice";
+import {
+  AiOutlineShoppingCart,
+  AiOutlineHeart,
+  AiOutlineMinus,
+  AiOutlinePlus,
+  AiFillHeart,
+} from "react-icons/ai";
+import BaseUrl from "../../BaseUrl";
+import { handleSetSingelProductId, showPopup } from "../../redux/GlobalStates";
+import { Link } from "react-router-dom";
 
 const TopSellers = ({}) => {
+  const [loading, setLoading] = useState(false);
   const [slide, setSlide] = useState({ isEnd: false, isBeginning: false });
+
+  const { topSellers } = useSelector((state) => state.getContent);
+  const { t } = useTranslation();
 
   const prevRef = useRef(null);
   const nextRef = useRef(null);
 
-  const Products = [
-    {
-      id: 1,
-      title: "2 Liter Pressure Spray Bottle",
-      productId: "12345677",
-      img: img1,
-    },
-    {
-      id: 2,
-      title: "Easter grass",
-      productId: "12345677",
-      img: img2,
-    },
-    {
-      id: 3,
-      title: "Native toothpaste",
-      productId: "12345677",
-      img: img3,
-    },
-    {
-      id: 4,
-      title: "Kumchun sauce",
-      productId: "12345677",
-      img: img4,
-    },
-    {
-      id: 5,
-      title: "ADVIL LIQUI-GELS",
-      productId: "12345677",
-      img: img5,
-    },
-    {
-      id: 6,
-      title: "Native toothpaste",
-      productId: "12345677",
-      img: img3,
-    },
-  ];
+  const { user, token } = useSelector((state) => state.Auth);
+
+  const AbortControllerRef = useRef(null);
+
+  const dispatch = useDispatch();
+
+  const handleAddtoFavourties = (id) => {
+    setLoading(true);
+    const response = dispatch(
+      handleAddProductToFavourites({ token, id, signal: AbortControllerRef })
+    );
+    if (response) {
+      response
+        .then((res) => {
+          if (res.payload.status === "success") {
+            dispatch(handleGetNewArrivals({ token }));
+            toast.success(res.payload.message);
+          } else if (res.payload.status === "fail") {
+            toast.error(res.payload.message);
+          }
+          setLoading(false);
+        })
+        .catch((err) => {
+          toast.error(err.payload.message);
+          setLoading(false);
+        });
+    }
+  };
+
+  const handleRemoveFromFavourties = (id) => {
+    setLoading(true);
+    const response = dispatch(
+      handleRemoveProductToFavourites({ token, id, signal: AbortControllerRef })
+    );
+    if (response) {
+      response
+        .then((res) => {
+          dispatch(handleGetNewArrivals({ token }));
+          toast.success(res.payload.message);
+          setLoading(false);
+        })
+        .catch((err) => {
+          toast.error(err.payload.message);
+          setLoading(false);
+        });
+    }
+  };
   return (
     <section className="bg-LIGHTGRAY md:py-5 py-2 w-full">
       <div className="md:space-y-5  space-y-3 relative z-0 container mx-auto xl:px-0 md:px-10 px-3 w-full">
         <h2 className="font-bold md:text-3xl text-xl uppercase text-center ">
-          Top sellers
+          {t("top_sellers")}
         </h2>
         <Swiper
           modules={[Autoplay, Navigation]}
@@ -73,7 +99,7 @@ const TopSellers = ({}) => {
           }}
           autoplay={{
             delay: 2000,
-            disableOnInteraction: false,
+            disableOnInteraction: true,
             pauseOnMouseEnter: true,
           }}
           speed={500}
@@ -107,19 +133,25 @@ const TopSellers = ({}) => {
               slidesPerView: 1,
             },
           }}
-          className="py-6"
+          className="py-8"
         >
-          {Products.map((product) => (
-            <SwiperSlide key={product?.id}>
-              <ProductCard product={product} />
-            </SwiperSlide>
-          ))}
+          {loading ? (
+            <p className="text-center md:text-3xl text-xl text-black p-3">
+              Loading...
+            </p>
+          ) : (
+            topSellers.map((product) => (
+              <SwiperSlide key={product?._id}>
+                <ProductCard product={product} from="TopSellers" />
+              </SwiperSlide>
+            ))
+          )}
         </Swiper>
         {!slide.isBeginning && (
           <button
             type="button"
             ref={prevRef}
-            className="rounded-full h-10 w-10 p-2 bg-white border border-black absolute top-1/2 -translate-y-1/2 xl:-left-4 md:left-4 left-0 z-10"
+            className="rounded-full md:p-2 p-0.5 bg-white border border-black absolute top-1/2 -translate-y-1/2 xl:-left-4 md:left-4 left-0 z-10"
           >
             <AiOutlineLeft className="w-6 h-6" />
           </button>
@@ -128,7 +160,7 @@ const TopSellers = ({}) => {
           <button
             type="button"
             ref={nextRef}
-            className="rounded-full h-10 w-10 p-2 bg-white border border-black absolute top-1/2 -translate-y-1/2 xl:-right-4 md:right-4 right-0 z-10"
+            className="rounded-full md:p-2 p-0.5 bg-white border border-black absolute top-1/2 -translate-y-1/2 xl:-right-4 md:right-4 right-0 z-10"
           >
             <AiOutlineRight className="w-6 h-6" />
           </button>

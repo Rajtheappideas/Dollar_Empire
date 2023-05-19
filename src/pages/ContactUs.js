@@ -17,6 +17,7 @@ import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { handlePostContactUs } from "../redux/BasicFeatureSlice";
 import { toast } from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 const ContactUs = () => {
   function handlChange(value) {
@@ -28,6 +29,8 @@ const ContactUs = () => {
 
   const AbortControllerRef = useRef(null);
   const captchaRef = useRef(null);
+
+  const { t } = useTranslation();
 
   const SignupSchema = yup.object().shape({
     email: yup.string().required("email is required").email(),
@@ -103,6 +106,7 @@ const ContactUs = () => {
   });
 
   const { getFieldProps, handleSubmit, setFieldValue, resetForm } = formik;
+
   useEffect(() => {
     return () => {
       AbortControllerRef.current !== null && AbortControllerRef.current.abort();
@@ -110,7 +114,7 @@ const ContactUs = () => {
   }, []);
   return (
     <>
-      <Helmet title="Contact Us" />
+      <Helmet title={t("contact_us")} />
       <TItleSection title={"Contact us"} image={bgImg} />
       <section className="xl:w-2/3 lg:w-4/5 w-full lg:px-0 px-3 mx-auto flex md:flex-row flex-col items-start justify-center gap-5 py-5">
         {/* left side div */}
@@ -205,8 +209,8 @@ const ContactUs = () => {
                 </div>
               </div>
               {/* email , phone */}
-              <div className="flex items-start w-full gap-x-3">
-                <div className="w-1/2">
+              <div className="flex items-start w-full lg:flex-row flex-col gap-3">
+                <div className="lg:w-1/2 w-full">
                   <label className="text-black font-medium block text-left text-lg">
                     Email address*
                   </label>
@@ -219,7 +223,7 @@ const ContactUs = () => {
                   />
                   <ErrorMessage name="email" component={TextError} />
                 </div>
-                <div className="w-1/2">
+                <div className="lg:w-1/2 w-full">
                   <>
                     <label className="text-black font-medium block text-left text-lg">
                       Phone*

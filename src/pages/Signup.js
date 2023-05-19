@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Helmet } from "react-helmet";
 import { Link, useNavigate } from "react-router-dom";
 import PhoneInput from "react-phone-input-2";
@@ -15,13 +15,23 @@ import { handleRegisterUser } from "../redux/AuthSlice";
 import { toast } from "react-hot-toast";
 import { useEffect } from "react";
 import { handleSuccess } from "../redux/GlobalStates";
+import { useTranslation } from "react-i18next";
+import { Country, State, City } from "country-state-city";
 
 const Signup = () => {
+  const [selectedData, setSelectedData] = useState({
+    state: "",
+    city: "",
+  });
+  const [allCountries, setAllCountries] = useState("");
+
   const { user, loading } = useSelector((state) => state.Auth);
 
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
+
+  const { t } = useTranslation();
 
   const AbortControllerRef = useRef(null);
 
@@ -57,7 +67,7 @@ const Signup = () => {
       .typeError("That doesn't look like a postal code")
       .required("postalcode is required")
       .max(6, "Pincode should be 6 characters")
-      .min(6, "Pincode should be 6 characters")
+      .min(5, "Pincode should be 5 characters")
       .matches(/^[0-9A-Za-z\s\-]+$/g, "That doesn't look like a postal code"),
     city: yup
       .string()
@@ -95,14 +105,10 @@ const Signup = () => {
       .string()
       .trim("The contact name cannot include leading and trailing spaces")
       .required("password is required")
-      .min(
-        8,
-        "Must Contain 8 Characters, 1 Uppercase, 1 Lowercase, 1 Number and 1 Special Case Character"
-      )
-      .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
-        "Must Contain 8 Characters, 1 Uppercase, 1 Lowercase, 1 Number and 1 Special Case Character"
-      ),
+      .min(8, "Must Contain 8 Characters"),
+    confirmPassword: yup
+      .string()
+      .oneOf([yup.ref("password"), null], "Passwords must match"),
     phone: yup
       .string()
       .required("A phone number is required")
@@ -117,11 +123,12 @@ const Signup = () => {
       email: "",
       companyName: "",
       password: "",
+      confirmPassword: "",
       phone: "",
       address: "",
-      city: "",
-      state: "",
-      country: "",
+      city: selectedData.city,
+      state: selectedData.state,
+      country: "United States",
       postalCode: "",
       checkBox: false,
     },
@@ -151,8 +158,8 @@ const Signup = () => {
           response.then((res) => {
             if (res.payload.status === "success") {
               dispatch(handleSuccess());
-              navigate("/");
               toast.success("Sign up successfully.");
+              navigate("/");
             } else {
               toast.error(res.payload.message);
             }
@@ -164,24 +171,53 @@ const Signup = () => {
     },
   });
 
-  const { getFieldProps, handleSubmit, setFieldValue } = formik;
+  const { getFieldProps, handleSubmit, setFieldValue, values } = formik;
 
   useEffect(() => {
     if (user !== null) {
       navigate("/");
       toast.success("Already Logged in.");
     }
+
+    setAllCountries(Country.getAllCountries());
+
     return () => {
       AbortControllerRef.current !== null && AbortControllerRef.current.abort();
     };
   }, []);
+
+  // for country , state , city selection
+  useEffect(() => {
+    if (values.country !== "") {
+      const country = Country.getAllCountries().find(
+        (country) => country.name === values.country
+      );
+      const states = State.getStatesOfCountry(country?.isoCode);
+
+      setSelectedData({ ...selectedData, state: states });
+      const state = states.find((state) => state.name === values.state);
+      const cities = City.getCitiesOfState(state?.countryCode, state?.isoCode);
+      if (cities.length > 0) {
+        setSelectedData({ ...selectedData, city: cities });
+      }
+    }
+  }, [values.country, values.state, values.city]);
+
   return (
     <>
-      <Helmet title="Sign-in" />
+      <Helmet title={t("Sign-up")} />
       <div className="p-4 mx-auto xl:w-2/5 lg:w-1/2 md:w-2/3 w-11/12 h-auto space-y-4 md:my-14 my-7 rounded-lg border border-BORDERGRAY">
         <h1 className="font-semibold md:text-3xl text-xl text-left">
-          Customer Register
+          {t("Customer Register")}
         </h1>
+        {/* <hr /> */}
+        {/* btn signin */}
+        <p className="font-semibold text-center text-lg">
+          {t("Already have an account")}?&nbsp;
+          <Link to="/sign-in" className="underline text-blue-400">
+            {t("login")}
+          </Link>
+        </p>
         <hr />
         <FormikProvider value={formik}>
           <Form
@@ -193,12 +229,12 @@ const Signup = () => {
             <div className="flex items-start w-full gap-x-3">
               <div className="w-1/2 space-y-3">
                 <label className="text-black font-medium block text-left text-lg">
-                  First name*
+                  {t("First name")}*
                 </label>
                 <input
                   type="text"
                   className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                  placeholder="First name"
+                  placeholder={t("First name")}
                   name="fname"
                   {...getFieldProps("fname")}
                 />
@@ -206,12 +242,12 @@ const Signup = () => {
               </div>
               <div className="w-1/2 space-y-3">
                 <label className="text-black font-medium block text-left text-lg">
-                  Last name*
+                  {t("Last name")}*
                 </label>
                 <input
                   type="text"
                   className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                  placeholder="Last name"
+                  placeholder={t("Last name")}
                   name="lname"
                   {...getFieldProps("lname")}
                 />
@@ -221,26 +257,42 @@ const Signup = () => {
             {/* country */}
             <>
               <label className="text-black font-medium block text-left text-lg">
-                Country*
+                {t("Country")}*
               </label>
-              <input
+              <select
+                className=" outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
+                onChange={(e) =>
+                  setSelectedData({ ...selectedData, country: e.target.value })
+                }
+                name="country"
+                {...getFieldProps("country")}
+              >
+                <option value="United States">Unites States</option>
+                {allCountries !== "" &&
+                  allCountries.map((country) => (
+                    <option key={country.name} value={country.name}>
+                      {country?.name}
+                    </option>
+                  ))}
+              </select>
+              {/* <input
                 type="text"
                 className=" outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
                 placeholder="United states"
                 name="country"
                 {...getFieldProps("country")}
-              />
+              /> */}
               <ErrorMessage name="country" component={TextError} />
             </>
             {/* company name */}
             <>
               <label className="text-black font-medium block text-left text-lg">
-                Company name*
+                {t("Company name")}*
               </label>
               <input
                 type="text"
                 className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                placeholder="Type here..."
+                placeholder={t("Company name")}
                 name="companyName"
                 {...getFieldProps("companyName")}
               />
@@ -249,57 +301,84 @@ const Signup = () => {
             {/* address */}
             <>
               <label className="text-black font-medium block text-left text-lg">
-                Address*
+                {t("Address")}*
               </label>
               <input
                 type="text"
                 className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                placeholder="Type here..."
+                placeholder={t("Address")}
                 name="address"
                 {...getFieldProps("address")}
               />
               <ErrorMessage name="address" component={TextError} />
             </>
-            {/* city */}
+            {/* states */}
             <>
               <label className="text-black font-medium block text-left text-lg">
-                City*
+                {t("State")}*
               </label>
-              <input
+              {/* <input
                 type="text"
                 className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                placeholder="Type here..."
-                name="city"
-                {...getFieldProps("city")}
-              />
-              <ErrorMessage name="city" component={TextError} />
+                placeholder={t("State")}
+                name="state"
+                {...getFieldProps("state")}
+              /> */}
+              <select
+                className=" outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
+                name="state"
+                {...getFieldProps("state")}
+              >
+                <option label="Select state"></option>
+                {selectedData?.state.length > 0 &&
+                  selectedData.state.map((state) => (
+                    <option key={state.name} value={state.name}>
+                      {state?.name}
+                    </option>
+                  ))}
+              </select>
+
+              <ErrorMessage name="state" component={TextError} />
             </>
-            {/* state & postal code */}
+            {/* city & postal code */}
             <div className="flex items-start w-full gap-x-3">
               <div className="w-1/2">
                 <label className="text-black font-medium block text-left text-lg">
-                  State*
+                  {t("City")}*
                 </label>
-                <input
+                {/* <input
                   type="text"
                   className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                  placeholder="Type here..."
-                  name="state"
-                  {...getFieldProps("state")}
-                />
-                <ErrorMessage name="state" component={TextError} />
+                  placeholder={t("City")}
+                  name="city"
+                  {...getFieldProps("city")}
+                /> */}
+                <select
+                  className=" outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
+                  name="city"
+                  {...getFieldProps("city")}
+                >
+                  <option label="Select city"></option>
+                  {selectedData?.city.length > 0 &&
+                    selectedData.city.map((city) => (
+                      <option key={city.name} value={city.name}>
+                        {city?.name}
+                      </option>
+                    ))}
+                </select>
+                <ErrorMessage name="city" component={TextError} />
               </div>
               <div className="w-1/2">
                 <label className="text-black font-medium block text-left text-lg">
-                  Postal code*
+                  {t("Postal code")}*
                 </label>
                 <input
                   type="number"
                   className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                  placeholder="Type here..."
+                  placeholder={t("Postal code")}
                   name="postalCode"
                   maxLength={6}
-                  minLength={6}
+                  minLength={5}
                   {...getFieldProps("postalCode")}
                 />
                 <ErrorMessage name="postalCode" component={TextError} />
@@ -308,7 +387,7 @@ const Signup = () => {
             {/* phone */}
             <>
               <label className="text-black font-medium block text-left text-lg">
-                Phone*
+                {t("Phone")}*
               </label>
               <PhoneInput
                 country={"us"}
@@ -335,12 +414,12 @@ const Signup = () => {
             {/* email */}
             <>
               <label className="text-black font-medium block text-left text-lg">
-                Email*
+                {t("Email")}*
               </label>
               <input
                 type="email"
                 className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                placeholder="Email"
+                placeholder={t("Email")}
                 name="email"
                 {...getFieldProps("email")}
               />
@@ -349,16 +428,30 @@ const Signup = () => {
             {/*password  */}
             <>
               <label className="text-black font-medium block text-left text-lg">
-                Password
+                {t("Password")}
               </label>
               <input
                 type="password"
                 className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                placeholder="Password"
+                placeholder={t("Password")}
                 name="password"
                 {...getFieldProps("password")}
               />
               <ErrorMessage name="password" component={TextError} />
+            </>
+            {/*reconfirm password  */}
+            <>
+              <label className="text-black font-medium block text-left text-lg">
+                {t("confirmPassword")}
+              </label>
+              <input
+                type="password"
+                className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
+                placeholder={t("confirmPassword")}
+                name="confirmPassword"
+                {...getFieldProps("confirmPassword")}
+              />
+              <ErrorMessage name="confirmPassword" component={TextError} />
             </>
             {/* checkbox */}
             <div>
@@ -373,8 +466,9 @@ const Signup = () => {
                   }}
                 />
                 <span>
-                  Accept Lorem Ipsum is simply dummy text of the printing and
-                  type lorem is setting industry.
+                  {t(
+                    "Accept Lorem Ipsum is simply dummy text of the printing and type lorem is setting industry."
+                  )}
                 </span>
               </p>
               {formik.errors.checkBox && (
@@ -387,18 +481,10 @@ const Signup = () => {
               className="bg-PRIMARY active:translate-y-2 hover:text-PRIMARY hover:bg-white border border-PRIMARY duration-300 p-3 text-white text-center w-40 rounded-md font-semibold"
               disabled={loading}
             >
-              {loading ? "Registering..." : "Register"}
+              {loading ? t("Registering...") : t("register")}
             </button>
           </Form>
         </FormikProvider>
-
-        {/* btn signin */}
-        <p className="font-semibold text-center text-lg py-5">
-          Already have an account?&nbsp;
-          <Link to="/sign-in" className="underline text-blue-400">
-            Login
-          </Link>
-        </p>
       </div>
     </>
   );

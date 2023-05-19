@@ -3,7 +3,7 @@ import EditAddressPopup from "./EditAddressPopup";
 import { handleChangeActiveComponent } from "../../redux/GlobalStates";
 import { useDispatch } from "react-redux";
 
-const Checkout = ({}) => {
+const Checkout = ({ summaryFixed }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [shipphingMethod, setShipphingMethod] = useState({
     freight: true,
@@ -107,7 +107,11 @@ const Checkout = ({}) => {
         </button>
       </div>
       {/* summary */}
-      <div className="xl:w-3/12 lg:w-1/3 md:w-1/2 w-full space-y-3 bg-BACKGROUNDGRAY text-BLACK p-3 border border-gray-300 ml-auto">
+      <div
+        className={`${
+          summaryFixed ? "xl:sticky top-2 right-10" : "static"
+        } xl:w-3/12 lg:w-1/3 md:w-1/2 w-full space-y-3 bg-BACKGROUNDGRAY text-BLACK p-3 border border-gray-300 ml-auto`}
+      >
         <p className="font-semibold text-xl">Order Summary</p>
         <hr className="w-full" />
         <p className="w-full flex items-center justify-between text-base">

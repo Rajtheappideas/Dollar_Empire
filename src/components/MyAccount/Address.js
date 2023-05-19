@@ -16,6 +16,7 @@ const Address = () => {
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   const { addressList, loading } = useSelector((state) => state.getContent);
+
   const { token } = useSelector((state) => state.Auth);
 
   const dispatch = useDispatch();

@@ -5,6 +5,7 @@ import {
 } from "@reduxjs/toolkit";
 import { toast } from "react-hot-toast";
 import { PostUrl } from "../BaseUrl";
+import i18next from "i18next";
 
 export const handleLoginUser = createAsyncThunk(
   "auth/handleLoginUser",
@@ -84,6 +85,9 @@ const initialState = {
   token: window.localStorage.getItem("token")
     ? JSON.parse(window.localStorage.getItem("token"))
     : null,
+  userLanguage: window.localStorage.getItem("user_lang")
+    ? JSON.parse(window.localStorage.getItem("user_lang"))
+    : window.localStorage.setItem("user_lang", JSON.stringify("en")),
   loading: false,
   error: null,
   success: false,
@@ -99,6 +103,9 @@ const AuthSlice = createSlice({
       window.localStorage.clear();
       window.location.href = window.location.origin;
       toast.success("Logout Successfully.");
+    },
+    handleChangeUserLanguage: (state, { payload }) => {
+      state.userLanguage = i18next.changeLanguage(payload);
     },
   },
   extraReducers: (builder) => {
@@ -157,6 +164,7 @@ const AuthSlice = createSlice({
   },
 });
 
-export const { handleLogoutReducer } = AuthSlice.actions;
+export const { handleLogoutReducer, handleChangeUserLanguage } =
+  AuthSlice.actions;
 
 export default AuthSlice.reducer;

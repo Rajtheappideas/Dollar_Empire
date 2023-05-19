@@ -79,3 +79,8 @@ body {
     padding: 0 0.75rem;
   }
 }
+
+.active{
+  background-color: #1B599E;
+  color: white;
+}

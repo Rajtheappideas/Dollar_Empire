@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { handleLoginUser } from "../redux/AuthSlice";
 import { useEffect } from "react";
 import { handleSuccess } from "../redux/GlobalStates";
+import { useTranslation } from "react-i18next";
 
 const Signin = () => {
   const { user, loading } = useSelector((state) => state.Auth);
@@ -16,6 +17,8 @@ const Signin = () => {
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
+
+  const { t } = useTranslation();
 
   const AbortControllerRef = useRef(null);
 
@@ -43,8 +46,8 @@ const Signin = () => {
         response.then((res) => {
           if (res.payload.status === "success") {
             dispatch(handleSuccess());
-            navigate("/");
             toast.success("Sign In successfully.");
+            navigate("/");
           } else {
             toast.error(res.payload.message);
           }
@@ -66,10 +69,10 @@ const Signin = () => {
   }, []);
   return (
     <>
-      <Helmet title="Sign-in" />
+      <Helmet title={t("Sign-in")} />
       <div className="p-4 mx-auto xl:w-2/5 lg:w-1/2 md:w-2/3 w-11/12 space-y-4 h-auto md:my-14 my-7 rounded-lg border border-BORDERGRAY">
         <h1 className="font-semibold md:text-3xl text-xl text-left">
-          Customer Login
+          {t("Customer Login")}
         </h1>
         <hr />
         <FormikProvider value={formik}>
@@ -79,23 +82,23 @@ const Signin = () => {
             className="space-y-3"
           >
             <label className="text-black font-medium block text-left text-lg">
-              Email address
+              {t("Email address")}
             </label>
             <input
               type="email"
               className="bg-LIGHTGRAY outline-none w-full text-black placeholder:text-gray-400 rounded-md p-3"
-              placeholder="Email"
+              placeholder={t("Email")}
               name="email"
               {...getFieldProps("email")}
             />
             <ErrorMessage name="email" component={TextError} />
             <label className="text-black font-medium block text-left text-lg">
-              Password
+              {t("Password")}
             </label>
             <input
               type="password"
               className="bg-LIGHTGRAY outline-none w-full text-black placeholder:text-gray-400 rounded-md p-3"
-              placeholder="Password"
+              placeholder={t("Password")}
               name="password"
               {...getFieldProps("password")}
             />
@@ -105,27 +108,27 @@ const Signin = () => {
                 to="/forgot-password"
                 className="font-medium text-lg inline-block"
               >
-                Forgot your password?
+                {t("Forgot your password")}?
               </Link>
             </p>
             <button
               type="submit"
-              className="bg-PRIMARY active:translate-y-2 hover:text-PRIMARY hover:bg-white border border-PRIMARY duration-300 p-3 text-white text-center w-40 rounded-md uppercase font-bold"
+              className="bg-PRIMARY active:translate-y-2 hover:text-PRIMARY hover:bg-white border border-PRIMARY duration-300 p-3 min-w-[10rem] text-white text-center w-auto rounded-md uppercase font-bold"
               disabled={loading}
             >
-              {loading ? "Logging in..." : "Login"}
+              {loading ? t("Logging in...") : t("login")}
             </button>
           </Form>
         </FormikProvider>
 
         <p className="font-semibold text-center text-lg py-5">
-          New customer?{" "}
+          {t("New customer")}?{" "}
           <Link
             to="/sign-up"
             className="underline text-blue-400
         "
           >
-            Create new account
+            {t("Create new account")}
           </Link>
         </p>
       </div>

@@ -4,6 +4,13 @@ import { BroadcastChannel } from "broadcast-channel";
 const initialState = {
   showProductDetailsPopup: false,
   activeComponentForCart: "Shopping_Cart",
+  singleProductId: null,
+  perPageItemView: window.localStorage.getItem("persist:globalStates")
+    ? JSON.parse(window.localStorage.getItem("persist:globalStates"))
+        .perPageItemView
+    : "128",
+  productListingPageLink: "",
+  pagination: 0,
 };
 const logoutChannel = new BroadcastChannel("handleLogout");
 const loginChannel = new BroadcastChannel("handleSuccess");
@@ -17,6 +24,7 @@ const GlobalStates = createSlice({
     },
     closePopup: (state) => {
       state.showProductDetailsPopup = false;
+      state.singleProductId = null;
     },
     handleChangeActiveComponent: (state, { payload }) => {
       state.activeComponentForCart = payload;
@@ -46,6 +54,16 @@ const GlobalStates = createSlice({
         loginChannel.close();
       };
     },
+    handleSetSingelProductId: (state, { payload }) => {
+      state.singleProductId = payload;
+    },
+    handleChangePagePerView: (state, { payload }) => {
+      state.perPageItemView = payload;
+    },
+    handleChangeProductListingPageLink: (state, { payload }) => {
+      state.productListingPageLink = payload?.link;
+      state.pagination = payload?.pagination;
+    },
   },
 });
 
@@ -57,6 +75,9 @@ export const {
   logoutAllTabsEventListener,
   handleSuccess,
   handleLogout,
+  handleChangeProductListingPageLink,
+  handleSetSingelProductId,
+  handleChangePagePerView,
 } = GlobalStates.actions;
 
 export default GlobalStates.reducer;

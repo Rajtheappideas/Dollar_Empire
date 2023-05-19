@@ -5,12 +5,15 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { PostUrl } from "../BaseUrl";
+import { useTranslation } from "react-i18next";
 
 const Footer = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
   const toTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+
+  const { t } = useTranslation();
 
   const handleSubscribeNewsletter = () => {
     toast.dismiss();
@@ -25,6 +28,7 @@ const Footer = () => {
       .then((res) => {
         setEmail("");
         setLoading(false);
+        toast.success(res.data.message);
       })
       .catch((err) => {
         toast.error(err.response.data.message);
@@ -35,6 +39,7 @@ const Footer = () => {
   return (
     <>
       <div className="grid xl:grid-cols-4 md:grid-cols-2 text-lg font-medium place-items-start items-start bg-LIGHTGRAY xl:px-20 md:px-10 px-5 md:pt-10 md:pb-20 py-5 md:gap-10 gap-5">
+        {/* logo */}
         <div className="w-full">
           <Link to="/" className="inline-block">
             <img
@@ -43,6 +48,7 @@ const Footer = () => {
             />
           </Link>
         </div>
+        {/* details */}
         <div className="space-y-3 w-full">
           <p className="flex items-start">
             <MdLocationOn className="w-5 h-5 text-black inline-block mt-2 mr-2" />
@@ -60,45 +66,47 @@ const Footer = () => {
             <a href="tel:323-268-8999">323-268-8999</a>
           </p>
         </div>
+        {/* links */}
         <div className="space-y-3  w-full">
           <Link
             className="block hover:pl-2 hover:border-l-4 hover:border-PRIMARY transition-all hover:text-PRIMARY duration-300"
             to="/about-us"
             onClick={toTop}
           >
-            About us
+            {t("about_us")}
           </Link>
           <Link
             className="block hover:pl-2 hover:border-l-4 hover:border-PRIMARY transition-all hover:text-PRIMARY duration-300"
             to="/contact-us"
             onClick={toTop}
           >
-            Contact us
+            {t("contact_us")}
           </Link>
           <Link
             className="block hover:pl-2 hover:border-l-4 hover:border-PRIMARY transition-all hover:text-PRIMARY duration-300"
             to="/shipping-&-freight"
             onClick={toTop}
           >
-            Shipping & freight
+            {t("shipping_&_freight")}
           </Link>
           <Link
             className="block hover:pl-2 hover:border-l-4 hover:border-PRIMARY transition-all hover:text-PRIMARY duration-300"
             to="/special-order"
             onClick={toTop}
           >
-            Special orders
+            {t("special_orders")}
           </Link>
           <Link
             className="block hover:pl-2 hover:border-l-4 hover:border-PRIMARY transition-all hover:text-PRIMARY duration-300"
             to="/privacy-policy"
             onClick={toTop}
           >
-            Privacy notice
+            {t("privacy_notice")}
           </Link>
         </div>
+        {/* subscibe */}
         <div className="space-y-3  w-full">
-          <p>Subscribe to our newsletter</p>
+          <p>{t("subscribe_to_our_newsletter")}</p>
           <div className="flex items-center w-full">
             <input
               type="email"
@@ -111,10 +119,10 @@ const Footer = () => {
             <button
               type="button"
               onClick={() => handleSubscribeNewsletter()}
-              className="bg-black text-white hover:bg-PRIMARY duration-300 ease-linear h-10 w-1/3"
+              className="bg-black text-white hover:bg-PRIMARY duration-300 ease-linear h-10 px-1 w-auto"
               disabled={loading}
             >
-              {loading ? "..." : "Subscribe"}
+              {loading ? "..." : t("subscribe")}
             </button>
           </div>
         </div>
