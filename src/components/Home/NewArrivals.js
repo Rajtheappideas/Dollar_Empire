@@ -24,7 +24,7 @@ const NewArrivals = ({}) => {
   return (
     <section
       id="New-Arrivals"
-      className="md:space-y-5 space-y-3 relative z-0 container mx-auto xl:px-0 md:px-10 px-3 w-full"
+      className="md:space-y-5 space-y-3 relative z-20 container mx-auto xl:px-0 md:px-10 px-3 w-full"
     >
       <h2 className="font-bold md:text-3xl text-xl uppercase text-center ">
         {t("new_arrivals")}
@@ -48,7 +48,7 @@ const NewArrivals = ({}) => {
             }}
             autoplay={{
               delay: 2000,
-              disableOnInteraction: true,
+              disableOnInteraction: false,
               pauseOnMouseEnter: true,
             }}
             speed={500}
@@ -144,7 +144,7 @@ const NewArrivals = ({}) => {
             <button
               type="button"
               ref={prevRef}
-              className="rounded-full md:p-2 p-0.5 bg-white border border-black absolute top-1/2 -translate-y-1/2 xl:-left-4 md:left-4 left-0 z-10"
+              className="rounded-full md:p-2 p-0.5 bg-white border border-black absolute top-1/2 -translate-y-1/2 xl:-left-4 md:left-4 left-0 z-20"
             >
               <AiOutlineLeft className="w-6 h-6" />
             </button>
@@ -153,7 +153,7 @@ const NewArrivals = ({}) => {
             <button
               type="button"
               ref={nextRef}
-              className="rounded-full md:p-2 p-0.5 bg-white border border-black absolute top-1/2 -translate-y-1/2 xl:-right-4 md:right-4 right-0 z-10"
+              className="rounded-full md:p-2 p-0.5 bg-white border border-black absolute top-1/2 -translate-y-1/2 xl:-right-4 md:right-4 right-0 z-20"
             >
               <AiOutlineRight className="w-6 h-6" />
             </button>

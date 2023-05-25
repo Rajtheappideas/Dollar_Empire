@@ -45,7 +45,7 @@ const TopSellers = ({}) => {
               }}
               autoplay={{
                 delay: 2000,
-                disableOnInteraction: true,
+                disableOnInteraction: false,
                 pauseOnMouseEnter: true,
               }}
               speed={500}
