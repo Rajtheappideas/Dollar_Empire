@@ -231,7 +231,7 @@ const Header = () => {
                 <span className="text-base whitespace-nowrap">
                   {t("all_categories")}
                 </span>
-                <BsChevronDown className="h-4 w-4 ml-2" />
+                <BsChevronDown className="min-h-[1rem] min-w-[1rem] ml-1" />
               </p>
               {/* menu */}
               <div className="text-left p-2 absolute top-9 -left-3 z-20 bg-white md:min-w-[14rem] min-w-[10rem] rounded-md group-hover:scale-100 scale-0 transform duration-300 ease-in origin-top-left">
@@ -252,17 +252,10 @@ const Header = () => {
                     </SkeletonTheme>
                   ) : (
                     <>
-                      <Link
-                        to={`/product-listing/all-products`}
-                        state={{
-                          title: "all-products",
-                          price: null,
-                          searchQuery: "",
-                        }}
-                      >
+                      <Link to={`/product-listing/all-products`}>
                         {" "}
                         <span className="cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold whitespace-nowrap block">
-                          All Categories
+                          {t("all_categories")}
                         </span>
                       </Link>
                       {categories.map((category) => (
@@ -274,11 +267,6 @@ const Header = () => {
                           <Link
                             key={category?._id}
                             to={`/product-listing/${category.name}`}
-                            // state={{
-                            //   title: category.name,
-                            //   price: null,
-                            //   searchQuery: "",
-                            // }}
                           >
                             {category.name} ({category?.productCount})
                           </Link>
@@ -306,30 +294,15 @@ const Header = () => {
                                 </Link>
                               ))}
 
-                            <Link
-                              to={`/product-listing/low-to-high`}
-                              // state={{
-                              //   title: "low-to-high",
-                              //   price: null,
-                              //   searchQuery: "",
-                              // }}
-                            >
+                            <Link to={`/product-listing/low-to-high`}>
                               {" "}
                               <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                                View all (Low to high)
+                                {t("View all")} ({t("Low to high")})
                               </span>
                             </Link>
-                            <Link
-                              to={`/product-listing/high-to-low`}
-                              // state={{
-                              //   title: "high-to-low",
-                              //   price: null,
-                              //   searchQuery: "",
-                              // }}
-                            >
-                              {" "}
+                            <Link to={`/product-listing/high-to-low`}>
                               <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                                View all (High to low)
+                                {t("View all")} ({t("High to low")})
                               </span>
                             </Link>
                           </div>
@@ -341,16 +314,8 @@ const Header = () => {
                   <div
                     className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
                   >
-                    <Link
-                      to={`/product-listing/low-to-high`}
-                      // state={{
-                      //   title: "low-to-high",
-                      //   price: null,
-                      //   searchQuery: "",
-                      // }}
-                    >
-                      {" "}
-                      View all (Low to high)
+                    <Link to={`/product-listing/low-to-high`}>
+                      {t("View all")} ({t("Low to high")})
                     </Link>
                     {/* View all (Low to high) */}
                     <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
@@ -359,15 +324,8 @@ const Header = () => {
                   <div
                     className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
                   >
-                    <Link
-                      to={`/product-listing/high-to-low`}
-                      // state={{
-                      //   title: "high-to-low",
-                      //   price: null,
-                      //   searchQuery: "",
-                      // }}
-                    >
-                      View all (High to low)
+                    <Link to={`/product-listing/high-to-low`}>
+                      {t("View all")} ({t("High to low")})
                     </Link>
                     <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
                   </div>
@@ -389,7 +347,6 @@ const Header = () => {
                     e.target.value.toLocaleLowerCase().trim()
                   )
                 );
-                // setSearchTerm(e.target.value.toLocaleLowerCase().trim());
               }}
             />
 
@@ -408,7 +365,7 @@ const Header = () => {
               <Link
                 to="/cart"
                 onClick={() =>
-                  dispatch(handleChangeActiveComponent("Shopping_Cart"))
+                  dispatch(handleChangeActiveComponent("Shopping Cart"))
                 }
               >
                 {t("shopping_cart")}:
@@ -472,17 +429,9 @@ const Header = () => {
                 </SkeletonTheme>
               ) : (
                 <>
-                  <Link
-                    to={`/product-listing/all-products`}
-                    state={{
-                      title: "all-products",
-                      price: null,
-                      searchQuery: "",
-                    }}
-                  >
-                    {" "}
+                  <Link to={`/product-listing/all-products`}>
                     <span className="cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold whitespace-nowrap block">
-                      All Categories
+                      {t("all_categories")}
                     </span>
                   </Link>
                   {categories.map((category) => (
@@ -494,11 +443,6 @@ const Header = () => {
                       <Link
                         key={category?._id}
                         to={`/product-listing/${category.name}`}
-                        // state={{
-                        //   title: category.name,
-                        //   price: null,
-                        //   searchQuery: "",
-                        // }}
                       >
                         {category.name} ({category?.productCount})
                       </Link>
@@ -526,30 +470,16 @@ const Header = () => {
                             </Link>
                           ))}
 
-                        <Link
-                          to={`/product-listing/low-to-high`}
-                          // state={{
-                          //   title: "low-to-high",
-                          //   price: null,
-                          //   searchQuery: "",
-                          // }}
-                        >
+                        <Link to={`/product-listing/low-to-high`}>
                           {" "}
                           <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                            View all (Low to high)
+                            {t("View all")} ({t("Low to high")})
                           </span>
                         </Link>
-                        <Link
-                          to={`/product-listing/high-to-low`}
-                          // state={{
-                          //   title: "high-to-low",
-                          //   price: null,
-                          //   searchQuery: "",
-                          // }}
-                        >
+                        <Link to={`/product-listing/high-to-low`}>
                           {" "}
                           <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                            View all (High to low)
+                            {t("View all")} ({t("High to low")})
                           </span>
                         </Link>
                       </div>
@@ -561,15 +491,7 @@ const Header = () => {
               <div
                 className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
               >
-                <Link
-                  to={`/product-listing/low-to-high`}
-                  // state={{
-                  //   title: "low-to-high",
-                  //   price: null,
-                  //   searchQuery: "",
-                  // }}
-                >
-                  {" "}
+                <Link to={`/product-listing/low-to-high`}>
                   View all (Low to high)
                 </Link>
                 {/* View all (Low to high) */}
@@ -579,14 +501,7 @@ const Header = () => {
               <div
                 className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
               >
-                <Link
-                  to={`/product-listing/high-to-low`}
-                  // state={{
-                  //   title: "high-to-low",
-                  //   price: null,
-                  //   searchQuery: "",
-                  // }}
-                >
+                <Link to={`/product-listing/high-to-low`}>
                   View all (High to low)
                 </Link>
                 <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
@@ -641,17 +556,23 @@ const Header = () => {
               <li
                 className={`cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
               >
-                <Link to={`/product-listing/Over $3.00`}>Over $3.00</Link>
+                <Link to={`/product-listing/Over $3.00`}>
+                  {t("Over")} $3.00
+                </Link>
               </li>
               <li
                 className={`cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
               >
-                <Link to={`/product-listing/low-to-high`}>Low to high</Link>
+                <Link to={`/product-listing/low-to-high`}>
+                  {t("Low to high")}
+                </Link>
               </li>
               <li
                 className={`cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
               >
-                <Link to={`/product-listing/high-to-low`}>High to low</Link>
+                <Link to={`/product-listing/high-to-low`}>
+                  {t("High to low")}
+                </Link>
               </li>
             </ul>
           </div>

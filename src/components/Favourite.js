@@ -398,10 +398,10 @@ const Favourite = ({ favourite }) => {
                   }}
                 >
                   {loading && selectedProductId === favourite?._id ? (
-                    "Adding..."
+                    t("Adding").concat("...")
                   ) : findInCart !== null &&
                     favourite?._id === findInCart?.product?._id ? (
-                    "Added"
+                    t("Added")
                   ) : (
                     <>
                       {t("add_to_cart")}

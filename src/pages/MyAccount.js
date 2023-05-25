@@ -42,7 +42,7 @@ const MyAccount = () => {
             {/* left side div */}
             <div className="lg:w-1/4 w-full border border-BORDERGRAY p-3 bg-white space-y-3">
               <p className="font-semibold md:text-2xl text-lg text-left pb-2">
-                Navigation
+                {t("Navigation")}
               </p>
               <p
                 role="button"
@@ -53,7 +53,7 @@ const MyAccount = () => {
                 }`}
                 onClick={() => setActiveComponent("incomplete_orders")}
               >
-                Incomplete Orders
+                {t("Incomplete Orders")}
                 {activeComponent === "incomplete_orders" && (
                   <span className="h-full w-1 bg-PRIMARY absolute top-0 -left-3"></span>
                 )}
@@ -67,7 +67,7 @@ const MyAccount = () => {
                 }`}
                 onClick={() => setActiveComponent("order_history")}
               >
-                Order history
+                {t("Order history")}
                 {activeComponent === "order_history" && (
                   <span className="h-full w-1 bg-PRIMARY absolute top-0 -left-3"></span>
                 )}
@@ -81,7 +81,7 @@ const MyAccount = () => {
                 }`}
                 onClick={() => setActiveComponent("profile")}
               >
-                Profile
+                {t("Profile")}
                 {activeComponent === "profile" && (
                   <span className="h-full w-1 bg-PRIMARY absolute top-0 -left-3"></span>
                 )}{" "}
@@ -95,7 +95,7 @@ const MyAccount = () => {
                 }`}
                 onClick={() => setActiveComponent("address")}
               >
-                Address
+                {t("Address")}
                 {activeComponent === "address" && (
                   <span className="h-full w-1 bg-PRIMARY absolute top-0 -left-3"></span>
                 )}{" "}
@@ -109,7 +109,7 @@ const MyAccount = () => {
                 }`}
                 onClick={() => setActiveComponent("change_password")}
               >
-                Change password
+                {t("Change password")}
                 {activeComponent === "change_password" && (
                   <span className="h-full w-1 bg-PRIMARY absolute top-0 -left-3"></span>
                 )}{" "}
@@ -123,7 +123,7 @@ const MyAccount = () => {
                   dispatch(handleLogout());
                 }}
               >
-                Logout
+                {t("Logout")}
               </button>
             </div>
             {/* right side div */}

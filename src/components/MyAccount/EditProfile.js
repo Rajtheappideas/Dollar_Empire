@@ -16,6 +16,7 @@ import { toast } from "react-hot-toast";
 import { useRef } from "react";
 import { Country, State, City } from "country-state-city";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const EditProfile = ({ setShowEditProfile }) => {
   const [selectedData, setSelectedData] = useState({
@@ -29,6 +30,8 @@ const EditProfile = ({ setShowEditProfile }) => {
   const { token } = useSelector((state) => state.Auth);
 
   const dispatch = useDispatch();
+
+  const { t } = useTranslation();
 
   const AbortControllerRef = useRef(null);
 
@@ -184,12 +187,12 @@ const EditProfile = ({ setShowEditProfile }) => {
         <div className="flex items-start w-full gap-x-3">
           <div className="lg:w-2/5 w-1/2 space-y-2">
             <label className="text-black font-medium block text-left text-lg">
-              First name
+              {t("First name")}
             </label>
             <input
               type="text"
               className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-              placeholder="First name"
+              placeholder={t("First name")}
               name="fname"
               {...getFieldProps("fname")}
             />
@@ -202,7 +205,7 @@ const EditProfile = ({ setShowEditProfile }) => {
             <input
               type="text"
               className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-              placeholder="Last name"
+              placeholder={t("Last name")}
               name="lname"
               {...getFieldProps("lname")}
             />
@@ -213,12 +216,12 @@ const EditProfile = ({ setShowEditProfile }) => {
         {/* company name */}
         <>
           <label className="text-black font-medium block text-left text-lg">
-            Company name
+            {t("Company name")}
           </label>
           <input
             type="text"
             className="bg-LIGHTGRAY outline-none lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
-            placeholder="Company name"
+            placeholder={t("Company name")}
             name="companyName"
             {...getFieldProps("companyName")}
           />
@@ -231,13 +234,13 @@ const EditProfile = ({ setShowEditProfile }) => {
         {/* location */}
         <>
           <label className="text-black font-medium block text-left text-lg">
-            Location
+            {t("Location")}
           </label>
           <input
             type="text"
             className="bg-LIGHTGRAY outline-none lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
             name="location"
-            placeholder="Location"
+            placeholder={t("Location")}
             {...getFieldProps("location")}
           />
           <ErrorMessage
@@ -250,7 +253,7 @@ const EditProfile = ({ setShowEditProfile }) => {
         <div className="flex items-start w-full gap-x-3">
           <div className="lg:w-2/5 w-1/2 space-y-2">
             <label className="text-black font-medium block text-left text-lg">
-              Country
+              {t("Country")}
             </label>
             <select
               className=" outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
@@ -283,7 +286,7 @@ const EditProfile = ({ setShowEditProfile }) => {
           </div>
           <div className="lg:w-2/5 w-1/2 space-y-2">
             <label className="text-black font-medium block text-left text-lg">
-              State
+              {t("State")}
             </label>
             <select
               className=" outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
@@ -305,7 +308,7 @@ const EditProfile = ({ setShowEditProfile }) => {
         <div className="flex items-start w-full gap-x-3">
           <div className="lg:w-2/5 w-1/2 space-y-2">
             <label className="text-black font-medium block text-left text-lg">
-              City
+              {t("City")}
             </label>
             <select
               className=" outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
@@ -324,13 +327,13 @@ const EditProfile = ({ setShowEditProfile }) => {
           </div>
           <div className="lg:w-2/5 w-1/2 space-y-2">
             <label className="text-black font-medium block text-left text-lg">
-              PostalCode
+              {t("PostalCode")}
             </label>
             <input
               type="number"
               className="bg-LIGHTGRAY outline-none w-full text-black placeholder:text-gray-400 rounded-md p-3"
               name="postalCode"
-              placeholder="postalCode"
+              placeholder={t("PostalCode")}
               {...getFieldProps("postalCode")}
               maxLength={6}
               minLength={5}
@@ -342,7 +345,7 @@ const EditProfile = ({ setShowEditProfile }) => {
         {/* phone */}
         <div className="lg:w-[82%] w-full">
           <label className="text-black font-medium block text-left text-lg">
-            Phone
+            {t("Phone")}
           </label>
           <PhoneInput
             country={"us"}
@@ -374,7 +377,7 @@ const EditProfile = ({ setShowEditProfile }) => {
             className="w-40 font-semibold bg-PRIMARY text-white rounded-md text-center p-3 active:translate-y-2 hover:text-PRIMARY hover:bg-white border border-PRIMARY duration-300"
             disabled={loading}
           >
-            {loading ? "Submitting..." : "Save"}
+            {loading ? t("Submitting").concat("...") : t("Save")}
           </button>
           <button
             type="button"
@@ -385,7 +388,7 @@ const EditProfile = ({ setShowEditProfile }) => {
                 : setShowEditProfile(false);
             }}
           >
-            Cancel
+            {t("Cancel")}
           </button>
         </div>
       </Form>

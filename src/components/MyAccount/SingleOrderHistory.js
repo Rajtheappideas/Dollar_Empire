@@ -5,12 +5,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { handleGetOrderbyId } from "../../redux/OrderSlice";
 import moment from "moment";
 import BaseUrl from "../../BaseUrl";
+import { useTranslation } from "react-i18next";
 
 const SingleOrderHistory = ({ setShowSingleOrder, orderId, setOrderId }) => {
   const { token } = useSelector((state) => state.Auth);
   const { singleOrder, loading } = useSelector((state) => state.orders);
 
   const dispatch = useDispatch();
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     dispatch(handleGetOrderbyId({ token, id: orderId }));
@@ -19,34 +22,34 @@ const SingleOrderHistory = ({ setShowSingleOrder, orderId, setOrderId }) => {
     <>
       {loading ? (
         <p className="text-2xl text-center mx-auto font-semibold">
-          Fetching Details...
+          {t("Fetching Details")}...
         </p>
       ) : (
         <div className="w-full relative z-0 bg-white border border-BORDERGRAY text-BLACK space-y-10">
           <div className="p-5 md:space-y-5 space-y-3 overflow-x-hidden">
             <p className="font-semibold md:text-3xl text-lg text-PRIMARY">
-              Order ID : {singleOrder?.orderId}
+              {t("Order ID")} : {singleOrder?.orderId}
             </p>
             <p className="flex items-center w-full text-lg">
-              <span className="font-bold md:w-60 w-40">Shipping method:</span>{" "}
+              <span className="font-bold md:w-60 w-40">{t("Shipping method")}:</span>{" "}
               <span className="font-normal">{singleOrder?.shippingMethod}</span>
             </p>
             <p className="flex items-center w-full text-lg">
-              <span className="font-bold md:w-60 w-40">Order date:</span>{" "}
+              <span className="font-bold md:w-60 w-40">{t("Order date")}:</span>{" "}
               <span className="font-normal">
                 {moment(singleOrder?.orderDate).format("lll")}
               </span>
             </p>
             <p className="flex items-center w-full text-lg">
-              <span className="font-bold md:w-60 w-40">Items:</span>{" "}
+              <span className="font-bold md:w-60 w-40">{t("Items")}:</span>{" "}
               <span className="font-normal">{singleOrder?.items.length}</span>
             </p>
             <p className="flex items-center w-full text-lg">
-              <span className="font-bold md:w-60 w-40">Quantity:</span>{" "}
+              <span className="font-bold md:w-60 w-40">{t("Quantity")}:</span>{" "}
               <span className="font-normal">{singleOrder?.totalQuantity}</span>
             </p>
             <p className="flex items-center w-full text-lg">
-              <span className="font-bold md:w-60 w-40">Total:</span>{" "}
+              <span className="font-bold md:w-60 w-40">{t("Total")}:</span>{" "}
               <span className="font-normal">${singleOrder?.total}</span>
             </p>
           </div>
@@ -55,11 +58,11 @@ const SingleOrderHistory = ({ setShowSingleOrder, orderId, setOrderId }) => {
             <table className="w-full table-auto">
               <thead>
                 <tr className=" bg-PRIMARY text-white w-full">
-                  <th className="p-3 text-left min-w-[20rem]">Product</th>
-                  <th className="p-3 text-center min-w-[8rem]">Item no.</th>
-                  <th className="p-3 text-center w-28">Price</th>
-                  <th className="p-3 text-center w-28">Quantity</th>
-                  <th className="p-3 text-center w-28">Subtotal</th>
+                  <th className="p-3 text-left min-w-[20rem]">{t("Product")}</th>
+                  <th className="p-3 text-center min-w-[8rem]">{t("Item no")}.</th>
+                  <th className="p-3 text-center w-28">{t("Price")}</th>
+                  <th className="p-3 text-center w-28">{t("Quantity")}</th>
+                  <th className="p-3 text-center w-28">{t("Subtotal")}</th>
                 </tr>
               </thead>
               <tbody>

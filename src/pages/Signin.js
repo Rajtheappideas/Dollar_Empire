@@ -48,7 +48,6 @@ const Signin = () => {
       if (response) {
         response.then((res) => {
           if (res.payload.status === "success") {
-            // toast.success("Sign In successfully.", { duration: 3000 });
             dispatch(handleSuccess());
             navigate("/");
             return toast.success("Sign In successfully.", { duration: 3000 });

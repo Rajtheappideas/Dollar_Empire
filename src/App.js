@@ -31,6 +31,7 @@ import {
   handleGetNewArrivals,
   handleGetTopSellers,
 } from "./redux/ProductSlice";
+import { handleGetVisitCount, handleRegisterUser } from "./redux/AuthSlice";
 
 const Home = lazy(() => import("./pages/Home"));
 const PrivayPolicy = lazy(() => import("./pages/PrivayPolicy"));
@@ -65,9 +66,17 @@ function App() {
     dispatch(handleGetTopSellers({ token }));
     dispatch(handleGetAllProducts({ token }));
 
+    if (user !== null) {
+      dispatch(handleGetVisitCount({ token }));
+    }
     if (!window.navigator.onLine) {
       toast.error("Check your internet connection!!!", { duration: "5000" });
     }
+    // return () => {
+    //   window.onbeforeunload = function () {
+    //     localStorage.removeItem("visited");
+    //   };
+    // };
   }, []);
 
   useEffect(() => {

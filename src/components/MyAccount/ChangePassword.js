@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-hot-toast";
 import { handleChangePassword } from "../../redux/BasicFeatureSlice";
 import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
+import { useTranslation } from "react-i18next";
 
 const ChangePassword = () => {
   const [passwords, setPasswords] = useState({
@@ -19,6 +20,8 @@ const ChangePassword = () => {
   const dispatch = useDispatch();
 
   const AbortControllerRef = useRef(null);
+
+  const { t } = useTranslation();
 
   const changePassword = (e) => {
     e.preventDefault();
@@ -88,12 +91,12 @@ const ChangePassword = () => {
       {/* current password */}
       <div className="relative z-0 space-y-3">
         <label className="text-black font-medium block text-left text-lg">
-          Current Password
+          {t("Current Password")}
         </label>
         <input
           type={passwords?.showOldPassword ? "text" : "password"}
           className="bg-LIGHTGRAY outline-none lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
-          placeholder="old password"
+          placeholder={t("old password")}
           name="old password"
           value={passwords.oldPassword}
           onChange={(e) =>
@@ -122,12 +125,12 @@ const ChangePassword = () => {
       {/* new password */}
       <div className="space-y-3 relative z-0">
         <label className="text-black font-medium block text-left text-lg">
-          New Password
+          {t("New Password")}
         </label>
         <input
           type={passwords?.showNewPassword ? "text" : "password"}
           className="bg-LIGHTGRAY outline-none lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
-          placeholder="new password"
+          placeholder={t("New Password")}
           name="new password"
           value={passwords.newPassword}
           onChange={(e) =>
@@ -155,12 +158,12 @@ const ChangePassword = () => {
       {/* Confirm New Password */}
       <>
         <label className="text-black font-medium block text-left text-lg">
-          Confirm New Password
+          {t("Confirm New Password")}
         </label>
         <input
           type="password"
           className="bg-LIGHTGRAY outline-none lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
-          placeholder="Confirm New Password"
+          placeholder={t("Confirm New Password")}
           name="confirm password"
           value={passwords.ConfirmPassword}
           onChange={(e) =>
@@ -176,7 +179,7 @@ const ChangePassword = () => {
           className="w-40 font-semibold bg-PRIMARY text-white rounded-md text-center p-3 active:scale-90 hover:text-PRIMARY hover:bg-white border border-PRIMARY duration-300"
           disabled={loading}
         >
-          {loading ? "Processing..." : "Save"}
+          {loading ? t("Processing").concat("...") : t("Save")}
         </button>
         <button
           type="button"
@@ -189,7 +192,7 @@ const ChangePassword = () => {
             })
           }
         >
-          Cancel
+          {t("Cancel")}
         </button>
       </div>
     </form>

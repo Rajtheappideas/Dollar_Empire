@@ -4,11 +4,14 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import moment from "moment/moment";
+import { useTranslation } from "react-i18next";
 
 const IncompleteOrders = () => {
   const [showSingleOrder, setShowSingleOrder] = useState(false);
   const [incompleteOrders, setIncompleteOrders] = useState([]);
   const [orderId, setOrderId] = useState(null);
+
+  const { t } = useTranslation();
 
   const { orders, loading } = useSelector((state) => state.orders);
   useEffect(() => {
@@ -30,20 +33,20 @@ const IncompleteOrders = () => {
         />
       ) : loading ? (
         <p className="text-center w-full mx-auto font-semibold text-2xl">
-          Fetching Orders...
+          {t("Fetching Orders")}...
         </p>
       ) : (
         <table className="w-full table-auto overflow-x-scroll">
           <thead>
             <tr className="w-full bg-PRIMARY text-white font-normal">
-              <th className="text-center p-3">Order no.</th>
+              <th className="text-center p-3">{t("Order no")}.</th>
               {/* <th className="text-center p-3">Type</th> */}
-              <th className="text-center p-3">Order date</th>
-              <th className="text-center p-3">Items</th>
-              <th className="text-center p-3">Quantity</th>
-              <th className="text-center p-3">Amount</th>
-              <th className="text-center p-3">Tax</th>
-              <th className="text-center p-3">Total</th>
+              <th className="text-center p-3">{t("Order date")}</th>
+              <th className="text-center p-3">{t("Items")}</th>
+              <th className="text-center p-3">{t("Quantity")}</th>
+              <th className="text-center p-3">{t("Amount")}</th>
+              <th className="text-center p-3">{t("Tax")}</th>
+              <th className="text-center p-3">{t("Total")}</th>
             </tr>
           </thead>
           <tbody className="bg-white text-BLACK text-base">
@@ -90,7 +93,7 @@ const IncompleteOrders = () => {
                     colSpan="100%"
                     className="text-center font-semibold text-xl p-2"
                   >
-                    No orders yet.
+                    {t("No orders yet")}.
                   </td>
                 </tr>
                 <tr>
@@ -100,7 +103,7 @@ const IncompleteOrders = () => {
                         type="button"
                         className="font-semibold mx-auto w-60 bg-PRIMARY text-white hover:bg-white hover:text-PRIMARY border border-PRIMARY duration-300 ease-in-out p-3 text-center"
                       >
-                        Go to products
+                        {t("Go to products")}
                       </button>
                     </Link>
                   </td>

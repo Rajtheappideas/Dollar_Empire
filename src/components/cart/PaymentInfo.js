@@ -10,11 +10,14 @@ import {
 import { Toaster, toast } from "react-hot-toast";
 import { handleClearCart, handleGetCart } from "../../redux/CartSlice";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 const PaymentInfo = ({ summaryFixed }) => {
   const [showCardDetails, setShowCardDetails] = useState(false);
 
   const dispatch = useDispatch();
+
+  const { t } = useTranslation();
 
   const AbortControllerRef = useRef(null);
 
@@ -100,7 +103,7 @@ const PaymentInfo = ({ summaryFixed }) => {
         <div className="w-full flex xl:flex-row flex-col items-start justify-start gap-4 pb-10">
           <div className="xl:w-9/12 w-full space-y-3">
             <p className="bg-PRIMARY text-white p-4 w-full text-left font-semibold tracking-wide">
-              Method
+              {t("Method")}
             </p>
             <div className="w-full border border-gray-300 rounded-md p-5">
               <div className="w-full flex justify-start items-center gap-x-5 bg-white">
@@ -116,10 +119,10 @@ const PaymentInfo = ({ summaryFixed }) => {
                 />
                 <p>
                   <span className="font-semibold text-xl block">
-                    Contact for Payment (Returning Customers)
+                    {t("Contact for Payment (Returning Customers)")}
                   </span>
                   <span className="font-normal text-base block">
-                    Our sales will contact you for payment information.
+                    {t("Our sales will contact you for payment information")}.
                   </span>
                 </p>
               </div>
@@ -138,7 +141,7 @@ const PaymentInfo = ({ summaryFixed }) => {
                 />
                 <p>
                   <span className="font-semibold text-xl block">
-                    Pay by Credit card
+                    {t("Pay by Credit card")}
                   </span>
                   <span className="font-normal text-base block">
                     Lorem Ipsum is simply dummy text of the printing and
@@ -154,23 +157,23 @@ const PaymentInfo = ({ summaryFixed }) => {
               summaryFixed ? "xl:sticky top-2 right-10" : "static"
             }`}
           >
-            <p className="font-semibold text-xl">Order Summary</p>
+            <p className="font-semibold text-xl">{t("Order Summary")}</p>
             <hr className="w-full" />
             <p className="w-full flex items-center justify-between text-base">
-              <span className="font-normal">Subtotal</span>
+              <span className="font-normal">{t("Subtotal")}</span>
               <span className="ml-auto font-semibold text-base">
                 ${parseFloat(grandTotal).toFixed(2)}{" "}
               </span>{" "}
             </p>
             <p className="w-full flex items-center justify-between text-base">
-              <span className="font-normal">Freight</span>
+              <span className="font-normal">{t("Freight")}</span>
               <span className="ml-auto font-semibold text-base">
                 ${shipphingMethod === "pickup" ? "0.00" : "10.00"}
               </span>
             </p>
             <hr className="w-full" />
             <p className="w-full flex items-center justify-between text-2xl font-bold">
-              <span>Grand Total</span>
+              <span>{t("Grand Total")}</span>
               <span className="ml-auto">
                 ${parseFloat(grandTotal).toFixed(2)}
               </span>
@@ -188,10 +191,10 @@ const PaymentInfo = ({ summaryFixed }) => {
               disabled={loading}
             >
               {loading
-                ? "Submitting Order..."
+                ? t("Submitting Order").concat("...")
                 : paymentOption === "contactForPayment"
-                ? "Confirm order"
-                : "Continue"}
+                ? t("Confirm order")
+                : t("Continue")}
             </button>
           </div>
         </div>

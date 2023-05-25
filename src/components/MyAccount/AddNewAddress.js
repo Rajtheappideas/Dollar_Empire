@@ -15,6 +15,7 @@ import { handlePostNewAddress } from "../../redux/FeatureSlice";
 import { handleGetAddresses } from "../../redux/GetContentSlice";
 import { useState } from "react";
 import { Country, State, City } from "country-state-city";
+import { useTranslation } from "react-i18next";
 
 const AddNewAddress = ({ setShowNewAddress }) => {
   const [selectedData, setSelectedData] = useState({
@@ -28,6 +29,8 @@ const AddNewAddress = ({ setShowNewAddress }) => {
   const { loading } = useSelector((state) => state.features);
 
   const dispatch = useDispatch();
+
+  const { t } = useTranslation();
 
   const AbortControllerRef = useRef(null);
 
@@ -190,12 +193,12 @@ const AddNewAddress = ({ setShowNewAddress }) => {
         <div className="flex items-start w-full gap-x-3">
           <div className="lg:w-2/5 w-1/2 space-y-2">
             <label className="text-black font-medium block text-left text-lg">
-              First name*
+              {t("First name")}*
             </label>
             <input
               type="text"
               className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-              placeholder="First name"
+              placeholder={t("First name")}
               name="fname"
               {...getFieldProps("fname")}
             />
@@ -203,12 +206,12 @@ const AddNewAddress = ({ setShowNewAddress }) => {
           </div>
           <div className="lg:w-2/5 w-1/2 space-y-2">
             <label className="text-black font-medium block text-left text-lg">
-              Last name*
+              {t("Last name")}*
             </label>
             <input
               type="text"
               className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-              placeholder="Last name"
+              placeholder={t("Last name")}
               name="lname"
               {...getFieldProps("lname")}
             />
@@ -218,12 +221,12 @@ const AddNewAddress = ({ setShowNewAddress }) => {
         {/* company name */}
         <>
           <label className="text-black font-medium block text-left text-lg">
-            Company name*
+            {t("Company name")}*
           </label>
           <input
             type="text"
             className="bg-LIGHTGRAY outline-none lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
-            placeholder="Company name"
+            placeholder={t("Company name")}
             name="companyName"
             {...getFieldProps("companyName")}
           />
@@ -236,13 +239,13 @@ const AddNewAddress = ({ setShowNewAddress }) => {
         {/* location */}
         <>
           <label className="text-black font-medium block text-left text-lg">
-            Location*
+            {t("Location")}*
           </label>
           <input
             type="text"
             className="bg-LIGHTGRAY outline-none lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
             name="location"
-            placeholder="Location"
+            placeholder={t("Location")}
             {...getFieldProps("location")}
           />
           <ErrorMessage
@@ -254,7 +257,7 @@ const AddNewAddress = ({ setShowNewAddress }) => {
         {/* Country */}
         <>
           <label className="text-black font-medium block text-left text-lg">
-            Country*
+            {t("Country")}*
           </label>
           <select
             className=" outline-none bg-LIGHTGRAY lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
@@ -282,7 +285,7 @@ const AddNewAddress = ({ setShowNewAddress }) => {
         <div className="flex items-start w-full gap-x-3">
           <div className="lg:w-2/5 w-1/2 space-y-2">
             <label className="text-black font-medium block text-left text-lg">
-              State*
+              {t("State")}*
             </label>
             <select
               className=" outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
@@ -301,7 +304,7 @@ const AddNewAddress = ({ setShowNewAddress }) => {
           </div>
           <div className="lg:w-2/5 w-1/2 space-y-2">
             <label className="text-black font-medium block text-left text-lg">
-              City*
+              {t("City")}*
             </label>
             <select
               className=" outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
@@ -324,7 +327,7 @@ const AddNewAddress = ({ setShowNewAddress }) => {
         <div className="flex items-start w-full gap-x-3">
           <div className="lg:w-2/5 w-full space-y-2">
             <label className="text-black font-medium block text-left text-lg">
-              Phone*
+              {t("Phone")}*
             </label>
             <PhoneInput
               country={"us"}
@@ -351,14 +354,14 @@ const AddNewAddress = ({ setShowNewAddress }) => {
           </div>
           <div className="lg:w-2/5 w-full space-y-2">
             <label className="text-black font-medium block text-left text-lg">
-              Postal Code*
+              {t("PostalCode")}*
             </label>
             <input
               type="number"
               maxLength={values.country === "United States" ? 5 : 6}
               minLength={5}
               className="bg-LIGHTGRAY outline-none w-full text-black placeholder:text-gray-400 rounded-md p-3"
-              placeholder="Postal code"
+              placeholder={t("PostalCode")}
               name="postalCode"
               {...getFieldProps("postalCode")}
             />
@@ -372,7 +375,7 @@ const AddNewAddress = ({ setShowNewAddress }) => {
             className="w-40 font-semibold bg-PRIMARY text-white rounded-md text-center p-3 active:translate-y-2 hover:text-PRIMARY hover:bg-white border border-PRIMARY duration-300"
             disabled={loading}
           >
-            {loading ? "Submitting..." : "Save"}
+            {loading ? t("Submitting").concat("...") : t("Save")}
           </button>
           <button
             type="button"
@@ -383,7 +386,7 @@ const AddNewAddress = ({ setShowNewAddress }) => {
                 : setShowNewAddress(false);
             }}
           >
-            Cancel
+            {t("Cancel")}
           </button>
         </div>
       </Form>

@@ -214,7 +214,7 @@ const EditAddressPopup = ({ setShowPopup, addressId }) => {
     >
       <div className="fixed overflow-hidden space-y-3 top-10 left-1/2 -translate-x-1/2 z-50 md:p-5 py-10 px-5 bg-white text-black lg:w-5/12 md:w-7/12 w-[95%] h-auto rounded-md">
         <div className="flex items-center justify-between w-full">
-          <p className="font-semibold text-2xl">Shipping Address</p>
+          <p className="font-semibold text-2xl">{t("Shipping Address")}</p>
           <AiOutlineClose
             role="button"
             onClick={() => setShowPopup(false)}
@@ -229,12 +229,12 @@ const EditAddressPopup = ({ setShowPopup, addressId }) => {
             <div className="flex items-start w-full gap-x-4">
               <div className=" w-1/2">
                 <label className="text-black font-medium block text-left text-lg">
-                  First name*
+                  {t("First name")}*
                 </label>
                 <input
                   type="text"
                   className="bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                  placeholder="First name"
+                  placeholder={t("First name")}
                   name="fname"
                   {...getFieldProps("fname")}
                 />
@@ -242,12 +242,12 @@ const EditAddressPopup = ({ setShowPopup, addressId }) => {
               </div>
               <div className=" w-1/2">
                 <label className="text-black font-medium block text-left text-lg">
-                  Last name*
+                  {t("Last name")}*
                 </label>
                 <input
                   type="text"
                   className="bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                  placeholder="Last name"
+                  placeholder={t("Last name")}
                   name="lname"
                   {...getFieldProps("lname")}
                 />
@@ -257,12 +257,12 @@ const EditAddressPopup = ({ setShowPopup, addressId }) => {
             {/* company name */}
             <>
               <label className="text-black font-medium block text-left text-lg">
-                Company name*
+                {t("Company name")}*
               </label>
               <input
                 type="text"
                 className="bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                placeholder="Company name"
+                placeholder={t("Company name")}
                 name="companyName"
                 {...getFieldProps("companyName")}
               />
@@ -271,7 +271,7 @@ const EditAddressPopup = ({ setShowPopup, addressId }) => {
             {/* Country */}
             <>
               <label className="text-black font-medium block text-left text-lg">
-                Country*
+                {t("Country")}*
               </label>
               <select
                 className=" outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
@@ -295,7 +295,7 @@ const EditAddressPopup = ({ setShowPopup, addressId }) => {
             {/* state */}
             <>
               <label className="text-black font-medium block text-left text-lg">
-                State*
+                {t("State")}*
               </label>
               <select
                 className=" outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
@@ -359,12 +359,12 @@ const EditAddressPopup = ({ setShowPopup, addressId }) => {
             {/* location */}
             <>
               <label className="text-black font-medium block text-left text-lg">
-                Location*
+                {t("Location")}*
               </label>
               <input
                 type="text"
                 className="bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                placeholder="Location"
+                placeholder={t("Location")}
                 name="location"
                 {...getFieldProps("location")}
               />
@@ -373,7 +373,7 @@ const EditAddressPopup = ({ setShowPopup, addressId }) => {
             {/* phone */}
             <div className="w-full">
               <label className="text-black font-medium block text-left text-lg">
-                Phone*
+                {t("Phone")}*
               </label>
               <PhoneInput
                 country={"us"}
@@ -404,14 +404,14 @@ const EditAddressPopup = ({ setShowPopup, addressId }) => {
                 className="w-40 font-semibold bg-PRIMARY text-white rounded-md text-center p-3 active:translate-y-2 hover:text-PRIMARY hover:bg-white border border-PRIMARY duration-300"
                 disabled={loading}
               >
-                {loading ? "Submitting..." : "Save"}
+                {loading ? t("Submitting").concat("...") : t("Save")}
               </button>
               <button
                 type="button"
                 className="w-40 font-semibold bg-gray-300 text-black rounded-md text-center p-3 active:translate-y-2 hover:text-white hover:bg-black border border-gray-400 duration-300"
                 onClick={() => setShowPopup(false)}
               >
-                Close
+                {t("Close")}
               </button>
             </div>
           </Form>

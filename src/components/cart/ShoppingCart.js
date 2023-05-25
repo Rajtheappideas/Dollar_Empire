@@ -15,6 +15,7 @@ import {
 import { toast } from "react-hot-toast";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { useTranslation } from "react-i18next";
 
 const ShoppingCart = ({ summaryFixed }) => {
   const [showChangeField, setShowChangeField] = useState(false);
@@ -31,6 +32,8 @@ const ShoppingCart = ({ summaryFixed }) => {
   const { shipphingMethod } = useSelector((state) => state.orders);
 
   const dispatch = useDispatch();
+
+  const { t } = useTranslation();
 
   const AbortControllerRef = useRef(null);
 
@@ -113,22 +116,22 @@ const ShoppingCart = ({ summaryFixed }) => {
           <thead className="bg-PRIMARY text-white p-2 w-full">
             <tr>
               <th className="lg:min-w-[20rem] min-w-[23rem] lg:p-3 p-2 font-semibold text-left text-base">
-                Product
+                {t("Product")}
               </th>
               <th className="lg:w-32 min-w-[8rem] lg:p-3 p-2 font-semibold text-left text-base">
-                Item Number
+                {t("Item Number")}
               </th>
               <th className="lg:w-28 min-w-[7rem] lg:p-3 p-2 font-semibold text-left text-base">
-                Unit Price
+                {t("Unit Price")}
               </th>
               <th className="lg:w-28 min-w-[10rem] lg:p-3 p-2 font-semibold text-left text-base">
-                Quantity
+                {t("Quantity")}
               </th>
               <th className="lg:w-28 min-w-[5rem] lg:p-3 p-2 font-semibold text-left text-base">
-                Subtotal
+                {t("Subtotal")}
               </th>
               <th className="lg:w-28 min-w-[3rem] lg:p-3 p-2 font-semibold text-cneter text-base">
-                Remove
+                {t("Remove")}
               </th>
             </tr>
           </thead>
@@ -139,7 +142,7 @@ const ShoppingCart = ({ summaryFixed }) => {
                   colSpan="100%"
                   className="text-center font-semibold md:text-2xl text-xl pt-10"
                 >
-                  Fetching your cart...
+                  {t("Fetching your cart")}...
                 </td>
               </tr>
             ) : cartItems.length <= 0 ? (
@@ -149,7 +152,7 @@ const ShoppingCart = ({ summaryFixed }) => {
                     colSpan="100%"
                     className="text-center font-semibold text-xl p-2"
                   >
-                    No items in cart.
+                    {t("No items in cart")}.
                   </td>
                 </tr>
                 <tr>
@@ -159,7 +162,7 @@ const ShoppingCart = ({ summaryFixed }) => {
                         type="button"
                         className="font-semibold mx-auto w-60 bg-PRIMARY text-white hover:bg-white hover:text-PRIMARY border border-PRIMARY duration-300 ease-in-out p-3 text-center"
                       >
-                        Go to products
+                        {t("Go to products")}
                       </button>
                     </Link>
                   </td>
@@ -217,7 +220,7 @@ const ShoppingCart = ({ summaryFixed }) => {
                           )
                         }
                       >
-                        Update
+                        {t("Update")}
                       </span>
                     ) : (
                       <span
@@ -229,7 +232,7 @@ const ShoppingCart = ({ summaryFixed }) => {
                           setProductId(item?.product?._id);
                         }}
                       >
-                        Change
+                        {t("Change")}
                       </span>
                     )}
                   </td>
@@ -266,23 +269,23 @@ const ShoppingCart = ({ summaryFixed }) => {
           summaryFixed ? "xl:sticky top-2 right-10" : "static"
         }`}
       >
-        <p className="font-semibold text-xl">Order Summary</p>
+        <p className="font-semibold text-xl">{t("Order Summary")}</p>
         <hr className="w-full" />
         <p className="w-full flex items-center justify-between text-base">
-          <span className="font-normal">Subtotal</span>
+          <span className="font-normal">{t("Subtotal")}</span>
           <span className="ml-auto font-semibold text-base">
             ${parseFloat(grandTotal).toFixed(2)}{" "}
           </span>
         </p>
         <p className="w-full flex items-center justify-between text-base">
-          <span className="font-normal">Freight</span>
+          <span className="font-normal">{t("Freight")}</span>
           <span className="ml-auto font-semibold text-base">
             ${shipphingMethod === "pickup" ? "0.00" : "10.00"}
           </span>
         </p>
         <hr className="w-full" />
         <p className="w-full flex items-center justify-between text-2xl font-bold">
-          <span>Grand Total</span>
+          <span>{t("Grand Total")}</span>
           <span className="ml-auto">${parseFloat(grandTotal).toFixed(2)}</span>
         </p>
         <hr className="w-full" />
@@ -291,13 +294,13 @@ const ShoppingCart = ({ summaryFixed }) => {
           onClick={() => {
             toast.dismiss();
             cartItems?.length > 0
-              ? dispatch(handleChangeActiveComponent("Check_Out"))
+              ? dispatch(handleChangeActiveComponent("Check Out"))
               : toast.error("Your Cart is empty!!!");
           }}
           className="font-semibold bg-PRIMARY text-white hover:bg-white hover:text-PRIMARY border border-PRIMARY duration-300 ease-in-out w-full p-3 text-center"
           // disabled={cartItems?.length}
         >
-          Proceed to checkout
+          {t("Proceed to checkout")}
         </button>
         <p>
           <Link
@@ -312,7 +315,7 @@ const ShoppingCart = ({ summaryFixed }) => {
               type="button"
               className="font-semibold bg-black text-white hover:bg-white hover:text-black border border-black duration-300 ease-in-out w-full p-3 text-center"
             >
-              Continue to shopping
+              {t("Continue to shopping")}
             </button>
           </Link>
         </p>

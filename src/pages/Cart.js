@@ -49,7 +49,6 @@ const Cart = () => {
       window.removeEventListener("scroll", () => {});
     };
   }, [window.scrollY]);
-
   return (
     <>
       <Helmet title={t("Cart")} />
@@ -58,16 +57,22 @@ const Cart = () => {
           <h1 className="block font-semibold md:text-4xl text-2xl text-left py-1">
             {activeComponentForCart === "Success"
               ? null
-              : activeComponentForCart.replace("_", " ")}
+              : activeComponentForCart === "Shopping Cart"
+              ? t("Shopping Cart")
+              : activeComponentForCart === "Check Out"
+              ? t("Check Out")
+              : activeComponentForCart === "Payment Info"
+              ? t("Payment Info")
+              : "Success"}
           </h1>
 
-          {activeComponentForCart === "Shopping_Cart" && (
+          {activeComponentForCart === "Shopping Cart" && (
             <ShoppingCart summaryFixed={summaryFixed} />
           )}
-          {activeComponentForCart === "Check_Out" && (
+          {activeComponentForCart === "Check Out" && (
             <Checkout summaryFixed={summaryFixed} />
           )}
-          {activeComponentForCart === "Payment_Info" && (
+          {activeComponentForCart === "Payment Info" && (
             <PaymentInfo summaryFixed={summaryFixed} />
           )}
           {activeComponentForCart === "Success" && <SuccessOrder />}

@@ -4,17 +4,20 @@ import baseUrl from "../../BaseUrl";
 import { Link } from "react-router-dom";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { useTranslation } from "react-i18next";
 
 const Categories = () => {
   const { categories, loading } = useSelector((state) => state.getContent);
+
+  const { t } = useTranslation();
   return (
     <section className="container mx-auto w-full md:pt-5 pb-20 py-2 md:space-y-5 space-y-3 xl:px-0 md:px-10 px-3">
       <p className="font-bold text-center md:text-3xl text-xl uppercase">
-        Categories
+        {t("Categories")}
       </p>
       {categories !== undefined && categories.length === 0 && !loading ? (
         <p className="md:text-2xl text-lg mx-auto w-full text-center font-semibold">
-          Categories Not Found, Try again sometimes.
+          {t("Categories Not Found, Try again sometimes")}.
         </p>
       ) : (
         <div className=" w-full grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 grid-cols-2 items-center md:gap-8 gap-5">
@@ -35,11 +38,6 @@ const Categories = () => {
             categories.map((category) => (
               <Link
                 to={`/product-listing/${category.name}`}
-                // state={{
-                //   title: category.name,
-                //   price: null,
-                //   searchQuery: "",
-                // }}
                 key={category?._id}
                 className={`space-y-3 w-full text-center ${
                   category.id === 9 &&

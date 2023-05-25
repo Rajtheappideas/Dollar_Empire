@@ -265,23 +265,23 @@ const CardDetails = ({ summaryFixed }) => {
         >
           {loading && !confirmOrderLoading ? (
             <p className="text-2xl text-center font-semibold mx-auto">
-              Loading...
+              {t("loading")}...
             </p>
           ) : (
             <div className="xl:w-9/12 w-full space-y-3">
               <p className="bg-PRIMARY text-white p-4 w-full text-left font-semibold tracking-wide">
-                Card details
+                {t("Card details")}
               </p>
 
               {/* name */}
               <>
                 <label className="text-black font-medium block text-left text-lg">
-                  Name on card*
+                  {t("Name on card")}*
                 </label>
                 <input
                   type="text"
                   className="bg-LIGHTGRAY xl:w-1/2 w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                  placeholder="Name"
+                  placeholder={t("Name")}
                   name="nameOnCard"
                   {...getFieldProps("nameOnCard")}
                 />
@@ -388,7 +388,7 @@ const CardDetails = ({ summaryFixed }) => {
               {/* street adress */}
               <>
                 <label className="text-black font-medium block text-left text-lg">
-                  Street Address*
+                  {t("Street Address")}*
                 </label>
                 <input
                   type="text"
@@ -402,12 +402,12 @@ const CardDetails = ({ summaryFixed }) => {
               {/* card number */}
               <>
                 <label className="text-black font-medium block text-left text-lg">
-                  Card number*
+                  {t("Card number")}*
                 </label>
                 <input
                   type="number"
                   className="bg-LIGHTGRAY xl:w-1/2 w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                  placeholder="Card number.."
+                  placeholder={t("Card number")}
                   name="cardNumber"
                   {...getFieldProps("cardNumber")}
                 />
@@ -416,7 +416,7 @@ const CardDetails = ({ summaryFixed }) => {
               {/* date */}
               <>
                 <label className="text-black font-medium block text-left text-lg">
-                  Expiration Date*
+                  {t("Expiration Date")}*
                 </label>
                 <input
                   type="month"
@@ -429,7 +429,7 @@ const CardDetails = ({ summaryFixed }) => {
               {/* cvv */}
               <>
                 <label className="text-black font-medium block text-left text-lg">
-                  CVV*
+                  {t("CVV")}*
                 </label>
                 <input
                   type="number"
@@ -448,21 +448,21 @@ const CardDetails = ({ summaryFixed }) => {
               summaryFixed ? "xl:sticky top-2 right-10" : "static"
             }`}
           >
-            <p className="font-semibold text-xl">Order Summary</p>
+            <p className="font-semibold text-xl">{t("Order Summary")}</p>
             <hr className="w-full" />
             <p className="w-full flex items-center justify-between text-base">
-              <span className="font-normal">Subtotal</span>
+              <span className="font-normal">{t("Subtotal")}</span>
               <span className="ml-auto font-semibold text-base">
                 ${parseFloat(grandTotal).toFixed(2)}{" "}
               </span>{" "}
             </p>
             <p className="w-full flex items-center justify-between text-base">
-              <span className="font-normal">Freight</span>
+              <span className="font-normal">{t("Freight")}</span>
               <span className="ml-auto font-semibold text-base">$10.00</span>
             </p>
             <hr className="w-full" />
             <p className="w-full flex items-center justify-between text-2xl font-bold">
-              <span>Grand Total</span>
+              <span>{t("Grand Total")}</span>
               <span className="ml-auto">
                 ${parseFloat(grandTotal).toFixed(2)}
               </span>{" "}
@@ -474,7 +474,9 @@ const CardDetails = ({ summaryFixed }) => {
               className="font-semibold bg-PRIMARY text-white hover:bg-white hover:text-PRIMARY border border-PRIMARY duration-300 ease-in-out w-full p-3 text-center"
               disabled={confirmOrderLoading || loading}
             >
-              {confirmOrderLoading ? "Submitting Order..." : "Confirm Order"}
+              {confirmOrderLoading
+                ? t("Submitting Order").concat("...")
+                : t("Confirm Order")}
             </button>
           </div>
         </Form>

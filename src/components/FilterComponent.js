@@ -1,6 +1,7 @@
 import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { useSelector } from "react-redux";
 
@@ -17,6 +18,9 @@ const FilterComponent = ({
   const [isOpenPrice, setIsOpenPrice] = useState(false);
 
   const { subCategories, loading } = useSelector((state) => state.getContent);
+
+  const { t } = useTranslation();
+
   useEffect(() => {
     const category = subCategories[title];
     setShownCategories(category?.subcategories);
@@ -31,7 +35,7 @@ const FilterComponent = ({
   return (
     <div className="w-full border border-BORDERGRAY bg-white">
       <p className="text-xl font-semibold text-left border-b border-BORDERGRAY py-4 px-3">
-        Filters
+        {t("Filters")}
       </p>
       {/* categories */}
       {!loading && categories.includes(title) && (
@@ -87,7 +91,7 @@ const FilterComponent = ({
           className="font-medium text-lg flex justify-between items-center w-full"
           onClick={() => setIsOpenPrice(!isOpenPrice)}
         >
-          <span>Price</span>
+          <span>{t("Price")}</span>
           {isOpenPrice ? (
             <FiChevronUp className="h-6 w-6" />
           ) : (
@@ -107,7 +111,7 @@ const FilterComponent = ({
                 className="h-5 w-5 cursor-pointer"
                 defaultChecked
               />
-              <span>Any</span>
+              <span>{t("Any")}</span>
             </li>
             <li
               className={`text-BLACK font-semibold flex items-center gap-x-2`}
@@ -119,7 +123,7 @@ const FilterComponent = ({
                 value={activePrice}
                 className="h-5 w-5 cursor-pointer"
               />
-              <span>Below $0.70</span>
+              <span>{t("Below")} $0.70</span>
             </li>
             <li
               className={`text-BLACK font-semibold flex items-center gap-x-2`}
@@ -167,7 +171,7 @@ const FilterComponent = ({
                 value={activePrice}
                 className="h-5 w-5 cursor-pointer"
               />
-              <span>Low to high</span>
+              <span>{t("Low to high")}</span>
             </li>
             <li
               className={`text-BLACK font-semibold flex items-center gap-x-2`}
@@ -179,7 +183,7 @@ const FilterComponent = ({
                 value={activePrice}
                 className="h-5 w-5 cursor-pointer"
               />
-              <span>High to low</span>
+              <span>{t("High to low")}</span>
             </li>
           </ul>
         )}

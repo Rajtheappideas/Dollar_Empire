@@ -8,6 +8,7 @@ import { useRef } from "react";
 import { useEffect } from "react";
 import { handleGetAddresses } from "../../redux/GetContentSlice";
 import { toast } from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 const Address = () => {
   const [showEditAddres, setShowEditAddres] = useState(false);
@@ -18,6 +19,8 @@ const Address = () => {
   const { addressList, loading } = useSelector((state) => state.getContent);
 
   const { token } = useSelector((state) => state.Auth);
+
+  const { t } = useTranslation();
 
   const dispatch = useDispatch();
 
@@ -51,7 +54,7 @@ const Address = () => {
     <>
       {loading ? (
         <p className="font-semibold md:text-3xl text-lg text-center w-full">
-          Loading...
+          {t("loading")}...
         </p>
       ) : showEditAddres ? (
         <EditAddress
@@ -88,7 +91,7 @@ const Address = () => {
                       setAddressId(address?._id);
                     }}
                   >
-                    Edit
+                    {t("Edit")}
                   </span>{" "}
                   <button
                     type="button"
@@ -100,8 +103,8 @@ const Address = () => {
                     disabled={loading || deleteLoading}
                   >
                     {deleteLoading && address?._id === addressId
-                      ? "Deleting..."
-                      : "Delete"}
+                      ? t("Deleting").concat("...")
+                      : t("Delete")}
                   </button>
                 </p>
               </div>
@@ -111,7 +114,7 @@ const Address = () => {
             className="border cursor-pointer border-BORDERGRAY rounded-md text-BLACK gap-y-2 text-center md:w-2/5 w-full min-h-[13rem] flex flex-col items-center justify-center"
           >
             <AiOutlinePlusCircle className="h-10 w-10 text-TEXTGRAY block" />
-            <p className="font-semibold text-TEXTGRAY">Add new address</p>
+            <p className="font-semibold text-TEXTGRAY">{t("Add new address")}</p>
           </div>
         </div>
       )}

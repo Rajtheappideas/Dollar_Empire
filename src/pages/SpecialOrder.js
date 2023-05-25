@@ -24,12 +24,16 @@ const SpecialOrder = () => {
       <Helmet title={t("special_orders")} />
       {loading ? (
         <div className="text-center h-screen w-screen mx-auto font-semibold flex items-center justify-center md:text-3xl text-xl">
-          Loading...
+          {t("loading")}...
         </div>
       ) : (
         <div className="w-full space-y-5 md:pb-20 pb-10 ">
-          <TItleSection title={"Special orders"} image={bgImg} />
-          <section className="container mx-auto md:space-y-10 space-y-5 w-full">
+          <TItleSection title={specialOrders?.title} image={bgImg} />
+          <section
+            className="container mx-auto md:space-y-5 space-y-3 space_for_div"
+            dangerouslySetInnerHTML={{ __html: specialOrders?.content }}
+          ></section>
+          {/* <section className="container mx-auto md:space-y-10 space-y-5 w-full">
             <p className="text-TEXTGRAY font-normal tracking-normal leading-normal text-center lg:text-base text-sm lg:w-9/12 md:w-10/12 w-11/12 mx-auto">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
               eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
@@ -57,7 +61,7 @@ const SpecialOrder = () => {
                 </Link>
               </p>
             </div>
-          </section>
+          </section> */}
         </div>
       )}{" "}
     </>

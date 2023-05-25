@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { BroadcastChannel } from "broadcast-channel";
-import { toast } from "react-hot-toast";
 
 const initialState = {
   showProductDetailsPopup: false,
@@ -10,7 +9,7 @@ const initialState = {
   singleProductEnlargeImageId: "",
   searchProducts: [],
   searchTerm: "",
-  activeComponentForCart: "Shopping_Cart",
+  activeComponentForCart: "Shopping Cart",
   singleProductId: null,
   perPageItemView: window.localStorage.getItem("persist:globalStates")
     ? JSON.parse(window.localStorage.getItem("persist:globalStates"))
@@ -18,6 +17,9 @@ const initialState = {
     : "128",
   productListingPageLink: "",
   pagination: 0,
+  // visited: window.localStorage.getItem("persist:globalStates")
+  //   ? JSON.parse(window.localStorage.getItem("persist:globalStates")).visited
+  //   : 0,
 };
 const logoutChannel = new BroadcastChannel("handleLogout");
 const loginChannel = new BroadcastChannel("handleSuccess");

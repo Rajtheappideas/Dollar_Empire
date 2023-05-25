@@ -21,12 +21,16 @@ const AboutUs = () => {
       <Helmet title={t("about_us")} />
       {loading ? (
         <div className="text-center h-screen w-screen mx-auto font-semibold flex items-center justify-center md:text-3xl text-xl">
-          Loading...
+          {t("loading")}...
         </div>
       ) : (
         <div className="w-full space-y-5 md:pb-20 pb-10">
-          <TItleSection title={"About Us"} image={bgImg} />
-          <section className="container mx-auto md:space-y-20 space-y-10 space_for_div">
+          <TItleSection title={aboutUs?.title} image={bgImg} />
+          <section
+            dangerouslySetInnerHTML={{ __html: aboutUs?.content }}
+            className="container mx-auto md:space-y-5 space-y-3 space_for_div"
+          ></section>
+          {/* <section className="container mx-auto md:space-y-20 space-y-10 space_for_div">
             <p className="text-TEXTGRAY font-normal tracking-normal leading-normal text-center lg:text-base text-sm lg:w-9/12 md:w-10/12 w-11/12 mx-auto">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
               eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
@@ -35,8 +39,8 @@ const AboutUs = () => {
               reprehenderit in voluptate velit esse cillum dolore eu fugiat
               nulla pariatur. Excepteur sint occaecat cupidatat non proiden.
             </p>
-            {/* first div */}
-            <div className="w-full grid lg:grid-cols-2 place-items-start items-center gap-10">
+            // {/* first div */}
+          {/* <div className="w-full grid lg:grid-cols-2 place-items-start items-center gap-10">
               <img
                 src={require("../assets/images/aboutus-1.png")}
                 alt=""
@@ -68,7 +72,7 @@ const AboutUs = () => {
                 </p>
               </div>
             </div>
-            {/* second div */}
+            second div
             <div className="w-full grid lg:grid-cols-2 place-items-start items-center gap-10">
               <div className="space-y-5">
                 <p className="font-bold md:text-3xl text-xl text-left uppercase">
@@ -101,7 +105,7 @@ const AboutUs = () => {
                 className="w-full h-fit object-contain object-center"
               />
             </div>
-          </section>
+          </section> */}
         </div>
       )}
     </>

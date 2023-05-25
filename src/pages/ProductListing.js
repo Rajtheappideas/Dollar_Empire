@@ -318,9 +318,19 @@ const ProductListing = () => {
           {/* title */}
           <h1 className="block font-semibold md:text-4xl text-2xl text-left capitalize">
             {title.includes("search")
-              ? `Search for: ${searchTerm}`
+              ? `${t("Search for")}: ${searchTerm}`
               : /\d/.test(title)
-              ? `By Price: ${title}`
+              ? `${t("By Price")}: ${title}`
+              : title.includes("new-arrivals")
+              ? t("new_arrivals")
+              : title.includes("top-sellers")
+              ? t("top_sellers")
+              : title.includes("all-products")
+              ? t("All Procuts")
+              : title.includes("low-to-high")
+              ? t("Low to high")
+              : title.includes("high-to-low")
+              ? t("High to low")
               : title}
           </h1>
           <div className="w-full flex items-start justify-start gap-5 lg:flex-row flex-col">
@@ -392,20 +402,20 @@ const ProductListing = () => {
                     </div>
                     <p className="font-medium text-base">
                       {products.length > 0 ? pageNumber + 1 : 0} of {pageCount}{" "}
-                      ({products.length} items)
+                      ({products.length} {t("items")})
                     </p>
                   </div>
                   {/* filter dropdown */}
                   <div className="flex  md:flex-nowrap flex-wrap items-center xl:gap-x-4 gap-2">
-                    <span className="font-medium">Sort:</span>
+                    <span className="font-medium">{t("Sort")}:</span>
                     <select
                       onChange={(e) => setFilterValue(e.target.value)}
                       className="bg-gray-200 outline-none text-black w-28 p-2 rounded-md  font-medium"
                     >
-                      <option value="newest">Newest</option>
-                      <option value="oldest">Oldest</option>
+                      <option value="newest">{t("Newest")}</option>
+                      <option value="oldest">{t("Oldest")}</option>
                     </select>
-                    <span className="font-medium">Show:</span>
+                    <span className="font-medium">{t("Show")}:</span>
                     <select
                       onChange={(e) =>
                         dispatch(handleChangePagePerView(e.target.value))
@@ -425,7 +435,7 @@ const ProductListing = () => {
                   className="xl:w-[20%] w-auto text-sm px-1 bg-PRIMARY text-white text-center xl:h-14 h-12 ml-auto"
                 >
                   <BsPlus className="w-6 h-6 inline-block" />
-                  Add Selected items to{" "}
+                  {t("Add Selected items to")}{" "}
                   <AiOutlineShoppingCart className="h-5 w-5 inline-block" />
                 </button>
               </div>
@@ -465,7 +475,7 @@ const ProductListing = () => {
                   ))
                 ) : (
                   <p className="col-span-full mx-auto md:text-3xl text-xl font-semibold p-3">
-                    {message}
+                    {t(message)}
                   </p>
                 )}
               </div>
@@ -500,7 +510,7 @@ const ProductListing = () => {
                   />
                   {/* filter dropdown */}
                   <div className="flex items-center gap-x-4">
-                    <span className="font-medium mr-1">Show:</span>
+                    <span className="font-medium mr-1">{t("Show")}:</span>
                     <select
                       onChange={(e) =>
                         dispatch(handleChangePagePerView(e.target.value))
@@ -520,7 +530,7 @@ const ProductListing = () => {
                   className="xl:w-[20%] w-auto text-sm px-1 bg-PRIMARY text-white text-center xl:h-14 h-12 ml-auto"
                 >
                   <BsPlus className="w-6 h-6 inline-block" />
-                  Add Selected items to{" "}
+                  {t("Add Selected items to")}{" "}
                   <AiOutlineShoppingCart className="h-5 w-5 inline-block" />
                 </button>
               </div>

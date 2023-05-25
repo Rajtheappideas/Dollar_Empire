@@ -115,7 +115,7 @@ const ContactUs = () => {
   return (
     <>
       <Helmet title={t("contact_us")} />
-      <TItleSection title={"Contact us"} image={bgImg} />
+      <TItleSection title={t("contact_us")} image={bgImg} />
       <section className="xl:w-2/3 lg:w-4/5 w-full lg:px-0 px-3 mx-auto flex md:flex-row flex-col items-start justify-center gap-5 py-5">
         {/* left side div */}
         <div className="md:w-1/3 w-full space-y-5 rounded-lg border border-gray-200">
@@ -131,7 +131,9 @@ const ContactUs = () => {
                 <MdLocationOn className="h-5 w-5 text-PRIMARY inline-block" />
               </p>
               <p>
-                <span className="font-semibold inline-block">Address:</span>
+                <span className="font-semibold inline-block">
+                  {t("Address")}:
+                </span>
                 <span className="font-semibold inline-block">
                   4423 E. Bandini Blvd. Los Angeles, CA 90058
                 </span>
@@ -143,7 +145,9 @@ const ContactUs = () => {
                 <MdCall className="h-5 w-5 text-PRIMARY inline-block" />
               </p>
               <p>
-                <span className="font-semibold block">Phone number:</span>
+                <span className="font-semibold block">
+                  {t("Phone number")}:
+                </span>
                 <a href="tel:323-268-8999" className="font-semibold block">
                   323-268-8999
                 </a>
@@ -155,7 +159,7 @@ const ContactUs = () => {
                 <GrMail className="h-5 w-5 text-PRIMARY block" />
               </p>
               <p>
-                <span className="font-semibold block">Email:</span>
+                <span className="font-semibold block">{t("Email")}:</span>
                 <a
                   href="mailto:sales@dollarempirellc.com"
                   className="font-semibold block text-PRIMARY"
@@ -170,7 +174,7 @@ const ContactUs = () => {
         {/* right side div */}
         <div className="md:w-2/3 w-full p-4 rounded-lg border border-BORDERGRAY space-y-4">
           <h1 className="font-semibold text-PRIMARY md:text-3xl text-xl text-left">
-            Get In Tocuh
+            {t("Get In Tocuh")}
           </h1>
           <hr />
           <FormikProvider value={formik}>
@@ -183,12 +187,12 @@ const ContactUs = () => {
               <div className="flex items-start w-full gap-x-3">
                 <div className="w-1/2">
                   <label className="text-black font-medium block text-left text-lg">
-                    First name*
+                    {t("First name")}*
                   </label>
                   <input
                     type="text"
                     className="bg-LIGHTGRAY outline-none w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                    placeholder="First name"
+                    placeholder={t("First name")}
                     name="fname"
                     {...getFieldProps("fname")}
                   />
@@ -196,12 +200,12 @@ const ContactUs = () => {
                 </div>
                 <div className="w-1/2">
                   <label className="text-black font-medium block text-left text-lg">
-                    Last name*
+                    {t("Last name")}*
                   </label>
                   <input
                     type="text"
                     className="bg-LIGHTGRAY outline-none w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                    placeholder="Last name"
+                    placeholder={t("Last name")}
                     name="lname"
                     {...getFieldProps("lname")}
                   />
@@ -212,7 +216,7 @@ const ContactUs = () => {
               <div className="flex items-start w-full lg:flex-row flex-col gap-3">
                 <div className="lg:w-1/2 w-full">
                   <label className="text-black font-medium block text-left text-lg">
-                    Email address*
+                    {t("Email address")}*
                   </label>
                   <input
                     type="email"
@@ -226,7 +230,7 @@ const ContactUs = () => {
                 <div className="lg:w-1/2 w-full">
                   <>
                     <label className="text-black font-medium block text-left text-lg">
-                      Phone*
+                      {t("Phone")}*
                     </label>
                     <PhoneInput
                       country={"us"}
@@ -257,7 +261,7 @@ const ContactUs = () => {
               </div>
               {/* message */}
               <label className="text-black font-medium block text-left text-lg">
-                Comments*
+                {t("Comments")}*
               </label>
               <textarea
                 className="bg-LIGHTGRAY outline-none w-full text-black placeholder:text-gray-400 rounded-md p-3 min-h-[8rem] max-h-[10rem]"
@@ -270,7 +274,7 @@ const ContactUs = () => {
                 name="comments"
                 component={TextError}
               />
-              <p>Please check the box below to proceed.</p>
+              <p>{t("Please check the box below to proceed")}.</p>
               <div>
                 <ReCAPTCHA
                   sitekey={process.env.REACT_APP_RECAPTCHA_KEY}
@@ -288,7 +292,7 @@ const ContactUs = () => {
                 className="bg-PRIMARY active:translate-y-2 hover:text-PRIMARY hover:bg-white border border-PRIMARY duration-500 p-3 text-white text-center w-40 rounded-md uppercase font-bold"
                 disabled={loading}
               >
-                {loading ? "Submitting..." : "Send"}
+                {loading ? t("Submitting").concat("...") : t("Send")}
               </button>
             </Form>
           </FormikProvider>

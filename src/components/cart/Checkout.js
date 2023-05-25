@@ -9,11 +9,14 @@ import {
   handleChangeShippingAddressId,
   handleChangeShippingMethod,
 } from "../../redux/OrderSlice";
+import { useTranslation } from "react-i18next";
 
 const Checkout = ({ summaryFixed }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [addressId, setAddressId] = useState(null);
   const [showAddnewaddressPopup, setShowAddnewaddressPopup] = useState(false);
+
+  const { t } = useTranslation();
 
   const { grandTotal } = useSelector((state) => state.cart);
   const { shippingAddressId, shipphingMethod } = useSelector(
@@ -35,7 +38,7 @@ const Checkout = ({ summaryFixed }) => {
     if (shippingAddressId === "") {
       return toast.error("Please select the shipping address.");
     }
-    dispatch(handleChangeActiveComponent("Payment_Info"));
+    dispatch(handleChangeActiveComponent("Payment Info"));
   };
   return (
     <div className="w-full flex xl:flex-row flex-col items-start justify-start gap-4 pb-10">
@@ -56,7 +59,7 @@ const Checkout = ({ summaryFixed }) => {
       {/* left side div */}
       <div className="xl:w-9/12 w-full space-y-3">
         <p className="bg-PRIMARY text-white p-4 w-full text-left font-semibold tracking-wide">
-          Shipping Method
+          {t("Shipping Method")}
         </p>
         <div className="w-full border border-gray-300 rounded-md md:p-5 p-2">
           <div className="w-full flex justify-start items-center gap-x-5 bg-white">
@@ -70,7 +73,7 @@ const Checkout = ({ summaryFixed }) => {
               checked={shipphingMethod === "pickup"}
             />
             <p>
-              <span className="font-semibold text-xl block">Pickup</span>
+              <span className="font-semibold text-xl block">{t("Pickup")}</span>
               <span className="font-normal text-base block">
                 Lorem Ipsum is simply dummy text of the printing and typesetting
                 industry.
@@ -90,7 +93,9 @@ const Checkout = ({ summaryFixed }) => {
               checked={shipphingMethod === "freight"}
             />
             <p>
-              <span className="font-semibold text-xl block">Freight</span>
+              <span className="font-semibold text-xl block">
+                {t("Freight")}
+              </span>
               <span className="font-normal text-base block">
                 Lorem Ipsum is simply dummy text of the printing and typesetting
                 industry.
@@ -116,11 +121,11 @@ const Checkout = ({ summaryFixed }) => {
         </ul>
         <div className="pt-12">
           <p className="bg-PRIMARY text-white p-4 w-full text-left font-semibold tracking-wide">
-            Shipping Address
+            {t("Shipping Address")}
           </p>
         </div>
         {loading ? (
-          <p>Loading...</p>
+          <p>{t("loading")}...</p>
         ) : (
           addressList.length > 0 &&
           addressList !== undefined &&
@@ -150,7 +155,7 @@ const Checkout = ({ summaryFixed }) => {
                 }}
                 className="text-PRIMARY inline-block"
               >
-                Edit
+                {t("Edit")}
               </p>
             </div>
           ))
@@ -164,7 +169,7 @@ const Checkout = ({ summaryFixed }) => {
             window.scrollTo({ top: 0, behavior: "smooth" });
           }}
         >
-          Add New Address
+          {t("Add New Address")}
         </button>
       </div>
       {/* summary */}
@@ -173,23 +178,23 @@ const Checkout = ({ summaryFixed }) => {
           summaryFixed ? "xl:sticky top-2 right-10" : "static"
         } xl:w-3/12 lg:w-1/3 md:w-1/2 w-full space-y-3 bg-BACKGROUNDGRAY text-BLACK p-3 border border-gray-300 ml-auto`}
       >
-        <p className="font-semibold text-xl">Order Summary</p>
+        <p className="font-semibold text-xl">{t("Order Summary")}</p>
         <hr className="w-full" />
         <p className="w-full flex items-center justify-between text-base">
-          <span className="font-normal">Subtotal</span>
+          <span className="font-normal">{t("Subtotal")}</span>
           <span className="ml-auto font-semibold text-base">
             ${parseFloat(grandTotal).toFixed(2)}{" "}
           </span>{" "}
         </p>
         <p className="w-full flex items-center justify-between text-base">
-          <span className="font-normal">Freight</span>
+          <span className="font-normal">{t("Freight")}</span>
           <span className="ml-auto font-semibold text-base">
             {shipphingMethod === "pickup" ? "$ 0.00" : "$ 10.00"}
           </span>
         </p>
         <hr className="w-full" />
         <p className="w-full flex items-center justify-between text-2xl font-bold">
-          <span>Grand Total</span>
+          <span>{t("Grand Total")}</span>
           <span className="ml-auto">${parseFloat(grandTotal).toFixed(2)}</span>
         </p>
         <hr className="w-full" />
@@ -199,7 +204,7 @@ const Checkout = ({ summaryFixed }) => {
           className="font-semibold bg-PRIMARY text-white hover:bg-white hover:text-PRIMARY border border-PRIMARY duration-300 ease-in-out w-full p-3 text-center"
           onClick={() => handlechangeActiveComponent()}
         >
-          Continue
+          {t("Continue")}
         </button>
       </div>
     </div>

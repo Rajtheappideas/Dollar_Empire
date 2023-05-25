@@ -23,6 +23,7 @@
 25/5
 1. solve issue in favourite entered of negative vlaues.- done
 2. working on search products functionality.-done.
-3.send to back on page in produc lising page. -pending
+3.send to back on page in produc lising page. -done
+4. changes static contents in both language- pending
 
 ssh root@179.61.246.13

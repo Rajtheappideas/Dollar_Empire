@@ -23,12 +23,16 @@ const ShippingAndFreight = () => {
       <Helmet title={t("shipping_&_freight")} />
       {loading ? (
         <div className="text-center h-screen w-screen mx-auto font-semibold flex items-center justify-center md:text-3xl text-xl">
-          Loading...
+          {t("loading")}...
         </div>
       ) : (
         <div className="w-full space-y-5 md:pb-20 pb-10 text-[#272727]">
-          <TItleSection title={"Shipping & freight"} image={bgImg} />
-          <section className="space_for_div container mx-auto space-y-5 w-full text-justify font-normal tracking-normal leading-normal text-lg">
+          <TItleSection title={shippingAndFreight?.title} image={bgImg} />
+          <section
+            dangerouslySetInnerHTML={{ __html: shippingAndFreight?.content }}
+            className="container mx-auto md:space-y-5 space-y-3 space_for_div"
+          ></section>
+          {/* <section className="space_for_div container mx-auto space-y-5 w-full text-justify font-normal tracking-normal leading-normal text-lg">
             <p>Lorem Ipsum is simply dumy text printing.</p>
             <p>
               Lorem Ipsum is simply dummy text of the printing and typesetting
@@ -120,7 +124,7 @@ const ShippingAndFreight = () => {
               survived not only five centuries, but also the leap into
               electronic .
             </p>
-          </section>
+          </section> */}
         </div>
       )}
     </>

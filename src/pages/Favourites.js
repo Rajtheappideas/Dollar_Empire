@@ -32,7 +32,7 @@ const Favourites = () => {
       <section className="bg-BACKGROUNDGRAY w-full lg:pb-20 pb-10">
         <div className="container mx-auto space_for_div space-y-5 w-full bg-BACKGROUNDGRAY lg:pb-20 pb-10">
           <h1 className="block font-semibold md:text-4xl text-2xl text-left py-1">
-            Your Favourites
+            {t("Your Favourites")}
           </h1>
 
           {/* table */}
@@ -41,18 +41,18 @@ const Favourites = () => {
               <thead className="bg-PRIMARY text-white p-2 w-full">
                 <tr>
                   <th className="w-40 lg:p-3 p-2 font-semibold text-left text-base">
-                    Image
+                    {t("Image")}
                   </th>
                   <th className="md:min-w-[20rem] min-w-[10rem] lg:p-3 p-2 font-semibold text-left text-base">
-                    Product
+                    {t("Product")}
                   </th>
                   <th className="xl:min-w-[5rem] md:min-w-[8rem] min-w-[5rem] lg:p-3 p-2 font-semibold text-left text-base">
-                    Item no.
+                    {t("Item no")}.
                   </th>
                   <th className="lg:p-3 p-2 font-semibold text-center text-base">
-                    Packing
+                    {t("Packing")}
                   </th>
-                  <th className="text-left min-w-[5rem]">Remove</th>
+                  <th className="text-left min-w-[5rem]">{t("Remove")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -62,27 +62,27 @@ const Favourites = () => {
                       className="font-semibold md:text-3xl text-xl text-center mx-auto p-3 w-full"
                       colSpan="100%"
                     >
-                    <Skeleton
-                      className="w-full md:h-40 h-28 mb-2"
-                      baseColor="lightgray"
-                      highlightColor="white"
-                      borderRadius="10px"
-                      duration={0.8}
-                    />
-                    <Skeleton
-                      className="w-full md:h-40 h-28 mb-2"
-                      baseColor="lightgray"
-                      highlightColor="white"
-                      borderRadius="10px"
-                      duration={0.8}
-                    />
-                    <Skeleton
-                      className="w-full md:h-40 h-28"
-                      baseColor="lightgray"
-                      highlightColor="white"
-                      borderRadius="10px"
-                      duration={0.8}
-                    />
+                      <Skeleton
+                        className="w-full md:h-40 h-28 mb-2"
+                        baseColor="lightgray"
+                        highlightColor="white"
+                        borderRadius="10px"
+                        duration={0.8}
+                      />
+                      <Skeleton
+                        className="w-full md:h-40 h-28 mb-2"
+                        baseColor="lightgray"
+                        highlightColor="white"
+                        borderRadius="10px"
+                        duration={0.8}
+                      />
+                      <Skeleton
+                        className="w-full md:h-40 h-28"
+                        baseColor="lightgray"
+                        highlightColor="white"
+                        borderRadius="10px"
+                        duration={0.8}
+                      />
                     </td>
                   </tr>
                 ) : favourites.length === 0 ? (
@@ -91,7 +91,7 @@ const Favourites = () => {
                       className="font-semibold md:text-3xl text-xl text-center mx-auto p-3 w-full"
                       colSpan="100%"
                     >
-                      No Favourites here.
+                      {t("No Favourites here")}.
                     </td>
                   </tr>
                 ) : (

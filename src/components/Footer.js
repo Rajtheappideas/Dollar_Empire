@@ -1,15 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { MdLocationOn, MdCall } from "react-icons/md";
 import { GrMail } from "react-icons/gr";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-import { PostUrl } from "../BaseUrl";
+import { GetUrl, PostUrl } from "../BaseUrl";
 import { useTranslation } from "react-i18next";
 
 const Footer = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [links, setLinks] = useState([]);
+  const [linkLoading, setLinkLoading] = useState(false);
 
   const toTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
@@ -36,6 +38,22 @@ const Footer = () => {
       });
   };
 
+  useEffect(() => {
+    setLinkLoading(true);
+    GetUrl("footer-links")
+      .then((res) => {
+        if (res.data?.status === "success") {
+          setLinks(res.data.pages);
+        } else {
+          toast.error(res.data.message);
+        }
+        setLinkLoading(false);
+      })
+      .catch((err) => {
+        toast.error(err.response.data.message);
+        setLinkLoading(false);
+      });
+  }, []);
   return (
     <>
       <div className="grid xl:grid-cols-4 md:grid-cols-2 text-lg font-medium place-items-start items-start bg-LIGHTGRAY xl:px-20 md:px-10 px-5 md:pt-10 md:pb-20 py-5 md:gap-10 gap-5">
@@ -70,18 +88,33 @@ const Footer = () => {
         <div className="space-y-3  w-full">
           <Link
             className="block hover:pl-2 hover:border-l-4 hover:border-PRIMARY transition-all hover:text-PRIMARY duration-300"
-            to="/about-us"
-            onClick={toTop}
-          >
-            {t("about_us")}
-          </Link>
-          <Link
-            className="block hover:pl-2 hover:border-l-4 hover:border-PRIMARY transition-all hover:text-PRIMARY duration-300"
             to="/contact-us"
             onClick={toTop}
           >
             {t("contact_us")}
           </Link>
+          {linkLoading
+            ? t("loading").concat("...")
+            : !linkLoading &&
+              links.length > 0 &&
+              links.map((link) => (
+                <Link
+                  key={link?.title}
+                  className="block hover:pl-2 hover:border-l-4 hover:border-PRIMARY transition-all hover:text-PRIMARY duration-300"
+                  to={`/${link?.url}`}
+                  onClick={toTop}
+                >
+                  {link?.title}
+                </Link>
+              ))}
+          {/* <Link
+            className="block hover:pl-2 hover:border-l-4 hover:border-PRIMARY transition-all hover:text-PRIMARY duration-300"
+            to="/about-us"
+            onClick={toTop}
+          >
+            {t("about_us")}
+          </Link>
+
           <Link
             className="block hover:pl-2 hover:border-l-4 hover:border-PRIMARY transition-all hover:text-PRIMARY duration-300"
             to="/shipping-&-freight"
@@ -102,7 +135,7 @@ const Footer = () => {
             onClick={toTop}
           >
             {t("privacy_notice")}
-          </Link>
+          </Link> */}
         </div>
         {/* subscibe */}
         <div className="space-y-3  w-full">
@@ -111,7 +144,7 @@ const Footer = () => {
             <input
               type="email"
               className="pl-3 h-10 w-2/3 outline-none text-black font-normal"
-              placeholder="Email Address"
+              placeholder={t("Email Address")}
               name="email"
               required
               value={email}
@@ -123,7 +156,7 @@ const Footer = () => {
               className="bg-black text-white hover:bg-PRIMARY duration-300 ease-linear h-10 px-1 w-auto"
               disabled={loading}
             >
-              {loading ? "Submitting..." : t("subscribe")}
+              {loading ? t("Submitting").concat("...") : t("subscribe")}
             </button>
           </div>
         </div>

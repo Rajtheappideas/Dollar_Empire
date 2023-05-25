@@ -4,7 +4,7 @@ import {
   isRejectedWithValue,
 } from "@reduxjs/toolkit";
 import { toast } from "react-hot-toast";
-import { PostUrl } from "../BaseUrl";
+import { GetUrl, PostUrl } from "../BaseUrl";
 import i18next from "i18next";
 
 export const handleLoginUser = createAsyncThunk(
@@ -69,6 +69,25 @@ export const handleRegisterUser = createAsyncThunk(
       .then((res) => {
         window.localStorage.setItem("user", JSON.stringify(res.data.user));
         window.localStorage.setItem("token", JSON.stringify(res.data.token));
+        return res.data;
+      })
+      .catch((err) => {
+        return err.response.data;
+      });
+    return response;
+  }
+);
+
+export const handleGetVisitCount = createAsyncThunk(
+  "auth/handleGetVisitCount",
+  async ({ token }) => {
+    toast.dismiss();
+    const response = await GetUrl("visit-count", {
+      headers: {
+        Authorization: token,
+      },
+    })
+      .then((res) => {
         return res.data;
       })
       .catch((err) => {
@@ -160,6 +179,26 @@ const AuthSlice = createSlice({
       state.error = error;
       state.user = null;
       state.token = null;
+    });
+    // visit count
+    builder.addCase(handleGetVisitCount.pending, (state) => {
+      state.loading = true;
+      state.success = false;
+      state.error = null;
+    });
+    builder.addCase(handleGetVisitCount.fulfilled, (state, { payload }) => {
+      state.loading = false;
+      state.success = true;
+      if (payload.status === "fail") {
+        state.error = payload;
+      } else {
+        state.error = null;
+      }
+    });
+    builder.addCase(handleGetVisitCount.rejected, (state, { error }) => {
+      state.loading = false;
+      state.success = false;
+      state.error = error;
     });
   },
 });

@@ -238,12 +238,6 @@ const ProductCard = ({ product, title, selectedView, from }) => {
     }
   };
 
-  // useEffect(() => {
-  //   dispatch(handleChangeEnlargeImageId(""));
-  //   dispatch(handleChangeEnlargeImageFrom(""));
-  //   dispatch(handleChangeSingleProductEnlargeImageId(""));
-  // }, []);
-
   useEffect(() => {
     if (cart !== null && cartItems.length > 0) {
       const findItemInCart = cartItems.find(
@@ -260,7 +254,7 @@ const ProductCard = ({ product, title, selectedView, from }) => {
           {/* top seller label */}
           {title === "top-sellers" && (
             <p className="bg-PRIMARY text-white h-8 w-40 leading-8 align-middle text-center text-sm rounded-tl-lg absolute z-20 top-0 left-0">
-              Top Seller
+              {t("Top Seller")}
             </p>
           )}
 
@@ -311,7 +305,7 @@ const ProductCard = ({ product, title, selectedView, from }) => {
             {user === null ? (
               <div className="space-y-1 font-medium text-black w-full">
                 <p className="text-PRIMARY font-semibold">
-                  ITEM NO.{product?.number}
+                  {t("ITEM NO")}.{product?.number}
                 </p>
                 <p
                   className="font-bold tracking-normal py-1"
@@ -328,7 +322,7 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                       type="button"
                       className="bg-DARKRED text-white text-center w-full p-2 rounded-lg"
                     >
-                      Login to order
+                      {t("login_to_order")}
                     </button>
                   </Link>
                 </p>
@@ -336,7 +330,7 @@ const ProductCard = ({ product, title, selectedView, from }) => {
             ) : (
               <ul className="space-y-1 font-medium text-black w-full">
                 <li className="text-PRIMARY font-semibold">
-                  ITEM NO.{product?.number}
+                  {t("ITEM NO")}.{product?.number}
                 </li>
                 <li
                   className="font-bold tracking-normal pt-1"
@@ -351,10 +345,10 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                   {product?.package}
                 </li>
                 <li className="text-BLACK md:text-sm text-base">
-                  PK volume : {product?.PKVolume} cu ft{" "}
+                  PK {t("volume")} : {product?.PKVolume} cu ft{" "}
                 </li>
                 <li className="text-BLACK md:text-sm text-base">
-                  CTN volume : {product?.CTNVolume} cu ft{" "}
+                  CTN {t("volume")} : {product?.CTNVolume} cu ft{" "}
                 </li>
                 <li className="text-BLACK md:text-sm text-base">
                   Pk wt : {product?.PKWeight} Lbs{" "}
@@ -561,10 +555,10 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                     }}
                   >
                     {loading && selectedProductId === product?._id ? (
-                      "Adding..."
+                      t("Adding").concat("...")
                     ) : findInCart !== null &&
                       product?._id === findInCart?.product?._id ? (
-                      "Added"
+                      t("Added")
                     ) : (
                       <>
                         {t("add_to_cart")}
@@ -869,14 +863,14 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                     disabled={loading}
                   >
                     {loading && selectedProductId === product?._id ? (
-                      "Adding..."
+                      t("Adding").concat("...")
                     ) : findInCart !== null &&
                       product?._id === findInCart?.product?._id ? (
-                      "Added"
+                      t("Added")
                     ) : (
                       <>
                         {t("add_to_cart")}
-                        <AiOutlineShoppingCart className="w-6 h-6 ml-2 inline-block" />
+                        <AiOutlineShoppingCart className="w-6 h-6 ml-1 inline-block" />
                       </>
                     )}
                   </button>
