@@ -114,6 +114,7 @@ const Footer = () => {
               placeholder="Email Address"
               name="email"
               required
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
             <button
@@ -122,7 +123,7 @@ const Footer = () => {
               className="bg-black text-white hover:bg-PRIMARY duration-300 ease-linear h-10 px-1 w-auto"
               disabled={loading}
             >
-              {loading ? "..." : t("subscribe")}
+              {loading ? "Submitting..." : t("subscribe")}
             </button>
           </div>
         </div>

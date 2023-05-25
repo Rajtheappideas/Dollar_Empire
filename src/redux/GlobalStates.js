@@ -1,8 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { BroadcastChannel } from "broadcast-channel";
+import { toast } from "react-hot-toast";
 
 const initialState = {
   showProductDetailsPopup: false,
+  showEnlargeImage: false,
+  activeEnlargeImageId: "",
+  activeEnlargeImageFrom: "",
+  singleProductEnlargeImageId: "",
+  searchProducts: [],
+  searchTerm: "",
   activeComponentForCart: "Shopping_Cart",
   singleProductId: null,
   perPageItemView: window.localStorage.getItem("persist:globalStates")
@@ -64,6 +71,27 @@ const GlobalStates = createSlice({
       state.productListingPageLink = payload?.link;
       state.pagination = payload?.pagination;
     },
+    showEnlargeImagePopup: (state) => {
+      state.showEnlargeImage = true;
+    },
+    closeEnlargeImagePopup: (state) => {
+      state.showEnlargeImage = false;
+    },
+    handleChangeEnlargeImageId: (state, { payload }) => {
+      state.activeEnlargeImageId = payload;
+    },
+    handleChangeEnlargeImageFrom: (state, { payload }) => {
+      state.activeEnlargeImageFrom = payload;
+    },
+    handleChangeSingleProductEnlargeImageId: (state, { payload }) => {
+      state.singleProductEnlargeImageId = payload;
+    },
+    handleChangeSearchProducts: (state, { payload }) => {
+      state.searchProducts = payload;
+    },
+    handleChangeSearchTerm: (state, { payload }) => {
+      state.searchTerm = payload;
+    },
   },
 });
 
@@ -78,6 +106,13 @@ export const {
   handleChangeProductListingPageLink,
   handleSetSingelProductId,
   handleChangePagePerView,
+  showEnlargeImagePopup,
+  closeEnlargeImagePopup,
+  handleChangeEnlargeImageId,
+  handleChangeEnlargeImageFrom,
+  handleChangeSingleProductEnlargeImageId,
+  handleChangeSearchProducts,
+  handleChangeSearchTerm,
 } = GlobalStates.actions;
 
 export default GlobalStates.reducer;

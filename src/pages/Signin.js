@@ -10,8 +10,11 @@ import { handleLoginUser } from "../redux/AuthSlice";
 import { useEffect } from "react";
 import { handleSuccess } from "../redux/GlobalStates";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
+import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
 
 const Signin = () => {
+  const [showPassword, setShowPassword] = useState(false);
   const { user, loading } = useSelector((state) => state.Auth);
 
   const navigate = useNavigate();
@@ -45,9 +48,10 @@ const Signin = () => {
       if (response) {
         response.then((res) => {
           if (res.payload.status === "success") {
+            // toast.success("Sign In successfully.", { duration: 3000 });
             dispatch(handleSuccess());
-            toast.success("Sign In successfully.");
             navigate("/");
+            return toast.success("Sign In successfully.", { duration: 3000 });
           } else {
             toast.error(res.payload.message);
           }
@@ -92,17 +96,33 @@ const Signin = () => {
               {...getFieldProps("email")}
             />
             <ErrorMessage name="email" component={TextError} />
-            <label className="text-black font-medium block text-left text-lg">
-              {t("Password")}
-            </label>
-            <input
-              type="password"
-              className="bg-LIGHTGRAY outline-none w-full text-black placeholder:text-gray-400 rounded-md p-3"
-              placeholder={t("Password")}
-              name="password"
-              {...getFieldProps("password")}
-            />
-            <ErrorMessage name="password" component={TextError} />
+            <div className="relative z-10 space-y-2">
+              <label className="text-black font-medium block text-left text-lg">
+                {t("Password")}
+              </label>
+              <input
+                type={showPassword ? "text" : "password"}
+                className="bg-LIGHTGRAY outline-none w-full text-black placeholder:text-gray-400 rounded-md p-3"
+                placeholder={t("Password")}
+                name="password"
+                {...getFieldProps("password")}
+              />
+              {showPassword ? (
+                <BsEyeFill
+                  onClick={() => setShowPassword(!showPassword)}
+                  role="button"
+                  className="absolute top-9 right-3 h-7 w-7"
+                />
+              ) : (
+                <BsEyeSlashFill
+                  onClick={() => setShowPassword(!showPassword)}
+                  role="button"
+                  className="absolute top-9 right-3 h-7 w-7"
+                />
+              )}
+
+              <ErrorMessage name="password" component={TextError} />
+            </div>
             <p>
               <Link
                 to="/forgot-password"

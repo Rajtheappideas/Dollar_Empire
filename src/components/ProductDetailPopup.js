@@ -20,19 +20,19 @@ import { Link } from "react-router-dom";
 import {
   handleGetNewArrivals,
   handleGetProductById,
-} from "../redux/GetContentSlice";
+} from "../redux/ProductSlice";
 import BaseUrl from "../BaseUrl";
 import {
   handleAddProductToFavourites,
   handleRemoveProductToFavourites,
-} from "../redux/FeatureSlice";
+} from "../redux/FavouriteSlice";
 import { toast } from "react-hot-toast";
 import {
   handleAddProductToCart,
-  handleUpdateTotalQuantity,
   handleUpdateTotalQuantityAndAmount,
 } from "../redux/CartSlice";
 import { useTranslation } from "react-i18next";
+import { MagnifyingGlassPlusIcon } from "@heroicons/react/24/outline";
 
 const ProductDetailPopup = ({}) => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
@@ -42,11 +42,13 @@ const ProductDetailPopup = ({}) => {
   const [favouriteLoading, setFavouriteLoading] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [findInCart, setFindInCart] = useState(null);
-  const [productAddLoading, setProductAddLoading] = useState(false);
+  const [addProductToCartLoading, setAddProductToCartLoading] = useState(false);
 
   const { user, token } = useSelector((state) => state.Auth);
   const { singleProductId } = useSelector((state) => state.globalStates);
-  const { singleProduct, loading } = useSelector((state) => state.getContent);
+  const { singleProduct, singleProductLoading } = useSelector(
+    (state) => state.products
+  );
   const { quantity, orderType, cart, cartItems } = useSelector(
     (state) => state.cart
   );
@@ -101,19 +103,26 @@ const ProductDetailPopup = ({}) => {
     }
   };
 
-  const handleAddProduct = (id, title, quantity,amount) => {
+  const handleAddProduct = (id, title, quantity, amount) => {
     toast.dismiss();
-    if (pkitemsQuantity === 0 && ctnItemQuantity === 0) {
+    if (pkitemsQuantity === "" && ctnItemQuantity === "") {
       return toast.error("Please add some quantity!!!");
     } else if (selectedItemType === "pk" && ctnItemQuantity > 0) {
       toast.error("Please enter quantity in PK, you choose PK");
-      setCtnItemQuantity(0);
+      setCtnItemQuantity("");
       return true;
     } else if (selectedItemType === "ctn" && pkitemsQuantity > 0) {
       toast.error("Please enter quantity in CTN, you choose CTN");
-      setpkItemsQuantity(0);
+      setpkItemsQuantity("");
       return true;
+    } else if (
+      !/^\d+$/.test(pkitemsQuantity !== "" ? pkitemsQuantity : ctnItemQuantity)
+    ) {
+      setCtnItemQuantity("");
+      setpkItemsQuantity("");
+      return toast.error("Please enter valid value!!!");
     }
+    setAddProductToCartLoading(true);
     const response = dispatch(
       handleAddProductToCart({
         token,
@@ -129,15 +138,19 @@ const ProductDetailPopup = ({}) => {
           if (res.payload.status === "success") {
             toast.success(`${title} added to cart successfully.`);
             dispatch(handleUpdateTotalQuantityAndAmount({ quantity, amount }));
-            setCtnItemQuantity(0);
-            setpkItemsQuantity(0);
+            setCtnItemQuantity("");
+            setpkItemsQuantity("");
             setSelectedItemType("pk");
             setSelectedProductId(null);
+            setAddProductToCartLoading(false);
+            // dispatch(handleGetNewArrivals({ token }));
+            // dispatch(handleGetTopSellers({ token }));
+            // dispatch(handleGetAllProducts({ token }));
           }
         })
         .catch((err) => {
           toast.error(err.payload.message);
-          console.log(err);
+          setAddProductToCartLoading(false);
         });
     }
   };
@@ -147,19 +160,23 @@ const ProductDetailPopup = ({}) => {
   }, [favouriteLoading]);
 
   useEffect(() => {
+    return () => {
+      AbortControllerRef.current !== null && AbortControllerRef.current.abort();
+    };
+  }, []);
+  useEffect(() => {
     if (cart !== null && cartItems.length > 0) {
       const findItemInCart = cartItems.find(
         (i) => i.product?._id === singleProduct?._id
       );
       setFindInCart(findItemInCart);
     }
-  }, [pkitemsQuantity, ctnItemQuantity, loading]);
-
+  }, [pkitemsQuantity, ctnItemQuantity, singleProductLoading]);
   return (
     <div
-      className={`absolute bg-black/30 z-50 w-full md:min-h-[100rem] min-h-[115rem] inset-0 backdrop-blur-sm`}
+      className={`absolute bg-black/30 z-30 w-full md:min-h-[100rem] min-h-[115rem] inset-0 backdrop-blur-sm`}
     >
-      {loading ? (
+      {singleProductLoading ? (
         <div className="absolute text-center font-semibold md:text-3xl text-xl overflow-hidden top-10 left-1/2 -translate-x-1/2 z-30 bg-white text-black flex items-center justify-center  xl:w-2/3 lg:w-10/12 w-11/12 min-h-screen">
           <AiOutlineClose
             role="button"
@@ -209,7 +226,7 @@ const ProductDetailPopup = ({}) => {
               }}
               className="border border-gray-400 p-3 relative z-0"
             >
-              {loading ? (
+              {singleProductLoading ? (
                 <p>Loading...</p>
               ) : (
                 singleProduct?.images.map((image, i) => (
@@ -218,6 +235,7 @@ const ProductDetailPopup = ({}) => {
                       src={BaseUrl.concat(image)}
                       alt={singleProduct?.title}
                       className="h-fit w-full object-contain object-center"
+                      loading="lazy"
                     />
                   </SwiperSlide>
                 ))
@@ -307,7 +325,17 @@ const ProductDetailPopup = ({}) => {
                     }`}
                     placeholder="24 PC"
                     value={pkitemsQuantity}
-                    onChange={(e) => setpkItemsQuantity(e.target.value)}
+                    onChange={(e) => {
+                      setpkItemsQuantity(e.target.value);
+
+                      if (
+                        !/^\d+$/.test(e.target.value) &&
+                        e.target.value !== ""
+                      ) {
+                        toast.dismiss();
+                        return toast.error("Please enter valid value.");
+                      }
+                    }}
                     disabled={selectedItemType === "ctn"}
                   />
                   <span className="absolute font-semibold top-1/2 -translate-y-1/2 right-2">
@@ -335,7 +363,16 @@ const ProductDetailPopup = ({}) => {
                     }`}
                     placeholder="144 PC"
                     value={ctnItemQuantity}
-                    onChange={(e) => setCtnItemQuantity(e.target.value)}
+                    onChange={(e) => {
+                      setCtnItemQuantity(e.target.value);
+                      if (
+                        !/^\d+$/.test(e.target.value) &&
+                        e.target.value !== ""
+                      ) {
+                        toast.dismiss();
+                        return toast.error("Please enter valid value.");
+                      }
+                    }}
                     disabled={selectedItemType === "pk"}
                   />
                   <span className="absolute font-semibold top-1/2 -translate-y-1/2 right-2">
@@ -366,9 +403,12 @@ const ProductDetailPopup = ({}) => {
                           ? pkitemsQuantity
                           : ctnItemQuantity
                       );
+                      setSelectedProductId(singleProduct?._id);
                     }}
+                    disabled={addProductToCartLoading}
                   >
-                    {loading && selectedProductId === singleProduct?._id ? (
+                    {addProductToCartLoading &&
+                    selectedProductId === singleProduct?._id ? (
                       "Adding..."
                     ) : findInCart !== null &&
                       singleProduct?._id === findInCart?.product?._id ? (
@@ -401,10 +441,10 @@ const ProductDetailPopup = ({}) => {
               </p>
               <hr className="pt-3" />
               {/* <p className="text-2xl font-bold">Discription</p>
-              <p className="text-black leading-normal w-11/12 pb-3">
-                {singleProduct?.description}
-              </p>
-              <hr className="pt-3" /> */}
+               <p className="text-black leading-normal w-11/12 pb-3">
+                 {singleProduct?.description}
+               </p>
+               <hr className="pt-3" /> */}
               <p className="text-2xl font-bold">Specification</p>
               <p className="flex items-center justify-between w-full">
                 <span className="font-normal">PK</span>
@@ -450,13 +490,13 @@ const ProductDetailPopup = ({}) => {
                 <span className="font-semibold">{singleProduct?.category}</span>
               </p>
               {/* <p className="flex items-center justify-between w-full">
-                <span className="font-normal">UPC Code</span>
-                <span className="font-semibold">6973096824116</span>
-              </p>
-              <p className="flex items-center justify-between w-full">
-                <span className="font-normal">Made by</span>
-                <span className="font-semibold">China</span>
-              </p> */}
+                 <span className="font-normal">UPC Code</span>
+                 <span className="font-semibold">6973096824116</span>
+               </p>
+               <p className="flex items-center justify-between w-full">
+                 <span className="font-normal">Made by</span>
+                 <span className="font-semibold">China</span>
+               </p> */}
             </div>
           )}
         </div>

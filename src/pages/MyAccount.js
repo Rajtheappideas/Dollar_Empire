@@ -14,6 +14,7 @@ import {
   handleGetUserProfile,
 } from "../redux/GetContentSlice";
 import { useTranslation } from "react-i18next";
+import { handleGetOrders } from "../redux/OrderSlice";
 
 const MyAccount = () => {
   const [activeComponent, setActiveComponent] = useState("incomplete_orders");
@@ -27,6 +28,7 @@ const MyAccount = () => {
   useEffect(() => {
     dispatch(handleGetAddresses({ token }));
     dispatch(handleGetUserProfile({ token }));
+    dispatch(handleGetOrders({ token }));
   }, []);
   return (
     <>

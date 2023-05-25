@@ -101,16 +101,16 @@ const initialState = {
   orderType: "pk",
   totalQuantity: 0,
   cartItems: [],
-  totalQuantity: window.localStorage.getItem("persist:cart")
-    ? JSON.parse(window.localStorage.getItem("persist:cart")).totalQuantity
-    : 0,
+  // totalQuantity: window.localStorage.getItem("persist:cart")
+  //   ? JSON.parse(window.localStorage.getItem("persist:cart")).totalQuantity
+  //   : 0,
+  totalQuantity: 0,
 };
 
 const CartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    addProductToCart: (state, { payload }) => {},
     calculateTotalQuantity: (state) => {
       state.totalQuantity = state.cartItems.reduce((acc, current) => {
         return acc + current?.quantity;
@@ -122,17 +122,46 @@ const CartSlice = createSlice({
         return total;
       }, 0);
     },
-    handleUpdateTotalQuantityAndAmount: (state, { payload }) => {
-      if (state.totalQuantity === 0) {
+    changeGrandTotal: (state, { payload }) => {
+      const total = state.cartItems.reduce((acc, curr) => {
+        let total = acc + curr?.product?.price * curr?.quantity;
+        return total;
+      }, 0);
+      if (payload === "freight") {
+        state.grandTotal = total + 10;
+      } else {
+        state.grandTotal = total;
+      }
+    },
+    handleChangeAddProduct: (state, { payload }) => {
+      if (state.totalQuantity === 0 && state.grandTotal === 0) {
         state.totalQuantity = payload?.quantity;
-      }
-      if (state.grandTotal === 0) {
         state.grandTotal = payload?.amount;
+      } else {
+        state.totalQuantity =
+          parseFloat(state.totalQuantity) + parseFloat(payload?.quantity);
+        state.grandTotal =
+          parseFloat(state.grandTotal) + parseFloat(payload?.amount);
       }
-      state.totalQuantity =
-        parseFloat(state.totalQuantity) + parseFloat(payload?.quantity);
-      state.grandTotal =
-        parseFloat(state.grandTotal) + parseFloat(payload?.amount);
+    },
+    handleUpdateTotalQuantityAndAmount: (state, { payload }) => {
+      const { id, quantity } = payload;
+
+      state.cartItems = state.cartItems.map((product) =>
+        product?.product?._id === id
+          ? { ...product, quantity: parseFloat(quantity) }
+          : product
+      );
+      state.totalQuantity = state.totalQuantity = state.cartItems.reduce(
+        (acc, current) => {
+          return acc + current?.quantity;
+        },
+        0
+      );
+      state.grandTotal = state.cartItems.reduce((acc, curr) => {
+        let total = acc + curr?.product?.price * curr?.quantity;
+        return total;
+      }, 0);
     },
     handleDecreaseQuantityAndAmount: (state, { payload }) => {
       if (state.totalQuantity <= 0) {
@@ -143,6 +172,11 @@ const CartSlice = createSlice({
       state.grandTotal = parseFloat(
         parseFloat(state.grandTotal) - parseFloat(payload?.amount)
       ).toFixed(2);
+    },
+    handleClearCart: (state) => {
+      state.totalQuantity = 0;
+      state.grandTotal = 0;
+      state.cartItems = [];
     },
   },
   extraReducers: (builder) => {
@@ -259,6 +293,9 @@ export const {
   handleDecreaseQuantityAndAmount,
   calculateTotalQuantity,
   calculateTotalAmount,
+  changeGrandTotal,
+  handleClearCart,
+  handleChangeAddProduct,
 } = CartSlice.actions;
 
 export default CartSlice.reducer;

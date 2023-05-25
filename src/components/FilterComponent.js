@@ -1,79 +1,85 @@
 import React from "react";
+import { useEffect } from "react";
 import { useState } from "react";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
+import { useSelector } from "react-redux";
 
-const FilterComponent = ({ setFilterProducts }) => {
-  const [activeCategory, setActiveCategory] = useState(
-    "Audio & Video Supplies"
-  );
+const FilterComponent = ({
+  setActivePrice,
+  activePrice,
+  title,
+  categories,
+  setActiveSubCategory,
+}) => {
+  const [shownCategories, setShownCategories] = useState([]);
+  const [activeCategory, setActiveCategory] = useState("");
   const [isOpenCategory, setIsOpenCategory] = useState(false);
   const [isOpenPrice, setIsOpenPrice] = useState(false);
-  const [activePrice, setActivePrice] = useState("Any");
 
+  const { subCategories, loading } = useSelector((state) => state.getContent);
+  useEffect(() => {
+    const category = subCategories[title];
+    setShownCategories(category?.subcategories);
+    if (
+      shownCategories !== undefined &&
+      shownCategories.length !== 0 &&
+      categories.includes(title)
+    ) {
+      setActiveCategory(shownCategories[0]?.name);
+    }
+  }, [loading, title]);
   return (
     <div className="w-full border border-BORDERGRAY bg-white">
       <p className="text-xl font-semibold text-left border-b border-BORDERGRAY py-4 px-3">
         Filters
       </p>
       {/* categories */}
-      <div className="w-full space-y-2 px-3 py-3 border-b border-BORDERGRAY">
-        <p
-          role="button"
-          className="font-medium text-lg flex justify-between items-center w-full"
-          onClick={() => setIsOpenCategory(!isOpenCategory)}
-        >
-          <span>Categories</span>
-          {isOpenCategory ? (
-            <FiChevronUp className="h-6 w-6" />
-          ) : (
-            <FiChevronDown className="h-6 w-6" />
+      {!loading && categories.includes(title) && (
+        <div className="w-full space-y-2 px-3 py-3 border-b border-BORDERGRAY">
+          <p
+            role="button"
+            className="font-medium text-lg flex justify-between items-center w-full"
+            onClick={() => setIsOpenCategory(!isOpenCategory)}
+          >
+            <span>Categories</span>
+            {isOpenCategory ? (
+              <FiChevronUp className="h-6 w-6" />
+            ) : (
+              <FiChevronDown className="h-6 w-6" />
+            )}
+          </p>
+          {isOpenCategory && (
+            <>
+              <p
+                role="button"
+                onClick={() => setActiveSubCategory("")}
+                className="text-PRIMARY text-left text-base font-semibold"
+              >
+                {categories.includes(title) && title}
+              </p>
+              <ul className="pl-3 text-lg font-normal text-gray-400 capitalize">
+                {shownCategories !== undefined &&
+                  shownCategories.length !== 0 &&
+                  shownCategories.map((category) => (
+                    <li
+                      key={category?._id}
+                      className={`${
+                        activeCategory === category?.name &&
+                        "text-BLACK font-semibold"
+                      } cursor-pointer hover:bg-gray-100 hover:text-black`}
+                      onClick={() => {
+                        setActiveCategory(category?.name);
+                        setActiveSubCategory(category?.name);
+                      }}
+                    >
+                      {category?.name}
+                    </li>
+                  ))}
+              </ul>
+            </>
           )}
-        </p>
-        {isOpenCategory && (
-          <>
-            <p className="text-PRIMARY text-left text-base font-semibold">
-              Electronics
-            </p>
-            <ul className="pl-3 text-lg font-normal text-gray-400 capitalize">
-              <li
-                className={`${
-                  activeCategory === "Audio & Video Supplies" &&
-                  "text-BLACK font-semibold"
-                } cursor-pointer`}
-                onClick={() => setActiveCategory("Audio & Video Supplies")}
-              >
-                Audio & Video supplies
-              </li>
-              <li
-                className={`${
-                  activeCategory === "Batteries" && "text-BLACK font-semibold"
-                } cursor-pointer`}
-                onClick={() => setActiveCategory("Batteries")}
-              >
-                Batteries
-              </li>
-              <li
-                className={`${
-                  activeCategory === "Cameras & Clocks" &&
-                  "text-BLACK font-semibold"
-                } cursor-pointer`}
-                onClick={() => setActiveCategory("Cameras & Clocks")}
-              >
-                Cameras & Clocks
-              </li>
-              <li
-                className={`${
-                  activeCategory === "Electric Accessories" &&
-                  "text-BLACK font-semibold"
-                } cursor-pointer`}
-                onClick={() => setActiveCategory("Electric Accessories")}
-              >
-                Electric Accessories
-              </li>
-            </ul>
-          </>
-        )}
-      </div>
+        </div>
+      )}
       {/* price */}
       <div className="w-full space-y-2 px-3 py-3 border-b border-BORDERGRAY">
         <p
@@ -105,7 +111,7 @@ const FilterComponent = ({ setFilterProducts }) => {
             </li>
             <li
               className={`text-BLACK font-semibold flex items-center gap-x-2`}
-              onClick={() => setActivePrice("Below $.70")}
+              onClick={() => setActivePrice("Below $0.70")}
             >
               <input
                 name="price"
@@ -113,11 +119,11 @@ const FilterComponent = ({ setFilterProducts }) => {
                 value={activePrice}
                 className="h-5 w-5 cursor-pointer"
               />
-              <span>Below $.70</span>
+              <span>Below $0.70</span>
             </li>
             <li
               className={`text-BLACK font-semibold flex items-center gap-x-2`}
-              onClick={() => setActivePrice("$.70 ~ $.89")}
+              onClick={() => setActivePrice("$0.70 - $0.89")}
             >
               <input
                 name="price"
@@ -125,11 +131,11 @@ const FilterComponent = ({ setFilterProducts }) => {
                 value={activePrice}
                 className="h-5 w-5 cursor-pointer"
               />
-              <span>$.70 ~ $.89</span>
+              <span>$0.70 - $0.89</span>
             </li>
             <li
               className={`text-BLACK font-semibold flex items-center gap-x-2`}
-              onClick={() => setActivePrice("$.90 ~ $1.99")}
+              onClick={() => setActivePrice("$0.90 - $1.99")}
             >
               <input
                 name="price"
@@ -137,11 +143,11 @@ const FilterComponent = ({ setFilterProducts }) => {
                 value={activePrice}
                 className="h-5 w-5 cursor-pointer"
               />
-              <span>$.90 ~ $1.99</span>
+              <span>$0.90 - $1.99</span>
             </li>
             <li
               className={`text-BLACK font-semibold flex items-center gap-x-2`}
-              onClick={() => setActivePrice("$2 ~ $2.99")}
+              onClick={() => setActivePrice("$2 - $2.99")}
             >
               <input
                 name="price"
@@ -149,11 +155,11 @@ const FilterComponent = ({ setFilterProducts }) => {
                 value={activePrice}
                 className="h-5 w-5 cursor-pointer"
               />
-              <span>$2 ~ $2.99</span>
+              <span>$2 - $2.99</span>
             </li>
             <li
               className={`text-BLACK font-semibold flex items-center gap-x-2`}
-              onClick={() => setActivePrice("Low to high")}
+              onClick={() => setActivePrice("Low_to_high")}
             >
               <input
                 name="price"
@@ -165,7 +171,7 @@ const FilterComponent = ({ setFilterProducts }) => {
             </li>
             <li
               className={`text-BLACK font-semibold flex items-center gap-x-2`}
-              onClick={() => setActivePrice("High to low")}
+              onClick={() => setActivePrice("High_to_low")}
             >
               <input
                 name="price"

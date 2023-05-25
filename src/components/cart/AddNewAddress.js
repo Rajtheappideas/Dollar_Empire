@@ -1,8 +1,9 @@
-import React, { useRef, useState } from "react";
-import { Helmet } from "react-helmet";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { AiOutlineClose } from "react-icons/ai";
+import { useRef } from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import { useDispatch, useSelector } from "react-redux";
 import {
   isPossiblePhoneNumber,
   isValidPhoneNumber,
@@ -10,27 +11,27 @@ import {
 import { useFormik, Form, FormikProvider, ErrorMessage } from "formik";
 import * as yup from "yup";
 import styled from "styled-components";
-import { useDispatch, useSelector } from "react-redux";
-import { handleRegisterUser } from "../redux/AuthSlice";
 import { toast } from "react-hot-toast";
 import { useEffect } from "react";
-import { handleSuccess } from "../redux/GlobalStates";
-import { useTranslation } from "react-i18next";
+import {
+  handlePostEditAddress,
+  handlePostNewAddress,
+} from "../../redux/FeatureSlice";
+import { handleGetAddresses } from "../../redux/GetContentSlice";
 import { Country, State, City } from "country-state-city";
-import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
+import { useTranslation } from "react-i18next";
 
-const Signup = () => {
+const AddNewAddress = ({ setShowAddnewaddressPopup }) => {
   const [selectedData, setSelectedData] = useState({
     state: "",
     city: "",
   });
   const [allCountries, setAllCountries] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [country, setCountry] = useState("");
 
-  const { user, loading } = useSelector((state) => state.Auth);
-
-  const navigate = useNavigate();
+  const { addressList, user } = useSelector((state) => state.getContent);
+  const { loading } = useSelector((state) => state.features);
+  const { token } = useSelector((state) => state.Auth);
 
   const dispatch = useDispatch();
 
@@ -38,8 +39,7 @@ const Signup = () => {
 
   const AbortControllerRef = useRef(null);
 
-  const SignupSchema = yup.object().shape({
-    email: yup.string().required("email is required").email(),
+  const addNewAddressSchema = yup.object().shape({
     fname: yup
       .string()
       .trim("The contact name cannot include leading and trailing spaces")
@@ -62,8 +62,8 @@ const Signup = () => {
       ),
     location: yup
       .string()
-      .required("address is required")
-      .matches(/^[0-9A-Za-z\s\-]+$/g, "That doesn't look Address")
+      .required("location is required")
+      .matches(/^[0-9A-Za-z\s\-]+$/g, "That doesn't look location")
       .trim("The contact name cannot include leading and trailing spaces"),
     postalCode: yup
       .string()
@@ -86,10 +86,7 @@ const Signup = () => {
       .string()
       .required("city is required")
       .trim("The contact name cannot include leading and trailing spaces"),
-    state: yup
-      .string()
-      .required("state is required")
-      .trim("The contact name cannot include leading and trailing spaces"),
+    state: yup.string().required("state is required"),
     companyName: yup
       .string()
       .required("companyName is required")
@@ -102,72 +99,59 @@ const Signup = () => {
       .string()
       .required("country is required")
       .trim("The contact name cannot include leading and trailing spaces"),
-    password: yup
-      .string()
-      .trim("The contact name cannot include leading and trailing spaces")
-      .required("password is required")
-      .min(8, "Must Contain 8 Characters"),
-    confirmPassword: yup
-      .string()
-      .oneOf([yup.ref("password"), null], "Passwords must match"),
     phone: yup
       .string()
       .required("A phone number is required")
       .trim("The contact name cannot include leading and trailing spaces"),
-    checkBox: yup.bool().oneOf([true], "Please Check the box."),
   });
 
   const formik = useFormik({
     initialValues: {
       fname: "",
       lname: "",
-      email: "",
-      companyName: "",
-      password: "",
-      confirmPassword: "",
-      phone: "",
       location: "",
+      companyName: "",
+      phone: "",
       city: selectedData.city,
       state: selectedData.state,
       country: "United States",
       postalCode: "",
-      checkBox: false,
     },
-    validationSchema: SignupSchema,
+    validationSchema: addNewAddressSchema,
     onSubmit: (values) => {
       if (
         isPossiblePhoneNumber(values.phone) &&
         isValidPhoneNumber(values.phone)
       ) {
         const response = dispatch(
-          handleRegisterUser({
+          handlePostNewAddress({
             fname: values.fname,
             lname: values.lname,
-            email: values.email,
             companyName: values.companyName,
-            password: values.password,
             phone: values.phone,
-            location: values.location,
             city: values.city,
             state: values.state,
             country: values.country,
             postalCode: values.postalCode,
+            location: values.location,
             signal: AbortControllerRef,
+            token,
           })
         );
         if (response) {
-          response
-            .then((res) => {
-              if (res.payload.status === "success") {
-                dispatch(handleSuccess());
-                toast.success("Sign up successfully.");
-                navigate("/");
-              } else {
-                if (res.payload.message) toast.error(res.payload.message);
-                toast.error("Something went try again!!!");
-              }
-            })
-            .catch((err) => {});
+          response.then((res) => {
+            if (res?.meta?.arg?.signal?.current?.signal?.aborted) {
+              toast.error("Request Cancelled.");
+            }
+            if (res.payload.status === "success") {
+              toast.success("Address added successfully.");
+              resetForm();
+              setShowAddnewaddressPopup(false);
+              dispatch(handleGetAddresses({ token }));
+            } else {
+              toast.error(res.payload.message);
+            }
+          });
         }
       } else {
         toast.error("Phone number is invalid!!!");
@@ -175,14 +159,10 @@ const Signup = () => {
     },
   });
 
-  const { getFieldProps, handleSubmit, setFieldValue, values } = formik;
+  const { getFieldProps, handleSubmit, setFieldValue, resetForm, values } =
+    formik;
 
   useEffect(() => {
-    if (user !== null) {
-      navigate("/");
-      toast.success("Already Logged in.");
-    }
-
     setAllCountries(Country.getAllCountries());
 
     return () => {
@@ -209,60 +189,69 @@ const Signup = () => {
   }, [values.country, values.state, values.city]);
 
   return (
-    <>
-      <Helmet title={t("Sign-up")} />
-      <div className="p-4 mx-auto xl:w-2/5 lg:w-1/2 md:w-2/3 w-11/12 h-auto space-y-4 md:my-14 my-7 rounded-lg border border-BORDERGRAY">
-        <h1 className="font-semibold md:text-3xl text-xl text-left">
-          {t("Customer Register")}
-        </h1>
-        {/* <hr /> */}
-        {/* btn signin */}
-        <p className="font-semibold text-center text-lg">
-          {t("Already have an account")}?&nbsp;
-          <Link to="/sign-in" className="underline text-blue-400">
-            {t("login")}
-          </Link>
-        </p>
-        <hr />
+    <div
+      className={`absolute bg-black/30 z-50 w-full lg:min-h-[100rem] min-h-[120rem]  inset-0 backdrop-blur-sm`}
+    >
+      <div className="fixed overflow-hidden space-y-3 top-10 left-1/2 -translate-x-1/2 z-50 md:p-5 py-10 px-5 bg-white text-black lg:w-5/12 md:w-7/12 w-[95%] h-auto rounded-md">
+        <div className="flex items-center justify-between w-full">
+          <p className="font-semibold text-2xl">Shipping Address</p>
+          <AiOutlineClose
+            role="button"
+            onClick={() => setShowAddnewaddressPopup(false)}
+            className="w-7 h-7 text-black"
+          />
+        </div>
+        <hr className="w-full" />
+        {/* form */}
         <FormikProvider value={formik}>
-          <Form
-            autoComplete="off"
-            onSubmit={handleSubmit}
-            className="space-y-4"
-          >
-            {/* first & last name */}
-            <div className="flex items-start w-full gap-x-3">
-              <div className="w-1/2 space-y-3">
+          <Form onSubmit={handleSubmit} className="space-y-3">
+            {/* name */}
+            <div className="flex items-start w-full gap-x-4">
+              <div className=" w-1/2">
                 <label className="text-black font-medium block text-left text-lg">
-                  {t("First name")}*
+                  First name*
                 </label>
                 <input
                   type="text"
-                  className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                  placeholder={t("First name")}
+                  className="bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
+                  placeholder="First name"
                   name="fname"
                   {...getFieldProps("fname")}
                 />
                 <ErrorMessage name="fname" component={TextError} />
               </div>
-              <div className="w-1/2 space-y-3">
+              <div className=" w-1/2">
                 <label className="text-black font-medium block text-left text-lg">
-                  {t("Last name")}*
+                  Last name*
                 </label>
                 <input
                   type="text"
-                  className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                  placeholder={t("Last name")}
+                  className="bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
+                  placeholder="Last name"
                   name="lname"
                   {...getFieldProps("lname")}
                 />
                 <ErrorMessage name="lname" component={TextError} />
               </div>
-            </div>
-            {/* country */}
+            </div>{" "}
+            {/* company name */}
             <>
               <label className="text-black font-medium block text-left text-lg">
-                {t("Country")}*
+                Company name*
+              </label>
+              <input
+                type="text"
+                className="bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
+                placeholder="Company name"
+                name="companyName"
+                {...getFieldProps("companyName")}
+              />
+              <ErrorMessage name="companyName" component={TextError} />
+            </>
+            {/* Country */}
+            <>
+              <label className="text-black font-medium block text-left text-lg">
+                Country*
               </label>
               <select
                 className=" outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
@@ -272,7 +261,7 @@ const Signup = () => {
                 name="country"
                 {...getFieldProps("country")}
               >
-                <option value="United States">Unites States</option>
+                <option value="United states">United states</option>
                 {allCountries !== "" &&
                   allCountries.map((country) => (
                     <option key={country.name} value={country.name}>
@@ -280,55 +269,14 @@ const Signup = () => {
                     </option>
                   ))}
               </select>
-              {/* <input
-                type="text"
-                className=" outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                placeholder="United states"
-                name="country"
-                {...getFieldProps("country")}
-              /> */}
+
               <ErrorMessage name="country" component={TextError} />
             </>
-            {/* company name */}
+            {/* state */}
             <>
               <label className="text-black font-medium block text-left text-lg">
-                {t("Company name")}*
+                State*
               </label>
-              <input
-                type="text"
-                className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                placeholder={t("Company name")}
-                name="companyName"
-                {...getFieldProps("companyName")}
-              />
-              <ErrorMessage name="companyName" component={TextError} />
-            </>
-            {/* address */}
-            <>
-              <label className="text-black font-medium block text-left text-lg">
-                {t("Address")}*
-              </label>
-              <input
-                type="text"
-                className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                placeholder={t("Address")}
-                name="location"
-                {...getFieldProps("location")}
-              />
-              <ErrorMessage name="location" component={TextError} />
-            </>
-            {/* states */}
-            <>
-              <label className="text-black font-medium block text-left text-lg">
-                {t("State")}*
-              </label>
-              {/* <input
-                type="text"
-                className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                placeholder={t("State")}
-                name="state"
-                {...getFieldProps("state")}
-              /> */}
               <select
                 className=" outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
                 name="state"
@@ -342,10 +290,9 @@ const Signup = () => {
                     </option>
                   ))}
               </select>
-
               <ErrorMessage name="state" component={TextError} />
             </>
-            {/* city & postal code */}
+            {/* city */}
             <div className="flex items-start w-full gap-x-3">
               <div className="w-1/2">
                 <label className="text-black font-medium block text-left text-lg">
@@ -389,10 +336,24 @@ const Signup = () => {
                 <ErrorMessage name="postalCode" component={TextError} />
               </div>
             </div>
-            {/* phone */}
+            {/* location */}
             <>
               <label className="text-black font-medium block text-left text-lg">
-                {t("Phone")}*
+                Location*
+              </label>
+              <input
+                type="text"
+                className="bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
+                placeholder="Location"
+                name="location"
+                {...getFieldProps("location")}
+              />
+              <ErrorMessage name="location" component={TextError} />
+            </>
+            {/* phone */}
+            <div className="w-full">
+              <label className="text-black font-medium block text-left text-lg">
+                Phone*
               </label>
               <PhoneInput
                 country={"us"}
@@ -401,6 +362,7 @@ const Signup = () => {
                 inputProps={{
                   name: "phone",
                 }}
+                value={values.phone}
                 onChange={(value) =>
                   setFieldValue("phone", "+".concat(value).trim())
                 }
@@ -414,105 +376,35 @@ const Signup = () => {
                 dropdownStyle={{ background: "lightgray" }}
                 buttonStyle={{ border: "0px" }}
               />
-              <ErrorMessage name="phone" component={TextError} />
-            </>
-            {/* email */}
-            <>
-              <label className="text-black font-medium block text-left text-lg">
-                {t("Email")}*
-              </label>
-              <input
-                type="email"
-                className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                placeholder={t("Email")}
-                name="email"
-                {...getFieldProps("email")}
-              />
-              <ErrorMessage name="email" component={TextError} />
-            </>
-            {/*password  */}
-            <div className="relative z-10 space-y-2">
-              <label className="text-black font-medium block text-left text-lg">
-                {t("Password")}
-              </label>
-              <input
-                type={showPassword ? "text" : "password"}
-                className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                placeholder={t("Password")}
-                name="password"
-                {...getFieldProps("password")}
-              />
-              {showPassword ? (
-                <BsEyeFill
-                  onClick={() => setShowPassword(!showPassword)}
-                  role="button"
-                  className="absolute top-9 right-3 h-7 w-7"
-                />
-              ) : (
-                <BsEyeSlashFill
-                  onClick={() => setShowPassword(!showPassword)}
-                  role="button"
-                  className="absolute top-9 right-3 h-7 w-7"
-                />
-              )}
-              <ErrorMessage name="password" component={TextError} />
             </div>
-            {/*reconfirm password  */}
-            <>
-              <label className="text-black font-medium block text-left text-lg">
-                {t("confirmPassword")}
-              </label>
-              <input
-                type="password"
-                className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                placeholder={t("confirmPassword")}
-                name="confirmPassword"
-                {...getFieldProps("confirmPassword")}
-              />
-              <ErrorMessage name="confirmPassword" component={TextError} />
-            </>
-            {/* checkbox */}
-            <div>
-              <p className="flex items-start gap-x-2">
-                <input
-                  type="checkbox"
-                  className="outline-none w-8 h-8 rounded-md border inline-block mt-1"
-                  name="checkBox"
-                  {...getFieldProps("checkBox")}
-                  onChange={(e) => {
-                    setFieldValue("checkBox", e.target.checked);
-                  }}
-                />
-                <span>
-                  {t(
-                    "Accept Lorem Ipsum is simply dummy text of the printing and type lorem is setting industry."
-                  )}
-                </span>
-              </p>
-              {formik.errors.checkBox && (
-                <ErrorMessage name="checkBox" component={TextError} />
-              )}
+            {/* btns */}
+            <div className="flex w-full items-center gap-x-3">
+              <button
+                type="submit"
+                className="w-40 font-semibold bg-PRIMARY text-white rounded-md text-center p-3 active:translate-y-2 hover:text-PRIMARY hover:bg-white border border-PRIMARY duration-300"
+                disabled={loading}
+              >
+                {loading ? "Submitting..." : "Save"}
+              </button>
+              <button
+                type="button"
+                className="w-40 font-semibold bg-gray-300 text-black rounded-md text-center p-3 active:translate-y-2 hover:text-white hover:bg-black border border-gray-400 duration-300"
+                onClick={() => setShowAddnewaddressPopup(false)}
+              >
+                Close
+              </button>
             </div>
-            {/* btn */}
-            <button
-              type="submit"
-              className="bg-PRIMARY active:translate-y-2 hover:text-PRIMARY hover:bg-white border border-PRIMARY duration-300 p-3 text-white text-center w-40 rounded-md font-semibold"
-              disabled={loading}
-            >
-              {loading ? t("Registering...") : t("register")}
-            </button>
           </Form>
         </FormikProvider>
       </div>
-    </>
+    </div>
   );
 };
 
-export default Signup;
+export default AddNewAddress;
 
 const TextError = styled.span`
   color: red !important;
   font-weight: 600;
-  padding-top: 10px;
   font-size: 1rem;
 `;

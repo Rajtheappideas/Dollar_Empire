@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { TiArrowBack } from "react-icons/ti";
 import { AiOutlineShoppingCart, AiOutlineUser } from "react-icons/ai";
 import { HiOutlineBars3, HiXMark } from "react-icons/hi2";
@@ -12,22 +12,37 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { handleChangeActiveComponent } from "../redux/GlobalStates";
+import {
+  handleChangeActiveComponent,
+  handleChangeSearchProducts,
+  handleChangeSearchTerm,
+} from "../redux/GlobalStates";
 import { useTranslation } from "react-i18next";
 import { handleChangeUserLanguage } from "../redux/AuthSlice";
+import {
+  calculateTotalAmount,
+  calculateTotalQuantity,
+} from "../redux/CartSlice";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import { toast } from "react-hot-toast";
+import { number } from "card-validator";
 
 const Header = () => {
   const [openSidebar, setOpenSidebar] = useState(false);
   const [activeCategory, setActiveCategory] = useState("");
   const [subCategoryProducts, setSubCategoryProducts] = useState([]);
+  // const [searchTerm, setSearchTerm] = useState("");
 
   const { user, userLanguage } = useSelector((state) => state.Auth);
+  const { searchTerm } = useSelector((state) => state.globalStates);
   const { totalQuantity, grandTotal } = useSelector((state) => state.cart);
+  const { allProducts } = useSelector((state) => state.products);
   const { categories, loading, subCategories } = useSelector(
     (state) => state.getContent
   );
-
   const { t } = useTranslation();
+
+  const searchRef = useRef(null);
 
   const navigate = useNavigate();
 
@@ -49,10 +64,45 @@ const Header = () => {
     }
   }, [activeCategory]);
 
+  useEffect(() => {
+    if (user !== null) {
+      dispatch(calculateTotalQuantity());
+      dispatch(calculateTotalAmount());
+    }
+  }, [user]);
+
+  const handleSearchProducts = () => {
+    toast.dismiss();
+    if (searchTerm === "") {
+      searchRef.current.focus();
+      return toast.error("Please enter a word!!!");
+    }
+    const filteredProducts = allProducts.filter((entry) =>
+      Object.values(entry).some((val) => {
+        return (
+          (typeof val === "string" || typeof val === number) &&
+          val.toLocaleLowerCase().includes(searchTerm)
+        );
+      })
+    );
+    if (filteredProducts.length === 0) {
+      return toast.error(`Product not found releated "${searchTerm}".`, {
+        style: {
+          fontSize: "14px",
+          fontWeight: "normal",
+          backgroundColor: "black",
+          color: "white",
+        },
+      });
+    } else {
+      dispatch(handleChangeSearchProducts(filteredProducts));
+      navigate(`/product-listing/search`);
+    }
+  };
   return (
     <div>
       {/* first section */}
-      <div className="flex relative z-40 w-full justify-stretch items-center md:h-auto h-14 md:py-2 xl:px-20 md:px-10 px-3 md:gap-x-0 gap-x-1">
+      <div className="flex relative z-20 w-full justify-stretch items-center md:h-auto h-14 md:py-2 xl:px-20 md:px-10 px-3 md:gap-x-0 gap-x-1">
         {/* first logo */}
         <div className="flex-grow">
           <Link to="/" className="inline-block">
@@ -174,7 +224,7 @@ const Header = () => {
       <div className="bg-PRIMARY text-white w-full flex lg:flex-row flex-col justify-between lg:items-center items-start gap-5 lg:gap-0 md:py-5 py-2 xl:px-20 md:px-10 px-3">
         {/* left side div */}
         <div className="lg:w-1/2 w-full text-black">
-          <div className="capitalize font-semibold relative z-30 flex items-center w-full bg-white rounded-md p-3">
+          <div className="capitalize font-semibold relative z-20 flex items-center w-full bg-white rounded-md p-3">
             {/* menu */}
             <div className="relative z-0 group min-w-[10rem]">
               <p className="cursor-pointer flex items-center justify-between flex-row text-black font-normal ">
@@ -184,12 +234,22 @@ const Header = () => {
                 <BsChevronDown className="h-4 w-4 ml-2" />
               </p>
               {/* menu */}
-              <div className="text-left p-2 absolute top-9 -left-3 z-30 bg-white md:min-w-[14rem] min-w-[10rem] rounded-md group-hover:scale-100 scale-0 transform duration-300 ease-in origin-top-left">
+              <div className="text-left p-2 absolute top-9 -left-3 z-20 bg-white md:min-w-[14rem] min-w-[10rem] rounded-md group-hover:scale-100 scale-0 transform duration-300 ease-in origin-top-left">
                 <div className="pl-3 text-base font-normal text-gray-400 capitalize space-y-1 min-md:w-[14rem]  min-w-[10rem]">
                   {loading ? (
-                    <p className="md:text-2xl text-xl font-semibold text-center p-3 text-black">
-                      Loading...
-                    </p>
+                    <SkeletonTheme
+                      baseColor="lightgray"
+                      highlightColor="white"
+                      duration={0.5}
+                      borderRadius="5px"
+                    >
+                      <Skeleton className=" h-4" />
+                      <Skeleton className=" h-4" />
+                      <Skeleton className=" h-4" />
+                      <Skeleton className=" h-4" />
+                      <Skeleton className=" h-4" />
+                      <Skeleton className=" h-4" />
+                    </SkeletonTheme>
                   ) : (
                     <>
                       <Link
@@ -207,7 +267,7 @@ const Header = () => {
                       </Link>
                       {categories.map((category) => (
                         <div
-                          className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
+                          className={`submenu z-20 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
                           key={category?._id}
                           onMouseOver={() => setActiveCategory(category.name)}
                         >
@@ -318,19 +378,25 @@ const Header = () => {
             <span className="md:px-4 px-2 text-gray-400">|</span>
             {/* input field */}
             <input
+              ref={searchRef}
               type="text"
               className="rounded-tr-lg rounded-br-lg outline-none md:w-3/4 w-1/2 text-black pr-7"
               placeholder={t("search_products").concat("...")}
+              value={searchTerm}
+              onChange={(e) => {
+                dispatch(
+                  handleChangeSearchTerm(
+                    e.target.value.toLocaleLowerCase().trim()
+                  )
+                );
+                // setSearchTerm(e.target.value.toLocaleLowerCase().trim());
+              }}
             />
 
             <BsSearch
               role="button"
               className="h-5 w-5 absolute top-1/2 -translate-y-1/2 right-3 z-10 text-black"
-              onClick={() =>
-                navigate("/product-listing", {
-                  state: { title: "Search", price: null, searchQuery: "music" },
-                })
-              }
+              onClick={() => handleSearchProducts()}
             />
           </div>
         </div>
@@ -380,7 +446,7 @@ const Header = () => {
         }`}
       >
         {/* all categories */}
-        <div className="capitalize font-semibold relative z-20 group md:min-w-[13rem]">
+        <div className="capitalize font-semibold relative z-10 group md:min-w-[13rem]">
           <p className="cursor-pointer flex items-center justify-between flex-row w-auto md:p-3 p-2 bg-black text-white ">
             <span className="md:text-xl text-lg whitespace-nowrap">
               {t("all_categories")}
@@ -388,12 +454,22 @@ const Header = () => {
             <BsChevronDown className="h-4 w-4 ml-2" />
           </p>
           {/* menu */}
-          <div className="text-left p-2 absolute top-14 left-0 z-30 bg-white md:min-w-[14rem] min-w-[10rem] rounded-md group-hover:scale-100 scale-0 transform duration-300 ease-in origin-top-left">
+          <div className="text-left p-2 absolute top-14 left-0 z-10 bg-white md:min-w-[14rem] min-w-[10rem] rounded-md group-hover:scale-100 scale-0 transform duration-300 ease-in origin-top-left">
             <div className="pl-3 text-base font-normal text-gray-400 capitalize space-y-1 min-md:w-[14rem]  min-w-[10rem]">
               {loading ? (
-                <p className="md:text-2xl text-xl font-semibold text-center p-3 text-black">
-                  Loading...
-                </p>
+                <SkeletonTheme
+                  baseColor="lightgray"
+                  highlightColor="white"
+                  duration={0.5}
+                  borderRadius="5px"
+                >
+                  <Skeleton className=" h-4" />
+                  <Skeleton className=" h-4" />
+                  <Skeleton className=" h-4" />
+                  <Skeleton className=" h-4" />
+                  <Skeleton className=" h-4" />
+                  <Skeleton className=" h-4" />
+                </SkeletonTheme>
               ) : (
                 <>
                   <Link

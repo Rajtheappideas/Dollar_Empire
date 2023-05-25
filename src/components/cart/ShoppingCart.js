@@ -1,18 +1,20 @@
 import React, { useEffect, useRef, useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { handleChangeActiveComponent } from "../../redux/GlobalStates";
 import BaseUrl from "../../BaseUrl";
 import {
+  calculateTotalAmount,
+  calculateTotalQuantity,
   handleAddProductToCart,
   handleDecreaseQuantityAndAmount,
-  handleDeleteQuantity,
   handleRemoveProductToCart,
-  handleUpdateTotalQuantity,
   handleUpdateTotalQuantityAndAmount,
 } from "../../redux/CartSlice";
 import { toast } from "react-hot-toast";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const ShoppingCart = ({ summaryFixed }) => {
   const [showChangeField, setShowChangeField] = useState(false);
@@ -26,12 +28,15 @@ const ShoppingCart = ({ summaryFixed }) => {
   );
   const { token } = useSelector((state) => state.Auth);
   const { productListingPageLink } = useSelector((state) => state.globalStates);
+  const { shipphingMethod } = useSelector((state) => state.orders);
 
   const dispatch = useDispatch();
 
   const AbortControllerRef = useRef(null);
 
   useEffect(() => {
+    dispatch(calculateTotalQuantity());
+    dispatch(calculateTotalAmount());
     return () => {
       AbortControllerRef.current !== null && AbortControllerRef.current.abort();
     };
@@ -45,7 +50,7 @@ const ShoppingCart = ({ summaryFixed }) => {
     if (response) {
       response
         .then((res) => {
-          dispatch(handleDecreaseQuantityAndAmount({ quantity, amount }));
+          dispatch(handleDecreaseQuantityAndAmount({ quantity, amount, id }));
           setDeleteLoading(false);
         })
         .catch((err) => {
@@ -55,9 +60,17 @@ const ShoppingCart = ({ summaryFixed }) => {
     }
   };
 
-  const handleAddProduct = (id, title, type, amount) => {
-    console.log(amount);
+  const handleUpdateProduct = (id, title, type, amount, quantity) => {
     toast.dismiss();
+    if (productQuantity === quantity) {
+      return toast.error(
+        "Quantity should be increased or decreased, not be same!!!"
+      );
+    }
+    if (!/^\d+$/.test(productQuantity)) {
+      setProductQuantity(quantity);
+      return toast.error("Please enter valid value!!!");
+    }
     setUpdateLoading(true);
     const response = dispatch(
       handleAddProductToCart({
@@ -73,25 +86,25 @@ const ShoppingCart = ({ summaryFixed }) => {
         .then((res) => {
           if (res.payload.status === "success") {
             toast.success(`${title}'s quantity updated.`);
-            setUpdateLoading(false);
-            setShowChangeField(false);
             dispatch(
               handleUpdateTotalQuantityAndAmount({
                 quantity: productQuantity > 0 ? productQuantity : 0,
                 amount,
+                id,
               })
             );
             setProductId(null);
           }
+          setShowChangeField(false);
+          setUpdateLoading(false);
+          setProductQuantity(0);
         })
         .catch((err) => {
           toast.error(err.payload.message);
-          console.log(err);
           setUpdateLoading(false);
         });
     }
   };
-
   return (
     <div className="relative w-full flex xl:flex-row flex-col items-start justify-start gap-4 pb-10 max-h-fit">
       {/* table */}
@@ -120,13 +133,13 @@ const ShoppingCart = ({ summaryFixed }) => {
             </tr>
           </thead>
           <tbody>
-            {loading ? (
+            {loading || updateLoading ? (
               <tr>
                 <td
                   colSpan="100%"
-                  className="text-center font-semibold text-xl p-2"
+                  className="text-center font-semibold md:text-2xl text-xl pt-10"
                 >
-                  Loading...
+                  Fetching your cart...
                 </td>
               </tr>
             ) : cartItems.length <= 0 ? (
@@ -178,7 +191,16 @@ const ShoppingCart = ({ summaryFixed }) => {
                         type="number"
                         className="bg-gray-300 outline-none text-black placeholder:text-BLACK h-10 rounded-md w-16 p-1"
                         value={productQuantity}
-                        onChange={(e) => setProductQuantity(e.target.value)}
+                        onChange={(e) => {
+                          setProductQuantity(e.target.value);
+                          if (
+                            !/^\d+$/.test(e.target.value) &&
+                            e.target.value !== ""
+                          ) {
+                            toast.dismiss();
+                            return toast.error("Please enter valid value.");
+                          }
+                        }}
                       />
                     )}
                     {showChangeField && productId === item?.product?._id ? (
@@ -186,11 +208,12 @@ const ShoppingCart = ({ summaryFixed }) => {
                         role="button"
                         className="text-PRIMARY underline ml-1"
                         onClick={() =>
-                          handleAddProduct(
+                          handleUpdateProduct(
                             item?.product?._id,
                             item?.product?.name,
                             item.type,
-                            item?.product?.price * productQuantity
+                            item?.product?.price * productQuantity,
+                            item?.quantity
                           )
                         }
                       >
@@ -253,7 +276,9 @@ const ShoppingCart = ({ summaryFixed }) => {
         </p>
         <p className="w-full flex items-center justify-between text-base">
           <span className="font-normal">Freight</span>
-          <span className="ml-auto font-semibold text-base">$10.00</span>
+          <span className="ml-auto font-semibold text-base">
+            ${shipphingMethod === "pickup" ? "0.00" : "10.00"}
+          </span>
         </p>
         <hr className="w-full" />
         <p className="w-full flex items-center justify-between text-2xl font-bold">
@@ -263,14 +288,24 @@ const ShoppingCart = ({ summaryFixed }) => {
         <hr className="w-full" />
         <button
           type="button"
-          onClick={() => dispatch(handleChangeActiveComponent("Check_Out"))}
+          onClick={() => {
+            toast.dismiss();
+            cartItems?.length > 0
+              ? dispatch(handleChangeActiveComponent("Check_Out"))
+              : toast.error("Your Cart is empty!!!");
+          }}
           className="font-semibold bg-PRIMARY text-white hover:bg-white hover:text-PRIMARY border border-PRIMARY duration-300 ease-in-out w-full p-3 text-center"
+          // disabled={cartItems?.length}
         >
           Proceed to checkout
         </button>
         <p>
           <Link
-            to={productListingPageLink}
+            to={
+              productListingPageLink === ""
+                ? "/product-listing/all-products"
+                : productListingPageLink
+            }
             state={{ title: "all-products", price: null, searchQuery: "" }}
           >
             <button

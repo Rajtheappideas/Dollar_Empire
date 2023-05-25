@@ -6,15 +6,24 @@ import {
   AiOutlineMinus,
   AiOutlinePlus,
   AiFillHeart,
+  AiOutlineClose,
 } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
-import { handleSetSingelProductId, showPopup } from "../redux/GlobalStates";
+import {
+  closeEnlargeImagePopup,
+  handleChangeEnlargeImageFrom,
+  handleChangeEnlargeImageId,
+  handleChangeSingleProductEnlargeImageId,
+  handleSetSingelProductId,
+  showEnlargeImagePopup,
+  showPopup,
+} from "../redux/GlobalStates";
 import { useTranslation } from "react-i18next";
 import BaseUrl from "../BaseUrl";
 import {
   handleAddProductToFavourites,
   handleRemoveProductToFavourites,
-} from "../redux/FeatureSlice";
+} from "../redux/FavouriteSlice";
 import { useEffect } from "react";
 import { useRef } from "react";
 import { toast } from "react-hot-toast";
@@ -22,25 +31,33 @@ import { useState } from "react";
 import {
   handleGetNewArrivals,
   handleGetTopSellers,
-} from "../redux/GetContentSlice";
+} from "../redux/ProductSlice";
 import {
   handleAddProductToCart,
-  handleGetCart,
-  handleUpdateTotalQuantityAndAmount,
+  handleChangeAddProduct,
 } from "../redux/CartSlice";
+import "react-loading-skeleton/dist/skeleton.css";
+import { MagnifyingGlassPlusIcon } from "@heroicons/react/24/outline";
 
 const ProductCard = ({ product, title, selectedView, from }) => {
   const [favouriteLoading, setFavouriteLoading] = useState(false);
   const [selectedItemType, setSelectedItemType] = useState("pk");
-  const [pkitemsQuantity, setpkItemsQuantity] = useState(0);
-  const [ctnItemQuantity, setCtnItemQuantity] = useState(0);
+  const [pkitemsQuantity, setpkItemsQuantity] = useState("");
+  const [ctnItemQuantity, setCtnItemQuantity] = useState("");
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [findInCart, setFindInCart] = useState(null);
+  const [pkCount, setPkCount] = useState(0);
+  const [ctnCount, setCtnCount] = useState(0);
 
   const { user, token } = useSelector((state) => state.Auth);
-  const { quantity, orderType, loading, cartItems, cart } = useSelector(
-    (state) => state.cart
-  );
+  const {
+    showProductDetailsPopup,
+    showEnlargeImage,
+    activeEnlargeImageId,
+    activeEnlargeImageFrom,
+    singleProductEnlargeImageId,
+  } = useSelector((state) => state.globalStates);
+  const { loading, cartItems, cart } = useSelector((state) => state.cart);
 
   const AbortControllerRef = useRef(null);
 
@@ -104,16 +121,33 @@ const ProductCard = ({ product, title, selectedView, from }) => {
 
   const handleAddProduct = (id, title, quantity, amount) => {
     toast.dismiss();
-    if (pkitemsQuantity === 0 && ctnItemQuantity === 0) {
-      return toast.error("Please add some quantity!!!");
+    if (
+      (pkitemsQuantity === "" || pkitemsQuantity === 0) &&
+      (ctnItemQuantity === "" || ctnItemQuantity === 0)
+    ) {
+      setpkItemsQuantity("");
+      setCtnItemQuantity("");
+      setPkCount(0);
+      setCtnCount(0);
+      return toast.error("Please add some quantity And enter valid value.");
     } else if (selectedItemType === "pk" && ctnItemQuantity > 0) {
       toast.error("Please enter quantity in PK, you choose PK");
-      setCtnItemQuantity(0);
+      setCtnItemQuantity("");
+      setCtnCount(0);
       return true;
     } else if (selectedItemType === "ctn" && pkitemsQuantity > 0) {
       toast.error("Please enter quantity in CTN, you choose CTN");
-      setpkItemsQuantity(0);
+      setpkItemsQuantity("");
+      setPkCount(0);
       return true;
+    } else if (
+      !/^\d+$/.test(pkitemsQuantity !== "" ? pkitemsQuantity : ctnItemQuantity)
+    ) {
+      setpkItemsQuantity("");
+      setCtnItemQuantity("");
+      setPkCount(0);
+      setCtnCount(0);
+      return toast.error("Please enter valid value!!!");
     }
     const response = dispatch(
       handleAddProductToCart({
@@ -129,25 +163,86 @@ const ProductCard = ({ product, title, selectedView, from }) => {
         .then((res) => {
           if (res.payload.status === "success") {
             toast.success(`${title} added to cart successfully.`);
-            dispatch(handleUpdateTotalQuantityAndAmount({ quantity, amount }));
-            setCtnItemQuantity(0);
-            setpkItemsQuantity(0);
+            dispatch(handleChangeAddProduct({ quantity, amount }));
+            setCtnItemQuantity("");
+            setpkItemsQuantity("");
             setSelectedItemType("pk");
+            setPkCount(0);
+            setCtnCount(0);
             setSelectedProductId(null);
           }
         })
         .catch((err) => {
           toast.error(err.payload.message);
-          console.log(err);
         });
     }
   };
 
-  useEffect(() => {
-    return () => {
-      AbortControllerRef.current !== null && AbortControllerRef.current.abort();
-    };
-  }, []);
+  function handleShowEnlargeImage() {
+    dispatch(handleChangeEnlargeImageId(""));
+    dispatch(handleChangeEnlargeImageFrom(""));
+    dispatch(handleChangeEnlargeImageId(product?._id));
+    dispatch(handleChangeEnlargeImageFrom(from));
+  }
+
+  function handleShowSingleProductEnlargeImage() {
+    dispatch(handleChangeSingleProductEnlargeImageId(""));
+    dispatch(handleChangeSingleProductEnlargeImageId(product?._id));
+  }
+
+  const handlePlusPkQuantity = (quantity, count) => {
+    if (
+      selectedItemType === "pk" &&
+      findInCart?.product?._id !== product?._id
+    ) {
+      setPkCount(count);
+      setpkItemsQuantity(quantity * count);
+    }
+  };
+
+  const handleMinusPkQuantity = (quantity, count) => {
+    if (
+      selectedItemType === "pk" &&
+      findInCart?.product?._id !== product?._id
+    ) {
+      if (pkCount === 0) {
+        setPkCount(0);
+      } else {
+        setPkCount(count);
+        setpkItemsQuantity(quantity * count);
+      }
+    }
+  };
+
+  const handlePlusCTNQuantity = (quantity, count) => {
+    if (
+      selectedItemType === "ctn" &&
+      findInCart?.product?._id !== product?._id
+    ) {
+      setCtnCount(count);
+      setCtnItemQuantity(quantity * count);
+    }
+  };
+
+  const handleMinusCTNQuantity = (quantity, count) => {
+    if (
+      selectedItemType === "ctn" &&
+      findInCart?.product?._id !== product?._id
+    ) {
+      if (ctnCount === 0) {
+        setCtnCount(0);
+      } else {
+        setCtnCount(count);
+        setCtnItemQuantity(quantity * count);
+      }
+    }
+  };
+
+  // useEffect(() => {
+  //   dispatch(handleChangeEnlargeImageId(""));
+  //   dispatch(handleChangeEnlargeImageFrom(""));
+  //   dispatch(handleChangeSingleProductEnlargeImageId(""));
+  // }, []);
 
   useEffect(() => {
     if (cart !== null && cartItems.length > 0) {
@@ -156,22 +251,21 @@ const ProductCard = ({ product, title, selectedView, from }) => {
       );
       setFindInCart(findItemInCart);
     }
-  }, [pkitemsQuantity, ctnItemQuantity]);
-
+  }, [pkitemsQuantity, ctnItemQuantity, showProductDetailsPopup]);
   return (
     <>
       {selectedView === "gridsingle" ? (
         // single product
-        <div className="lg:space-y-3 relative space-y-2 w-full xl:p-3 md:p-5 p-3 bg-white font-semibold md:text-lg border rounded-lg border-[#EAEAEA] flex xl:flex-row flex-col items-start justify-between">
+        <div className="lg:space-y-3 relative z-0 space-y-2 w-full xl:p-3 md:p-5 p-3 bg-white font-semibold md:text-lg border rounded-lg border-[#EAEAEA] flex xl:flex-row flex-col items-start justify-between">
           {/* top seller label */}
           {title === "top-sellers" && (
-            <p className="bg-PRIMARY text-white h-8 w-40 leading-8 align-middle text-center text-sm rounded-tl-lg absolute top-0 left-0">
+            <p className="bg-PRIMARY text-white h-8 w-40 leading-8 align-middle text-center text-sm rounded-tl-lg absolute z-20 top-0 left-0">
               Top Seller
             </p>
           )}
 
           {/* left side */}
-          <div className="h-auto xl:w-2/3 w-full flex md:flex-row flex-col md:items-start items-center justify-start xl:gap-5 gap-3">
+          <div className="h-auto xl:w-2/3 w-full relative flex md:flex-row flex-col md:items-start items-center justify-start xl:gap-5 gap-3">
             {/* img */}
             <img
               src={BaseUrl.concat(product?.images[0])}
@@ -183,7 +277,36 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                 dispatch(handleSetSingelProductId(product?._id));
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}
+              loading="lazy"
             />
+            <MagnifyingGlassPlusIcon
+              role="button"
+              onClick={() => {
+                dispatch(showEnlargeImagePopup());
+                handleShowSingleProductEnlargeImage();
+              }}
+              className="h-6 w-6 bg-white/40 absolute left-0 md:bottom-0 bottom-56  text-PRIMARY"
+            />
+            {singleProductEnlargeImageId === product?._id &&
+              showEnlargeImage && (
+                <div className="absolute bg-black/30 z-40 xl:w-[30rem] md:w-[40rem] w-72 md:min-h-[22rem] md:max-h-[22rem] min-h-[24rem] max-h-[24rem] xl:-top-32 md:-top-20 top-0 md:left-0 -left-2 backdrop-blur-sm">
+                  <AiOutlineClose
+                    role="button"
+                    onClick={() => {
+                      dispatch(closeEnlargeImagePopup());
+                      handleShowSingleProductEnlargeImage();
+                    }}
+                    className="absolute top-1 right-2 w-7 h-7 text-white z-50"
+                  />
+                  <img
+                    src={BaseUrl.concat(product?.images[0])}
+                    alt={product?.name}
+                    className="w-full md:max-h-[19rem] md:min-h-[19rem] min-h-[20rem] max-h-[20rem] px-2 rounded-none object-fill object-center absolute top-10 z-50"
+                    title={product?.name}
+                    loading="lazy"
+                  />
+                </div>
+              )}
             {/* details */}
             {user === null ? (
               <div className="space-y-1 font-medium text-black w-full">
@@ -273,27 +396,61 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                 </span>
                 <div className="w-full relative z-0">
                   <input
-                    type="text"
+                    type="number"
                     className={`w-full h-10 text-sm pr-[4.5rem] pl-5 rounded-md outline-none border border-BORDERGRAY ${
-                      selectedItemType === "ctn" && "cursor-not-allowed"
+                      (selectedItemType === "ctn" ||
+                        findInCart?.product?._id === product?._id) &&
+                      "cursor-not-allowed"
                     }`}
                     placeholder="24 PC"
-                    value={pkitemsQuantity > 0 ? pkitemsQuantity : ""}
+                    value={pkitemsQuantity}
                     onChange={(e) => {
                       setpkItemsQuantity(e.target.value);
+                      setPkCount(
+                        e.target.value >= product?.PK
+                          ? parseFloat(
+                              (e.target.value / product?.PK)
+                                .toFixed(1)
+                                .toString()
+                                .split(".")[0]
+                            )
+                          : 0
+                      );
+                      if (
+                        !/^\d+$/.test(e.target.value) &&
+                        e.target.value !== ""
+                      ) {
+                        toast.dismiss();
+                        return toast.error("Please enter valid value.");
+                      }
                     }}
-                    disabled={selectedItemType === "ctn"}
+                    disabled={
+                      selectedItemType === "ctn" ||
+                      findInCart?.product?._id === product?._id
+                    }
                   />
-                  <span className="font-semibold text-BLACK text-sm absolute top-1/2 -translate-y-1/2 right-8">
-                    {pkitemsQuantity > 0 ? "" : 0} PK
+                  <span className="font-semibold text-BLACK w-14 text-xs absolute top-1/2 -translate-y-1/2 right-6">
+                    {pkCount} PK
                   </span>
                   <AiOutlineMinus
                     role="button"
                     className=" text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 left-1"
+                    onClick={() =>
+                      handleMinusPkQuantity(
+                        parseFloat(product?.PK),
+                        parseFloat(pkCount - 1)
+                      )
+                    }
                   />
                   <AiOutlinePlus
                     role="button"
                     className=" text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2"
+                    onClick={() =>
+                      handlePlusPkQuantity(
+                        parseFloat(product?.PK),
+                        parseFloat(pkCount + 1)
+                      )
+                    }
                   />
                 </div>
               </div>
@@ -319,27 +476,61 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                 </span>
                 <div className="w-full relative z-0">
                   <input
-                    type="text"
+                    type="number"
                     className={`w-full h-10 text-sm pr-[4.5rem] pl-5 rounded-md outline-none border border-BORDERGRAY ${
-                      selectedItemType === "pk" && "cursor-not-allowed"
+                      (selectedItemType === "pk" ||
+                        findInCart?.product?._id === product?._id) &&
+                      "cursor-not-allowed"
                     }`}
                     placeholder="144 PC"
-                    value={ctnItemQuantity > 0 ? ctnItemQuantity : ""}
+                    value={ctnItemQuantity}
                     onChange={(e) => {
                       setCtnItemQuantity(e.target.value);
+                      setCtnCount(
+                        e.target.value >= product?.CTN
+                          ? parseFloat(
+                              (e.target.value / product?.CTN)
+                                .toFixed(1)
+                                .toString()
+                                .split(".")[0]
+                            )
+                          : 0
+                      );
+                      if (
+                        !/^\d+$/.test(e.target.value) &&
+                        e.target.value !== ""
+                      ) {
+                        toast.dismiss();
+                        return toast.error("Please enter valid value.");
+                      }
                     }}
-                    disabled={selectedItemType === "pk"}
+                    disabled={
+                      selectedItemType === "pk" ||
+                      findInCart?.product?._id === product?._id
+                    }
                   />
-                  <span className="font-semibold text-BLACK text-sm absolute top-1/2 -translate-y-1/2 right-8">
-                    {ctnItemQuantity > 0 ? "" : 0} CTN
+                  <span className="font-semibold w-14 text-BLACK text-xs absolute top-1/2 -translate-y-1/2 right-6">
+                    {ctnCount} CTN
                   </span>
                   <AiOutlineMinus
                     role="button"
                     className=" text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 left-1"
+                    onClick={() =>
+                      handleMinusCTNQuantity(
+                        parseFloat(product?.CTN),
+                        parseFloat(ctnCount - 1)
+                      )
+                    }
                   />
                   <AiOutlinePlus
                     role="button"
                     className=" text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2"
+                    onClick={() =>
+                      handlePlusCTNQuantity(
+                        parseFloat(product?.CTN),
+                        parseFloat(ctnCount + 1)
+                      )
+                    }
                   />
                 </div>
               </div>
@@ -402,7 +593,7 @@ const ProductCard = ({ product, title, selectedView, from }) => {
           )}
         </div>
       ) : (
-        <div className="md:space-y-3 space-y-2 relative w-full md:p-3 p-4 bg-white lg:min-h-[27rem] md:min-h-[21rem] min-h-[19rem] font-semibold md:text-lg border rounded-lg border-[#EAEAEA]">
+        <div className="md:space-y-2 space-y-1 relative z-0 w-full md:p-3 p-4 bg-white lg:min-h-[27rem] md:min-h-[21rem] min-h-[19rem] font-semibold md:text-lg border rounded-lg border-[#EAEAEA]">
           {/* top seller label */}
           {title === "top-sellers" && (
             <p className="bg-PRIMARY text-white h-8 w-40 leading-8 align-middle text-center text-sm rounded-tl-lg absolute top-0 left-0">
@@ -410,17 +601,50 @@ const ProductCard = ({ product, title, selectedView, from }) => {
             </p>
           )}
           {/* prodcut img */}
-          <img
-            src={BaseUrl.concat(product?.images[0])}
-            alt={product?.name}
-            className="lg:h-64 md:h-40 h-32 cursor-pointer w-full object-contain object-center"
-            title={product?.name}
-            onClick={() => {
-              dispatch(showPopup());
-              dispatch(handleSetSingelProductId(product?._id));
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }}
-          />
+          <div className="relative z-20 pt-3">
+            <img
+              src={BaseUrl.concat(product?.images[0])}
+              alt={product?.name}
+              className="lg:h-64 md:h-40 relative z-0 h-32 cursor-pointer w-full object-contain object-center"
+              title={product?.name}
+              onClick={() => {
+                dispatch(showPopup());
+                dispatch(handleSetSingelProductId(product?._id));
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              loading="lazy"
+            />
+            <MagnifyingGlassPlusIcon
+              role="button"
+              onClick={() => {
+                dispatch(showEnlargeImagePopup());
+                handleShowEnlargeImage();
+              }}
+              className="h-6 w-6 bg-white/40 absolute bottom-0 right-0 text-PRIMARY"
+            />
+            {activeEnlargeImageId === product?._id &&
+              activeEnlargeImageFrom === from &&
+              showEnlargeImage && (
+                <div className="absolute bg-black/30 z-50 xl:w-[200%] w-full lg:min-h-[30rem] min-h-[22rem] max-h-screen top-0 md:-right-5 right-0 backdrop-blur-sm">
+                  <AiOutlineClose
+                    role="button"
+                    onClick={() => {
+                      dispatch(closeEnlargeImagePopup());
+                      handleShowEnlargeImage();
+                    }}
+                    className="absolute top-1 right-2 w-7 h-7 text-white z-50"
+                  />
+                  <img
+                    src={BaseUrl.concat(product?.images[0])}
+                    alt={product?.name}
+                    className="w-full max-h-screen px-2 rounded-none object-contain object-center absolute top-10"
+                    title={product?.name}
+                    loading="lazy"
+                  />
+                </div>
+              )}
+          </div>
+
           <p className="text-PRIMARY font-semibold">
             ITEM NO.{product?.number}
           </p>
@@ -430,18 +654,10 @@ const ProductCard = ({ product, title, selectedView, from }) => {
           >
             {product?.name}
           </p>
-          {user === null && (
-            <p
-              className="font-bold tracking-normal truncate"
-              title={product?.name}
-            >
-              {product?.shortDesc}
-            </p>
-          )}
           {user !== null ? (
             <Fragment>
               <p className="text-BLACK text-sm text-left">{product?.package}</p>
-              <p className="text-base font-bold text-left">
+              <p className="md:text-base text-sm font-bold text-left">
                 ${product?.price}/PC | $
                 {(product?.price * product?.CTN).toFixed(1)}/CTN
               </p>
@@ -464,7 +680,7 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                   </li>
                 </ul>
               )}
-              <p className="flex w-full items-center gap-x-2 relative z-0">
+              <p className="flex w-full items-center gap-x-1 relative z-0">
                 <input
                   name={
                     from === "TopSellers"
@@ -475,7 +691,6 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                   className="md:w-6 md:h-6 w-7 h-7"
                   onChange={(e) => setSelectedItemType(e.target.value)}
                   defaultChecked={true}
-                  // value={product?.name}
                   value="pk"
                   id={
                     from === "TopSellers"
@@ -483,32 +698,65 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                       : product?.name
                   }
                 />
-                <span className="font-semibold text-sm whitespace-nowrap">
-                  PK QTY
+                <span className="font-semibold text-xs whitespace-nowrap">
+                  PC QTY
                 </span>
                 <input
                   type="number"
-                  className={`w-11/12 h-10 text-sm pl-5 pr-16 rounded-md outline-none border border-BORDERGRAY ${
-                    selectedItemType === "ctn" && "cursor-not-allowed"
+                  className={`w-11/12 h-10 text-sm pl-4 pr-16 rounded-md outline-none border border-BORDERGRAY ${
+                    (selectedItemType === "ctn" ||
+                      findInCart?.product?._id === product?._id) &&
+                    "cursor-not-allowed"
                   }`}
-                  place
                   placeholder="24 PC"
-                  value={pkitemsQuantity > 0 ? pkitemsQuantity : ""}
+                  value={pkitemsQuantity}
                   onChange={(e) => {
                     setpkItemsQuantity(e.target.value);
+                    setPkCount(
+                      e.target.value >= product?.PK
+                        ? parseFloat(
+                            (e.target.value / product?.PK)
+                              .toFixed(1)
+                              .toString()
+                              .split(".")[0]
+                          )
+                        : 0
+                    );
+                    if (
+                      !/^\d+$/.test(e.target.value) &&
+                      e.target.value !== ""
+                    ) {
+                      toast.dismiss();
+                      return toast.error("Please enter valid value.");
+                    }
                   }}
-                  disabled={selectedItemType === "ctn"}
+                  disabled={
+                    selectedItemType === "ctn" ||
+                    findInCart?.product?._id === product?._id
+                  }
                 />
-                <span className="font-semibold text-BLACK text-sm absolute top-1/2 -translate-y-1/2 right-7">
-                  {pkitemsQuantity > 0 ? "" : 0} PK
+                <span className="font-semibold w-10 text-BLACK text-xs absolute top-1/2 -translate-y-1/2 right-4">
+                  {pkCount} PK
                 </span>
                 <AiOutlineMinus
                   role="button"
-                  className=" text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 left-20"
+                  className=" text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 md:left-[66px] left-[88px]"
+                  onClick={() =>
+                    handleMinusPkQuantity(
+                      parseFloat(product?.PK),
+                      parseFloat(pkCount - 1)
+                    )
+                  }
                 />
                 <AiOutlinePlus
                   role="button"
                   className=" text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2"
+                  onClick={() => {
+                    handlePlusPkQuantity(
+                      parseFloat(product?.PK),
+                      parseFloat(pkCount + 1)
+                    );
+                  }}
                 />
               </p>
               <p className="flex w-full items-center gap-x-1 relative z-0">
@@ -521,11 +769,6 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                   type="radio"
                   className="md:w-6 md:h-6 w-7 h-7"
                   onChange={(e) => setSelectedItemType(e.target.value)}
-                  // value={
-                  //   from === "TopSellers"
-                  //     ? product?.name.concat(from)
-                  //     : product?.name
-                  // }
                   value="ctn"
                   id={
                     from === "TopSellers"
@@ -533,31 +776,65 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                       : product?.name
                   }
                 />
-                <span className="font-semibold text-sm whitespace-nowrap">
+                <span className="font-semibold text-xs whitespace-nowrap">
                   CTN QTY
                 </span>
                 <input
                   type="text"
-                  className={`w-11/12 h-10 text-sm pl-5 pr-[74px] rounded-md outline-none border border-BORDERGRAY ${
-                    selectedItemType === "pk" && "cursor-not-allowed"
+                  className={`w-11/12  h-10 text-sm pl-5 pr-[74px] rounded-md outline-none border border-BORDERGRAY ${
+                    (selectedItemType === "pk" ||
+                      findInCart?.product?._id === product?._id) &&
+                    "cursor-not-allowed"
                   }`}
                   placeholder="144 PC"
-                  value={ctnItemQuantity > 0 ? ctnItemQuantity : ""}
+                  value={ctnItemQuantity}
                   onChange={(e) => {
                     setCtnItemQuantity(e.target.value);
+                    setCtnCount(
+                      e.target.value >= product?.CTN
+                        ? parseFloat(
+                            (e.target.value / product?.CTN)
+                              .toFixed(1)
+                              .toString()
+                              .split(".")[0]
+                          )
+                        : 0
+                    );
+                    if (
+                      !/^\d+$/.test(e.target.value) &&
+                      e.target.value !== ""
+                    ) {
+                      toast.dismiss();
+                      return toast.error("Please enter valid value.");
+                    }
                   }}
-                  disabled={selectedItemType === "pk"}
+                  disabled={
+                    selectedItemType === "pk" ||
+                    findInCart?.product?._id === product?._id
+                  }
                 />
-                <span className="font-semibold text-BLACK text-sm absolute top-1/2 -translate-y-1/2 right-8">
-                  {ctnItemQuantity > 0 ? "" : 0} CTN
+                <span className="font-semibold w-12 text-xs text-BLACK absolute top-1/2 -translate-y-1/2 right-3">
+                  {ctnCount} CTN
                 </span>
                 <AiOutlineMinus
                   role="button"
-                  className=" text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 left-20"
+                  className=" text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 md:left-[72px] left-[88px]"
+                  onClick={() =>
+                    handleMinusCTNQuantity(
+                      parseFloat(product?.CTN),
+                      parseFloat(ctnCount - 1)
+                    )
+                  }
                 />
                 <AiOutlinePlus
                   role="button"
                   className=" text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2"
+                  onClick={() => {
+                    handlePlusCTNQuantity(
+                      parseFloat(product?.CTN),
+                      parseFloat(ctnCount + 1)
+                    );
+                  }}
                 />
               </p>
               <p className="flex items-center gap-x-2">
@@ -576,18 +853,20 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                     type="button"
                     className="bg-DARKRED text-white text-center w-full p-2 rounded-lg"
                     onClick={() => {
-                      handleAddProduct(
-                        product?._id,
-                        product?.name,
-                        selectedItemType === "pk"
-                          ? pkitemsQuantity
-                          : ctnItemQuantity,
-                        selectedItemType === "pk"
-                          ? pkitemsQuantity * product?.price
-                          : ctnItemQuantity * product?.price
-                      );
+                      product?._id !== findInCart?.product?._id &&
+                        handleAddProduct(
+                          product?._id,
+                          product?.name,
+                          selectedItemType === "pk"
+                            ? pkitemsQuantity
+                            : ctnItemQuantity,
+                          selectedItemType === "pk"
+                            ? pkitemsQuantity * product?.price
+                            : ctnItemQuantity * product?.price
+                        );
                       setSelectedProductId(product?._id);
                     }}
+                    disabled={loading}
                   >
                     {loading && selectedProductId === product?._id ? (
                       "Adding..."

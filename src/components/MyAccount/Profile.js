@@ -1,14 +1,11 @@
 import React, { useState } from "react";
 import EditProfile from "./EditProfile";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
-import { handleUserProfile } from "../../redux/GetContentSlice";
 
 const Profile = () => {
   const [showEditProfile, setShowEditProfile] = useState(false);
 
   const { user, loading } = useSelector((state) => state.getContent);
-
   return (
     <>
       {showEditProfile ? (
@@ -37,7 +34,7 @@ const Profile = () => {
           </p>
           <p className="flex items-center w-full text-lg">
             <span className="font-bold md:w-60 w-40">Location:</span>{" "}
-            <span className="font-normal capitalize">{user?.address}</span>
+            <span className="font-normal capitalize">{user?.location}</span>
           </p>
           <p className="flex items-center w-full text-lg">
             <span className="font-bold md:w-60 w-40">City:</span>{" "}

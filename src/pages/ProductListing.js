@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import FilterComponent from "../components/FilterComponent";
 import { Helmet } from "react-helmet";
 import {
@@ -9,8 +9,7 @@ import {
 } from "react-icons/bs";
 import { useState } from "react";
 import ProductCard from "../components/ProductCard";
-import SingleProdcutCard from "../components/SingleProdcutCard";
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import ReactPaginate from "react-paginate";
 import { useTranslation } from "react-i18next";
@@ -19,42 +18,45 @@ import { useEffect } from "react";
 import {
   handleGetAllProducts,
   handleGetNewArrivals,
-} from "../redux/GetContentSlice";
+  handleGetTopSellers,
+} from "../redux/ProductSlice";
 import { toast } from "react-hot-toast";
 import {
   handleChangePagePerView,
   handleChangeProductListingPageLink,
 } from "../redux/GlobalStates";
-import { handleGetTopSellers } from "../redux/GetContentSlice";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 
 const ProductListing = () => {
-  const { perPageItemView, pagination } = useSelector(
-    (state) => state.globalStates
-  );
+  const { pagination } = useSelector((state) => state.globalStates);
   const [selectedView, setSelectedView] = useState("grid");
   const [pageNumber, setPageNumber] = useState(pagination);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [filterProducts, setFilterProducts] = useState([]);
   const [filterValue, setFilterValue] = useState("newest");
   const [message, setMessage] = useState("");
+  const [activePrice, setActivePrice] = useState("Any");
+  const [activeSubCategory, setActiveSubCategory] = useState("");
 
-  const { newArrivals, loading, allProducts, topSellers } = useSelector(
-    (state) => state.getContent
+  const { newArrivals, productLoading, allProducts, topSellers } = useSelector(
+    (state) => state.products
   );
 
   const { token } = useSelector((state) => state.Auth);
-
-  // const { title, price, searchQuery } = useLocation().state;
-
+  const { searchProducts, searchTerm, perPageItemView } = useSelector(
+    (state) => state.globalStates
+  );
+  const { loading } = useSelector((state) => state.favourite);
   const { title } = useParams();
 
   const { t } = useTranslation();
 
+  const AbortControllerRef = useRef(null);
+
   const dispatch = useDispatch();
 
   // pagination logic
-  const productsPerPage = 4;
+  const productsPerPage = parseInt(perPageItemView);
   const pageVisited = pageNumber * productsPerPage;
   const displayProdcuts = products.slice(
     pageVisited,
@@ -64,31 +66,33 @@ const ProductListing = () => {
   const changePage = ({ selected }) => {
     setPageNumber(selected);
   };
-
   // filter products
-  const handleFilterProducts = () => {
+  const handleFilterProducts = async () => {
     toast.dismiss();
-    if (loading) {
+    if (await productLoading) {
       return true;
     } else if (title.includes("new-arrivals")) {
-      // console.log("nwe");
-      // setPageNumber(0);
+      // new arrivals
       setProducts(newArrivals);
-      console.log(newArrivals, loading);
-      if (newArrivals.length === 0 && !loading) {
-        setMessage("Product Not Found in New Arrivals, Try Someting else.");
+      handleFilterProductsByPrice(newArrivals);
+      if (newArrivals.length <= 0 && !productLoading) {
+        return setMessage(
+          "Product Not Found in New Arrivals, Try Someting else."
+        );
       }
       return true;
     } else if (title.includes("top-sellers")) {
-      // console.log("topseles");
+      // top sellers
       setProducts(topSellers);
-      // setPageNumber(0);
-      if (topSellers.length === 0) {
-        setMessage("Product Not Found in Top Sellers, Try something else.");
+      handleFilterProductsByPrice(topSellers);
+      if (topSellers.length <= 0) {
+        return setMessage(
+          "Product Not Found in Top Sellers, Try something else."
+        );
       }
       return true;
     } else if (/\d/.test(title)) {
-      // console.log("price");
+      // by price
       if (title.includes("-")) {
         const price = title.split("-");
         const byPrice = allProducts.filter(
@@ -97,73 +101,156 @@ const ProductListing = () => {
             i.price <= price[1].replace("$", "")
         );
         setProducts(byPrice);
+        handleFilterProductsByPrice(byPrice);
+
         if (allProducts.length === 0) {
-          setMessage("Product Not Found, Try something else.");
+          return setMessage("Product Not Found, Try with different price.");
         }
       } else {
+        // over by price
         const price = title.split("$");
         const byPrice = allProducts.filter((i) => i.price >= price[1]);
         setProducts(byPrice);
+        handleFilterProductsByPrice(byPrice);
+
         if (allProducts.length === 0) {
-          setMessage("Product Not Found, Try something else.");
+          return setMessage("Product Not Found, Try with different price.");
         }
       }
-      // setPageNumber(0);
       return true;
     } else if (title.includes("all-products")) {
-      // setPageNumber(0);
+      // all products
       setProducts(allProducts);
+      handleFilterProductsByPrice(allProducts);
+
       if (allProducts.length === 0) {
-        setMessage("Product Not Found, Try something else.");
+        return setMessage("Product Not Found, Try something else.");
       }
       return true;
     } else if (title.includes("low-to-high")) {
+      // low - high
       const lowToHigh = allProducts.slice().sort((a, b) => {
         return parseFloat(a.price) - parseFloat(b.price);
       });
-      // setPageNumber(0);
       setProducts(lowToHigh);
+      handleFilterProductsByPrice(lowToHigh);
+
       if (allProducts.length === 0) {
-        setMessage("Product Not Found, Try something else.");
+        return setMessage("Product Not Found, Try something else.");
       }
       return true;
     } else if (title.includes("high-to-low")) {
+      // high - low
       const highToLow = allProducts.slice().sort((a, b) => {
         return parseFloat(b.price) - parseFloat(a.price);
       });
-      // setPageNumber(0);
       setProducts(highToLow);
+      handleFilterProductsByPrice(highToLow);
+
       if (allProducts.length === 0) {
-        setMessage("Product Not Found, Try something else.");
+        return setMessage("Product Not Found, Try something else.");
       }
       return true;
     } else if (categories.includes(title)) {
+      // by category
       const productsByCategories = allProducts.filter((i) =>
         i.category.includes(title)
       );
-      // setPageNumber(0);
       setProducts(productsByCategories);
+      handleFilterProductsByPrice(productsByCategories);
+      if (activeSubCategory !== "") {
+        const findProducts = productsByCategories.filter(
+          (c) => c?.subcategory === activeSubCategory
+        );
+        setProducts(findProducts);
+      }
       if (allProducts.length === 0) {
-        setMessage("Product Not Found, Try something else.");
+        return setMessage("Product Not Found, Try something else.");
       }
       return true;
+    } else if (title.includes("search")) {
+      setProducts(searchProducts);
+      handleFilterProductsByPrice(searchProducts);
+      return true;
     } else if (!categories.includes(title)) {
-      // setPageNumber(0);
+      // if category not found
       setProducts([]);
-      setMessage("Product Not Found, Try different category.");
+      setMessage("Product Not Found, Try other filter.");
       return true;
     } else if (
       (allProducts.length === 0 ||
         products.length === 0 ||
         newArrivals.length === 0 ||
         topSellers.length === 0) &&
-      !loading
+      !productLoading
     ) {
-      // console.log("null");
-      // setPageNumber(0);
       setProducts([]);
       toast.error("Products Not Found!!!");
+      setMessage("Product Not Found, Try other filter.");
       return true;
+    }
+  };
+
+  // filters on price
+  const handleFilterProductsByPrice = (filterproducts) => {
+    toast.dismiss();
+    if (activePrice.includes("Any")) {
+      return setProducts(filterproducts);
+    } else if (activePrice.includes("Below $0.70")) {
+      const byPrice = filterproducts.filter(
+        (i) => parseFloat(i.price) <= parseFloat(0.7)
+      );
+      if (byPrice.length > 0) {
+        return setProducts(byPrice);
+      } else {
+        return toast.error("Products not found below $0.70 price.");
+      }
+    } else if (activePrice.includes("$0.70 - $0.89")) {
+      const price = activePrice.split("-");
+      const byPrice = filterproducts.filter(
+        (i) =>
+          i.price >= price[0].replace("$", "") &&
+          i.price <= price[1].replace("$", "")
+      );
+      if (byPrice.length > 0) {
+        return setProducts(byPrice);
+      } else {
+        return toast.error("Products not found between $0.70 - $0.89 price.");
+      }
+    } else if (activePrice.includes("$0.90 - $1.99")) {
+      const price = activePrice.split("-");
+      const byPrice = filterproducts.filter(
+        (i) =>
+          i.price >= price[0].replace("$", "") &&
+          i.price <= price[1].replace("$", "")
+      );
+      if (byPrice.length > 0) {
+        return setProducts(byPrice);
+      } else {
+        return toast.error("Products not found between $0.90 - $1.99 price.");
+      }
+    } else if (activePrice.includes("$2 - $2.99")) {
+      const price = activePrice.split("-");
+      const byPrice = filterproducts.filter(
+        (i) =>
+          i.price >= price[0].replace("$", "") &&
+          i.price <= price[1].replace("$", "")
+      );
+      if (byPrice.length > 0) {
+        return setProducts(byPrice);
+      } else {
+        return toast.error("Products not found between $2 - $2.99 price.");
+      }
+    } else if (activePrice.includes("High_to_low")) {
+      const highToLow = filterproducts.slice().sort((a, b) => {
+        return parseFloat(b.price) - parseFloat(a.price);
+      });
+      return setProducts(highToLow);
+    } else if (activePrice.includes("Low_to_high")) {
+      const lowToHigh = filterproducts.slice().sort((a, b) => {
+        return parseFloat(a.price) - parseFloat(b.price);
+      });
+      return setProducts(lowToHigh);
     }
   };
 
@@ -184,12 +271,26 @@ const ProductListing = () => {
         })
         .catch((err) => {});
     }
-  }, []);
+    return () => {
+      AbortControllerRef.current !== null && AbortControllerRef.current.abort();
+    };
+  }, [loading]);
 
   // set products releated category & filter wise
   useEffect(() => {
     handleFilterProducts();
-  }, [allProducts, loading, categories, title]);
+  }, [
+    allProducts,
+    productLoading,
+    categories,
+    title,
+    loading,
+    newArrivals,
+    topSellers,
+    activePrice,
+    activeSubCategory,
+    searchProducts,
+  ]);
 
   // filter by new & old
   useEffect(() => {
@@ -209,36 +310,29 @@ const ProductListing = () => {
       })
     );
   }, [title, pageNumber]);
-  // console.log(pageNumber);
-
   return (
     <>
       <Helmet title={`product-listing-${title}`} />
       <section className="bg-BACKGROUNDGRAY lg:pb-20 lg:py-0 py-10">
         <div className="container mx-auto space_for_div space-y-5 w-full bg-BACKGROUNDGRAY">
           {/* title */}
-          <h1 className="block font-semibold md:text-4xl text-2xl text-left">
-            {/* {title === "Price" && title !== "" ? (
-              <>
-                By Price:
-                <span className="text-PRIMARY ml-1 capitalize">"{price}"</span>
-              </>
-            ) : title === "Search" && title !== "" ? (
-              <>
-                Search for:
-                <span className="text-PRIMARY ml-1 capitalize">
-                  "{searchQuery}"
-                </span>
-              </>
-            ) : title !== "" ? (
-              <span className="capitalize">{title}</span>
-            ) : null} */}
-            {title}
+          <h1 className="block font-semibold md:text-4xl text-2xl text-left capitalize">
+            {title.includes("search")
+              ? `Search for: ${searchTerm}`
+              : /\d/.test(title)
+              ? `By Price: ${title}`
+              : title}
           </h1>
           <div className="w-full flex items-start justify-start gap-5 lg:flex-row flex-col">
             {/* filter */}
             <section className="lg:w-[20%] w-full">
-              <FilterComponent setFilterProducts={setFilterProducts} />
+              <FilterComponent
+                setActivePrice={setActivePrice}
+                activePrice={activePrice}
+                title={title}
+                categories={categories}
+                setActiveSubCategory={setActiveSubCategory}
+              />
             </section>
             {/* products listing*/}
             <section className="lg:w-[80%] w-full space-y-5">
@@ -297,7 +391,8 @@ const ProductListing = () => {
                       ></p>
                     </div>
                     <p className="font-medium text-base">
-                      {pageNumber + 1} of {pageCount} ({products.length} items)
+                      {products.length > 0 ? pageNumber + 1 : 0} of {pageCount}{" "}
+                      ({products.length} items)
                     </p>
                   </div>
                   {/* filter dropdown */}
@@ -338,16 +433,27 @@ const ProductListing = () => {
               <div
                 className={`w-full grid ${
                   selectedView === "grid"
-                    ? "xl:grid-cols-4 grid-cols-2 md:gap-3 gap-1"
+                    ? "xl:grid-cols-4 md:grid-cols-2 md:gap-3 gap-1"
                     : selectedView === "grid3"
-                    ? "xl:grid-cols-3 grid-cols-2 md:gap-5 gap-1"
+                    ? "xl:grid-cols-3 md:grid-cols-2 md:gap-5 gap-1"
                     : "grid-cols-1 gap-y-5"
-                } place-items-start items-center`}
+                } items-center`}
               >
-                {loading ? (
-                  <p className="col-span-full mx-auto md:text-3xl text-xl font-normal p-3">
-                    Loading...
-                  </p>
+                {productLoading ? (
+                  <SkeletonTheme
+                    baseColor="lightgray"
+                    highlightColor="white"
+                    borderRadius="10px"
+                  >
+                    <Skeleton className="w-full md:h-80 h-60" />
+                    <Skeleton className="w-full md:h-80 h-60" />
+                    <Skeleton className="w-full md:h-80 h-60" />
+                    <Skeleton className="w-full md:h-80 h-60" />
+                    <Skeleton className="w-full md:h-80 h-60" />
+                    <Skeleton className="w-full md:h-80 h-60" />
+                    <Skeleton className="w-full md:h-80 h-60" />
+                    <Skeleton className="w-full md:h-80 h-60" />
+                  </SkeletonTheme>
                 ) : displayProdcuts.length > 0 && products.length > 0 ? (
                   displayProdcuts.map((product) => (
                     <ProductCard
@@ -390,6 +496,7 @@ const ProductListing = () => {
                     containerClassName=""
                     activeClassName="active"
                     className="flex items-center gap-x-3"
+                    forcePage={pagination}
                   />
                   {/* filter dropdown */}
                   <div className="flex items-center gap-x-4">

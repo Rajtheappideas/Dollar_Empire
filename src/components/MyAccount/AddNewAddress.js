@@ -13,8 +13,17 @@ import { toast } from "react-hot-toast";
 import { useEffect } from "react";
 import { handlePostNewAddress } from "../../redux/FeatureSlice";
 import { handleGetAddresses } from "../../redux/GetContentSlice";
+import { useState } from "react";
+import { Country, State, City } from "country-state-city";
 
 const AddNewAddress = ({ setShowNewAddress }) => {
+  const [selectedData, setSelectedData] = useState({
+    state: "",
+    city: "",
+  });
+  const [allCountries, setAllCountries] = useState("");
+  const [country, setCountry] = useState("");
+
   const { token } = useSelector((state) => state.Auth);
   const { loading } = useSelector((state) => state.features);
 
@@ -22,7 +31,7 @@ const AddNewAddress = ({ setShowNewAddress }) => {
 
   const AbortControllerRef = useRef(null);
 
-  const SignupSchema = yup.object().shape({
+  const addNewAddressSchema = yup.object().shape({
     fname: yup
       .string()
       .trim("The contact name cannot include leading and trailing spaces")
@@ -52,25 +61,27 @@ const AddNewAddress = ({ setShowNewAddress }) => {
       .string()
       .typeError("That doesn't look like a postal code")
       .required("postalcode is required")
-      .max(6, "Pincode should be 6 characters")
-      .min(6, "Pincode should be 6 characters")
+      .max(
+        country === "United States" ? 5 : 6,
+        country === "United States"
+          ? "Pincode should be 5 characters"
+          : "Pincode should be 6 characters"
+      )
+      .min(
+        country === "United States" ? 5 : 6,
+        country === "United States"
+          ? "Pincode should be 5 characters"
+          : "Pincode should be 6 characters"
+      )
       .matches(/^[0-9A-Za-z\s\-]+$/g, "That doesn't look like a postal code"),
     city: yup
       .string()
       .required("city is required")
-      .trim("The contact name cannot include leading and trailing spaces")
-      .matches(
-        /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
-        "only contain Latin letters."
-      ),
+      .trim("The contact name cannot include leading and trailing spaces"),
     state: yup
       .string()
       .required("state is required")
-      .trim("The contact name cannot include leading and trailing spaces")
-      .matches(
-        /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
-        "only contain Latin letters."
-      ),
+      .trim("The contact name cannot include leading and trailing spaces"),
     companyName: yup
       .string()
       .required("companyName is required")
@@ -82,11 +93,7 @@ const AddNewAddress = ({ setShowNewAddress }) => {
     country: yup
       .string()
       .required("country is required")
-      .trim("The contact name cannot include leading and trailing spaces")
-      .matches(
-        /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
-        "only contain Latin letters."
-      ),
+      .trim("The contact name cannot include leading and trailing spaces"),
     phone: yup
       .string()
       .required("A phone number is required")
@@ -100,12 +107,12 @@ const AddNewAddress = ({ setShowNewAddress }) => {
       location: "",
       companyName: "",
       phone: "",
-      city: "",
-      state: "",
-      country: "",
+      city: selectedData.city,
+      state: selectedData.state,
+      country: "United States",
       postalCode: "",
     },
-    validationSchema: SignupSchema,
+    validationSchema: addNewAddressSchema,
     onSubmit: (values) => {
       if (
         isPossiblePhoneNumber(values.phone) &&
@@ -147,13 +154,30 @@ const AddNewAddress = ({ setShowNewAddress }) => {
     },
   });
 
-  const { getFieldProps, handleSubmit, setFieldValue, resetForm } = formik;
+  const { getFieldProps, handleSubmit, setFieldValue, resetForm, values } =
+    formik;
 
   useEffect(() => {
+    setAllCountries(Country.getAllCountries());
+
     return () => {
       AbortControllerRef.current !== null && AbortControllerRef.current.abort();
     };
   }, []);
+  // for country , state , city selection
+  useEffect(() => {
+    const country = Country.getAllCountries().find(
+      (country) => country.name === values.country
+    );
+    setCountry(country?.name);
+    const states = State.getStatesOfCountry(country?.isoCode);
+    setSelectedData({ ...selectedData, state: states });
+    const state = states.find((state) => state.name === values.state);
+    const cities = City.getCitiesOfState(state?.countryCode, state?.isoCode);
+    if (cities.length > 0) {
+      setSelectedData({ ...selectedData, city: cities });
+    }
+  }, [values.country, values.state, values.city]);
 
   return (
     <FormikProvider value={formik}>
@@ -227,53 +251,75 @@ const AddNewAddress = ({ setShowNewAddress }) => {
             component={TextError}
           />
         </>
-        {/* city */}
-        <div className="flex items-start w-full gap-x-3">
-          <div className="lg:w-2/5 w-1/2 space-y-2">
-            <label className="text-black font-medium block text-left text-lg">
-              City*
-            </label>
-            <input
-              type="text"
-              className="bg-LIGHTGRAY outline-none w-full text-black placeholder:text-gray-400 rounded-md p-3"
-              placeholder="City"
-              name="city"
-              {...getFieldProps("city")}
-            />
-            <ErrorMessage name="city" className="block" component={TextError} />
-          </div>
-          <div className="lg:w-2/5 w-1/2 space-y-2">
-            <label className="text-black font-medium block text-left text-lg">
-              State*
-            </label>
-            <input
-              type="text"
-              className="bg-LIGHTGRAY outline-none w-full text-black placeholder:text-gray-400 rounded-md p-3"
-              name="state"
-              placeholder="State"
-              {...getFieldProps("state")}
-            />
-            <ErrorMessage name="state" component={TextError} />
-          </div>
-        </div>
         {/* Country */}
         <>
           <label className="text-black font-medium block text-left text-lg">
             Country*
           </label>
-          <input
-            type="text"
-            className="bg-LIGHTGRAY outline-none lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
+          <select
+            className=" outline-none bg-LIGHTGRAY lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
+            onChange={(e) =>
+              setSelectedData({ ...selectedData, country: e.target.value })
+            }
             name="country"
-            placeholder="Country"
             {...getFieldProps("country")}
-          />
+          >
+            <option value="United states">United states</option>
+            {allCountries !== "" &&
+              allCountries.map((country) => (
+                <option key={country.name} value={country.name}>
+                  {country?.name}
+                </option>
+              ))}
+          </select>
           <ErrorMessage
             name="country"
             className="block"
             component={TextError}
           />
         </>
+        {/* city */}
+        <div className="flex items-start w-full gap-x-3">
+          <div className="lg:w-2/5 w-1/2 space-y-2">
+            <label className="text-black font-medium block text-left text-lg">
+              State*
+            </label>
+            <select
+              className=" outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
+              name="state"
+              {...getFieldProps("state")}
+            >
+              <option label="Select state"></option>
+              {selectedData?.state.length > 0 &&
+                selectedData.state.map((state) => (
+                  <option key={state.name} value={state.name}>
+                    {state?.name}
+                  </option>
+                ))}
+            </select>
+            <ErrorMessage name="state" component={TextError} />
+          </div>
+          <div className="lg:w-2/5 w-1/2 space-y-2">
+            <label className="text-black font-medium block text-left text-lg">
+              City*
+            </label>
+            <select
+              className=" outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
+              name="city"
+              {...getFieldProps("city")}
+            >
+              <option label="Select city"></option>
+              {selectedData?.city.length > 0 &&
+                selectedData.city.map((city) => (
+                  <option key={city.name} value={city.name}>
+                    {city?.name}
+                  </option>
+                ))}
+            </select>
+            <ErrorMessage name="city" className="block" component={TextError} />
+          </div>
+        </div>
+
         {/* phone, postal code */}
         <div className="flex items-start w-full gap-x-3">
           <div className="lg:w-2/5 w-full space-y-2">
@@ -309,8 +355,8 @@ const AddNewAddress = ({ setShowNewAddress }) => {
             </label>
             <input
               type="number"
-              maxLength={6}
-              minLength={6}
+              maxLength={values.country === "United States" ? 5 : 6}
+              minLength={5}
               className="bg-LIGHTGRAY outline-none w-full text-black placeholder:text-gray-400 rounded-md p-3"
               placeholder="Postal code"
               name="postalCode"

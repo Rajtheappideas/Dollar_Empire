@@ -8,6 +8,8 @@ import CartSlice from "./CartSlice";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import OrderSlice from "./OrderSlice";
+import FavouriteSlice from "./FavouriteSlice";
+import ProductSlice from "./ProductSlice";
 
 const persistConfigForGlobalStates = {
   key: "globalStates",
@@ -32,7 +34,10 @@ export const store = configureStore({
     getContent: GetContentSlice,
     features: FeatureSlice,
     orders: OrderSlice,
-    cart: persisteCart,
+    // cart: persisteCart,
+    cart: CartSlice,
+    favourite: FavouriteSlice,
+    products: ProductSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }),

@@ -40,7 +40,7 @@ export const handleRegisterUser = createAsyncThunk(
     password,
     phone,
     companyName,
-    address,
+    location,
     city,
     state,
     country,
@@ -58,7 +58,7 @@ export const handleRegisterUser = createAsyncThunk(
         password,
         phone,
         companyName,
-        address,
+        location,
         city,
         state,
         country,
@@ -102,7 +102,7 @@ const AuthSlice = createSlice({
       state.user = null;
       window.localStorage.clear();
       window.location.href = window.location.origin;
-      toast.success("Logout Successfully.");
+      toast.success("Logout Successfully.", { duration: 3000 });
     },
     handleChangeUserLanguage: (state, { payload }) => {
       state.userLanguage = i18next.changeLanguage(payload);

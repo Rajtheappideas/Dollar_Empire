@@ -1,21 +1,56 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import EditAddressPopup from "./EditAddressPopup";
 import { handleChangeActiveComponent } from "../../redux/GlobalStates";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { changeGrandTotal } from "../../redux/CartSlice";
+import AddNewAddress from "./AddNewAddress";
+import { toast } from "react-hot-toast";
+import {
+  handleChangeShippingAddressId,
+  handleChangeShippingMethod,
+} from "../../redux/OrderSlice";
 
 const Checkout = ({ summaryFixed }) => {
   const [showPopup, setShowPopup] = useState(false);
-  const [shipphingMethod, setShipphingMethod] = useState({
-    freight: true,
-    pickup: false,
-  });
+  const [addressId, setAddressId] = useState(null);
+  const [showAddnewaddressPopup, setShowAddnewaddressPopup] = useState(false);
 
+  const { grandTotal } = useSelector((state) => state.cart);
+  const { shippingAddressId, shipphingMethod } = useSelector(
+    (state) => state.orders
+  );
+  const { addressList, loading } = useSelector((state) => state.getContent);
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    if (shipphingMethod === "freight") {
+      dispatch(changeGrandTotal("freight"));
+    } else {
+      dispatch(changeGrandTotal("pickup"));
+    }
+  }, [shipphingMethod]);
+
+  const handlechangeActiveComponent = () => {
+    toast.dismiss();
+    if (shippingAddressId === "") {
+      return toast.error("Please select the shipping address.");
+    }
+    dispatch(handleChangeActiveComponent("Payment_Info"));
+  };
   return (
     <div className="w-full flex xl:flex-row flex-col items-start justify-start gap-4 pb-10">
       {showPopup && (
-        <EditAddressPopup setShowPopup={setShowPopup} showPopup={showPopup} />
+        <EditAddressPopup
+          addressId={addressId}
+          setShowPopup={setShowPopup}
+          showPopup={showPopup}
+        />
+      )}
+      {showAddnewaddressPopup && (
+        <AddNewAddress
+          setShowAddnewaddressPopup={setShowAddnewaddressPopup}
+          showAddnewaddressPopup={showAddnewaddressPopup}
+        />
       )}
 
       {/* left side div */}
@@ -27,12 +62,12 @@ const Checkout = ({ summaryFixed }) => {
           <div className="w-full flex justify-start items-center gap-x-5 bg-white">
             <input
               name="checkout"
-              onChange={() =>
-                setShipphingMethod({ pickup: true, freight: false })
-              }
+              onChange={() => {
+                dispatch(handleChangeShippingMethod("pickup"));
+              }}
               type="radio"
               className="w-6 h-6"
-              checked={shipphingMethod.pickup}
+              checked={shipphingMethod === "pickup"}
             />
             <p>
               <span className="font-semibold text-xl block">Pickup</span>
@@ -47,12 +82,12 @@ const Checkout = ({ summaryFixed }) => {
           <div className="w-full flex justify-start items-center gap-x-5 bg-white">
             <input
               name="checkout"
-              onChange={() =>
-                setShipphingMethod({ pickup: false, freight: true })
-              }
+              onChange={() => {
+                dispatch(handleChangeShippingMethod("freight"));
+              }}
               type="radio"
               className="w-6 h-6"
-              checked={shipphingMethod.freight}
+              checked={shipphingMethod === "freight"}
             />
             <p>
               <span className="font-semibold text-xl block">Freight</span>
@@ -84,22 +119,48 @@ const Checkout = ({ summaryFixed }) => {
             Shipping Address
           </p>
         </div>
-        <div className="w-full border border-gray-300 rounded-md p-5 font-normal text-left space-y-3 text-[#282828]">
-          <p className="font-semibold text-xl">John</p>
-          <p>Company name</p>
-          <p className="w-4/12">
-            4127 State Street, Michigan, Southfield 48075 United States
-          </p>
-          <p>+01 123456475</p>
-          <p role="button" className="text-PRIMARY">
-            Edit
-          </p>
-        </div>
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
+          addressList.length > 0 &&
+          addressList !== undefined &&
+          addressList.map((address) => (
+            <div
+              key={address?._id}
+              className={`${
+                shippingAddressId === address?._id && "bg-gray-100"
+              } cursor-pointer w-full border border-gray-300 rounded-md p-5 font-normal text-left space-y-3 text-[#282828]`}
+              onClick={() =>
+                dispatch(handleChangeShippingAddressId(address?._id))
+              }
+            >
+              <p className="font-semibold text-xl">{address?.fname}</p>
+              <p>{address?.companyName}</p>
+              <p className="w-4/12">
+                {address?.location}, {address?.city}, {address?.state}{" "}
+                {address?.postalCode} {address?.country}
+              </p>
+              <p>{address?.phone}</p>
+              <p
+                role="button"
+                onClick={() => {
+                  setShowPopup(true);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                  setAddressId(address?._id);
+                }}
+                className="text-PRIMARY inline-block"
+              >
+                Edit
+              </p>
+            </div>
+          ))
+        )}
+
         <button
           type="button"
           className="bg-PRIMARY text-white hover:bg-white hover:text-PRIMARY duration-300 ease-in-out border border-PRIMARY w-60 rounded-md text-center p-4 font-semibold"
           onClick={() => {
-            setShowPopup(true);
+            setShowAddnewaddressPopup(true);
             window.scrollTo({ top: 0, behavior: "smooth" });
           }}
         >
@@ -116,25 +177,27 @@ const Checkout = ({ summaryFixed }) => {
         <hr className="w-full" />
         <p className="w-full flex items-center justify-between text-base">
           <span className="font-normal">Subtotal</span>
-          <span className="ml-auto font-semibold text-base">$620.00</span>
+          <span className="ml-auto font-semibold text-base">
+            ${parseFloat(grandTotal).toFixed(2)}{" "}
+          </span>{" "}
         </p>
         <p className="w-full flex items-center justify-between text-base">
           <span className="font-normal">Freight</span>
           <span className="ml-auto font-semibold text-base">
-            {shipphingMethod.pickup ? "$ 0.00" : "$ 10.00"}
+            {shipphingMethod === "pickup" ? "$ 0.00" : "$ 10.00"}
           </span>
         </p>
         <hr className="w-full" />
         <p className="w-full flex items-center justify-between text-2xl font-bold">
           <span>Grand Total</span>
-          <span className="ml-auto">$630.00</span>
+          <span className="ml-auto">${parseFloat(grandTotal).toFixed(2)}</span>
         </p>
         <hr className="w-full" />
 
         <button
           type="button"
           className="font-semibold bg-PRIMARY text-white hover:bg-white hover:text-PRIMARY border border-PRIMARY duration-300 ease-in-out w-full p-3 text-center"
-          onClick={() => dispatch(handleChangeActiveComponent("Payment_Info"))}
+          onClick={() => handlechangeActiveComponent()}
         >
           Continue
         </button>

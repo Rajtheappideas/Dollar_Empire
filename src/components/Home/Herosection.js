@@ -61,6 +61,7 @@ const Herosection = () => {
                     src={BaseUrl.concat(banner?.image)}
                     alt={banner?.imageAlt}
                     className="w-screen md:h-96 h-60 object-fill object-center"
+                    loading="lazy"
                   />
                 </Link>
               </SwiperSlide>
@@ -73,6 +74,7 @@ const Herosection = () => {
                   src={BaseUrl.concat(img.image)}
                   alt={img?.imageAlt}
                   className="md:h-40 h-12 w-full object-fill object-center"
+                  loading="lazy"
                 />
               </Link>
             ))}

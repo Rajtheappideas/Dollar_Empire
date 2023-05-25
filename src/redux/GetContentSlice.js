@@ -70,124 +70,6 @@ export const handleGetSubCategory = createAsyncThunk(
   }
 );
 
-export const handleGetAllProducts = createAsyncThunk(
-  "getContent/handleGetAllProducts",
-  async ({ token }) => {
-    toast.dismiss();
-    if (token === null) {
-      const response = await GetUrl("product", {})
-        .then((res) => {
-          return res.data;
-        })
-        .catch((err) => {
-          return err.response.data;
-        });
-      return response;
-    } else {
-      const response = await GetUrl("product", {
-        headers: {
-          Authorization: token,
-        },
-      })
-        .then((res) => {
-          return res.data;
-        })
-        .catch((err) => {
-          return err.response.data;
-        });
-      return response;
-    }
-  }
-);
-
-export const handleGetNewArrivals = createAsyncThunk(
-  "getContent/handleGetNewArrivals",
-  async ({ token }) => {
-    toast.dismiss();
-    if (token === null) {
-      const response = await GetUrl("new-arrivals", {})
-        .then((res) => {
-          return res.data;
-        })
-        .catch((err) => {
-          return err.response.data;
-        });
-      return response;
-    } else {
-      const response = await GetUrl("new-arrivals", {
-        headers: {
-          Authorization: token,
-        },
-      })
-        .then((res) => {
-          return res.data;
-        })
-        .catch((err) => {
-          return err.response.data;
-        });
-      return response;
-    }
-  }
-);
-
-export const handleGetTopSellers = createAsyncThunk(
-  "getContent/handleGetTopSellers",
-  async ({ token }) => {
-    toast.dismiss();
-    if (token === null) {
-      const response = await GetUrl("top-sellers", {})
-        .then((res) => {
-          return res.data;
-        })
-        .catch((err) => {
-          return err.response.data;
-        });
-      return response;
-    } else {
-      const response = await GetUrl("top-sellers", {
-        headers: {
-          Authorization: token,
-        },
-      })
-        .then((res) => {
-          return res.data;
-        })
-        .catch((err) => {
-          return err.response.data;
-        });
-      return response;
-    }
-  }
-);
-
-export const handleGetProductById = createAsyncThunk(
-  "getContent/handleGetProductById",
-  async ({ id, token }) => {
-    toast.dismiss();
-    if (token === null) {
-      const response = await GetUrl(`product/${id}`, {})
-        .then((res) => {
-          return res.data;
-        })
-        .catch((err) => {
-          return err.response.data;
-        });
-      return response;
-    } else {
-      const response = await GetUrl(`product/${id}`, {
-        headers: { Authorization: token },
-      })
-        .then((res) => {
-          return res.data;
-        })
-        .catch((err) => {
-          return err.response.data;
-        });
-      return response;
-    }
-  }
-);
-
 export const handleGetBanners = createAsyncThunk(
   "getContent/handleGetBanners",
   async () => {
@@ -248,25 +130,6 @@ export const handleGetShippingAndFreightContent = createAsyncThunk(
   }
 );
 
-export const handleGetUserFavourites = createAsyncThunk(
-  "getContent/handleGetUserFavourites",
-  async ({ token }) => {
-    toast.dismiss();
-    const response = await GetUrl(`favourite`, {
-      headers: {
-        Authorization: token,
-      },
-    })
-      .then((res) => {
-        return res.data;
-      })
-      .catch((err) => {
-        return err.response.data;
-      });
-    return response;
-  }
-);
-
 export const handleGetSpecialOrders = createAsyncThunk(
   "getContent/handleGetSpecialOrders",
   async () => {
@@ -290,16 +153,11 @@ const initialState = {
   user: null,
   categories: [],
   subCategories: [],
-  newArrivals: [],
-  topSellers: [],
-  singleProduct: null,
   banners: [],
   featured: [],
   privacyNotice: null,
   shippingAndFreight: null,
   aboutUs: null,
-  favourites: [],
-  allProducts: [],
   specialOrders: null,
 };
 
@@ -399,78 +257,6 @@ const GetContentSlice = createSlice({
       state.success = false;
       state.error = error;
       state.subCategories = [];
-    });
-    // get new arrivals
-    builder.addCase(handleGetNewArrivals.pending, (state) => {
-      state.loading = true;
-      state.success = false;
-      state.error = null;
-      state.newArrivals = [];
-    });
-    builder.addCase(handleGetNewArrivals.fulfilled, (state, { payload }) => {
-      state.loading = false;
-      state.success = true;
-      if (payload.status === "fail") {
-        state.error = payload;
-        state.newArrivals = [];
-      } else {
-        state.error = null;
-        state.newArrivals = payload?.products;
-      }
-    });
-    builder.addCase(handleGetNewArrivals.rejected, (state, { error }) => {
-      state.loading = false;
-      state.success = false;
-      state.error = error;
-      state.newArrivals = [];
-    });
-    // get top sellers
-    builder.addCase(handleGetTopSellers.pending, (state) => {
-      state.loading = true;
-      state.success = false;
-      state.error = null;
-      state.topSellers = [];
-    });
-    builder.addCase(handleGetTopSellers.fulfilled, (state, { payload }) => {
-      state.loading = false;
-      state.success = true;
-      if (payload.status === "fail") {
-        state.error = payload;
-        state.topSellers = [];
-      } else {
-        state.error = null;
-        state.topSellers = payload?.products;
-      }
-    });
-    builder.addCase(handleGetTopSellers.rejected, (state, { error }) => {
-      state.loading = false;
-      state.success = false;
-      state.error = error;
-      state.topSellers = [];
-    });
-    // get product by id
-    builder.addCase(handleGetProductById.pending, (state) => {
-      state.loading = true;
-      state.success = false;
-      state.error = null;
-      state.singleProduct = null;
-    });
-    builder.addCase(handleGetProductById.fulfilled, (state, { payload }) => {
-      state.loading = false;
-      state.success = true;
-      if (payload.status === "fail") {
-        state.error = payload;
-        state.singleProduct = null;
-      } else {
-        state.error = null;
-        state.singleProduct = payload?.product;
-      }
-    });
-    builder.addCase(handleGetProductById.rejected, (state, { error }) => {
-      state.loading = false;
-      state.success = false;
-      state.error = error;
-      state.singleProduct = null;
     });
     // get banners
     builder.addCase(handleGetBanners.pending, (state) => {
@@ -599,54 +385,6 @@ const GetContentSlice = createSlice({
       state.success = false;
       state.error = error;
       state.specialOrders = null;
-    });
-    // get users favourites
-    builder.addCase(handleGetUserFavourites.pending, (state) => {
-      state.loading = true;
-      state.success = false;
-      state.error = null;
-      state.favourites = [];
-    });
-    builder.addCase(handleGetUserFavourites.fulfilled, (state, { payload }) => {
-      state.loading = false;
-      state.success = true;
-      if (payload.status === "fail") {
-        state.error = payload;
-        state.favourites = [];
-      } else {
-        state.error = null;
-        state.favourites = payload?.favourites;
-      }
-    });
-    builder.addCase(handleGetUserFavourites.rejected, (state, { error }) => {
-      state.loading = false;
-      state.success = false;
-      state.error = error;
-      state.favourites = [];
-    });
-    // get all products
-    builder.addCase(handleGetAllProducts.pending, (state) => {
-      state.loading = true;
-      state.success = false;
-      state.error = null;
-      state.allProducts = [];
-    });
-    builder.addCase(handleGetAllProducts.fulfilled, (state, { payload }) => {
-      state.loading = false;
-      state.success = true;
-      if (payload.status === "fail") {
-        state.error = payload;
-        state.allProducts = [];
-      } else {
-        state.error = null;
-        state.allProducts = payload?.products;
-      }
-    });
-    builder.addCase(handleGetAllProducts.rejected, (state, { error }) => {
-      state.loading = false;
-      state.success = false;
-      state.error = error;
-      state.allProducts = [];
     });
   },
 });

@@ -19,10 +19,18 @@ import {
 import {
   handleGetBanners,
   handleGetCategory,
-  handleGetNewArrivals,
   handleGetSubCategory,
 } from "./redux/GetContentSlice";
-import { calculateTotalQuantity, handleGetCart } from "./redux/CartSlice";
+import {
+  calculateTotalAmount,
+  calculateTotalQuantity,
+  handleGetCart,
+} from "./redux/CartSlice";
+import {
+  handleGetAllProducts,
+  handleGetNewArrivals,
+  handleGetTopSellers,
+} from "./redux/ProductSlice";
 
 const Home = lazy(() => import("./pages/Home"));
 const PrivayPolicy = lazy(() => import("./pages/PrivayPolicy"));
@@ -40,9 +48,8 @@ const SpecialOrder = lazy(() => import("./pages/SpecialOrder"));
 const Favourites = lazy(() => import("./pages/Favourites"));
 
 function App() {
-  const { showProductDetailsPopup } = useSelector(
-    (state) => state.globalStates
-  );
+  const { showProductDetailsPopup, activeComponentForCart, showEnlargeImage } =
+    useSelector((state) => state.globalStates);
 
   const { token, user } = useSelector((state) => state.Auth);
 
@@ -53,22 +60,24 @@ function App() {
     dispatch(logoutAllTabsEventListener());
     dispatch(handleGetCategory());
     dispatch(handleGetSubCategory());
-    if (user !== null) {
-      dispatch(handleGetCart({ token }));
-      dispatch(calculateTotalQuantity());
-    }
+    dispatch(handleGetNewArrivals({ token }));
+    dispatch(handleGetBanners());
+    dispatch(handleGetTopSellers({ token }));
+    dispatch(handleGetAllProducts({ token }));
 
     if (!window.navigator.onLine) {
       toast.error("Check your internet connection!!!", { duration: "5000" });
     }
   }, []);
 
-  // function googleTranslateElementInit() {
-  //   new google.translate.TranslateElement(
-  //     { pageLanguage: "en" },
-  //     "google_translate_element"
-  //   );
-  // }
+  useEffect(() => {
+    if (user !== null) {
+      dispatch(handleGetCart({ token }));
+      dispatch(calculateTotalQuantity());
+      dispatch(calculateTotalAmount());
+    }
+  }, [user, showProductDetailsPopup, activeComponentForCart]);
+
   return (
     <BrowserRouter>
       <ErrorBoundary
@@ -91,7 +100,6 @@ function App() {
             />
           }
         >
-          <Toaster />
           {showProductDetailsPopup && <ProductDetailPopup />}
           <Header />
           <Routes>

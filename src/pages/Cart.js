@@ -11,6 +11,8 @@ import {
   calculateTotalQuantity,
   handleGetCart,
 } from "../redux/CartSlice";
+import { handleGetAddresses } from "../redux/GetContentSlice";
+import { useRef } from "react";
 
 const Cart = () => {
   const [summaryFixed, setSummaryFixed] = useState(false);
@@ -22,10 +24,16 @@ const Cart = () => {
 
   const dispatch = useDispatch();
 
+  const AbortControllerRef = useRef(null);
+
   useEffect(() => {
     dispatch(handleGetCart({ token }));
+    dispatch(handleGetAddresses({ token }));
     dispatch(calculateTotalQuantity());
     dispatch(calculateTotalAmount());
+    return () => {
+      AbortControllerRef.current !== null && AbortControllerRef.current.abort();
+    };
   }, []);
 
   // for sticky summary component

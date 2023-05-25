@@ -14,8 +14,15 @@ import * as yup from "yup";
 import styled from "styled-components";
 import { toast } from "react-hot-toast";
 import { useRef } from "react";
+import { Country, State, City } from "country-state-city";
+import { useState } from "react";
 
 const EditProfile = ({ setShowEditProfile }) => {
+  const [selectedData, setSelectedData] = useState({
+    state: "",
+    city: "",
+  });
+  const [allCountries, setAllCountries] = useState("");
   const { user } = useSelector((state) => state.getContent);
   const { loading } = useSelector((state) => state.basicFeatures);
 
@@ -25,7 +32,7 @@ const EditProfile = ({ setShowEditProfile }) => {
 
   const AbortControllerRef = useRef(null);
 
-  const SignupSchema = yup.object().shape({
+  const editProfileSchema = yup.object().shape({
     fname: yup
       .string()
       .trim("The contact name cannot include leading and trailing spaces")
@@ -56,24 +63,16 @@ const EditProfile = ({ setShowEditProfile }) => {
       .typeError("That doesn't look like a postal code")
       .required("postalcode is required")
       .max(6, "Pincode should be 6 characters")
-      .min(6, "Pincode should be 6 characters")
+      .min(5, "Pincode should be 6 characters")
       .matches(/^[0-9A-Za-z\s\-]+$/g, "That doesn't look like a postal code"),
     city: yup
       .string()
       .required("city is required")
-      .trim("The contact name cannot include leading and trailing spaces")
-      .matches(
-        /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
-        "only contain Latin letters."
-      ),
+      .trim("The contact name cannot include leading and trailing spaces"),
     state: yup
       .string()
       .required("state is required")
-      .trim("The contact name cannot include leading and trailing spaces")
-      .matches(
-        /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
-        "only contain Latin letters."
-      ),
+      .trim("The contact name cannot include leading and trailing spaces"),
     companyName: yup
       .string()
       .required("companyName is required")
@@ -85,11 +84,7 @@ const EditProfile = ({ setShowEditProfile }) => {
     country: yup
       .string()
       .required("country is required")
-      .trim("The contact name cannot include leading and trailing spaces")
-      .matches(
-        /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
-        "only contain Latin letters."
-      ),
+      .trim("The contact name cannot include leading and trailing spaces"),
     phone: yup
       .string()
       .required("A phone number is required")
@@ -100,7 +95,7 @@ const EditProfile = ({ setShowEditProfile }) => {
     initialValues: {
       fname: user?.fname,
       lname: user?.lname,
-      location: user?.address,
+      location: user?.location,
       companyName: user?.companyName,
       phone: user?.phone,
       city: user?.city,
@@ -108,7 +103,7 @@ const EditProfile = ({ setShowEditProfile }) => {
       country: user?.country,
       postalCode: user?.postalCode,
     },
-    validationSchema: SignupSchema,
+    validationSchema: editProfileSchema,
     enableReinitialize: true,
     onSubmit: (values) => {
       if (
@@ -150,13 +145,34 @@ const EditProfile = ({ setShowEditProfile }) => {
     },
   });
 
-  const { getFieldProps, handleSubmit, setFieldValue } = formik;
+  const { getFieldProps, handleSubmit, setFieldValue, values } = formik;
 
   useEffect(() => {
+    setAllCountries(Country.getAllCountries());
+
     return () => {
       AbortControllerRef.current !== null && AbortControllerRef.current.abort();
     };
   }, []);
+
+  // for country , state , city selection
+  useEffect(() => {
+    const country = Country.getAllCountries().find(
+      (country) =>
+        country.name.toLocaleLowerCase() === values.country.toLocaleLowerCase()
+    );
+    const states = State.getStatesOfCountry(country?.isoCode);
+
+    setSelectedData({ ...selectedData, state: states });
+    const state = states.find(
+      (state) =>
+        state.name.toLocaleLowerCase() === values.state.toLocaleLowerCase()
+    );
+    const cities = City.getCitiesOfState(state?.countryCode, state?.isoCode);
+    if (cities.length > 0) {
+      setSelectedData({ ...selectedData, city: cities });
+    }
+  }, [values.country, values.state, values.city]);
 
   return (
     <FormikProvider value={formik}>
@@ -230,19 +246,80 @@ const EditProfile = ({ setShowEditProfile }) => {
             component={TextError}
           />
         </>
+        {/* Country & state */}
+        <div className="flex items-start w-full gap-x-3">
+          <div className="lg:w-2/5 w-1/2 space-y-2">
+            <label className="text-black font-medium block text-left text-lg">
+              Country
+            </label>
+            <select
+              className=" outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
+              onChange={(e) =>
+                setSelectedData({ ...selectedData, country: e.target.value })
+              }
+              name="country"
+              {...getFieldProps("country")}
+            >
+              <option value={values?.country}>{values.country}</option>
+              {allCountries !== "" &&
+                allCountries.map((country) => (
+                  <option key={country.name} value={country.name}>
+                    {country?.name}
+                  </option>
+                ))}
+            </select>
+            {/* <input
+              type="text"
+              className="bg-LIGHTGRAY outline-none w-full text-black placeholder:text-gray-400 rounded-md p-3"
+              name="country"
+              placeholder="Country"
+              {...getFieldProps("country")}
+            /> */}
+            <ErrorMessage
+              name="country"
+              className="block"
+              component={TextError}
+            />
+          </div>
+          <div className="lg:w-2/5 w-1/2 space-y-2">
+            <label className="text-black font-medium block text-left text-lg">
+              State
+            </label>
+            <select
+              className=" outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
+              name="state"
+              {...getFieldProps("state")}
+            >
+              <option label={values?.state}>{values?.state}</option>
+              {selectedData?.state.length > 0 &&
+                selectedData.state.map((state) => (
+                  <option key={state.name} value={state.name}>
+                    {state?.name}
+                  </option>
+                ))}
+            </select>
+            <ErrorMessage name="state" component={TextError} />
+          </div>
+        </div>
         {/* city & postalcode */}
         <div className="flex items-start w-full gap-x-3">
           <div className="lg:w-2/5 w-1/2 space-y-2">
             <label className="text-black font-medium block text-left text-lg">
               City
             </label>
-            <input
-              type="text"
-              className="bg-LIGHTGRAY outline-none w-full text-black placeholder:text-gray-400 rounded-md p-3"
-              placeholder="City"
+            <select
+              className=" outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
               name="city"
               {...getFieldProps("city")}
-            />
+            >
+              <option label={values?.city}>{values?.city}</option>
+              {selectedData?.city.length > 0 &&
+                selectedData.city.map((city) => (
+                  <option key={city.name} value={city.name}>
+                    {city?.name}
+                  </option>
+                ))}
+            </select>
             <ErrorMessage name="city" className="block" component={TextError} />
           </div>
           <div className="lg:w-2/5 w-1/2 space-y-2">
@@ -255,44 +332,13 @@ const EditProfile = ({ setShowEditProfile }) => {
               name="postalCode"
               placeholder="postalCode"
               {...getFieldProps("postalCode")}
+              maxLength={6}
+              minLength={5}
             />
             <ErrorMessage name="postalCode" component={TextError} />
           </div>
         </div>
-        {/* Country & state */}
-        <div className="flex items-start w-full gap-x-3">
-          <div className="lg:w-2/5 w-1/2 space-y-2">
-            <label className="text-black font-medium block text-left text-lg">
-              State
-            </label>
-            <input
-              type="text"
-              className="bg-LIGHTGRAY outline-none w-full text-black placeholder:text-gray-400 rounded-md p-3"
-              name="state"
-              placeholder="State"
-              {...getFieldProps("state")}
-            />
-            <ErrorMessage name="state" component={TextError} />
-          </div>
-          <div className="lg:w-2/5 w-1/2 space-y-2">
-            <label className="text-black font-medium block text-left text-lg">
-              Country
-            </label>
-            <input
-              type="text"
-              className="bg-LIGHTGRAY outline-none w-full text-black placeholder:text-gray-400 rounded-md p-3"
-              name="country"
-              placeholder="Country"
-              {...getFieldProps("country")}
-            />
-            <ErrorMessage
-              name="country"
-              className="block"
-              component={TextError}
-            />
-          </div>
-        </div>
-        <></>
+
         {/* phone */}
         <div className="lg:w-[82%] w-full">
           <label className="text-black font-medium block text-left text-lg">

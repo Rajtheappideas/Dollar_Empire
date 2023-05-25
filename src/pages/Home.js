@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Herosection from "../components/Home/Herosection";
 import NewArrivals from "../components/Home/NewArrivals";
 import Categories from "../components/Home/Categories";
@@ -6,29 +6,43 @@ import TopSellers from "../components/Home/TopSellers";
 import { Helmet } from "react-helmet";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
+import { handleGetBanners } from "../redux/GetContentSlice";
 import {
-  handleGetBanners,
+  handleGetAllProducts,
   handleGetNewArrivals,
   handleGetTopSellers,
-} from "../redux/GetContentSlice";
-import { calculateTotalAmount, calculateTotalQuantity } from "../redux/CartSlice";
+} from "../redux/ProductSlice";
+import {
+  calculateTotalAmount,
+  calculateTotalQuantity,
+} from "../redux/CartSlice";
 
 const Home = () => {
   const { t } = useTranslation();
 
   const { token, user } = useSelector((state) => state.Auth);
+  const { productLoading } = useSelector((state) => state.products);
 
   const dispatch = useDispatch();
 
+  const AbortControllerRef = useRef(null);
+
   useEffect(() => {
-    dispatch(handleGetNewArrivals({ token }));
-    dispatch(handleGetBanners());
-    dispatch(handleGetTopSellers({ token }));
+    // dispatch(handleGetNewArrivals({ token }));
+    // dispatch(handleGetBanners());
+    // dispatch(handleGetTopSellers({ token }));
+    // dispatch(handleGetAllProducts({ token }));
+    return () => {
+      AbortControllerRef.current !== null && AbortControllerRef.current.abort();
+    };
+  }, []);
+
+  useEffect(() => {
     if (user !== null) {
       dispatch(calculateTotalQuantity());
       dispatch(calculateTotalAmount());
     }
-  }, []);
+  }, [user, productLoading]);
   return (
     <>
       <Helmet title={t("Home")} />

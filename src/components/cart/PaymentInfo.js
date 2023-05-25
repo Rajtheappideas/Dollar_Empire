@@ -1,21 +1,100 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import CardDetails from "./CardDetails";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { handleChangeActiveComponent } from "../../redux/GlobalStates";
+import {
+  handleChangeOrderId,
+  handleChangePaymentOption,
+  handleCreateOrder,
+} from "../../redux/OrderSlice";
+import { Toaster, toast } from "react-hot-toast";
+import { handleClearCart, handleGetCart } from "../../redux/CartSlice";
+import { useEffect } from "react";
 
 const PaymentInfo = ({ summaryFixed }) => {
   const [showCardDetails, setShowCardDetails] = useState(false);
-  const [paymentOption, setPaymentOption] = useState({
-    noPayment: false,
-    cardDetails: true,
-  });
 
   const dispatch = useDispatch();
 
+  const AbortControllerRef = useRef(null);
+
+  const { token } = useSelector((state) => state.Auth);
+
+  const { grandTotal } = useSelector((state) => state.cart);
+
+  const {
+    paymentOption,
+    loading,
+    shipphingMethod,
+    shippingAddressId,
+    orderId,
+  } = useSelector((state) => state.orders);
+
+  const handleConfirmOrder = () => {
+    toast.dismiss();
+    if (shippingAddressId === "") {
+      return toast.error("Please select the shipping address!!!");
+    } else if (shipphingMethod === "") {
+      return toast.error("Please select the shipping method!!!");
+    } else if (paymentOption === "") {
+      return toast.error("Please choose the Payment option!!!");
+    }
+    const response = dispatch(
+      handleCreateOrder({
+        token,
+        signal: AbortControllerRef,
+        shippingMethod: shipphingMethod,
+        shippingAddress: shippingAddressId,
+        paymentMethod: paymentOption,
+        orderId: orderId,
+      })
+    );
+    if (response) {
+      response
+        .then((res) => {
+          if (res?.meta?.arg?.signal?.current?.signal?.aborted) {
+            return toast.error("Request Cancelled.");
+          }
+          if (res.payload.status === "success") {
+            dispatch(handleChangeActiveComponent("Success"));
+            dispatch(handleClearCart());
+            toast.success("Order Submitted successfully.");
+          } else {
+            return toast.error(res.payload.message);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
+
+  function orderID(length) {
+    let result = "";
+    const characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const charactersLength = characters.length;
+    let counter = 0;
+    while (counter < length) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      counter += 1;
+    }
+    dispatch(handleChangeOrderId(result));
+    return result;
+  }
+
+  useEffect(() => {
+    orderID(9);
+    return () => {
+      AbortControllerRef.current !== null && AbortControllerRef.current.abort();
+    };
+  }, []);
   return (
     <div className="w-full pb-10">
       {/* table */}
-      {showCardDetails && paymentOption.cardDetails ? (
+      <Toaster />
+
+      {showCardDetails && paymentOption === "cardPayment" ? (
         <CardDetails summaryFixed={summaryFixed} />
       ) : (
         <div className="w-full flex xl:flex-row flex-col items-start justify-start gap-4 pb-10">
@@ -27,12 +106,13 @@ const PaymentInfo = ({ summaryFixed }) => {
               <div className="w-full flex justify-start items-center gap-x-5 bg-white">
                 <input
                   onChange={(e) =>
-                    setPaymentOption({ cardDetails: false, noPayment: true })
+                    dispatch(handleChangePaymentOption("contactForPayment"))
                   }
                   name="checkout"
                   type="radio"
                   className="w-6 h-6"
-                  checked={paymentOption.noPayment}
+                  checked={paymentOption === "contactForPayment"}
+                  disabled={loading}
                 />
                 <p>
                   <span className="font-semibold text-xl block">
@@ -48,12 +128,13 @@ const PaymentInfo = ({ summaryFixed }) => {
               <div className="w-full flex justify-start items-center gap-x-5 bg-white">
                 <input
                   onChange={(e) =>
-                    setPaymentOption({ noPayment: false, cardDetails: true })
+                    dispatch(handleChangePaymentOption("cardPayment"))
                   }
-                  checked={paymentOption.cardDetails}
+                  checked={paymentOption === "cardPayment"}
                   name="checkout"
                   type="radio"
                   className="w-6 h-6"
+                  disabled={loading}
                 />
                 <p>
                   <span className="font-semibold text-xl block">
@@ -77,16 +158,22 @@ const PaymentInfo = ({ summaryFixed }) => {
             <hr className="w-full" />
             <p className="w-full flex items-center justify-between text-base">
               <span className="font-normal">Subtotal</span>
-              <span className="ml-auto font-semibold text-base">$620.00</span>
+              <span className="ml-auto font-semibold text-base">
+                ${parseFloat(grandTotal).toFixed(2)}{" "}
+              </span>{" "}
             </p>
             <p className="w-full flex items-center justify-between text-base">
               <span className="font-normal">Freight</span>
-              <span className="ml-auto font-semibold text-base">$10.00</span>
+              <span className="ml-auto font-semibold text-base">
+                ${shipphingMethod === "pickup" ? "0.00" : "10.00"}
+              </span>
             </p>
             <hr className="w-full" />
             <p className="w-full flex items-center justify-between text-2xl font-bold">
               <span>Grand Total</span>
-              <span className="ml-auto">$630.00</span>
+              <span className="ml-auto">
+                ${parseFloat(grandTotal).toFixed(2)}
+              </span>
             </p>
             <hr className="w-full" />
 
@@ -94,12 +181,17 @@ const PaymentInfo = ({ summaryFixed }) => {
               type="button"
               className="font-semibold bg-PRIMARY text-white hover:bg-white hover:text-PRIMARY border border-PRIMARY duration-300 ease-in-out w-full p-3 text-center"
               onClick={() => {
-                paymentOption.cardDetails && !showCardDetails
+                paymentOption === "cardPayment" && !showCardDetails
                   ? setShowCardDetails(true)
-                  : dispatch(handleChangeActiveComponent("Success"));
+                  : handleConfirmOrder();
               }}
+              disabled={loading}
             >
-              {paymentOption.noPayment ? "Confirm order" : "Continue"}
+              {loading
+                ? "Submitting Order..."
+                : paymentOption === "contactForPayment"
+                ? "Confirm order"
+                : "Continue"}
             </button>
           </div>
         </div>

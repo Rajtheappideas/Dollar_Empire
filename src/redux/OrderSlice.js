@@ -19,6 +19,23 @@ export const handleGetOrders = createAsyncThunk(
   }
 );
 
+export const handleGetOrderbyId = createAsyncThunk(
+  "orders/handleGetOrderbyId",
+  async ({ token, id }) => {
+    toast.dismiss();
+    const response = await GetUrl(`order/${id}`, {
+      headers: { Authorization: token },
+    })
+      .then((res) => {
+        return res.data;
+      })
+      .catch((err) => {
+        return err.response.data;
+      });
+    return response;
+  }
+);
+
 export const handleGetCard = createAsyncThunk(
   "orders/handleGetCard",
   async ({ token }) => {
@@ -38,7 +55,14 @@ export const handleGetCard = createAsyncThunk(
 
 export const handleCreateOrder = createAsyncThunk(
   "orders/handleCreateOrder",
-  async ({ token, signal, shippingMethod, shippingAddress, paymentMethod }) => {
+  async ({
+    token,
+    signal,
+    shippingMethod,
+    shippingAddress,
+    paymentMethod,
+    orderId,
+  }) => {
     toast.dismiss();
     signal.current = new AbortController();
 
@@ -47,6 +71,7 @@ export const handleCreateOrder = createAsyncThunk(
         shippingAddress,
         shippingMethod,
         paymentMethod,
+        orderId,
       },
       signal: signal.current.signal,
       headers: {
@@ -65,7 +90,19 @@ export const handleCreateOrder = createAsyncThunk(
 
 export const handleCreateOrUpdateCard = createAsyncThunk(
   "orders/handleCreateOrUpdateCard",
-  async ({ token, signal, nameOnCard, cardNumber, expiry, cvv }) => {
+  async ({
+    token,
+    signal,
+    nameOnCard,
+    cardNumber,
+    expiry,
+    cvv,
+    country,
+    postalCode,
+    street,
+    state,
+    city,
+  }) => {
     toast.dismiss();
     signal.current = new AbortController();
 
@@ -75,6 +112,11 @@ export const handleCreateOrUpdateCard = createAsyncThunk(
         cardNumber,
         expiry,
         cvv,
+        country,
+        postalCode,
+        street,
+        state,
+        city,
       },
       signal: signal.current.signal,
       headers: {
@@ -96,13 +138,34 @@ const initialState = {
   success: false,
   error: null,
   orders: [],
-  CardDetials: null,
+  cardDetails: null,
+  shipphingMethod: "pickup",
+  shippingAddressId: "",
+  paymentOption: "cardPayment",
+  orderId: window.localStorage.getItem("orderId")
+    ? JSON.parse(window.localStorage.getItem("orderId"))
+    : "",
+  singleOrder: null,
 };
 
 const OrderSlice = createSlice({
   name: "orders",
   initialState,
-  reducers: {},
+  reducers: {
+    handleChangeShippingMethod: (state, { payload }) => {
+      state.shipphingMethod = payload;
+    },
+    handleChangeShippingAddressId: (state, { payload }) => {
+      state.shippingAddressId = payload;
+    },
+    handleChangePaymentOption: (state, { payload }) => {
+      state.paymentOption = payload;
+    },
+    handleChangeOrderId: (state, { payload }) => {
+      state.orderId = payload;
+      window.localStorage.setItem("orderId", JSON.stringify(payload));
+    },
+  },
   extraReducers: (builder) => {
     // get users orders
     builder.addCase(handleGetOrders.pending, (state) => {
@@ -127,32 +190,57 @@ const OrderSlice = createSlice({
       state.loading = false;
       state.success = false;
       state.error = error;
-      state.CardDetials = null;
+      state.cardDetails = null;
+    });
+    // get order by id
+    builder.addCase(handleGetOrderbyId.pending, (state) => {
+      state.loading = true;
+      state.success = false;
+      state.error = null;
+      state.singleOrder = null;
+    });
+    builder.addCase(handleGetOrderbyId.fulfilled, (state, { payload }) => {
+      state.loading = false;
+      if (payload.status === "fail") {
+        state.error = payload;
+        state.success = false;
+        state.singleOrder = null;
+      } else {
+        state.error = null;
+        state.success = true;
+        state.singleOrder = payload?.order;
+      }
+    });
+    builder.addCase(handleGetOrderbyId.rejected, (state, { error }) => {
+      state.loading = false;
+      state.success = false;
+      state.error = error;
+      state.cardDetails = null;
     });
     // get users card details
     builder.addCase(handleGetCard.pending, (state) => {
       state.loading = true;
       state.success = false;
       state.error = null;
-      state.CardDetials = null;
+      state.cardDetails = null;
     });
     builder.addCase(handleGetCard.fulfilled, (state, { payload }) => {
       state.loading = false;
       if (payload.status === "fail") {
         state.error = payload;
         state.success = false;
-        state.CardDetials = null;
+        state.cardDetails = null;
       } else {
         state.error = null;
         state.success = true;
-        state.CardDetials = payload;
+        state.cardDetails = payload?.card;
       }
     });
     builder.addCase(handleGetCard.rejected, (state, { error }) => {
       state.loading = false;
       state.success = false;
       state.error = error;
-      state.CardDetials = null;
+      state.cardDetails = null;
     });
     // create order
     builder.addCase(handleCreateOrder.pending, (state) => {
@@ -202,6 +290,11 @@ const OrderSlice = createSlice({
   },
 });
 
-export const {} = OrderSlice.actions;
+export const {
+  handleChangeShippingMethod,
+  handleChangePaymentOption,
+  handleChangeShippingAddressId,
+  handleChangeOrderId,
+} = OrderSlice.actions;
 
 export default OrderSlice.reducer;

@@ -80,7 +80,34 @@ body {
   }
 }
 
-.active{
-  background-color: #1B599E;
+.active {
+  background-color: #1b599e;
   color: white;
 }
+.react_magnify {
+  width: 100% !important;
+  height: 100% !important;
+  position: relative;
+  z-index: 99999 !important;
+}
+
+.react_magnify > img {
+  height: 100% !important;
+  width: 100% !important;
+}
+.enlarge_image {
+  position: absolute;
+  z-index: 999999 !important;
+  top: 16rem !important;
+  left: 0rem !important;
+  background-color: lightgray !important;
+  padding: 1rem 0;
+}
+/* .enlarge_image > * {
+  position: absolute;
+  z-index: 99999 !important;
+  top: 0;
+  left: 100% !important;
+  background-color: gray !important;
+  padding: 1rem;
+} */
