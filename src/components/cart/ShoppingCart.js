@@ -13,9 +13,9 @@ import {
   handleUpdateTotalQuantityAndAmount,
 } from "../../redux/CartSlice";
 import { toast } from "react-hot-toast";
-import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useTranslation } from "react-i18next";
+import { handleChangeShippingMethod } from "../../redux/OrderSlice";
 
 const ShoppingCart = ({ summaryFixed }) => {
   const [showChangeField, setShowChangeField] = useState(false);
@@ -38,8 +38,8 @@ const ShoppingCart = ({ summaryFixed }) => {
   const AbortControllerRef = useRef(null);
 
   useEffect(() => {
-    dispatch(calculateTotalQuantity());
-    dispatch(calculateTotalAmount());
+    dispatch(handleChangeShippingMethod("pickup"));
+
     return () => {
       AbortControllerRef.current !== null && AbortControllerRef.current.abort();
     };
@@ -112,7 +112,8 @@ const ShoppingCart = ({ summaryFixed }) => {
     <div className="relative w-full flex xl:flex-row flex-col items-start justify-start gap-4 pb-10 max-h-fit">
       {/* table */}
       <div className="xl:w-9/12 w-full xl:overflow-hidden overflow-x-scroll scrollbar">
-        <table className="w-full">
+        {/* for deskt & tablet */}
+        <table className="w-full md:inline-block hidden">
           <thead className="bg-PRIMARY text-white p-2 w-full">
             <tr>
               <th className="lg:min-w-[20rem] min-w-[23rem] lg:p-3 p-2 font-semibold text-left text-base">
@@ -186,9 +187,13 @@ const ShoppingCart = ({ summaryFixed }) => {
                   </td>
                   <td className="lg:p-5 p-3">#{item?.product?.number}</td>
                   <td className="lg:p-5 p-3">${item?.product?.price}</td>
-                  <td className="whitespace-nowrap lg:p-5 p-3">
+                  <td className="whitespace-nowrap lg:p-5 p-3 uppercase">
                     {productId !== item?.product?._id ? (
-                      item.quantity
+                      item?.type === "pk" ? (
+                        `${item?.quantity} ${item?.type}`
+                      ) : (
+                        `${item?.quantity} ${item?.type}`
+                      )
                     ) : (
                       <input
                         type="number"
@@ -209,7 +214,7 @@ const ShoppingCart = ({ summaryFixed }) => {
                     {showChangeField && productId === item?.product?._id ? (
                       <span
                         role="button"
-                        className="text-PRIMARY underline ml-1"
+                        className="text-PRIMARY underline ml-1 capitalize"
                         onClick={() =>
                           handleUpdateProduct(
                             item?.product?._id,
@@ -225,7 +230,7 @@ const ShoppingCart = ({ summaryFixed }) => {
                     ) : (
                       <span
                         role="button"
-                        className="text-PRIMARY underline ml-1"
+                        className="text-PRIMARY underline ml-1 capitalize"
                         onClick={() => {
                           setShowChangeField(true);
                           setProductQuantity(item?.quantity);
@@ -236,8 +241,18 @@ const ShoppingCart = ({ summaryFixed }) => {
                       </span>
                     )}
                   </td>
-                  <td className="lg:p-5 p-3">
-                    ${(item?.product?.price * item?.quantity).toFixed(2)}
+                  <td className="lg:p-5 p-3 uppercase">
+                    {item?.type === "pk"
+                      ? (
+                          item?.product?.price *
+                          item?.quantity *
+                          item?.product?.PK
+                        ).toFixed(2)
+                      : (
+                          item?.product?.price *
+                          item?.quantity *
+                          item?.product?.CTN
+                        ).toFixed(2)}{" "}
                   </td>
                   <td className="lg:p-5 p-3">
                     {deleteLoading ? (
@@ -247,16 +262,212 @@ const ShoppingCart = ({ summaryFixed }) => {
                         role="button"
                         className="h-6 w-6 mx-auto"
                         color="red"
-                        onClick={() =>
-                          handleRemoveFromCart(
-                            item?.product?._id,
-                            item?.quantity,
-                            item?.product?.price * item?.quantity
-                          )
-                        }
+                        onClick={() => {
+                          item?.type === "pk"
+                            ? handleRemoveFromCart(
+                                item?.product?._id,
+                                item?.quantity * item?.product?.PK,
+                                item?.product?.price *
+                                  item?.quantity *
+                                  item?.product?.PK
+                              )
+                            : handleRemoveFromCart(
+                                item?.product?._id,
+                                item?.quantity * item?.product?.CTN,
+                                item?.product?.price *
+                                  item?.quantity *
+                                  item?.product?.CTN
+                              );
+                        }}
                       />
                     )}
                   </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+        {/* for mobile */}
+        <table className="w-full md:hidden overflow-hidden">
+          <tbody>
+            {loading || updateLoading ? (
+              <tr>
+                <td
+                  colSpan="100%"
+                  className="text-center font-semibold md:text-2xl text-xl pt-10"
+                >
+                  {t("Fetching your cart")}...
+                </td>
+              </tr>
+            ) : cartItems.length <= 0 ? (
+              <>
+                <tr>
+                  <td
+                    colSpan="100%"
+                    className="text-center font-semibold text-xl p-2"
+                  >
+                    {t("No items in cart")}.
+                  </td>
+                </tr>
+                <tr>
+                  <td colSpan="100%" className="text-center mx-auto py-3">
+                    <Link to="/product-listing/all-products">
+                      <button
+                        type="button"
+                        className="font-semibold mx-auto w-60 bg-PRIMARY text-white hover:bg-white hover:text-PRIMARY border border-PRIMARY duration-300 ease-in-out p-3 text-center"
+                      >
+                        {t("Go to products")}
+                      </button>
+                    </Link>
+                  </td>
+                </tr>
+              </>
+            ) : (
+              cartItems.map((item) => (
+                <tr className="flex flex-col w-full" key={item?._id}>
+                  <tr className="bg-white font-normal text-BLACK text-center w-full flex flex-row">
+                    <th className="bg-PRIMARY min-w-[5rem] max-w-[5rem] p-2 text-center text-white">
+                      {t("Product")}
+                    </th>
+                    <td className="flex items-center gap-x-3 lg:p-5 p-3 text-center w-full">
+                      <img
+                        src={BaseUrl.concat(item?.product?.images[0])}
+                        alt={item?.product?.name}
+                        className="min-w-[6rem] max-w-[6rem] object-contain object-center mx-auto"
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <th className="bg-PRIMARY min-w-[5rem] max-w-[5rem] p-2 text-center text-white">
+                      {t("Name")}
+                    </th>
+                    <td className="font-semibold md:text-lg text-center w-full">
+                      {item?.product?.name}
+                    </td>{" "}
+                  </tr>
+                  <tr>
+                    <th className="bg-PRIMARY min-w-[5rem] max-w-[5rem] p-2 text-center text-white">
+                      {t("Item Number")}
+                    </th>
+                    <td className="lg:p-5 p-3 text-center w-full">
+                      #{item?.product?.number}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th className="bg-PRIMARY min-w-[5rem] max-w-[5rem] p-2 text-center text-white">
+                      {t("Unit Price")}
+                    </th>
+                    <td className="lg:p-5 p-3 text-center w-full">
+                      ${item?.product?.price}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th className="bg-PRIMARY min-w-[5rem] max-w-[5rem] p-2 text-center text-white">
+                      {t("Quantity")}
+                    </th>
+                    <td className="lg:p-5 p-3  text-center w-full">
+                      {productId !== item?.product?._id ? (
+                        item.quantity
+                      ) : (
+                        <input
+                          type="number"
+                          className="bg-gray-300 outline-none text-black placeholder:text-BLACK h-10 rounded-md w-16 p-1"
+                          value={productQuantity}
+                          onChange={(e) => {
+                            setProductQuantity(e.target.value);
+                            if (
+                              !/^\d+$/.test(e.target.value) &&
+                              e.target.value !== ""
+                            ) {
+                              toast.dismiss();
+                              return toast.error("Please enter valid value.");
+                            }
+                          }}
+                        />
+                      )}
+                      {showChangeField && productId === item?.product?._id ? (
+                        <span
+                          role="button"
+                          className="text-PRIMARY underline ml-1"
+                          onClick={() =>
+                            handleUpdateProduct(
+                              item?.product?._id,
+                              item?.product?.name,
+                              item.type,
+                              item?.product?.price * productQuantity,
+                              item?.quantity
+                            )
+                          }
+                        >
+                          {t("Update")}
+                        </span>
+                      ) : (
+                        <span
+                          role="button"
+                          className="text-PRIMARY underline ml-1"
+                          onClick={() => {
+                            setShowChangeField(true);
+                            setProductQuantity(item?.quantity);
+                            setProductId(item?.product?._id);
+                          }}
+                        >
+                          {t("Change")}
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <th className="bg-PRIMARY min-w-[5rem] max-w-[5rem] p-2 text-center text-white">
+                      {t("Subtotal")}
+                    </th>
+                    <td className="lg:p-5 p-3  text-center w-full">
+                      {item?.type === "pk"
+                        ? (
+                            item?.product?.price *
+                            item?.quantity *
+                            item?.product?.PK
+                          ).toFixed(2)
+                        : (
+                            item?.product?.price *
+                            item?.quantity *
+                            item?.product?.CTN
+                          ).toFixed(2)}
+                    </td>
+                  </tr>
+                  <tr className="last:pb-0 pb-4 last:border-none border-b-2 border-gray-300">
+                    <th className="bg-PRIMARY min-w-[5rem] max-w-[5rem] p-2 text-center text-white">
+                      {t("Remove")}
+                    </th>
+                    <td className="lg:p-5 p-3  text-center w-full">
+                      {deleteLoading ? (
+                        "..."
+                      ) : (
+                        <AiOutlineClose
+                          role="button"
+                          className="h-6 w-6 mx-auto"
+                          color="red"
+                          onClick={() => {
+                            item?.type === "pk"
+                              ? handleRemoveFromCart(
+                                  item?.product?._id,
+                                  item?.quantity * item?.product?.PK,
+                                  item?.product?.price *
+                                    item?.quantity *
+                                    item?.product?.PK
+                                )
+                              : handleRemoveFromCart(
+                                  item?.product?._id,
+                                  item?.quantity * item?.product?.CTN,
+                                  item?.product?.price *
+                                    item?.quantity *
+                                    item?.product?.CTN
+                                );
+                          }}
+                        />
+                      )}
+                    </td>
+                  </tr>
                 </tr>
               ))
             )}
@@ -298,7 +509,7 @@ const ShoppingCart = ({ summaryFixed }) => {
               : toast.error("Your Cart is empty!!!");
           }}
           className="font-semibold bg-PRIMARY text-white hover:bg-white hover:text-PRIMARY border border-PRIMARY duration-300 ease-in-out w-full p-3 text-center"
-          // disabled={cartItems?.length}
+          disabled={loading || deleteLoading || updateLoading}
         >
           {t("Proceed to checkout")}
         </button>
@@ -314,6 +525,7 @@ const ShoppingCart = ({ summaryFixed }) => {
             <button
               type="button"
               className="font-semibold bg-black text-white hover:bg-white hover:text-black border border-black duration-300 ease-in-out w-full p-3 text-center"
+              disabled={loading || deleteLoading || updateLoading}
             >
               {t("Continue to shopping")}
             </button>

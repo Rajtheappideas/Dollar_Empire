@@ -10,10 +10,11 @@ import {
   AiFillHeart,
 } from "react-icons/ai";
 import { FreeMode, Navigation, Thumbs } from "swiper";
-import { Swiper, SwiperSlide } from "swiper/react";
+import { Swiper, SwiperSlide, useSwiper } from "swiper/react";
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/navigation";
+import "swiper/css/thumbs";
 import { useDispatch, useSelector } from "react-redux";
 import { closePopup, showPopup } from "../redux/GlobalStates";
 import { Link } from "react-router-dom";
@@ -32,10 +33,9 @@ import {
   handleUpdateTotalQuantityAndAmount,
 } from "../redux/CartSlice";
 import { useTranslation } from "react-i18next";
-import { MagnifyingGlassPlusIcon } from "@heroicons/react/24/outline";
 
 const ProductDetailPopup = ({}) => {
-  const [thumbsSwiper, setThumbsSwiper] = useState(null);
+  const [thumbsSwiper, setThumbsSwiper] = useState();
   const [selectedItemType, setSelectedItemType] = useState("pk");
   const [pkitemsQuantity, setpkItemsQuantity] = useState("");
   const [ctnItemQuantity, setCtnItemQuantity] = useState("");
@@ -43,6 +43,10 @@ const ProductDetailPopup = ({}) => {
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [findInCart, setFindInCart] = useState(null);
   const [addProductToCartLoading, setAddProductToCartLoading] = useState(false);
+  const [pkCount, setPkCount] = useState(0);
+  const [ctnCount, setCtnCount] = useState(0);
+  const [isFavourite, setIsFavourite] = useState(false);
+  const [activeSlide, setActiveSlide] = useState(0);
 
   const { user, token } = useSelector((state) => state.Auth);
   const { singleProductId } = useSelector((state) => state.globalStates);
@@ -69,12 +73,8 @@ const ProductDetailPopup = ({}) => {
     if (response) {
       response
         .then((res) => {
-          if (res.payload.status === "success") {
-            dispatch(handleGetNewArrivals({ token }));
-            toast.success(res.payload.message);
-          } else if (res.payload.status === "fail") {
-            toast.error(res.payload.message);
-          }
+          setIsFavourite(!isFavourite);
+          toast.success(res.payload.message);
           setFavouriteLoading(false);
         })
         .catch((err) => {
@@ -92,7 +92,7 @@ const ProductDetailPopup = ({}) => {
     if (response) {
       response
         .then((res) => {
-          dispatch(handleGetNewArrivals({ token }));
+          setIsFavourite(!isFavourite);
           toast.success(res.payload.message);
           setFavouriteLoading(false);
         })
@@ -155,15 +155,74 @@ const ProductDetailPopup = ({}) => {
     }
   };
 
-  useEffect(() => {
-    dispatch(handleGetProductById({ id: singleProductId, token }));
-  }, [favouriteLoading]);
+  const handlePlusPkQuantity = (quantity, count) => {
+    if (
+      selectedItemType === "pk" &&
+      findInCart?.product?._id !== singleProduct?._id
+    ) {
+      setPkCount(count);
+      setpkItemsQuantity(quantity * count);
+    }
+  };
+
+  const handleMinusPkQuantity = (quantity, count) => {
+    if (
+      selectedItemType === "pk" &&
+      findInCart?.product?._id !== singleProduct?._id
+    ) {
+      if (pkCount === 0) {
+        setPkCount(0);
+      } else {
+        setPkCount(count);
+        setpkItemsQuantity(quantity * count);
+      }
+    }
+  };
+
+  const handlePlusCTNQuantity = (quantity, count) => {
+    if (
+      selectedItemType === "ctn" &&
+      findInCart?.product?._id !== singleProduct?._id
+    ) {
+      setCtnCount(count);
+      setCtnItemQuantity(quantity * count);
+    }
+  };
+
+  const handleMinusCTNQuantity = (quantity, count) => {
+    if (
+      selectedItemType === "ctn" &&
+      findInCart?.product?._id !== singleProduct?._id
+    ) {
+      if (ctnCount === 0) {
+        setCtnCount(0);
+      } else {
+        setCtnCount(count);
+        setCtnItemQuantity(quantity * count);
+      }
+    }
+  };
+
+  const handleChangePkCount = (e) => {
+    if (pkCount < 0) {
+      setPkCount(0);
+    } else {
+      setPkCount(e.target.value);
+      setpkItemsQuantity(singleProduct?.PK * e.target.value);
+    }
+  };
 
   useEffect(() => {
+    dispatch(handleGetProductById({ id: singleProductId, token }));
     return () => {
       AbortControllerRef.current !== null && AbortControllerRef.current.abort();
     };
   }, []);
+
+  useEffect(() => {
+    setIsFavourite(singleProduct?.isFavourite);
+  }, [singleProductLoading]);
+
   useEffect(() => {
     if (cart !== null && cartItems.length > 0) {
       const findItemInCart = cartItems.find(
@@ -174,7 +233,7 @@ const ProductDetailPopup = ({}) => {
   }, [pkitemsQuantity, ctnItemQuantity, singleProductLoading]);
   return (
     <div
-      className={`absolute bg-black/30 z-30 w-full md:min-h-[100rem] min-h-[115rem] inset-0 backdrop-blur-sm`}
+      className={`absolute bg-black/30 z-40 w-full md:min-h-[100rem] min-h-[115rem] inset-0 backdrop-blur-sm`}
     >
       {singleProductLoading ? (
         <div className="absolute text-center font-semibold md:text-3xl text-xl overflow-hidden top-10 left-1/2 -translate-x-1/2 z-30 bg-white text-black flex items-center justify-center  xl:w-2/3 lg:w-10/12 w-11/12 min-h-screen">
@@ -193,38 +252,83 @@ const ProductDetailPopup = ({}) => {
             className="absolute md:top-6 top-2 md:left-[94%] left-[90%] w-7 h-7 text-black z-40"
           />
           {/* images */}
-          <div className="md:w-5/12 w-full space-y-4 relative z-0">
-            <Swiper
-              modules={[Navigation, FreeMode]}
-              spaceBetween={0}
-              slidesPerView={1}
-              direction={"horizontal"}
-              navigation={{
-                prevEl: prevRef?.current,
-                nextEl: nextRef?.current,
-              }}
-              freeMode={true}
-              thumbs={thumbsSwiper}
-              speed={500}
+          <div className="md:w-5/12 w-full">
+            <div className="w-full space-y-4 relative z-0">
+              <Swiper
+                modules={[Navigation, FreeMode, Thumbs]}
+                spaceBetween={0}
+                slidesPerView={1}
+                direction={"horizontal"}
+                grabCursor={true}
+                navigation={{
+                  prevEl: prevRef?.current,
+                  nextEl: nextRef?.current,
+                }}
+                freeMode={true}
+                centeredSlides={true}
+                thumbs={{ swiper: thumbsSwiper }}
+                speed={500}
+                onSwiper={(swiper) => {
+                  // Delay execution for the refs to be defined
+                  setTimeout(() => {
+                    // Override prevEl & nextEl now that refs are defined
+                    if (swiper.params) {
+                      swiper.params.navigation.prevEl = prevRef.current;
+                      swiper.params.navigation.nextEl = nextRef.current;
+
+                      // Re-init navigation
+                      swiper.navigation.destroy();
+                      swiper.navigation.init();
+                      swiper.navigation.update();
+                    }
+                  });
+                }}
+                className="border border-gray-400 p-3 relative z-0"
+              >
+                {singleProductLoading ? (
+                  <p>Loading...</p>
+                ) : (
+                  singleProduct?.images.map((image, i) => (
+                    <SwiperSlide key={i}>
+                      <img
+                        src={BaseUrl.concat(image)}
+                        alt={singleProduct?.title}
+                        className="h-fit w-full object-contain object-center"
+                        loading="lazy"
+                      />
+                    </SwiperSlide>
+                  ))
+                )}
+              </Swiper>
+              {/* prev btn */}
+              <button
+                type="button"
+                ref={prevRef}
+                className="rounded-full h-8 w-8 p-2 bg-gray-400 absolute top-1/3 -translate-y-1/2 xl:-left-4 -left-3 z-10"
+              >
+                <AiOutlineLeft className="w-4 h-4 text-white" />
+              </button>
+              {/* next btn */}
+              <button
+                type="button"
+                ref={nextRef}
+                className="rounded-full h-8 w-8 p-2 bg-gray-400 absolute top-1/3 -translate-y-1/2 xl:-right-4 -right-3 z-10"
+              >
+                <AiOutlineRight className="w-4 h-4 text-white" />
+              </button>
+            </div>
+            {/* <Swiper
               onSwiper={(swiper) => {
-                // Delay execution for the refs to be defined
-                setTimeout(() => {
-                  // Override prevEl & nextEl now that refs are defined
-                  if (swiper.params) {
-                    swiper.params.navigation.prevEl = prevRef.current;
-                    swiper.params.navigation.nextEl = nextRef.current;
-
-                    // Re-init navigation
-                    swiper.navigation.destroy();
-                    swiper.navigation.init();
-                    swiper.navigation.update();
-                  }
-                });
-
-                setThumbsSwiper(swiper ? swiper : null);
-                // console.log(swiper);
+                // swiper.activeIndex
+                if (swiper && swiper.thumbs) {
+                  setThumbsSwiper(swiper);
+                  console.log(swiper);
+                }
               }}
-              className="border border-gray-400 p-3 relative z-0"
+              loop={true}
+              spaceBetween={10}
+              slidesPerView={4}
+              modules={[Navigation, Thumbs]}
             >
               {singleProductLoading ? (
                 <p>Loading...</p>
@@ -234,28 +338,26 @@ const ProductDetailPopup = ({}) => {
                     <img
                       src={BaseUrl.concat(image)}
                       alt={singleProduct?.title}
-                      className="h-fit w-full object-contain object-center"
+                      className="h-20 w-20 object-contain object-center"
                       loading="lazy"
                     />
                   </SwiperSlide>
                 ))
               )}
-            </Swiper>
-
-            <button
-              type="button"
-              ref={prevRef}
-              className="rounded-full h-8 w-8 p-2 bg-gray-400 absolute top-1/3 -translate-y-1/2 xl:-left-4 -left-3 z-10"
-            >
-              <AiOutlineLeft className="w-4 h-4 text-white" />
-            </button>
-            <button
-              type="button"
-              ref={nextRef}
-              className="rounded-full h-8 w-8 p-2 bg-gray-400 absolute top-1/3 -translate-y-1/2 xl:-right-4 -right-3 z-10"
-            >
-              <AiOutlineRight className="w-4 h-4 text-white" />
-            </button>
+            </Swiper> */}
+            {/* <div className="flex items-center gap-x-2 pt-5">
+              {singleProduct?.images.map((image, index) => (
+                <img
+                  key={index}
+                  src={BaseUrl.concat(image)}
+                  className="h-20 w-20 border-2 border-PRIMARY p-2 rounded-lg cursor-pointer"
+                  onClick={() => {
+                    // handleChangeActiveSlide(index);
+                    setActiveSlide(index);
+                  }}
+                />
+              ))}
+            </div> */}
           </div>
           <hr className="md:hidden block my-3 bg-black w-full" />
           {/* details */}
@@ -302,6 +404,7 @@ const ProductDetailPopup = ({}) => {
               </p>
               <p className="text-PRIMARY font-semibold text-lg pb-3">
                 ${singleProduct?.price}/PC | $
+                {(singleProduct?.price * singleProduct?.PK).toFixed(1)}/PK | $
                 {(singleProduct?.price * singleProduct?.CTN).toFixed(1)}/CTN
               </p>
               <hr className="pt-3" />
@@ -313,37 +416,122 @@ const ProductDetailPopup = ({}) => {
                   defaultChecked={true}
                   onChange={(e) => setSelectedItemType(e.target.value)}
                   value="pk"
+                  disabled={addProductToCartLoading}
                 />
                 <span>Order By PK*</span>
               </p>
               <div className="flex items-center gap-x-4 ">
-                <AiOutlineMinus role="button" className="w-7 h-7" />
-                <p className="lg:w-1/3 md:w-1/2 w-10/12 relative">
+                <button
+                  type="button"
+                  className={`${
+                    selectedItemType === "ctn" && "cursor-not-allowed"
+                  }`}
+                  disabled={addProductToCartLoading}
+                >
+                  <AiOutlineMinus
+                    onClick={() =>
+                      !addProductToCartLoading &&
+                      handleMinusPkQuantity(
+                        parseFloat(singleProduct?.PK),
+                        parseFloat(pkCount - 1)
+                      )
+                    }
+                    className="w-7 h-7"
+                  />
+                </button>
+                <div className="w-auto min-w-[10rem] flex items-center justify-between rounded-md border p-3 pr-12 h-12 outline-none border-BORDERGRAY text-black">
                   <input
-                    className={`w-full p-3 pr-12 rounded-md border outline-none border-BORDERGRAY text-black ${
+                    className={`w-1/2 outline-none text-black ${
                       selectedItemType === "ctn" && "cursor-not-allowed"
                     }`}
-                    placeholder="24 PC"
+                    readOnly={true}
+                    placeholder={`${singleProduct?.PK} PC`}
                     value={pkitemsQuantity}
-                    onChange={(e) => {
-                      setpkItemsQuantity(e.target.value);
-
-                      if (
-                        !/^\d+$/.test(e.target.value) &&
-                        e.target.value !== ""
-                      ) {
-                        toast.dismiss();
-                        return toast.error("Please enter valid value.");
-                      }
-                    }}
-                    disabled={selectedItemType === "ctn"}
+                    // onChange={(e) => {
+                    //   !addProductToCartLoading &&
+                    //     setpkItemsQuantity(e.target.value);
+                    //   !addProductToCartLoading &&
+                    //     setPkCount(
+                    //       e.target.value >= singleProduct?.PK
+                    //         ? parseFloat(
+                    //             (e.target.value / singleProduct?.PK)
+                    //               .toFixed(1)
+                    //               .toString()
+                    //               .split(".")[0]
+                    //           )
+                    //         : 0
+                    //     );
+                    //   if (
+                    //     !/^\d+$/.test(e.target.value) &&
+                    //     e.target.value !== ""
+                    //   ) {
+                    //     toast.dismiss();
+                    //     return toast.error("Please enter valid value.");
+                    //   }
+                    // }}
+                    disabled={
+                      selectedItemType === "ctn" ||
+                      findInCart?.product?._id === singleProduct?._id ||
+                      addProductToCartLoading
+                    }
                   />
-                  <span className="absolute font-semibold top-1/2 -translate-y-1/2 right-2">
-                    0 PK
-                  </span>
-                </p>
-                <AiOutlinePlus role="button" className="w-7 h-7" />
+                  <p>
+                    <input
+                      type="text"
+                      value={pkCount}
+                      className="outline-none"
+                      onChange={(e) => {
+                        handleChangePkCount(e);
+                        // !addProductToCartLoading &&
+                        //   setpkItemsQuantity(e.target.value);
+                        // !addProductToCartLoading &&
+                        //   setPkCount(
+                        //     e.target.value >= singleProduct?.PK
+                        //       ? parseFloat(
+                        //           (e.target.value / singleProduct?.PK)
+                        //             .toFixed(1)
+                        //             .toString()
+                        //             .split(".")[0]
+                        //         )
+                        //       : 0
+                        //   );
+                        if (
+                          !/^\d+$/.test(e.target.value) &&
+                          e.target.value !== ""
+                        ) {
+                          toast.dismiss();
+                          return toast.error("Please enter valid value.");
+                        }
+                      }}
+                      disabled={
+                        selectedItemType === "ctn" ||
+                        findInCart?.product?._id === singleProduct?._id ||
+                        addProductToCartLoading
+                      }
+                      // className="absolute z-20 bg-transparent font-semibold top-1/2 -translate-y-1/2 left-36 max-w-[2rem] outline-none"
+                    ></input>
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className={`${
+                    selectedItemType === "ctn" && "cursor-not-allowed"
+                  } relative`}
+                  disabled={addProductToCartLoading}
+                >
+                  <AiOutlinePlus
+                    onClick={() =>
+                      !addProductToCartLoading &&
+                      handlePlusPkQuantity(
+                        parseFloat(singleProduct?.PK),
+                        parseFloat(pkCount + 1)
+                      )
+                    }
+                    className="w-7 h-7 absolute z-10 -top-4"
+                  />
+                </button>
               </div>
+              {/* ctn */}
               <p className="flex items-center gap-x-4">
                 <input
                   name="quantity"
@@ -351,17 +539,35 @@ const ProductDetailPopup = ({}) => {
                   className="h-5 w-5 inline-block"
                   onChange={(e) => setSelectedItemType(e.target.value)}
                   value="ctn"
+                  disabled={addProductToCartLoading}
                 />
                 <span>Order By CTN*</span>
               </p>
               <div className="flex w-full items-center gap-x-4 ">
-                <AiOutlineMinus role="button" className="w-7 h-7" />
+                <button
+                  type="button"
+                  className={`${
+                    selectedItemType === "pk" && "cursor-not-allowed"
+                  }`}
+                  disabled={addProductToCartLoading}
+                >
+                  <AiOutlineMinus
+                    onClick={() =>
+                      !addProductToCartLoading &&
+                      handleMinusCTNQuantity(
+                        parseFloat(singleProduct?.CTN),
+                        parseFloat(ctnCount - 1)
+                      )
+                    }
+                    className="w-7 h-7"
+                  />
+                </button>
                 <p className="lg:w-1/3 md:w-1/2 w-10/12 relative">
                   <input
                     className={`w-full p-3 pr-14 rounded-md border outline-none border-BORDERGRAY text-black ${
                       selectedItemType === "pk" && "cursor-not-allowed"
                     }`}
-                    placeholder="144 PC"
+                    placeholder={`${singleProduct?.CTN} PC`}
                     value={ctnItemQuantity}
                     onChange={(e) => {
                       setCtnItemQuantity(e.target.value);
@@ -373,13 +579,32 @@ const ProductDetailPopup = ({}) => {
                         return toast.error("Please enter valid value.");
                       }
                     }}
-                    disabled={selectedItemType === "pk"}
+                    disabled={
+                      selectedItemType === "pk" || addProductToCartLoading
+                    }
                   />
                   <span className="absolute font-semibold top-1/2 -translate-y-1/2 right-2">
-                    0 CTN
+                    {ctnCount} CTN
                   </span>
                 </p>
-                <AiOutlinePlus role="button" className="w-7 h-7" />
+                <button
+                  type="button"
+                  className={`${
+                    selectedItemType === "pk" && "cursor-not-allowed"
+                  }`}
+                  disabled={addProductToCartLoading}
+                >
+                  <AiOutlinePlus
+                    onClick={() =>
+                      !addProductToCartLoading &&
+                      handlePlusCTNQuantity(
+                        parseFloat(singleProduct?.CTN),
+                        parseFloat(ctnCount + 1)
+                      )
+                    }
+                    className="w-7 h-7"
+                  />
+                </button>
               </div>
               <p className="flex items-center gap-x-3 pb-3">
                 <Link
@@ -423,7 +648,7 @@ const ProductDetailPopup = ({}) => {
                 </Link>
                 {favouriteLoading ? (
                   "..."
-                ) : singleProduct?.isFavourite ? (
+                ) : isFavourite ? (
                   <AiFillHeart
                     className="w-10 h-10 text-DARKRED"
                     role="button"

@@ -6,14 +6,19 @@ import { toast } from "react-hot-toast";
 import { useRef } from "react";
 import { FaTelegramPlane } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [success, setSuccess] = useState(false);
 
   const { loading } = useSelector((state) => state.basicFeatures);
+  const { user } = useSelector((state) => state.Auth);
 
   const dispatch = useDispatch();
+
+  const navigate = useNavigate();
 
   const { t } = useTranslation();
 
@@ -41,6 +46,15 @@ const ForgotPassword = () => {
     }
   };
 
+  useEffect(() => {
+    if (user !== null) {
+      navigate("/");
+      toast.success("Already Logged in.");
+    }
+    return () => {
+      AbortControllerRef.current !== null && AbortControllerRef.current.abort();
+    };
+  }, []);
   return (
     <>
       <Helmet title={t("Forgot-password")} />

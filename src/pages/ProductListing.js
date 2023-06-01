@@ -26,6 +26,16 @@ import {
   handleChangeProductListingPageLink,
 } from "../redux/GlobalStates";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import {
+  calculateTotalAmount,
+  calculateTotalQuantity,
+  handleAddMultipleProductToCart,
+  handleAddMultipleProducts,
+  handleChangeAddProduct,
+  handleRemoveAllProducts,
+  handleRemoveAllTotalQuantityAndTotalAmount,
+  handlechangeTotalQuantityAndAmountOfmultipleProducts,
+} from "../redux/CartSlice";
 
 const ProductListing = () => {
   const { pagination } = useSelector((state) => state.globalStates);
@@ -37,16 +47,24 @@ const ProductListing = () => {
   const [message, setMessage] = useState("");
   const [activePrice, setActivePrice] = useState("Any");
   const [activeSubCategory, setActiveSubCategory] = useState("");
+  const [countTotalQuantity, setCountTotalQuantity] = useState([]);
 
   const { newArrivals, productLoading, allProducts, topSellers } = useSelector(
     (state) => state.products
   );
 
   const { token } = useSelector((state) => state.Auth);
+  const {
+    loading,
+    cartItems,
+    cart,
+    selectedItems,
+    totalQuantityMultipleProducts,
+    totalAmountMultipleProducts,
+  } = useSelector((state) => state.cart);
   const { searchProducts, searchTerm, perPageItemView } = useSelector(
     (state) => state.globalStates
   );
-  const { loading } = useSelector((state) => state.favourite);
   const { title } = useParams();
 
   const { t } = useTranslation();
@@ -69,6 +87,8 @@ const ProductListing = () => {
   // filter products
   const handleFilterProducts = async () => {
     toast.dismiss();
+    dispatch(handleRemoveAllProducts());
+    dispatch(handleRemoveAllTotalQuantityAndTotalAmount());
     if (await productLoading) {
       return true;
     } else if (title.includes("new-arrivals")) {
@@ -193,10 +213,11 @@ const ProductListing = () => {
 
   // filters on price
   const handleFilterProductsByPrice = (filterproducts) => {
-    toast.dismiss();
     if (activePrice.includes("Any")) {
+      toast.dismiss();
       return setProducts(filterproducts);
     } else if (activePrice.includes("Below $0.70")) {
+      toast.dismiss();
       const byPrice = filterproducts.filter(
         (i) => parseFloat(i.price) <= parseFloat(0.7)
       );
@@ -206,6 +227,8 @@ const ProductListing = () => {
         return toast.error("Products not found below $0.70 price.");
       }
     } else if (activePrice.includes("$0.70 - $0.89")) {
+      toast.dismiss();
+
       const price = activePrice.split("-");
       const byPrice = filterproducts.filter(
         (i) =>
@@ -218,6 +241,8 @@ const ProductListing = () => {
         return toast.error("Products not found between $0.70 - $0.89 price.");
       }
     } else if (activePrice.includes("$0.90 - $1.99")) {
+      toast.dismiss();
+
       const price = activePrice.split("-");
       const byPrice = filterproducts.filter(
         (i) =>
@@ -230,6 +255,8 @@ const ProductListing = () => {
         return toast.error("Products not found between $0.90 - $1.99 price.");
       }
     } else if (activePrice.includes("$2 - $2.99")) {
+      toast.dismiss();
+
       const price = activePrice.split("-");
       const byPrice = filterproducts.filter(
         (i) =>
@@ -254,10 +281,116 @@ const ProductListing = () => {
     }
   };
 
+  // selected multiple items to cart
+  const handleAddSelectedItem = async (
+    pkQuantity,
+    ctnQuantity,
+    id,
+    itemType,
+    pkCount,
+    ctnCount,
+    amount
+  ) => {
+    if (pkQuantity !== "" || ctnQuantity !== "") {
+      const item = {};
+      const itemForQuantity = {};
+      if (pkQuantity !== "" || ctnQuantity !== "") {
+        item.id = id;
+        item.quantity = itemType === "pk" ? pkCount : ctnCount;
+        item.type = itemType;
+        itemForQuantity.id = id;
+        itemForQuantity.quantity = itemType === "pk" ? pkQuantity : ctnQuantity;
+        itemForQuantity.type = itemType;
+        itemForQuantity.amount = itemForQuantity.quantity * amount;
+      }
+      // for filter same id product with max quantity
+      const selectedItemProducts = [...selectedItems, item];
+      let arr = [];
+      arr.push(selectedItemProducts);
+      const result = Object.values(
+        arr.flat(1).reduce((acc, cur) => {
+          acc[cur.id] = cur;
+          return acc;
+        }, {})
+      );
+      dispatch(
+        handleAddMultipleProducts(result.filter((i) => i.quantity !== 0))
+      );
+
+      // for count total quanitty
+      const countTotalQuantityOfProducts = [
+        ...countTotalQuantity,
+        itemForQuantity,
+      ];
+      let arr2 = [];
+      arr2.push(countTotalQuantityOfProducts);
+      const result2 = Object.values(
+        arr2.flat(1).reduce((acc, cur) => {
+          acc[cur.id] = cur;
+          return acc;
+        }, {})
+      );
+
+      const filteredQuantityAndAmount = result2.filter((i) => i.quantity !== 0);
+
+      const totalQuantity = filteredQuantityAndAmount.reduce((acc, curr) => {
+        return acc + curr?.quantity;
+      }, 0);
+      const totalAmount = filteredQuantityAndAmount.reduce((acc, curr) => {
+        return acc + curr?.amount;
+      }, 0);
+      dispatch(
+        handlechangeTotalQuantityAndAmountOfmultipleProducts({
+          totalQuantity,
+          totalAmount,
+        })
+      );
+      setCountTotalQuantity(result2.filter((i) => i.quantity !== 0));
+    }
+  };
+
+  // add multiple product api handle
+  const handleSubmitMulitpleProductToCart = () => {
+    if (selectedItems.length === 0) {
+      toast.dismiss();
+      return toast.error("Please add some quantity to products!!!");
+    } else {
+      const response = dispatch(
+        handleAddMultipleProductToCart({
+          token,
+          signal: AbortControllerRef,
+          products: selectedItems,
+        })
+      );
+      if (response) {
+        response
+          .then((res) => {
+            if (res.payload.status === "success") {
+              toast.success("Products Added to cart.");
+              dispatch(
+                handleChangeAddProduct({
+                  quantity: totalQuantityMultipleProducts,
+                  amount: totalAmountMultipleProducts,
+                })
+              );
+              setCountTotalQuantity([]);
+              dispatch(handleRemoveAllProducts());
+              dispatch(handleRemoveAllTotalQuantityAndTotalAmount());
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    }
+  };
+
   // fetch products
   useEffect(() => {
     dispatch(handleGetNewArrivals({ token }));
     dispatch(handleGetTopSellers({ token }));
+    dispatch(calculateTotalAmount());
+    dispatch(calculateTotalQuantity());
     const response = dispatch(handleGetAllProducts({ token }));
     if (response) {
       response
@@ -274,7 +407,17 @@ const ProductListing = () => {
     return () => {
       AbortControllerRef.current !== null && AbortControllerRef.current.abort();
     };
-  }, [loading]);
+  }, []);
+
+  // find items in cart added
+  useEffect(() => {
+    if (cart !== null && cartItems.length > 0) {
+      const findItemInCart = cartItems.filter(
+        (i) => !selectedItems.includes(i?.product?._id)
+      );
+      console.log("findincart", findItemInCart);
+    }
+  }, [loading, selectedItems]);
 
   // set products releated category & filter wise
   useEffect(() => {
@@ -284,7 +427,6 @@ const ProductListing = () => {
     productLoading,
     categories,
     title,
-    loading,
     newArrivals,
     topSellers,
     activePrice,
@@ -296,8 +438,18 @@ const ProductListing = () => {
   useEffect(() => {
     if (filterValue == "newest") {
       return setProducts(products.slice().reverse());
-    } else {
+    } else if (filterValue === "oldest") {
       return setProducts(products.slice().reverse());
+    } else if (filterValue === "lowtohigh") {
+      const lowToHigh = products.slice().sort((a, b) => {
+        return parseFloat(a.price) - parseFloat(b.price);
+      });
+      return setProducts(lowToHigh);
+    } else if (filterValue === "higtolow") {
+      const lowToHigh = products.slice().sort((a, b) => {
+        return parseFloat(b.price) - parseFloat(a.price);
+      });
+      return setProducts(lowToHigh);
     }
   }, [filterValue]);
 
@@ -310,6 +462,7 @@ const ProductListing = () => {
       })
     );
   }, [title, pageNumber]);
+
   return (
     <>
       <Helmet title={`product-listing-${title}`} />
@@ -410,10 +563,12 @@ const ProductListing = () => {
                     <span className="font-medium">{t("Sort")}:</span>
                     <select
                       onChange={(e) => setFilterValue(e.target.value)}
-                      className="bg-gray-200 outline-none text-black w-28 p-2 rounded-md  font-medium"
+                      className="bg-gray-200 outline-none text-black w-32 p-2 rounded-md  font-medium"
                     >
                       <option value="newest">{t("Newest")}</option>
                       <option value="oldest">{t("Oldest")}</option>
+                      <option value="lowtohigh">{t("Low to high")}</option>
+                      <option value="hightolow">{t("High to low")}</option>
                     </select>
                     <span className="font-medium">{t("Show")}:</span>
                     <select
@@ -433,17 +588,27 @@ const ProductListing = () => {
                 <button
                   type="button"
                   className="xl:w-[20%] w-auto text-sm px-1 bg-PRIMARY text-white text-center xl:h-14 h-12 ml-auto"
+                  disabled={loading}
+                  onClick={() => {
+                    handleSubmitMulitpleProductToCart();
+                  }}
                 >
-                  <BsPlus className="w-6 h-6 inline-block" />
-                  {t("Add Selected items to")}{" "}
-                  <AiOutlineShoppingCart className="h-5 w-5 inline-block" />
+                  {loading ? (
+                    t("loading").concat("...")
+                  ) : (
+                    <>
+                      <BsPlus className="w-6 h-6 inline-block" />
+                      {t("Add Selected items to")}
+                      <AiOutlineShoppingCart className="h-5 w-5 inline-block" />
+                    </>
+                  )}
                 </button>
               </div>
               {/* prodcts */}
               <div
                 className={`w-full grid ${
                   selectedView === "grid"
-                    ? "xl:grid-cols-4 md:grid-cols-2 md:gap-3 gap-1"
+                    ? "xl:grid-cols-4 md:grid-cols-3 md:gap-3 gap-1"
                     : selectedView === "grid3"
                     ? "xl:grid-cols-3 md:grid-cols-2 md:gap-5 gap-1"
                     : "grid-cols-1 gap-y-5"
@@ -471,6 +636,7 @@ const ProductListing = () => {
                       key={product?._id}
                       product={product}
                       selectedView={selectedView}
+                      handleAddSelectedItem={handleAddSelectedItem}
                     />
                   ))
                 ) : (
@@ -528,10 +694,20 @@ const ProductListing = () => {
                 <button
                   type="button"
                   className="xl:w-[20%] w-auto text-sm px-1 bg-PRIMARY text-white text-center xl:h-14 h-12 ml-auto"
+                  disabled={loading}
+                  onClick={() => {
+                    handleSubmitMulitpleProductToCart();
+                  }}
                 >
-                  <BsPlus className="w-6 h-6 inline-block" />
-                  {t("Add Selected items to")}{" "}
-                  <AiOutlineShoppingCart className="h-5 w-5 inline-block" />
+                  {loading ? (
+                    t("loading").concat("...")
+                  ) : (
+                    <>
+                      <BsPlus className="w-6 h-6 inline-block" />
+                      {t("Add Selected items to")}
+                      <AiOutlineShoppingCart className="h-5 w-5 inline-block" />
+                    </>
+                  )}
                 </button>
               </div>
             </section>

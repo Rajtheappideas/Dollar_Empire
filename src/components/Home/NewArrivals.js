@@ -1,6 +1,6 @@
 import React, { Fragment, useRef, useState } from "react";
 import ProductCard from "../ProductCard";
-import { Autoplay, Navigation } from "swiper";
+import { Navigation } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 // Import Swiper styles
 import "swiper/css";
@@ -12,8 +12,6 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
 const NewArrivals = ({}) => {
-  const [slide, setSlide] = useState({ isEnd: false, isBeginning: false });
-
   const { newArrivals, productLoading } = useSelector(
     (state) => state.products
   );
@@ -33,28 +31,24 @@ const NewArrivals = ({}) => {
       newArrivals.length === 0 &&
       !productLoading ? (
         <p className="md:text-2xl text-lg mx-auto w-full text-center font-semibold">
-          Prodcuts Not Found, Try again sometimes.
+          Prodcuts Not Found, Try again after sometimes.
         </p>
       ) : (
         <>
           <Swiper
-            modules={[Autoplay, Navigation]}
+            modules={[Navigation]}
             spaceBetween={10}
             slidesPerView={5}
             direction={"horizontal"}
             navigation={{
-              prevEl: prevRef?.current,
-              nextEl: nextRef?.current,
+              prevEl: prevRef.current,
+              nextEl: nextRef.current,
+              enabled: true,
             }}
-            autoplay={{
-              delay: 2000,
-              disableOnInteraction: false,
-              pauseOnMouseEnter: true,
-            }}
-            speed={500}
-            onSlideChange={(e) => {
-              setSlide({ isEnd: e.isEnd, isBeginning: e.isBeginning });
-            }}
+            loop={false}
+            observer={true}
+            parallax={true}
+            observeParents={true}
             onSwiper={(swiper) => {
               // Delay execution for the refs to be defined
               setTimeout(() => {
@@ -101,7 +95,7 @@ const NewArrivals = ({}) => {
                     duration={0.5}
                     baseColor="lightgray"
                     highlightColor="white"
-                    className="md:h-80 h-60 "
+                    className="md:h-80 h-60"
                   />
                 </SwiperSlide>
                 <SwiperSlide>
@@ -135,29 +129,29 @@ const NewArrivals = ({}) => {
             ) : (
               newArrivals.map((product) => (
                 <SwiperSlide key={product?._id}>
-                  <ProductCard product={product} from="NewArrivals" />
+                  <ProductCard
+                    handleAddSelectedItem=""
+                    product={product}
+                    from="NewArrivals"
+                  />
                 </SwiperSlide>
               ))
             )}
           </Swiper>
-          {!slide.isBeginning && (
-            <button
-              type="button"
-              ref={prevRef}
-              className="rounded-full md:p-2 p-0.5 bg-white border border-black absolute top-1/2 -translate-y-1/2 xl:-left-4 md:left-4 left-0 z-20"
-            >
-              <AiOutlineLeft className="w-6 h-6" />
-            </button>
-          )}
-          {!slide?.isEnd && (
-            <button
-              type="button"
-              ref={nextRef}
-              className="rounded-full md:p-2 p-0.5 bg-white border border-black absolute top-1/2 -translate-y-1/2 xl:-right-4 md:right-4 right-0 z-20"
-            >
-              <AiOutlineRight className="w-6 h-6" />
-            </button>
-          )}
+          <button
+            type="button"
+            ref={prevRef}
+            className="rounded-full md:p-2 p-0.5 bg-white border border-black absolute top-1/2 -translate-y-1/2 xl:-left-4 md:left-4 left-0 z-20"
+          >
+            <AiOutlineLeft className="w-6 h-6" />
+          </button>
+          <button
+            type="button"
+            ref={nextRef}
+            className="rounded-full md:p-2 p-0.5 bg-white border border-black absolute top-1/2 -translate-y-1/2 xl:-right-4 md:right-4 right-0 z-20"
+          >
+            <AiOutlineRight className="w-6 h-6" />
+          </button>
         </>
       )}
     </section>

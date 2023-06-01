@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { Pagination, Autoplay } from "swiper";
+import { Pagination } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 // Import Swiper styles
 import "swiper/css";
@@ -19,11 +19,11 @@ const Herosection = () => {
 
   useEffect(() => {
     window.addEventListener("resize", () => {
-      if (window.screen.width < 540) {
-        swiperRef.current.swiper.autoplay.running = false;
-      } else {
-        swiperRef.current.swiper.autoplay.running = true;
-      }
+      // if (window.screen.width < 540) {
+      //   swiperRef.current.swiper.autoplay.running = false;
+      // } else {
+      //   swiperRef.current.swiper.autoplay.running = true;
+      // }
     });
     return () => {
       window.removeEventListener("resize", () => {});
@@ -39,16 +39,10 @@ const Herosection = () => {
       ) : (
         <>
           <Swiper
-            modules={[Pagination, Autoplay]}
+            modules={[Pagination]}
             spaceBetween={0}
             slidesPerView={1}
             loop={true}
-            autoplay={{
-              delay: 3000,
-              disableOnInteraction: true,
-              pauseOnMouseEnter: true,
-            }}
-            speed={1000}
             direction={"horizontal"}
             pagination
             className="w-full"
@@ -69,7 +63,7 @@ const Herosection = () => {
           </Swiper>
           <div className="grid place-items-start justify-items-start grid-cols-4 w-full gap-x-1 items-start justify-start">
             {featured.map((img, i) => (
-              <Link key={i} to={img?.link} className="w-full">
+              <Link key={i} to={img?.link} target="_blank" className="w-full">
                 <img
                   src={BaseUrl.concat(img.image)}
                   alt={img?.imageAlt}

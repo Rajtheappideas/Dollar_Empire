@@ -99,10 +99,22 @@ const Header = () => {
       navigate(`/product-listing/search`);
     }
   };
+
+  const handlechangeuserlanguage = () => {
+    if (userLanguage === "en") {
+      window.localStorage.setItem("user_lang", JSON.stringify("es"));
+      dispatch(handleChangeUserLanguage(userLanguage === "en" ? "es" : "en"));
+      window.location.reload();
+    } else {
+      window.localStorage.setItem("user_lang", JSON.stringify("en"));
+      dispatch(handleChangeUserLanguage(userLanguage === "es" ? "en" : "es"));
+      window.location.reload();
+    }
+  };
   return (
     <div>
       {/* first section */}
-      <div className="flex relative z-20 w-full justify-stretch items-center md:h-auto h-14 md:py-2 xl:px-20 md:px-10 px-3 md:gap-x-0 gap-x-1">
+      <div className="flex relative z-30 w-full justify-stretch items-center md:h-auto h-14 md:py-2 xl:px-20 md:px-10 px-3 md:gap-x-0 gap-x-1">
         {/* first logo */}
         <div className="flex-grow">
           <Link to="/" className="inline-block">
@@ -129,18 +141,7 @@ const Header = () => {
           <p
             className="text-sm text-PRIMARY"
             role="button"
-            onClick={() => {
-              userLanguage === "en"
-                ? window.localStorage.setItem("user_lang", JSON.stringify("es"))
-                : window.localStorage.setItem(
-                    "user_lang",
-                    JSON.stringify("en")
-                  );
-              dispatch(
-                handleChangeUserLanguage(userLanguage === "en" ? "es" : "en")
-              );
-              window.location.reload();
-            }}
+            onClick={() => handlechangeuserlanguage()}
           >
             <span className="flex items-center">
               SP <TiArrowBack className="h-5 w-5 inline-block" color="blue" />
@@ -156,15 +157,10 @@ const Header = () => {
 
           {user === null ? (
             <>
-              <button type="button" className="md:block hidden">
+              <button type="button" className="">
                 <Link to="/sign-in">{t("login")}</Link>
-                <Link to="/sign-up">/ {t("register")}</Link>
+                <Link to="/sign-up" className="md:inline-block hidden">/ {t("register")}</Link>
               </button>
-              <HiOutlineBars3
-                onClick={() => setOpenSidebar(true)}
-                role="button"
-                className="h-8 w-8 block md:hidden"
-              />
             </>
           ) : (
             <>
@@ -192,7 +188,7 @@ const Header = () => {
         </div>
 
         {/* sidebar for mobile */}
-        <div
+        {/* <div
           className={`absolute z-40 top-0 right-0 text-center transform duration-300 ease-in origin-top-right ${
             openSidebar ? "scale-100" : "scale-0"
           } font-semibold text-xl bg-white w-full h-screen p-3 text-PRIMARY space-y-3`}
@@ -218,20 +214,20 @@ const Header = () => {
               <Link to="/my-account">{t("my_account")}</Link>
             </p>
           )}
-        </div>
+        </div> */}
       </div>
       {/* second section */}
       <div className="bg-PRIMARY text-white w-full flex lg:flex-row flex-col justify-between lg:items-center items-start gap-5 lg:gap-0 md:py-5 py-2 xl:px-20 md:px-10 px-3">
         {/* left side div */}
         <div className="lg:w-1/2 w-full text-black">
-          <div className="capitalize font-semibold relative z-20 flex items-center w-full bg-white rounded-md p-3">
+          <div className="capitalize font-semibold relative z-30 flex items-center w-full bg-white rounded-md p-3">
             {/* menu */}
-            <div className="relative z-0 group min-w-[10rem]">
+            <div className="relative z-0 group md:min-w-[10rem]">
               <p className="cursor-pointer flex items-center justify-between flex-row text-black font-normal ">
                 <span className="text-base whitespace-nowrap">
                   {t("all_categories")}
                 </span>
-                <BsChevronDown className="min-h-[1rem] min-w-[1rem] ml-1" />
+                <BsChevronDown className="md:min-h-[1rem] md:min-w-[1rem] ml-1" />
               </p>
               {/* menu */}
               <div className="text-left p-2 absolute top-9 -left-3 z-20 bg-white md:min-w-[14rem] min-w-[10rem] rounded-md group-hover:scale-100 scale-0 transform duration-300 ease-in origin-top-left">
@@ -358,40 +354,36 @@ const Header = () => {
           </div>
         </div>
         {/* cart + amount */}
-        <div className="flex items-center gap-x-2 flex-wrap">
-          <AiOutlineShoppingCart className="w-7 h-7" />
-          <p>
-            <span className="md:mr-2 mr-1">
-              <Link
-                to="/cart"
-                onClick={() =>
-                  dispatch(handleChangeActiveComponent("Shopping Cart"))
-                }
-              >
-                {t("shopping_cart")}:
-              </Link>
-            </span>
-            <input
-              type="number"
-              className="max-w-[5rem] inline-block text-black h-9 p-1 text-center rounded-md outline-none placeholder:text-black"
-              placeholder="0"
-              value={totalQuantity}
-              readOnly={true}
-            />
-            <span className="md:ml-2 ml-1">PC</span>
-          </p>
-          <p>|</p>
-          <p>
-            <BsCurrencyDollar className="h-5 w-5 md:mr-2 inline-block" />
-            <input
-              type="number"
-              className="max-w-[5rem] h-9 text-black p-1 text-center rounded-md outline-none placeholder:text-black"
-              placeholder="0"
-              value={parseFloat(grandTotal).toFixed(2)}
-              readOnly={true}
-            />
-          </p>
-        </div>
+        <Link
+          to="/cart"
+          onClick={() => dispatch(handleChangeActiveComponent("Shopping Cart"))}
+        >
+          <div className="flex items-center gap-x-2 flex-wrap">
+            <AiOutlineShoppingCart className="w-7 h-7" />
+            <p>
+              <span className="md:mr-2 mr-1">{t("shopping_cart")}:</span>
+              <input
+                type="number"
+                className="max-w-[5rem] inline-block text-black h-9 p-1 text-center rounded-md outline-none placeholder:text-black"
+                placeholder="0"
+                value={totalQuantity}
+                readOnly={true}
+              />
+              <span className="md:ml-2 ml-1">PC</span>
+            </p>
+            <p>|</p>
+            <p>
+              <BsCurrencyDollar className="h-5 w-5 md:mr-2 inline-block" />
+              <input
+                type="number"
+                className="lg:max-w-[5rem] max-w-[6rem] h-9 text-black p-1 text-center rounded-md outline-none placeholder:text-black"
+                placeholder="0"
+                value={parseFloat(grandTotal).toFixed(2)}
+                readOnly={true}
+              />
+            </p>
+          </div>
+        </Link>
       </div>
       {/* third section */}
       <div
@@ -403,7 +395,7 @@ const Header = () => {
         }`}
       >
         {/* all categories */}
-        <div className="capitalize font-semibold relative z-10 group md:min-w-[13rem]">
+        <div className="capitalize font-semibold relative z-20 group md:min-w-[13rem]">
           <p className="cursor-pointer flex items-center justify-between flex-row w-auto md:p-3 p-2 bg-black text-white ">
             <span className="md:text-xl text-lg whitespace-nowrap">
               {t("all_categories")}

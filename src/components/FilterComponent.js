@@ -14,8 +14,8 @@ const FilterComponent = ({
 }) => {
   const [shownCategories, setShownCategories] = useState([]);
   const [activeCategory, setActiveCategory] = useState("");
-  const [isOpenCategory, setIsOpenCategory] = useState(false);
-  const [isOpenPrice, setIsOpenPrice] = useState(false);
+  const [isOpenCategory, setIsOpenCategory] = useState(true);
+  const [isOpenPrice, setIsOpenPrice] = useState(true);
 
   const { subCategories, loading } = useSelector((state) => state.getContent);
 

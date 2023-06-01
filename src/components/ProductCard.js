@@ -11,6 +11,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import {
   closeEnlargeImagePopup,
+  handleChangeActiveComponent,
   handleChangeEnlargeImageFrom,
   handleChangeEnlargeImageId,
   handleChangeSingleProductEnlargeImageId,
@@ -29,17 +30,21 @@ import { useRef } from "react";
 import { toast } from "react-hot-toast";
 import { useState } from "react";
 import {
-  handleGetNewArrivals,
-  handleGetTopSellers,
-} from "../redux/ProductSlice";
-import {
   handleAddProductToCart,
   handleChangeAddProduct,
+  handleRemoveFromTotalQuantityAndAmountOfmultipleProducts,
+  handleRemoveOneProductFromSelected,
 } from "../redux/CartSlice";
 import "react-loading-skeleton/dist/skeleton.css";
 import { MagnifyingGlassPlusIcon } from "@heroicons/react/24/outline";
 
-const ProductCard = ({ product, title, selectedView, from }) => {
+const ProductCard = ({
+  product,
+  title,
+  selectedView,
+  from,
+  handleAddSelectedItem,
+}) => {
   const [favouriteLoading, setFavouriteLoading] = useState(false);
   const [selectedItemType, setSelectedItemType] = useState("pk");
   const [pkitemsQuantity, setpkItemsQuantity] = useState("");
@@ -48,8 +53,12 @@ const ProductCard = ({ product, title, selectedView, from }) => {
   const [findInCart, setFindInCart] = useState(null);
   const [pkCount, setPkCount] = useState(0);
   const [ctnCount, setCtnCount] = useState(0);
+  const [isFavourite, setisFavourite] = useState(false);
+  const [activeEnlargeImage, setActiveEnlargeImage] = useState(0);
 
   const { user, token } = useSelector((state) => state.Auth);
+
+  const { productLoading } = useSelector((state) => state.products);
   const {
     showProductDetailsPopup,
     showEnlargeImage,
@@ -57,7 +66,9 @@ const ProductCard = ({ product, title, selectedView, from }) => {
     activeEnlargeImageFrom,
     singleProductEnlargeImageId,
   } = useSelector((state) => state.globalStates);
-  const { loading, cartItems, cart } = useSelector((state) => state.cart);
+  const { loading, cartItems, cart, selectedItems, success } = useSelector(
+    (state) => state.cart
+  );
 
   const AbortControllerRef = useRef(null);
 
@@ -74,11 +85,7 @@ const ProductCard = ({ product, title, selectedView, from }) => {
       response
         .then((res) => {
           if (res.payload.status === "success") {
-            if (category === "TopSellers") {
-              dispatch(handleGetTopSellers({ token }));
-            } else if (category === "NewArrivals") {
-              dispatch(handleGetNewArrivals({ token }));
-            }
+            setisFavourite(!isFavourite);
             toast.success(res.payload.message);
           } else if (res.payload.status === "fail") {
             toast.error(res.payload.message);
@@ -101,11 +108,7 @@ const ProductCard = ({ product, title, selectedView, from }) => {
       response
         .then((res) => {
           if (res.payload.status === "success") {
-            if (category === "TopSellers") {
-              dispatch(handleGetTopSellers({ token }));
-            } else if (category === "NewArrivals") {
-              dispatch(handleGetNewArrivals({ token }));
-            }
+            setisFavourite(!isFavourite);
             toast.success(res.payload.message);
           } else {
             toast.error(res.payload.message);
@@ -120,22 +123,24 @@ const ProductCard = ({ product, title, selectedView, from }) => {
   };
 
   const handleAddProduct = (id, title, quantity, amount) => {
-    toast.dismiss();
     if (
       (pkitemsQuantity === "" || pkitemsQuantity === 0) &&
       (ctnItemQuantity === "" || ctnItemQuantity === 0)
     ) {
+      toast.remove();
       setpkItemsQuantity("");
       setCtnItemQuantity("");
       setPkCount(0);
       setCtnCount(0);
       return toast.error("Please add some quantity And enter valid value.");
     } else if (selectedItemType === "pk" && ctnItemQuantity > 0) {
+      toast.remove();
       toast.error("Please enter quantity in PK, you choose PK");
       setCtnItemQuantity("");
       setCtnCount(0);
       return true;
     } else if (selectedItemType === "ctn" && pkitemsQuantity > 0) {
+      toast.remove();
       toast.error("Please enter quantity in CTN, you choose CTN");
       setpkItemsQuantity("");
       setPkCount(0);
@@ -143,19 +148,21 @@ const ProductCard = ({ product, title, selectedView, from }) => {
     } else if (
       !/^\d+$/.test(pkitemsQuantity !== "" ? pkitemsQuantity : ctnItemQuantity)
     ) {
+      toast.remove();
       setpkItemsQuantity("");
       setCtnItemQuantity("");
       setPkCount(0);
       setCtnCount(0);
       return toast.error("Please enter valid value!!!");
     }
+    setSelectedProductId(id);
     const response = dispatch(
       handleAddProductToCart({
         token,
         id,
         signal: AbortControllerRef,
         type: selectedItemType,
-        quantity: selectedItemType === "pk" ? pkitemsQuantity : ctnItemQuantity,
+        quantity: selectedItemType === "pk" ? pkCount : ctnCount,
       })
     );
     if (response) {
@@ -164,6 +171,13 @@ const ProductCard = ({ product, title, selectedView, from }) => {
           if (res.payload.status === "success") {
             toast.success(`${title} added to cart successfully.`);
             dispatch(handleChangeAddProduct({ quantity, amount }));
+            dispatch(
+              handleRemoveFromTotalQuantityAndAmountOfmultipleProducts({
+                quantity,
+                amount,
+              })
+            );
+            dispatch(handleRemoveOneProductFromSelected(product?._id));
             setCtnItemQuantity("");
             setpkItemsQuantity("");
             setSelectedItemType("pk");
@@ -178,16 +192,29 @@ const ProductCard = ({ product, title, selectedView, from }) => {
     }
   };
 
-  function handleShowEnlargeImage() {
+  function handleShowEnlargeImage(index) {
     dispatch(handleChangeEnlargeImageId(""));
     dispatch(handleChangeEnlargeImageFrom(""));
-    dispatch(handleChangeEnlargeImageId(product?._id));
-    dispatch(handleChangeEnlargeImageFrom(from));
+    if (index > 0) {
+      setActiveEnlargeImage(index);
+      dispatch(handleChangeEnlargeImageId(product?._id));
+      dispatch(handleChangeEnlargeImageFrom(from));
+    } else {
+      setActiveEnlargeImage(0);
+      dispatch(handleChangeEnlargeImageId(product?._id));
+      dispatch(handleChangeEnlargeImageFrom(from));
+    }
   }
 
-  function handleShowSingleProductEnlargeImage() {
+  function handleShowSingleProductEnlargeImage(index) {
     dispatch(handleChangeSingleProductEnlargeImageId(""));
-    dispatch(handleChangeSingleProductEnlargeImageId(product?._id));
+    if (index > 0) {
+      setActiveEnlargeImage(index);
+      dispatch(handleChangeSingleProductEnlargeImageId(product?._id));
+    } else {
+      setActiveEnlargeImage(0);
+      dispatch(handleChangeSingleProductEnlargeImageId(product?._id));
+    }
   }
 
   const handlePlusPkQuantity = (quantity, count) => {
@@ -245,7 +272,39 @@ const ProductCard = ({ product, title, selectedView, from }) => {
       );
       setFindInCart(findItemInCart);
     }
-  }, [pkitemsQuantity, ctnItemQuantity, showProductDetailsPopup]);
+  }, [
+    pkitemsQuantity,
+    ctnItemQuantity,
+    showProductDetailsPopup,
+    selectedItems,
+  ]);
+
+  useEffect(() => {
+    setisFavourite(product?.isFavourite);
+  }, [productLoading]);
+
+  useEffect(() => {
+    if (handleAddSelectedItem !== "") {
+      handleAddSelectedItem(
+        pkitemsQuantity,
+        ctnItemQuantity,
+        product?._id,
+        selectedItemType,
+        pkCount,
+        ctnCount,
+        product?.price
+      );
+    }
+  }, [pkitemsQuantity, ctnItemQuantity, selectedItemType]);
+
+  useEffect(() => {
+    if (success) {
+      setCtnItemQuantity("");
+      setpkItemsQuantity("");
+      setPkCount(0);
+      setCtnCount(0);
+    }
+  }, [success]);
   return (
     <>
       {selectedView === "gridsingle" ? (
@@ -264,7 +323,7 @@ const ProductCard = ({ product, title, selectedView, from }) => {
             <img
               src={BaseUrl.concat(product?.images[0])}
               alt={product?.name}
-              className="xl:w-48 md:h-auto md:w-1/2 w-full h-40 cursor-pointer xl:object-fill object-contain object-center"
+              className="xl:w-48 md:h-60 md:w-1/2 w-full h-40 pb-10 cursor-pointer xl:object-fill object-contain object-center"
               title={product?.name}
               onClick={() => {
                 dispatch(showPopup());
@@ -273,27 +332,40 @@ const ProductCard = ({ product, title, selectedView, from }) => {
               }}
               loading="lazy"
             />
+            <p className="flex items-center gap-x-1 absolute md:bottom-0 bottom-[220px] left-9">
+              {product?.images.map((image, index) => (
+                <img
+                  key={index}
+                  src={BaseUrl.concat(image)}
+                  className="h-10 w-10 border-2 border-PRIMARY p-2 rounded-lg cursor-pointer"
+                  onClick={() => {
+                    dispatch(showEnlargeImagePopup());
+                    handleShowSingleProductEnlargeImage(index);
+                  }}
+                />
+              ))}
+            </p>
             <MagnifyingGlassPlusIcon
               role="button"
               onClick={() => {
                 dispatch(showEnlargeImagePopup());
-                handleShowSingleProductEnlargeImage();
+                handleShowSingleProductEnlargeImage(0, product?._id);
               }}
               className="h-6 w-6 bg-white/40 absolute left-0 md:bottom-0 bottom-56  text-PRIMARY"
             />
             {singleProductEnlargeImageId === product?._id &&
               showEnlargeImage && (
-                <div className="absolute bg-black/30 z-40 xl:w-[30rem] md:w-[40rem] w-72 md:min-h-[22rem] md:max-h-[22rem] min-h-[24rem] max-h-[24rem] xl:-top-32 md:-top-20 top-0 md:left-0 -left-2 backdrop-blur-sm">
+                <div className="absolute bg-black/30 z-40 xl:w-[30rem] md:w-[30rem] w-full md:min-h-[22rem] md:max-h-[22rem] min-h-[24rem] max-h-[24rem] xl:-top-32 md:-top-20 top-0 md:left-0 -left-2 backdrop-blur-sm">
                   <AiOutlineClose
                     role="button"
                     onClick={() => {
                       dispatch(closeEnlargeImagePopup());
-                      handleShowSingleProductEnlargeImage();
+                      // handleShowSingleProductEnlargeImage();
                     }}
                     className="absolute top-1 right-2 w-7 h-7 text-white z-50"
                   />
                   <img
-                    src={BaseUrl.concat(product?.images[0])}
+                    src={BaseUrl.concat(product?.images[activeEnlargeImage])}
                     alt={product?.name}
                     className="w-full md:max-h-[19rem] md:min-h-[19rem] min-h-[20rem] max-h-[20rem] px-2 rounded-none object-fill object-center absolute top-10 z-50"
                     title={product?.name}
@@ -367,6 +439,7 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                 {(product?.price * product?.PK).toFixed(1)}
                 /PK, ${(product?.price * product?.CTN).toFixed(1)}/CTN
               </p>
+              {/* pk */}
               <div className="flex xl:w-64 w-full items-center gap-x-2 relative z-0 ml-auto">
                 <input
                   name={
@@ -384,6 +457,10 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                       ? product?.name.concat(from)
                       : product?.name
                   }
+                  disabled={
+                    (loading && selectedProductId?._id === product?._id) ||
+                    findInCart?.product?._id === product?._id
+                  }
                 />{" "}
                 <span className="font-semibold text-sm whitespace-nowrap pr-2">
                   PC QTY
@@ -396,20 +473,21 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                         findInCart?.product?._id === product?._id) &&
                       "cursor-not-allowed"
                     }`}
-                    placeholder="24 PC"
+                    placeholder={`${product?.PK} PC`}
                     value={pkitemsQuantity}
                     onChange={(e) => {
-                      setpkItemsQuantity(e.target.value);
-                      setPkCount(
-                        e.target.value >= product?.PK
-                          ? parseFloat(
-                              (e.target.value / product?.PK)
-                                .toFixed(1)
-                                .toString()
-                                .split(".")[0]
-                            )
-                          : 0
-                      );
+                      !loading && setpkItemsQuantity(e.target.value);
+                      !loading &&
+                        setPkCount(
+                          e.target.value >= product?.PK
+                            ? parseFloat(
+                                (e.target.value / product?.PK)
+                                  .toFixed(1)
+                                  .toString()
+                                  .split(".")[0]
+                              )
+                            : 0
+                        );
                       if (
                         !/^\d+$/.test(e.target.value) &&
                         e.target.value !== ""
@@ -420,34 +498,60 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                     }}
                     disabled={
                       selectedItemType === "ctn" ||
-                      findInCart?.product?._id === product?._id
+                      findInCart?.product?._id === product?._id ||
+                      (loading && selectedProductId?._id === product?._id)
                     }
                   />
                   <span className="font-semibold text-BLACK w-14 text-xs absolute top-1/2 -translate-y-1/2 right-6">
                     {pkCount} PK
                   </span>
-                  <AiOutlineMinus
-                    role="button"
-                    className=" text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 left-1"
-                    onClick={() =>
-                      handleMinusPkQuantity(
-                        parseFloat(product?.PK),
-                        parseFloat(pkCount - 1)
-                      )
+                  <button
+                    type="button"
+                    disabled={
+                      (loading && selectedProductId?._id === product?._id) ||
+                      findInCart?.product?._id === product?._id
                     }
-                  />
-                  <AiOutlinePlus
-                    role="button"
-                    className=" text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2"
-                    onClick={() =>
-                      handlePlusPkQuantity(
-                        parseFloat(product?.PK),
-                        parseFloat(pkCount + 1)
-                      )
+                  >
+                    <AiOutlineMinus
+                      className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 left-1 ${
+                        (selectedItemType === "ctn" ||
+                          findInCart?.product?._id === product?._id) &&
+                        "cursor-not-allowed"
+                      }`}
+                      onClick={() =>
+                        !loading &&
+                        handleMinusPkQuantity(
+                          parseFloat(product?.PK),
+                          parseFloat(pkCount - 1)
+                        )
+                      }
+                    />
+                  </button>
+                  <button
+                    type="button"
+                    disabled={
+                      (loading && selectedProductId?._id === product?._id) ||
+                      findInCart?.product?._id === product?._id
                     }
-                  />
+                  >
+                    <AiOutlinePlus
+                      className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2 ${
+                        (selectedItemType === "ctn" ||
+                          findInCart?.product?._id === product?._id) &&
+                        "cursor-not-allowed"
+                      }`}
+                      onClick={() =>
+                        !loading &&
+                        handlePlusPkQuantity(
+                          parseFloat(product?.PK),
+                          parseFloat(pkCount + 1)
+                        )
+                      }
+                    />
+                  </button>
                 </div>
               </div>
+              {/* ctn */}
               <div className="flex xl:w-64 w-full items-center gap-x-2 relative z-0 ml-auto">
                 <input
                   name={
@@ -464,6 +568,10 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                       ? product?.name.concat(from)
                       : product?.name
                   }
+                  disabled={
+                    (loading && selectedProductId?._id === product?._id) ||
+                    findInCart?.product?._id === product?._id
+                  }
                 />{" "}
                 <span className="font-semibold text-sm whitespace-nowrap">
                   CTN QTY
@@ -476,20 +584,21 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                         findInCart?.product?._id === product?._id) &&
                       "cursor-not-allowed"
                     }`}
-                    placeholder="144 PC"
+                    placeholder={`${product?.CTN} PC`}
                     value={ctnItemQuantity}
                     onChange={(e) => {
-                      setCtnItemQuantity(e.target.value);
-                      setCtnCount(
-                        e.target.value >= product?.CTN
-                          ? parseFloat(
-                              (e.target.value / product?.CTN)
-                                .toFixed(1)
-                                .toString()
-                                .split(".")[0]
-                            )
-                          : 0
-                      );
+                      !loading && setCtnItemQuantity(e.target.value);
+                      !loading &&
+                        setCtnCount(
+                          e.target.value >= product?.CTN
+                            ? parseFloat(
+                                (e.target.value / product?.CTN)
+                                  .toFixed(1)
+                                  .toString()
+                                  .split(".")[0]
+                              )
+                            : 0
+                        );
                       if (
                         !/^\d+$/.test(e.target.value) &&
                         e.target.value !== ""
@@ -500,34 +609,64 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                     }}
                     disabled={
                       selectedItemType === "pk" ||
-                      findInCart?.product?._id === product?._id
+                      findInCart?.product?._id === product?._id ||
+                      (loading && selectedProductId?._id === product?._id)
                     }
                   />
                   <span className="font-semibold w-14 text-BLACK text-xs absolute top-1/2 -translate-y-1/2 right-6">
                     {ctnCount} CTN
                   </span>
-                  <AiOutlineMinus
-                    role="button"
-                    className=" text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 left-1"
-                    onClick={() =>
-                      handleMinusCTNQuantity(
-                        parseFloat(product?.CTN),
-                        parseFloat(ctnCount - 1)
-                      )
+                  <button
+                    type="button"
+                    disabled={
+                      (loading && selectedProductId?._id === product?._id) ||
+                      findInCart?.product?._id === product?._id
                     }
-                  />
-                  <AiOutlinePlus
-                    role="button"
-                    className=" text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2"
-                    onClick={() =>
-                      handlePlusCTNQuantity(
-                        parseFloat(product?.CTN),
-                        parseFloat(ctnCount + 1)
-                      )
+                  >
+                    <AiOutlineMinus
+                      className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 left-1
+                      ${
+                        (selectedItemType === "pk" ||
+                          findInCart?.product?._id === product?._id) &&
+                        "cursor-not-allowed"
+                      }
+                      `}
+                      onClick={() =>
+                        !loading &&
+                        handleMinusCTNQuantity(
+                          parseFloat(product?.CTN),
+                          parseFloat(ctnCount - 1)
+                        )
+                      }
+                    />
+                  </button>
+                  <button
+                    type="button"
+                    disabled={
+                      (loading && selectedProductId?._id === product?._id) ||
+                      findInCart?.product?._id === product?._id
                     }
-                  />
+                  >
+                    <AiOutlinePlus
+                      className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2
+                      ${
+                        (selectedItemType === "pk" ||
+                          findInCart?.product?._id === product?._id) &&
+                        "cursor-not-allowed"
+                      }
+                      `}
+                      onClick={() =>
+                        !loading &&
+                        handlePlusCTNQuantity(
+                          parseFloat(product?.CTN),
+                          parseFloat(ctnCount + 1)
+                        )
+                      }
+                    />
+                  </button>
                 </div>
               </div>
+              {/* btn */}
               <p className="flex items-center gap-x-2">
                 <Link
                   to={
@@ -544,13 +683,15 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                     type="button"
                     className="bg-DARKRED text-white text-center w-full p-2 rounded-lg"
                     onClick={() => {
-                      handleAddProduct(
-                        product?._id,
-                        product?.name,
-                        selectedItemType === "pk"
-                          ? pkitemsQuantity
-                          : ctnItemQuantity
-                      );
+                      !loading &&
+                        selectedProductId !== product?._id &&
+                        handleAddProduct(
+                          product?._id,
+                          product?.name,
+                          selectedItemType === "pk"
+                            ? pkitemsQuantity
+                            : ctnItemQuantity
+                        );
                       setSelectedProductId(product?._id);
                     }}
                   >
@@ -569,7 +710,7 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                 </Link>
                 {favouriteLoading ? (
                   "..."
-                ) : product?.isFavourite ? (
+                ) : isFavourite ? (
                   <AiFillHeart
                     className="w-10 h-10 text-DARKRED"
                     role="button"
@@ -587,7 +728,7 @@ const ProductCard = ({ product, title, selectedView, from }) => {
           )}
         </div>
       ) : (
-        <div className="md:space-y-2 space-y-1 relative z-0 w-full md:p-3 p-4 bg-white lg:min-h-[27rem] md:min-h-[21rem] min-h-[19rem] font-semibold md:text-lg border rounded-lg border-[#EAEAEA]">
+        <div className="md:space-y-2 space-y-3 relative z-0 md:w-full w-screen md:p-3 p-4 bg-white lg:min-h-[27rem] md:min-h-[21rem] min-h-[19rem] font-semibold md:text-lg border rounded-lg border-[#EAEAEA]">
           {/* top seller label */}
           {title === "top-sellers" && (
             <p className="bg-PRIMARY text-white h-8 w-40 leading-8 align-middle text-center text-sm rounded-tl-lg absolute top-0 left-0">
@@ -595,11 +736,11 @@ const ProductCard = ({ product, title, selectedView, from }) => {
             </p>
           )}
           {/* prodcut img */}
-          <div className="relative z-20 pt-3">
+          <div className="relative w-auto z-20 pt-3">
             <img
               src={BaseUrl.concat(product?.images[0])}
               alt={product?.name}
-              className="lg:h-64 md:h-40 relative z-0 h-32 cursor-pointer w-full object-contain object-center"
+              className="lg:h-64 md:h-40 relative z-0 h-32 cursor-pointer w-fit mx-auto object-contain object-center"
               title={product?.name}
               onClick={() => {
                 dispatch(showPopup());
@@ -613,32 +754,45 @@ const ProductCard = ({ product, title, selectedView, from }) => {
               onClick={() => {
                 dispatch(showEnlargeImagePopup());
                 handleShowEnlargeImage();
+                console.log("click");
               }}
               className="h-6 w-6 bg-white/40 absolute bottom-0 right-0 text-PRIMARY"
             />
             {activeEnlargeImageId === product?._id &&
               activeEnlargeImageFrom === from &&
               showEnlargeImage && (
-                <div className="absolute bg-black/30 z-50 xl:w-[200%] w-full lg:min-h-[30rem] min-h-[22rem] max-h-screen top-0 md:-right-5 right-0 backdrop-blur-sm">
+                <div className="absolute bg-black/30 z-50 xl:w-[200%] w-full xl:min-h-[30rem] lg:min-h-[25rem] min-h-[22rem] max-h-screen top-0 md:-right-5 right-0 backdrop-blur-sm">
                   <AiOutlineClose
                     role="button"
                     onClick={() => {
                       dispatch(closeEnlargeImagePopup());
-                      handleShowEnlargeImage();
                     }}
                     className="absolute top-1 right-2 w-7 h-7 text-white z-50"
                   />
                   <img
-                    src={BaseUrl.concat(product?.images[0])}
+                    src={BaseUrl.concat(product?.images[activeEnlargeImage])}
                     alt={product?.name}
-                    className="w-full max-h-screen px-2 rounded-none object-contain object-center absolute top-10"
+                    className="lg:max-h-[25rem] max-h-screen px-2 w-full rounded-none object-contain object-center absolute top-10"
                     title={product?.name}
                     loading="lazy"
                   />
                 </div>
               )}
           </div>
-
+          {/* mulitple images */}
+          <p className="flex items-center gap-x-1">
+            {product?.images.map((image, index) => (
+              <img
+                key={index}
+                src={BaseUrl.concat(image)}
+                className="h-10 w-10 border-2 border-PRIMARY p-1 rounded-lg cursor-pointer"
+                onClick={() => {
+                  dispatch(showEnlargeImagePopup());
+                  handleShowEnlargeImage(index);
+                }}
+              />
+            ))}
+          </p>
           <p className="text-PRIMARY font-semibold">
             ITEM NO.{product?.number}
           </p>
@@ -650,10 +804,11 @@ const ProductCard = ({ product, title, selectedView, from }) => {
           </p>
           {user !== null ? (
             <Fragment>
-              <p className="text-BLACK text-sm text-left">{product?.package}</p>
+              {/* <p className="text-BLACK text-sm text-left">{product?.package}</p> */}
               <p className="md:text-base text-sm font-bold text-left">
                 ${product?.price}/PC | $
-                {(product?.price * product?.CTN).toFixed(1)}/CTN
+                {(product?.price * product?.PK).toFixed(1)}
+                /PK | $ {(product?.price * product?.CTN).toFixed(1)}/CTN
               </p>
               {selectedView === "grid3" && (
                 <ul>
@@ -674,7 +829,8 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                   </li>
                 </ul>
               )}
-              <p className="flex w-full items-center gap-x-1 relative z-0">
+              {/* pk */}
+              <p className="flex w-full items-center lg:gap-x-1 md:gap-x-0 gap-x-1 relative z-0">
                 <input
                   name={
                     from === "TopSellers"
@@ -691,18 +847,22 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                       ? product?.name.concat(from)
                       : product?.name
                   }
+                  disabled={
+                    (loading && selectedProductId === product?._id) ||
+                    findInCart?.product?._id === product?._id
+                  }
                 />
                 <span className="font-semibold text-xs whitespace-nowrap">
-                  PC QTY
+                  PK QTY
                 </span>
                 <input
                   type="number"
-                  className={`w-11/12 h-10 text-sm pl-4 pr-16 rounded-md outline-none border border-BORDERGRAY ${
+                  className={`w-11/12 h-10 text-sm pl-5 pr-16 rounded-md outline-none border border-BORDERGRAY ${
                     (selectedItemType === "ctn" ||
                       findInCart?.product?._id === product?._id) &&
                     "cursor-not-allowed"
                   }`}
-                  placeholder="24 PC"
+                  placeholder={`${product?.PK} PC`}
                   value={pkitemsQuantity}
                   onChange={(e) => {
                     setpkItemsQuantity(e.target.value);
@@ -726,7 +886,8 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                   }}
                   disabled={
                     selectedItemType === "ctn" ||
-                    findInCart?.product?._id === product?._id
+                    findInCart?.product?._id === product?._id ||
+                    (loading && selectedProductId === product?._id)
                   }
                 />
                 <span className="font-semibold w-10 text-BLACK text-xs absolute top-1/2 -translate-y-1/2 right-4">
@@ -734,8 +895,19 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                 </span>
                 <AiOutlineMinus
                   role="button"
-                  className=" text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 md:left-[66px] left-[88px]"
+                  className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 lg:left-[65px] left-[73px] ${
+                    selectedView === "grid3"
+                      ? " md:left-[60px]"
+                      : " md:left-[55px]"
+                  } 
+                  ${
+                    (selectedItemType === "ctn" ||
+                      findInCart?.product?._id === product?._id) &&
+                    "cursor-not-allowed"
+                  }`}
                   onClick={() =>
+                    !loading &&
+                    selectedProductId !== product?._id &&
                     handleMinusPkQuantity(
                       parseFloat(product?.PK),
                       parseFloat(pkCount - 1)
@@ -744,16 +916,25 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                 />
                 <AiOutlinePlus
                   role="button"
-                  className=" text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2"
+                  className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2
+                   ${
+                     (selectedItemType === "ctn" ||
+                       findInCart?.product?._id === product?._id) &&
+                     "cursor-not-allowed"
+                   }
+                  `}
                   onClick={() => {
-                    handlePlusPkQuantity(
-                      parseFloat(product?.PK),
-                      parseFloat(pkCount + 1)
-                    );
+                    !loading &&
+                      selectedProductId !== product?._id &&
+                      handlePlusPkQuantity(
+                        parseFloat(product?.PK),
+                        parseFloat(pkCount + 1)
+                      );
                   }}
                 />
               </p>
-              <p className="flex w-full items-center gap-x-1 relative z-0">
+              {/* ctn */}
+              <p className="flex w-full items-center lg:gap-x-1 md:gap-x-0 gap-x-1 relative z-0">
                 <input
                   name={
                     from === "TopSellers"
@@ -769,6 +950,10 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                       ? product?.name.concat(from)
                       : product?.name
                   }
+                  disabled={
+                    (loading && selectedProductId === product?._id) ||
+                    findInCart?.product?._id === product?._id
+                  }
                 />
                 <span className="font-semibold text-xs whitespace-nowrap">
                   CTN QTY
@@ -780,7 +965,7 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                       findInCart?.product?._id === product?._id) &&
                     "cursor-not-allowed"
                   }`}
-                  placeholder="144 PC"
+                  placeholder={`${product?.CTN} PC`}
                   value={ctnItemQuantity}
                   onChange={(e) => {
                     setCtnItemQuantity(e.target.value);
@@ -804,7 +989,8 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                   }}
                   disabled={
                     selectedItemType === "pk" ||
-                    findInCart?.product?._id === product?._id
+                    findInCart?.product?._id === product?._id ||
+                    (loading && selectedProductId === product?._id)
                   }
                 />
                 <span className="font-semibold w-12 text-xs text-BLACK absolute top-1/2 -translate-y-1/2 right-3">
@@ -812,8 +998,16 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                 </span>
                 <AiOutlineMinus
                   role="button"
-                  className=" text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 md:left-[72px] left-[88px]"
+                  className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 lg:left-[73px] md:left-[66px] left-[79px]
+                  ${
+                    (selectedItemType === "pk" ||
+                      findInCart?.product?._id === product?._id) &&
+                    "cursor-not-allowed"
+                  }
+                  `}
                   onClick={() =>
+                    !loading &&
+                    selectedProductId !== product?._id &&
                     handleMinusCTNQuantity(
                       parseFloat(product?.CTN),
                       parseFloat(ctnCount - 1)
@@ -822,15 +1016,24 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                 />
                 <AiOutlinePlus
                   role="button"
-                  className=" text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2"
+                  className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2
+                  ${
+                    (selectedItemType === "pk" ||
+                      findInCart?.product?._id === product?._id) &&
+                    "cursor-not-allowed"
+                  }
+                  `}
                   onClick={() => {
-                    handlePlusCTNQuantity(
-                      parseFloat(product?.CTN),
-                      parseFloat(ctnCount + 1)
-                    );
+                    !loading &&
+                      selectedProductId !== product?._id &&
+                      handlePlusCTNQuantity(
+                        parseFloat(product?.CTN),
+                        parseFloat(ctnCount + 1)
+                      );
                   }}
                 />
               </p>
+              {/* add to cart btn */}
               <p className="flex items-center gap-x-2">
                 <Link
                   to={
@@ -847,7 +1050,8 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                     type="button"
                     className="bg-DARKRED text-white text-center w-full p-2 rounded-lg"
                     onClick={() => {
-                      product?._id !== findInCart?.product?._id &&
+                      !loading &&
+                        product?._id !== findInCart?.product?._id &&
                         handleAddProduct(
                           product?._id,
                           product?.name,
@@ -858,15 +1062,17 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                             ? pkitemsQuantity * product?.price
                             : ctnItemQuantity * product?.price
                         );
-                      setSelectedProductId(product?._id);
+                      dispatch(handleChangeActiveComponent("Shopping Cart"));
                     }}
-                    disabled={loading}
+                    disabled={loading && selectedProductId === product?._id}
                   >
                     {loading && selectedProductId === product?._id ? (
                       t("Adding").concat("...")
                     ) : findInCart !== null &&
                       product?._id === findInCart?.product?._id ? (
-                      t("Added")
+                      `${t("Added")} ${findInCart?.quantity} ${
+                        findInCart?.type
+                      }`
                     ) : (
                       <>
                         {t("add_to_cart")}
@@ -877,7 +1083,7 @@ const ProductCard = ({ product, title, selectedView, from }) => {
                 </Link>
                 {favouriteLoading ? (
                   "..."
-                ) : product?.isFavourite ? (
+                ) : isFavourite ? (
                   <AiFillHeart
                     className="w-10 h-10 text-DARKRED"
                     role="button"

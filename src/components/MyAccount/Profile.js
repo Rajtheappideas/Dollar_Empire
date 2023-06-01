@@ -36,7 +36,7 @@ const Profile = () => {
             <span className="font-normal capitalize">{user?.companyName}</span>
           </p>
           <p className="flex items-center w-full text-lg">
-            <span className="font-bold md:w-60 w-40">{t("Location")}:</span>{" "}
+            <span className="font-bold md:w-60 w-40">{t("Street Address")}:</span>{" "}
             <span className="font-normal capitalize">{user?.location}</span>
           </p>
           <p className="flex items-center w-full text-lg">

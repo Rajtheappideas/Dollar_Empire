@@ -92,7 +92,7 @@ export const handleRemoveProductToCart = createAsyncThunk(
 
 const initialState = {
   loading: false,
-  success: true,
+  success: false,
   error: null,
   cart: null,
   subTotal: 0,
@@ -101,6 +101,9 @@ const initialState = {
   orderType: "pk",
   totalQuantity: 0,
   cartItems: [],
+  selectedItems: [],
+  totalQuantityMultipleProducts: 0,
+  totalAmountMultipleProducts: 0,
   // totalQuantity: window.localStorage.getItem("persist:cart")
   //   ? JSON.parse(window.localStorage.getItem("persist:cart")).totalQuantity
   //   : 0,
@@ -113,19 +116,39 @@ const CartSlice = createSlice({
   reducers: {
     calculateTotalQuantity: (state) => {
       state.totalQuantity = state.cartItems.reduce((acc, current) => {
-        return acc + current?.quantity;
+        if (current?.type === "pk") {
+          return acc + current?.quantity * current?.product?.PK;
+        } else {
+          return acc + current?.quantity * current?.product?.CTN;
+        }
       }, 0);
     },
+
     calculateTotalAmount: (state) => {
       state.grandTotal = state.cartItems.reduce((acc, curr) => {
-        let total = acc + curr?.product?.price * curr?.quantity;
-        return total;
+        if (curr?.type === "pk") {
+          let total =
+            acc + curr?.product?.price * curr?.quantity * curr?.product?.PK;
+          return total;
+        } else {
+          let total =
+            acc + curr?.product?.price * curr?.quantity * curr?.product?.CTN;
+          return total;
+        }
       }, 0);
     },
+
     changeGrandTotal: (state, { payload }) => {
       const total = state.cartItems.reduce((acc, curr) => {
-        let total = acc + curr?.product?.price * curr?.quantity;
-        return total;
+        if (curr?.type === "pk") {
+          let pkTotal =
+            acc + curr?.product?.price * curr?.quantity * curr?.product?.PK;
+          return pkTotal;
+        } else {
+          let ctnTotal =
+            acc + curr?.product?.price * curr?.quantity * curr?.product?.CTN;
+          return ctnTotal;
+        }
       }, 0);
       if (payload === "freight") {
         state.grandTotal = total + 10;
@@ -133,6 +156,7 @@ const CartSlice = createSlice({
         state.grandTotal = total;
       }
     },
+
     handleChangeAddProduct: (state, { payload }) => {
       if (state.totalQuantity === 0 && state.grandTotal === 0) {
         state.totalQuantity = payload?.quantity;
@@ -144,6 +168,7 @@ const CartSlice = createSlice({
           parseFloat(state.grandTotal) + parseFloat(payload?.amount);
       }
     },
+
     handleUpdateTotalQuantityAndAmount: (state, { payload }) => {
       const { id, quantity } = payload;
 
@@ -154,29 +179,81 @@ const CartSlice = createSlice({
       );
       state.totalQuantity = state.totalQuantity = state.cartItems.reduce(
         (acc, current) => {
-          return acc + current?.quantity;
+          if (current?.type === "pk") {
+            return acc + current?.quantity * current?.product?.PK;
+          } else {
+            return acc + current?.quantity * current?.product?.CTN;
+          }
         },
         0
       );
       state.grandTotal = state.cartItems.reduce((acc, curr) => {
-        let total = acc + curr?.product?.price * curr?.quantity;
-        return total;
+        if (curr?.type === "pk") {
+          let total =
+            acc + curr?.product?.price * curr?.quantity * curr?.product?.PK;
+          return total;
+        } else {
+          let total =
+            acc + curr?.product?.price * curr?.quantity * curr?.product?.CTN;
+          return total;
+        }
       }, 0);
     },
+
     handleDecreaseQuantityAndAmount: (state, { payload }) => {
       if (state.totalQuantity <= 0) {
         return (state.totalQuantity = 0);
+      } else {
+        state.totalQuantity =
+          parseFloat(state.totalQuantity) - parseFloat(payload?.quantity);
+        state.grandTotal = parseFloat(
+          parseFloat(state.grandTotal) - parseFloat(payload?.amount)
+        ).toFixed(2);
       }
-      state.totalQuantity =
-        parseFloat(state.totalQuantity) - parseFloat(payload?.quantity);
-      state.grandTotal = parseFloat(
-        parseFloat(state.grandTotal) - parseFloat(payload?.amount)
-      ).toFixed(2);
     },
+
     handleClearCart: (state) => {
       state.totalQuantity = 0;
       state.grandTotal = 0;
       state.cartItems = [];
+    },
+
+    handleAddMultipleProducts: (state, { payload }) => {
+      state.selectedItems = payload;
+    },
+
+    handleRemoveOneProductFromSelected: (state, { payload }) => {
+      const filterArr = state.selectedItems.filter(
+        (item) => item?.id !== payload
+      );
+      state.selectedItems = filterArr;
+    },
+
+    handleRemoveAllProducts: (state) => {
+      state.selectedItems = [];
+    },
+
+    handlechangeTotalQuantityAndAmountOfmultipleProducts: (
+      state,
+      { payload }
+    ) => {
+      state.totalQuantityMultipleProducts = parseInt(payload?.totalQuantity);
+      state.totalAmountMultipleProducts = parseInt(payload?.totalAmount);
+    },
+
+    handleRemoveFromTotalQuantityAndAmountOfmultipleProducts: (
+      state,
+      { payload }
+    ) => {
+      state.totalQuantityMultipleProducts =
+        state.totalQuantityMultipleProducts - parseInt(payload?.quantity);
+      state.totalAmountMultipleProducts =
+        state.totalAmountMultipleProducts - parseInt(payload?.amount);
+    },
+
+    handleRemoveAllTotalQuantityAndTotalAmount: (state) => {
+      state.totalAmountMultipleProducts = 0;
+      state.totalQuantityMultipleProducts = 0;
     },
   },
   extraReducers: (builder) => {
@@ -296,6 +373,12 @@ export const {
   changeGrandTotal,
   handleClearCart,
   handleChangeAddProduct,
+  handleAddMultipleProducts,
+  handleRemoveAllProducts,
+  handleRemoveOneProductFromSelected,
+  handlechangeTotalQuantityAndAmountOfmultipleProducts,
+  handleRemoveFromTotalQuantityAndAmountOfmultipleProducts,
+  handleRemoveAllTotalQuantityAndTotalAmount,
 } = CartSlice.actions;
 
 export default CartSlice.reducer;

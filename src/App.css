@@ -44,11 +44,14 @@
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
-    -moz-appearance: none;
+    /* -moz-appearance: none; */
     appearance: none;
     margin: 0;
     display: none;
   }
+}
+input[type=number] {
+  -moz-appearance:textfield;
 }
 
 body {
@@ -111,3 +114,7 @@ body {
   background-color: gray !important;
   padding: 1rem;
 } */
+
+.react-tel-input .country-list {
+  top: -100px;
+}

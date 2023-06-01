@@ -97,6 +97,31 @@ export const handleGetVisitCount = createAsyncThunk(
   }
 );
 
+export const handleResetPassword = createAsyncThunk(
+  "auth/handleResetPassword",
+  async ({ password, signal, token }) => {
+    toast.dismiss();
+    signal.current = new AbortController();
+
+    const response = await PostUrl("reset-password", {
+      data: {
+        password,
+        token,
+      },
+      signal: signal.current.signal,
+    })
+      .then((res) => {
+        window.localStorage.setItem("user", JSON.stringify(res.data.user));
+        window.localStorage.setItem("token", JSON.stringify(res.data.token));
+        return res.data;
+      })
+      .catch((err) => {
+        return err.response.data;
+      });
+    return response;
+  }
+);
+
 const initialState = {
   user: window.localStorage.getItem("user")
     ? JSON.parse(window.localStorage.getItem("user"))
@@ -106,7 +131,7 @@ const initialState = {
     : null,
   userLanguage: window.localStorage.getItem("user_lang")
     ? JSON.parse(window.localStorage.getItem("user_lang"))
-    : window.localStorage.setItem("user_lang", JSON.stringify("en")),
+    : "en",
   loading: false,
   error: null,
   success: false,
@@ -148,6 +173,32 @@ const AuthSlice = createSlice({
       }
     });
     builder.addCase(handleLoginUser.rejected, (state, { error }) => {
+      state.loading = false;
+      state.success = false;
+      state.error = error;
+      state.user = null;
+      state.token = null;
+    });
+    // reset password
+    builder.addCase(handleResetPassword.pending, (state) => {
+      state.loading = true;
+      state.success = false;
+      state.error = null;
+    });
+    builder.addCase(handleResetPassword.fulfilled, (state, { payload }) => {
+      state.loading = false;
+      state.success = true;
+      if (payload.status === "fail") {
+        state.error = payload;
+        state.user = null;
+        state.token = null;
+      } else {
+        state.error = null;
+        state.user = payload?.user;
+        state.token = payload?.token;
+      }
+    });
+    builder.addCase(handleResetPassword.rejected, (state, { error }) => {
       state.loading = false;
       state.success = false;
       state.error = error;

@@ -13,12 +13,15 @@ import {
 } from "../redux/CartSlice";
 import { handleGetAddresses } from "../redux/GetContentSlice";
 import { useRef } from "react";
+import { handleChangeShippingMethod } from "../redux/OrderSlice";
+import { handleChangeActiveComponent } from "../redux/GlobalStates";
 
 const Cart = () => {
   const [summaryFixed, setSummaryFixed] = useState(false);
 
   const { activeComponentForCart } = useSelector((state) => state.globalStates);
   const { token } = useSelector((state) => state.Auth);
+  const { loading } = useSelector((state) => state.cart);
 
   const { t } = useTranslation();
 
@@ -29,12 +32,17 @@ const Cart = () => {
   useEffect(() => {
     dispatch(handleGetCart({ token }));
     dispatch(handleGetAddresses({ token }));
+    dispatch(handleChangeShippingMethod("pickup"));
+    dispatch(handleChangeActiveComponent("Shopping Cart"));
     dispatch(calculateTotalQuantity());
     dispatch(calculateTotalAmount());
+
     return () => {
       AbortControllerRef.current !== null && AbortControllerRef.current.abort();
     };
   }, []);
+
+  // useEffect(() => {}, []);
 
   // for sticky summary component
   useEffect(() => {

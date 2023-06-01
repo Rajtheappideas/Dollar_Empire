@@ -10,6 +10,7 @@ import {
   handleChangeShippingMethod,
 } from "../../redux/OrderSlice";
 import { useTranslation } from "react-i18next";
+import { CheckCircleIcon } from "@heroicons/react/24/outline";
 
 const Checkout = ({ summaryFixed }) => {
   const [showPopup, setShowPopup] = useState(false);
@@ -40,6 +41,10 @@ const Checkout = ({ summaryFixed }) => {
     }
     dispatch(handleChangeActiveComponent("Payment Info"));
   };
+  useEffect(() => {
+    setAddressId(addressList[0]?._id);
+    dispatch(handleChangeShippingAddressId(addressList[0]?._id));
+  }, []);
   return (
     <div className="w-full flex xl:flex-row flex-col items-start justify-start gap-4 pb-10">
       {showPopup && (
@@ -133,8 +138,8 @@ const Checkout = ({ summaryFixed }) => {
             <div
               key={address?._id}
               className={`${
-                shippingAddressId === address?._id && "bg-gray-100"
-              } cursor-pointer w-full border border-gray-300 rounded-md p-5 font-normal text-left space-y-3 text-[#282828]`}
+                shippingAddressId === address?._id && "bg-gray-200"
+              } cursor-pointer relative w-full border border-gray-300 rounded-md p-5 font-normal text-left space-y-3 text-[#282828]`}
               onClick={() =>
                 dispatch(handleChangeShippingAddressId(address?._id))
               }
@@ -157,6 +162,12 @@ const Checkout = ({ summaryFixed }) => {
               >
                 {t("Edit")}
               </p>
+              {shippingAddressId === address?._id && (
+                <CheckCircleIcon
+                  title="selected address"
+                  className="absolute top-2 right-3 w-12 h-12 text-green-500 bg-white rounded-full p-2"
+                ></CheckCircleIcon>
+              )}
             </div>
           ))
         )}

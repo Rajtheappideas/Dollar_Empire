@@ -106,7 +106,7 @@ const Signup = () => {
       .string()
       .trim("The contact name cannot include leading and trailing spaces")
       .required("password is required")
-      .min(8, "Must Contain 8 Characters"),
+      .min(6, "Must Contain 6 Characters"),
     confirmPassword: yup
       .string()
       .oneOf([yup.ref("password"), null], "Passwords must match"),
@@ -127,7 +127,7 @@ const Signup = () => {
       confirmPassword: "",
       phone: "",
       location: "",
-      city: selectedData.city,
+      city: "",
       state: selectedData.state,
       country: "United States",
       postalCode: "",
@@ -201,13 +201,8 @@ const Signup = () => {
 
       setSelectedData({ ...selectedData, state: states });
       const state = states.find((state) => state.name === values.state);
-      const cities = City.getCitiesOfState(state?.countryCode, state?.isoCode);
-      if (cities.length > 0) {
-        setSelectedData({ ...selectedData, city: cities });
-      }
     }
   }, [values.country, values.state, values.city]);
-
   return (
     <>
       <Helmet title={t("Sign-up")} />
@@ -272,7 +267,7 @@ const Signup = () => {
                 name="country"
                 {...getFieldProps("country")}
               >
-                <option value="United States">Unites States</option>
+                <option value="United States">United States</option>
                 {allCountries !== "" &&
                   allCountries.map((country) => (
                     <option key={country.name} value={country.name}>
@@ -351,26 +346,14 @@ const Signup = () => {
                 <label className="text-black font-medium block text-left text-lg">
                   {t("City")}*
                 </label>
-                {/* <input
+                <input
                   type="text"
                   className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
                   placeholder={t("City")}
                   name="city"
                   {...getFieldProps("city")}
-                /> */}
-                <select
-                  className=" outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                  name="city"
-                  {...getFieldProps("city")}
-                >
-                  <option label="Select city"></option>
-                  {selectedData?.city.length > 0 &&
-                    selectedData.city.map((city) => (
-                      <option key={city.name} value={city.name}>
-                        {city?.name}
-                      </option>
-                    ))}
-                </select>
+                />
+
                 <ErrorMessage name="city" component={TextError} />
               </div>
               <div className="w-1/2">

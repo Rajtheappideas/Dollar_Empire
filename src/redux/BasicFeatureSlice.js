@@ -76,29 +76,6 @@ export const handleForgotPassword = createAsyncThunk(
   }
 );
 
-export const handleResetPassword = createAsyncThunk(
-  "basicFeature/handleResetPassword",
-  async ({ password, signal, token }) => {
-    toast.dismiss();
-    signal.current = new AbortController();
-
-    const response = await PostUrl("reset-password", {
-      data: {
-        password,
-        token,
-      },
-      signal: signal.current.signal,
-    })
-      .then((res) => {
-        return res.data;
-      })
-      .catch((err) => {
-        return err.response.data;
-      });
-    return response;
-  }
-);
-
 export const handleEditProfile = createAsyncThunk(
   "basicFeature/handleEditProfile",
   async ({
@@ -199,22 +176,6 @@ const BasicFeatureSlice = createSlice({
       state.error = null;
     });
     builder.addCase(handleForgotPassword.rejected, (state, { error }) => {
-      state.loading = false;
-      state.success = false;
-      state.error = error;
-    });
-    // reset password
-    builder.addCase(handleResetPassword.pending, (state) => {
-      state.loading = true;
-      state.success = false;
-      state.error = null;
-    });
-    builder.addCase(handleResetPassword.fulfilled, (state, { payload }) => {
-      state.loading = false;
-      state.success = true;
-      state.error = null;
-    });
-    builder.addCase(handleResetPassword.rejected, (state, { error }) => {
       state.loading = false;
       state.success = false;
       state.error = error;

@@ -25,13 +25,15 @@ const SingleOrderHistory = ({ setShowSingleOrder, orderId, setOrderId }) => {
           {t("Fetching Details")}...
         </p>
       ) : (
-        <div className="w-full relative z-0 bg-white border border-BORDERGRAY text-BLACK space-y-10">
-          <div className="p-5 md:space-y-5 space-y-3 overflow-x-hidden">
+        <div className="w-full relative z-0 bg-white border border-BORDERGRAY text-BLACK md:space-y-10 space-y-3">
+          <div className="p-5 md:space-y-5 space-y-3 overflow-x-hidden border-b-2 border-gray-100">
             <p className="font-semibold md:text-3xl text-lg text-PRIMARY">
               {t("Order ID")} : {singleOrder?.orderId}
             </p>
             <p className="flex items-center w-full text-lg">
-              <span className="font-bold md:w-60 w-40">{t("Shipping method")}:</span>{" "}
+              <span className="font-bold md:w-60 w-40">
+                {t("Shipping method")}:
+              </span>{" "}
               <span className="font-normal">{singleOrder?.shippingMethod}</span>
             </p>
             <p className="flex items-center w-full text-lg">
@@ -46,20 +48,29 @@ const SingleOrderHistory = ({ setShowSingleOrder, orderId, setOrderId }) => {
             </p>
             <p className="flex items-center w-full text-lg">
               <span className="font-bold md:w-60 w-40">{t("Quantity")}:</span>{" "}
-              <span className="font-normal">{singleOrder?.totalQuantity}</span>
+              <span className="font-normal">
+                {singleOrder?.totalQuantity} PC
+              </span>
             </p>
             <p className="flex items-center w-full text-lg">
               <span className="font-bold md:w-60 w-40">{t("Total")}:</span>{" "}
-              <span className="font-normal">${singleOrder?.total}</span>
+              <span className="font-normal">
+                ${parseInt(singleOrder?.total).toFixed(2)}
+              </span>
             </p>
           </div>
           {/* products */}
-          <div className="w-full overflow-x-scroll">
+          {/* for desk & tablet */}
+          <div className="w-full overflow-x-scroll md:inline-block hidden">
             <table className="w-full table-auto">
               <thead>
                 <tr className=" bg-PRIMARY text-white w-full">
-                  <th className="p-3 text-left min-w-[20rem]">{t("Product")}</th>
-                  <th className="p-3 text-center min-w-[8rem]">{t("Item no")}.</th>
+                  <th className="p-3 text-left min-w-[20rem]">
+                    {t("Product")}
+                  </th>
+                  <th className="p-3 text-center min-w-[8rem]">
+                    {t("Item no")}.
+                  </th>
                   <th className="p-3 text-center w-28">{t("Price")}</th>
                   <th className="p-3 text-center w-28">{t("Quantity")}</th>
                   <th className="p-3 text-center w-28">{t("Subtotal")}</th>
@@ -79,14 +90,103 @@ const SingleOrderHistory = ({ setShowSingleOrder, orderId, setOrderId }) => {
                       </span>
                     </td>
                     <td className="p-3">#{product?.product?.number}</td>
-                    <td className="p-3">${product?.product?.price}</td>
-                    <td className="p-3">{product?.quantity}</td>
                     <td className="p-3">
-                      $
-                      {parseFloat(
-                        product?.product?.price * product?.quantity
-                      ).toFixed(2)}
+                      ${parseInt(product?.product?.price).toFixed(1)}
                     </td>
+                    <td className="p-3 uppercase">
+                      {product?.quantity} {product?.type}
+                    </td>
+                    <td className="p-3">
+                      {product?.type === "pk"
+                        ? `$ ${parseFloat(
+                            product?.product?.price *
+                              product?.quantity *
+                              product?.product?.PK
+                          ).toFixed(2)}`
+                        : `$
+                      ${parseFloat(
+                        product?.product?.price *
+                          product?.quantity *
+                          product?.product?.CTN
+                      ).toFixed(2)}`}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {/* for mobile */}
+          <div className="w-full overflow-hidden md:hidden block">
+            <table className="w-full table-auto">
+              <tbody>
+                {singleOrder?.items.map((product) => (
+                  <tr className="flex flex-col w-full" key={product?._id}>
+                    <tr className="text-center w-full flex flex-row">
+                      <th className="bg-PRIMARY min-w-[5rem] max-w-[5rem] p-2 text-center text-white">
+                        {t("Product")}
+                      </th>
+                      <td className="p-2 flex gap-x-1 items-center text-center mx-auto">
+                        <img
+                          src={BaseUrl.concat(product?.product?.images[0])}
+                          alt={product?.product?.name}
+                          className="min-w-[6rem] max-w-[6rem] object-contain object-center mx-auto"
+                        />
+                      </td>
+                    </tr>
+                    <tr className="w-full">
+                      <th className="bg-PRIMARY min-w-[5rem] max-w-[5rem] p-2 text-center text-white">
+                        {t("Name")}
+                      </th>
+                      <td className="p-2 text-center w-full">
+                        <span className="font-semibold text-left">
+                          {product?.product?.name}
+                        </span>
+                      </td>
+                    </tr>
+                    <tr className="w-full">
+                      <th className="bg-PRIMARY min-w-[5rem] max-w-[5rem] p-2 text-center text-white">
+                        {t("Item no")}.
+                      </th>
+                      <td className="p-2 text-center w-full">
+                        #{product?.product?.number}
+                      </td>
+                    </tr>
+                    <tr className="w-full">
+                      <th className="bg-PRIMARY min-w-[5rem] max-w-[5rem] p-2 text-center text-white">
+                        {t("Price")}
+                      </th>
+                      <td className="p-2 text-center w-full">
+                        ${product?.product?.price}
+                      </td>
+                    </tr>
+                    <tr className="w-full">
+                      <th className="bg-PRIMARY min-w-[5rem] max-w-[5rem] p-2 text-center text-white">
+                        {t("Quantity")}{" "}
+                      </th>
+                      <td className="p-2 text-center w-full uppercase">
+                        {product?.quantity} {product?.type}
+                      </td>
+                    </tr>
+                    <tr className="w-full">
+                      <th className="bg-PRIMARY min-w-[5rem] max-w-[5rem] p-2 text-center text-white">
+                        {t("Subtotal")}
+                      </th>
+                      <td className="p-2 text-center w-full">
+                        {product?.type === "pk"
+                          ? `$ ${parseFloat(
+                              product?.product?.price *
+                                product?.quantity *
+                                product?.product?.PK
+                            ).toFixed(2)}`
+                          : `$
+                      ${parseFloat(
+                        product?.product?.price *
+                          product?.quantity *
+                          product?.product?.CTN
+                      ).toFixed(2)}`}
+                      </td>
+                    </tr>
+                    <hr className="my-1" />
                   </tr>
                 ))}
               </tbody>
@@ -98,7 +198,7 @@ const SingleOrderHistory = ({ setShowSingleOrder, orderId, setOrderId }) => {
               setShowSingleOrder(false);
               setOrderId(null);
             }}
-            className="h-6 w-6 absolute -top-5 right-2 z-10 text-black"
+            className="h-6 w-6 absolute md:-top-5 top-0 right-2 z-10 text-black"
           />
         </div>
       )}

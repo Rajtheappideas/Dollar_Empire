@@ -1,5 +1,11 @@
 import React, { useRef, useState } from "react";
-import { useFormik, Form, FormikProvider, ErrorMessage } from "formik";
+import {
+  useFormik,
+  Form,
+  FormikProvider,
+  ErrorMessage,
+  validateYupSchema,
+} from "formik";
 import * as yup from "yup";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,6 +23,9 @@ import {
 import { useNavigate } from "react-router-dom";
 import { handleChangeActiveComponent } from "../../redux/GlobalStates";
 import { handleClearCart } from "../../redux/CartSlice";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import moment from "moment/moment";
 
 const CardDetails = ({ summaryFixed }) => {
   const [selectedData, setSelectedData] = useState({
@@ -90,15 +99,14 @@ const CardDetails = ({ summaryFixed }) => {
     state: yup
       .string()
       .required("state is required")
-      .trim("The contact name cannot include leading and trailing spaces")
       .matches(
         /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
         "only contain Latin letters."
-      ),
+      )
+      .typeError("State contain only string And it's required!!!"),
     country: yup
       .string()
       .required("country is required")
-      .trim("The contact name cannot include leading and trailing spaces")
       .matches(
         /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
         "only contain Latin letters."
@@ -109,7 +117,12 @@ const CardDetails = ({ summaryFixed }) => {
       .test(
         "test-date",
         "Expiration Date is invalid",
-        (value) => valid.expirationDate(value).isValid
+        (value) =>
+          valid.expirationDate(
+            `${moment(values.expiry).year().toString()}-${(
+              moment(values.expiry).month() + 1
+            ).toString()}`
+          ).isValid
       ),
     cardNumber: yup
       .number()
@@ -127,28 +140,31 @@ const CardDetails = ({ summaryFixed }) => {
 
   const formik = useFormik({
     initialValues: {
-      nameOnCard: cardDetails?.nameOnCard ?? "",
-      street: cardDetails?.nameOnCard ?? "",
-      city: cardDetails?.city ?? selectedData.city,
-      state: cardDetails?.state ?? selectedData.state,
-      country: cardDetails?.country ?? "United States",
-      postalCode: cardDetails?.postalCode ?? "",
-      cardNumber: cardDetails?.cardNumber ?? "",
-      expiry: cardDetails?.expiry ?? "",
-      cvv: cardDetails?.cvv ?? "",
+      nameOnCard: "",
+      street: "",
+      city: "",
+      state: selectedData.state,
+      country: country === "" ? "United States" : country,
+      postalCode: "",
+      cardNumber: "",
+      expiry: "",
+      cvv: "",
     },
     validationSchema: creditCardSchema,
     enableReinitialize: true,
     onSubmit: (values) => {
       setConfirmOrderLoading(true);
-      toast.dismiss();
       if (shippingAddressId === "") {
+        toast.dismiss();
         return toast.error("Please select the shipping address!!!");
       } else if (shipphingMethod === "") {
+        toast.dismiss();
         return toast.error("Please select the shipping method!!!");
       } else if (paymentOption === "") {
+        toast.dismiss();
         return toast.error("Please choose the Payment option!!!");
       }
+
       const response = dispatch(
         handleCreateOrUpdateCard({
           nameOnCard: values.nameOnCard,
@@ -168,10 +184,11 @@ const CardDetails = ({ summaryFixed }) => {
         response
           .then((res) => {
             if (res?.meta?.arg?.signal?.current?.signal?.aborted) {
+              toast.dismiss();
               toast.error("Request Cancelled.");
             }
             if (res.payload.status === "success") {
-              return toast.success("Card Details Saved successfully.", {
+              toast.success("Card Details Saved successfully.", {
                 duration: 2000,
               });
             } else {
@@ -192,6 +209,7 @@ const CardDetails = ({ summaryFixed }) => {
             if (response) {
               response.then((res) => {
                 if (res?.meta?.arg?.signal?.current?.signal?.aborted) {
+                  toast.dismiss();
                   return toast.error("Request Cancelled.");
                 }
                 if (res.payload.status === "success") {
@@ -199,7 +217,6 @@ const CardDetails = ({ summaryFixed }) => {
                   toast.success("Order Submitted successfully.");
                   dispatch(handleChangeActiveComponent("Success"));
                   dispatch(handleClearCart());
-                  return toast.success("Order Submitted successfully.");
                 } else {
                   setConfirmOrderLoading(false);
                   return toast.error(res.payload.message);
@@ -226,21 +243,14 @@ const CardDetails = ({ summaryFixed }) => {
 
   // for country , state , city selection
   useEffect(() => {
-    // if (cardDetails === null && !loading) {
     const country = Country.getAllCountries().find(
       (country) => country.name === values.country
     );
     setCountry(country?.name);
     const states = State.getStatesOfCountry(country?.isoCode);
 
-    setSelectedData({ ...selectedData, state: states });
-    const state = states.find((state) => state.name === values.state);
-    const cities = City.getCitiesOfState(state?.countryCode, state?.isoCode);
-    if (cities.length > 0) {
-      setSelectedData({ ...selectedData, city: cities });
-    }
-    // }
-  }, [values.country, values.state, values.city]);
+    setSelectedData({ ...selectedData, state: states.map((s) => s.name) });
+  }, [values.country]);
 
   function orderID(length) {
     let result = "";
@@ -294,19 +304,14 @@ const CardDetails = ({ summaryFixed }) => {
                 </label>
                 <select
                   className="bg-LIGHTGRAY xl:w-1/2 w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                  onChange={(e) =>
-                    setSelectedData({
-                      ...selectedData,
-                      country: e.target.value,
-                    })
-                  }
                   name="country"
                   {...getFieldProps("country")}
+                  // onChange={(e) => setCountry(e.target.value.trim())}
                 >
-                  <option value={values?.country}>{values?.country}</option>
+                  <option label="United States"></option>
                   {allCountries !== "" &&
-                    allCountries.map((country) => (
-                      <option key={country.name} value={country.name}>
+                    allCountries.map((country, index) => (
+                      <option key={index} value={country.name}>
                         {country?.name}
                       </option>
                     ))}
@@ -325,17 +330,11 @@ const CardDetails = ({ summaryFixed }) => {
                   name="state"
                   {...getFieldProps("state")}
                 >
-                  <option
-                    value={
-                      cardDetails === null ? "Select state" : cardDetails?.state
-                    }
-                  >
-                    {cardDetails?.state}
-                  </option>
+                  <option label="Select state"></option>
                   {selectedData?.state.length > 0 &&
                     selectedData.state.map((state) => (
-                      <option key={state.name} value={state.name}>
-                        {state?.name}
+                      <option key={state} value={state}>
+                        {state}
                       </option>
                     ))}
                 </select>
@@ -347,25 +346,12 @@ const CardDetails = ({ summaryFixed }) => {
                 <label className="text-black font-medium block text-left text-lg">
                   {t("City")}*
                 </label>
-                <select
+                <input
                   className="bg-LIGHTGRAY xl:w-1/2 w-full text-black placeholder:text-gray-400 rounded-md p-3"
                   name="city"
+                  type="text"
                   {...getFieldProps("city")}
-                >
-                  <option
-                    value={
-                      cardDetails === null ? "Select city" : cardDetails?.city
-                    }
-                  >
-                    {cardDetails?.city}
-                  </option>{" "}
-                  {selectedData?.city.length > 0 &&
-                    selectedData.city.map((city) => (
-                      <option key={city.name} value={city.name}>
-                        {city?.name}
-                      </option>
-                    ))}
-                </select>
+                ></input>
                 <ErrorMessage name="city" component={TextError} />
               </>
 
@@ -418,11 +404,25 @@ const CardDetails = ({ summaryFixed }) => {
                 <label className="text-black font-medium block text-left text-lg">
                   {t("Expiration Date")}*
                 </label>
-                <input
+                {/* <input
                   type="month"
+                  datatype="MM/yyyy"
                   className="bg-LIGHTGRAY xl:w-1/2 w-full text-black placeholder:text-gray-400 rounded-md p-3"
                   {...getFieldProps("expiry")}
                   name="expiry"
+                /> */}
+                <DatePicker
+                  selected={values.expiry}
+                  onChange={(date) => {
+                    setFieldValue("expiry", date);
+                    // setexpireDate()
+                  }}
+                  dateFormat="MM/yyyy"
+                  showMonthYearPicker
+                  // {...getFieldProps("expiry")}
+                  minDate={new Date()}
+                  name="expiry"
+                  className="bg-LIGHTGRAY xl:w-1/2 w-full text-black placeholder:text-gray-400 rounded-md p-3"
                 />
                 <ErrorMessage name="expiry" component={TextError} />
               </>

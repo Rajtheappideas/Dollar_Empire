@@ -15,6 +15,8 @@ import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
 
 const Signin = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   const { user, loading } = useSelector((state) => state.Auth);
 
   const navigate = useNavigate();
@@ -50,9 +52,11 @@ const Signin = () => {
           if (res.payload.status === "success") {
             dispatch(handleSuccess());
             navigate("/");
+            setErrorMessage("");
             return toast.success("Sign In successfully.", { duration: 3000 });
           } else {
-            toast.error(res.payload.message);
+            // toast.error(res.payload.message);
+            setErrorMessage(res.payload.message);
           }
         });
       }
@@ -78,6 +82,9 @@ const Signin = () => {
           {t("Customer Login")}
         </h1>
         <hr />
+        <p className="text-center w-full mx-auto md:text-xl text-lg text-red-600 font-semibold">
+          {errorMessage !== "" && errorMessage}
+        </p>
         <FormikProvider value={formik}>
           <Form
             autoComplete="off"

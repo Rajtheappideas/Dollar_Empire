@@ -85,7 +85,7 @@ function App() {
       dispatch(calculateTotalQuantity());
       dispatch(calculateTotalAmount());
     }
-  }, [user, showProductDetailsPopup, activeComponentForCart]);
+  }, [user, showProductDetailsPopup]);
 
   return (
     <BrowserRouter>

@@ -50,7 +50,7 @@
   "send": "enviar",
   "We have e-mailed your password reset link! please check your inbox.": "¡Le hemos enviado por correo electrónico su enlace de restablecimiento de contraseña! por favor revise su bandeja de entrada.",
   "New Password": "Nueva contraseña",
-  "The password should have atleast 8 characters.": "La contraseña debe tener al menos 8 caracteres.",
+  "The password should have atleast 6 characters.": "La contraseña debe tener al menos 6 caracteres.",
   "Confirm Password": "confirmar Contraseña",
   "submit": "entregar",
   "Verifying...": "Verificando...",

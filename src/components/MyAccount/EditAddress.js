@@ -314,14 +314,14 @@ const EditAddress = ({ setShowEditAddres, addressId }) => {
           <label className="text-black font-medium block text-left text-lg">
             {t("City")}*
           </label>
-          {/* <input
-                  type="text"
-                  className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                  placeholder={t("City")}
-                  name="city"
-                  {...getFieldProps("city")}
-                /> */}
-          <select
+          <input
+            type="text"
+            className="outline-none bg-LIGHTGRAY lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
+            placeholder={t("City")}
+            name="city"
+            {...getFieldProps("city")}
+          />
+          {/* <select
             className=" outline-none bg-LIGHTGRAY lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
             name="city"
             {...getFieldProps("city")}
@@ -333,19 +333,19 @@ const EditAddress = ({ setShowEditAddres, addressId }) => {
                   {city?.name}
                 </option>
               ))}
-          </select>
+          </select> */}
           <ErrorMessage name="city" component={TextError} />
         </>
         {/* location */}
         <>
           <label className="text-black font-medium block text-left text-lg">
-            {t("Location")}*
+            {t("Street Address")}*
           </label>
           <input
             type="text"
             className="bg-LIGHTGRAY outline-none lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
             name="location"
-            placeholder={t("Location")}
+            placeholder={t("Street Address")}
             {...getFieldProps("location")}
           />
           <ErrorMessage

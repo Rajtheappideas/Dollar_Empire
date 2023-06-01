@@ -16,6 +16,7 @@ import {
   calculateTotalAmount,
   calculateTotalQuantity,
 } from "../redux/CartSlice";
+import axios from "axios";
 
 const Home = () => {
   const { t } = useTranslation();
@@ -32,6 +33,7 @@ const Home = () => {
     // dispatch(handleGetBanners());
     // dispatch(handleGetTopSellers({ token }));
     // dispatch(handleGetAllProducts({ token }));
+    // autoTranslate();
     return () => {
       AbortControllerRef.current !== null && AbortControllerRef.current.abort();
     };
@@ -43,6 +45,25 @@ const Home = () => {
       dispatch(calculateTotalAmount());
     }
   }, [user, productLoading]);
+  // const autoTranslate = async () => {
+  //   await axios("https://libretranslate.com/translate", {
+  //     method: "post",
+  //     data: {
+  //       body: JSON.stringify({
+  //         q: "Hello",
+  //         source: "auto",
+  //         target: "sp",
+  //       }),
+  //     },
+  //     headers: { "Content-Type": "application/json" },
+  //   })
+  //     .then((res) => {
+  //       console.log(res);
+  //     })
+  //     .catch((err) => {
+  //       console.log(err.response.data);
+  //     });
+  // };
   return (
     <>
       <Helmet title={t("Home")} />

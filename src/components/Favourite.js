@@ -62,22 +62,25 @@ const Favourite = ({ favourite }) => {
   };
 
   const handleAddProduct = (id, title, quantity, amount) => {
-    toast.dismiss();
+    
     if (
       (pkitemsQuantity === "" || pkCount === 0) &&
       (ctnItemQuantity === "" || ctnCount === 0)
     ) {
+      toast.dismiss();
       setCtnItemQuantity("");
       setpkItemsQuantity("");
       setPkCount(0);
       setCtnCount(0);
       return toast.error("Please add some quantity And enter valid value.");
     } else if (selectedItemType === "pk" && ctnItemQuantity > 0) {
+      toast.dismiss();
       toast.error("Please enter quantity in PK, you choose PK");
       setCtnItemQuantity("");
       setCtnCount(0);
       return true;
     } else if (selectedItemType === "ctn" && pkitemsQuantity > 0) {
+      toast.dismiss();
       toast.error("Please enter quantity in CTN, you choose CTN");
       setpkItemsQuantity("");
       setPkCount(0);
@@ -85,12 +88,15 @@ const Favourite = ({ favourite }) => {
     } else if (
       !/^\d+$/.test(pkitemsQuantity !== "" ? pkitemsQuantity : ctnItemQuantity)
     ) {
+      toast.dismiss();
       setpkItemsQuantity("");
       setCtnItemQuantity("");
       setPkCount(0);
       setCtnCount(0);
       return toast.error("Please enter valid value!!!");
     }
+    setSelectedProductId(favourite?._id);
+
     const response = dispatch(
       handleAddProductToCart({
         token,
@@ -182,7 +188,7 @@ const Favourite = ({ favourite }) => {
         <img
           src={BaseUrl.concat(favourite?.images[0])}
           alt={favourite.name}
-          className="min-h-[6rem] min-w-[6em] object-contain object-center"
+          className="min-h-[6rem] min-w-[6rem] object-contain object-center"
         />
       </td>
       <td className="font-semibold lg:p-3 p-2 whitespace-nowrap">
@@ -211,7 +217,10 @@ const Favourite = ({ favourite }) => {
                 defaultChecked={true}
                 value="pk"
                 id={favourite?._id}
-                disabled={loading}
+                disabled={
+                  (loading && selectedProductId === favourite?._id) ||
+                  findInCart?.product?._id === favourite?._id
+                }
               />
               <span className="font-semibold text-sm whitespace-nowrap pr-2">
                 PC QTY
@@ -224,7 +233,7 @@ const Favourite = ({ favourite }) => {
                       findInCart?.product?._id === favourite?._id) &&
                     "cursor-not-allowed"
                   }`}
-                  placeholder="24 PC"
+                  placeholder={`${favourite?.PK} PC`}
                   value={pkitemsQuantity}
                   onChange={(e) => {
                     !loading && setpkItemsQuantity(e.target.value);
@@ -250,7 +259,7 @@ const Favourite = ({ favourite }) => {
                   disabled={
                     selectedItemType === "ctn" ||
                     findInCart?.product?._id === favourite?._id ||
-                    loading
+                    (loading && selectedProductId === favourite?._id)
                   }
                 />
                 <span className="font-semibold w-12 text-BLACK text-xs absolute top-1/2 -translate-y-1/2 right-6">
@@ -259,7 +268,12 @@ const Favourite = ({ favourite }) => {
                 <button type="button" disabled={loading}>
                   <AiOutlineMinus
                     role="button"
-                    className=" text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 left-1"
+                    className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 left-1
+                    ${
+                      (selectedItemType === "ctn" ||
+                        findInCart?.product?._id === favourite?._id) &&
+                      "cursor-not-allowed"
+                    }`}
                     onClick={() =>
                       !loading &&
                       handleMinusPkQuantity(
@@ -267,18 +281,31 @@ const Favourite = ({ favourite }) => {
                         parseFloat(pkCount - 1)
                       )
                     }
+                    disabled={
+                      (loading && selectedProductId === favourite?._id) ||
+                      findInCart?.product?._id === favourite?._id
+                    }
                   />
                 </button>
                 <button type="button" disabled={loading}>
                   <AiOutlinePlus
                     role="button"
-                    className=" text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2"
+                    className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2 ${
+                      (selectedItemType === "ctn" ||
+                        findInCart?.product?._id === favourite?._id) &&
+                      "cursor-not-allowed"
+                    }`}
                     onClick={() =>
                       !loading &&
+                      selectedProductId !== favourite?._id &&
                       handlePlusPkQuantity(
                         parseFloat(favourite?.PK),
                         parseFloat(pkCount + 1)
                       )
+                    }
+                    disabled={
+                      (loading && selectedProductId === favourite?._id) ||
+                      findInCart?.product?._id === favourite?._id
                     }
                   />
                 </button>
@@ -293,7 +320,10 @@ const Favourite = ({ favourite }) => {
                 onChange={(e) => setSelectedItemType(e.target.value)}
                 value="ctn"
                 id={favourite?._id}
-                disabled={loading}
+                disabled={
+                  (loading && selectedProductId === favourite?._id) ||
+                  findInCart?.product?._id === favourite?._id
+                }
               />
               <span className="font-semibold text-sm whitespace-nowrap">
                 CTN QTY
@@ -306,7 +336,7 @@ const Favourite = ({ favourite }) => {
                       findInCart?.product?._id === favourite?._id) &&
                     "cursor-not-allowed"
                   }`}
-                  placeholder="144 PC"
+                  placeholder={`${favourite?.CTN} PC`}
                   value={ctnItemQuantity}
                   onChange={(e) => {
                     !loading && setCtnItemQuantity(e.target.value);
@@ -332,7 +362,7 @@ const Favourite = ({ favourite }) => {
                   disabled={
                     selectedItemType === "pk" ||
                     findInCart?.product?._id === favourite?._id ||
-                    loading
+                    (loading && selectedProductId === favourite?._id)
                   }
                 />
                 <span className="font-semibold w-12 text-BLACK text-xs absolute top-1/2 -translate-y-1/2 right-6">
@@ -340,27 +370,44 @@ const Favourite = ({ favourite }) => {
                 </span>
                 <button type="button" disabled={loading}>
                   <AiOutlineMinus
-                    role="button"
-                    className=" text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 left-1"
+                    className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 left-1 ${
+                      (selectedItemType === "pk" ||
+                        findInCart?.product?._id === favourite?._id) &&
+                      "cursor-not-allowed"
+                    }`}
                     onClick={() =>
                       !loading &&
+                      selectedProductId !== favourite?._id &&
                       handleMinusCTNQuantity(
                         parseFloat(favourite?.CTN),
                         parseFloat(ctnCount - 1)
                       )
+                    }
+                    disabled={
+                      (loading && selectedProductId === favourite?._id) ||
+                      findInCart?.product?._id === favourite?._id
                     }
                   />
                 </button>
                 <button type="button" disabled={loading}>
                   <AiOutlinePlus
                     role="button"
-                    className=" text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2"
+                    className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2 ${
+                      (selectedItemType === "pk" ||
+                        findInCart?.product?._id === favourite?._id) &&
+                      "cursor-not-allowed"
+                    }`}
                     onClick={() =>
                       !loading &&
+                      selectedProductId !== favourite?._id &&
                       handlePlusCTNQuantity(
                         parseFloat(favourite?.CTN),
                         parseFloat(ctnCount + 1)
                       )
+                    }
+                    disabled={
+                      (loading && selectedProductId === favourite?._id) ||
+                      findInCart?.product?._id === favourite?._id
                     }
                   />
                 </button>
@@ -381,9 +428,10 @@ const Favourite = ({ favourite }) => {
                 <button
                   type="button"
                   className="bg-DARKRED text-white text-center w-full p-2 rounded-lg"
-                  disabled={loading}
+                  disabled={loading && selectedProductId === favourite?._id}
                   onClick={() => {
-                    findInCart?.product?._id !== favourite?._id &&
+                    !loading &&
+                      findInCart?.product?._id !== favourite?._id &&
                       handleAddProduct(
                         favourite?._id,
                         favourite?.name,
@@ -394,7 +442,6 @@ const Favourite = ({ favourite }) => {
                           ? pkitemsQuantity * favourite?.price
                           : ctnItemQuantity * favourite?.price
                       );
-                    setSelectedProductId(favourite?._id);
                   }}
                 >
                   {loading && selectedProductId === favourite?._id ? (
