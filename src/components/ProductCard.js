@@ -298,7 +298,7 @@ const ProductCard = ({
   }, [pkitemsQuantity, ctnItemQuantity, selectedItemType]);
 
   useEffect(() => {
-    if (success) {
+    if (success && selectedProductId===product?._id) {
       setCtnItemQuantity("");
       setpkItemsQuantity("");
       setPkCount(0);

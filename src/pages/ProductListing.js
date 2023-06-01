@@ -462,7 +462,7 @@ const ProductListing = () => {
       })
     );
   }, [title, pageNumber]);
-
+console.log(selectedItems);
   return (
     <>
       <Helmet title={`product-listing-${title}`} />
