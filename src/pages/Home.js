@@ -29,11 +29,6 @@ const Home = () => {
   const AbortControllerRef = useRef(null);
 
   useEffect(() => {
-    // dispatch(handleGetNewArrivals({ token }));
-    // dispatch(handleGetBanners());
-    // dispatch(handleGetTopSellers({ token }));
-    // dispatch(handleGetAllProducts({ token }));
-    // autoTranslate();
     return () => {
       AbortControllerRef.current !== null && AbortControllerRef.current.abort();
     };

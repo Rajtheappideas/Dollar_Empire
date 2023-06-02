@@ -69,7 +69,7 @@ const CardDetails = ({ summaryFixed }) => {
     street: yup
       .string()
       .required("address is required")
-      .matches(/^[0-9A-Za-z\s\-]+$/g, "That doesn't look Address")
+      .matches(/^[0-9A-Za-z\s\-\,\.]+$/g, "That doesn't look Address")
       .trim("The contact name cannot include leading and trailing spaces"),
     postalCode: yup
       .string()

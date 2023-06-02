@@ -20,7 +20,7 @@ import { handleChangeShippingMethod } from "../../redux/OrderSlice";
 const ShoppingCart = ({ summaryFixed }) => {
   const [showChangeField, setShowChangeField] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const [productQuantity, setProductQuantity] = useState(0);
+  const [productQuantity, setProductQuantity] = useState("");
   const [updateLoading, setUpdateLoading] = useState(false);
   const [productId, setProductId] = useState(null);
 
@@ -69,11 +69,17 @@ const ShoppingCart = ({ summaryFixed }) => {
       return toast.error(
         "Quantity should be increased or decreased, not be same!!!"
       );
-    }
-    if (!/^\d+$/.test(productQuantity)) {
+    } else if (productQuantity === "") {
+      toast.error("Value not be empty!!!");
+      return true;
+    } else if (productQuantity === 0) {
+      toast.error("Minimum quantity should more than 0!!!");
+      return true;
+    } else if (!/^\d+$/.test(productQuantity)) {
       setProductQuantity(quantity);
       return toast.error("Please enter valid value!!!");
     }
+
     setUpdateLoading(true);
     const response = dispatch(
       handleAddProductToCart({
@@ -106,6 +112,15 @@ const ShoppingCart = ({ summaryFixed }) => {
           toast.error(err.payload.message);
           setUpdateLoading(false);
         });
+    }
+  };
+
+  const handleOnChangeProductQuantity = (e) => {
+    toast.remove();
+    setProductQuantity(parseFloat(e.target.value));
+    if (!/^\d+$/.test(e.target.value) && e.target.value !== "") {
+      toast.dismiss();
+      return toast.error("Please enter valid value.");
     }
   };
   return (
@@ -200,14 +215,7 @@ const ShoppingCart = ({ summaryFixed }) => {
                         className="bg-gray-300 outline-none text-black placeholder:text-BLACK h-10 rounded-md w-16 p-1"
                         value={productQuantity}
                         onChange={(e) => {
-                          setProductQuantity(e.target.value);
-                          if (
-                            !/^\d+$/.test(e.target.value) &&
-                            e.target.value !== ""
-                          ) {
-                            toast.dismiss();
-                            return toast.error("Please enter valid value.");
-                          }
+                          handleOnChangeProductQuantity(e);
                         }}
                       />
                     )}
@@ -374,14 +382,7 @@ const ShoppingCart = ({ summaryFixed }) => {
                           className="bg-gray-300 outline-none text-black placeholder:text-BLACK h-10 rounded-md w-16 p-1"
                           value={productQuantity}
                           onChange={(e) => {
-                            setProductQuantity(e.target.value);
-                            if (
-                              !/^\d+$/.test(e.target.value) &&
-                              e.target.value !== ""
-                            ) {
-                              toast.dismiss();
-                              return toast.error("Please enter valid value.");
-                            }
+                            handleOnChangeProductQuantity(e);
                           }}
                         />
                       )}
@@ -435,11 +436,11 @@ const ShoppingCart = ({ summaryFixed }) => {
                           ).toFixed(2)}
                     </td>
                   </tr>
-                  <tr className="last:pb-0 pb-4 last:border-none border-b-2 border-gray-300">
+                  <tr className="">
                     <th className="bg-PRIMARY min-w-[5rem] max-w-[5rem] p-2 text-center text-white">
                       {t("Remove")}
                     </th>
-                    <td className="lg:p-5 p-3  text-center w-full">
+                    <td className="lg:p-5 p-3 text-center w-full">
                       {deleteLoading ? (
                         "..."
                       ) : (
@@ -468,6 +469,7 @@ const ShoppingCart = ({ summaryFixed }) => {
                       )}
                     </td>
                   </tr>
+                  <hr className="my-1" />
                 </tr>
               ))
             )}

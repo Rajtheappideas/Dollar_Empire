@@ -92,13 +92,12 @@ export const handleRemoveProductToCart = createAsyncThunk(
 
 const initialState = {
   loading: false,
+  multipleLoading: false,
   success: false,
   error: null,
   cart: null,
   subTotal: 0,
   grandTotal: 0,
-  quantity: 0,
-  orderType: "pk",
   totalQuantity: 0,
   cartItems: [],
   selectedItems: [],
@@ -202,7 +201,11 @@ const CartSlice = createSlice({
 
     handleDecreaseQuantityAndAmount: (state, { payload }) => {
       if (state.totalQuantity <= 0) {
-        return (state.totalQuantity = 0);
+        state.totalQuantity = 0;
+        return true;
+      } else if (state.grandTotal <= 0) {
+        state.grandTotal = 0;
+        return true;
       } else {
         state.totalQuantity =
           parseFloat(state.totalQuantity) - parseFloat(payload?.quantity);
@@ -309,14 +312,14 @@ const CartSlice = createSlice({
     });
     // handle add multiple product to cart
     builder.addCase(handleAddMultipleProductToCart.pending, (state) => {
-      state.loading = true;
+      state.multipleLoading = true;
       state.success = false;
       state.error = null;
     });
     builder.addCase(
       handleAddMultipleProductToCart.fulfilled,
       (state, { payload }) => {
-        state.loading = false;
+        state.multipleLoading = false;
         if (payload.status === "fail") {
           state.error = payload;
           state.success = false;
@@ -331,7 +334,7 @@ const CartSlice = createSlice({
     builder.addCase(
       handleAddMultipleProductToCart.rejected,
       (state, { error }) => {
-        state.loading = false;
+        state.multipleLoading = false;
         state.success = false;
         state.error = error;
       }

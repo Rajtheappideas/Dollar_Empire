@@ -16,7 +16,11 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/thumbs";
 import { useDispatch, useSelector } from "react-redux";
-import { closePopup, showPopup } from "../redux/GlobalStates";
+import {
+  closePopup,
+  handleChangeActiveComponent,
+  showPopup,
+} from "../redux/GlobalStates";
 import { Link } from "react-router-dom";
 import {
   handleGetNewArrivals,
@@ -46,16 +50,15 @@ const ProductDetailPopup = ({}) => {
   const [pkCount, setPkCount] = useState(0);
   const [ctnCount, setCtnCount] = useState(0);
   const [isFavourite, setIsFavourite] = useState(false);
-  const [activeSlide, setActiveSlide] = useState(0);
+  const [changeTo, setChangeTo] = useState(false);
+  const [changingLoading, setChangingLoading] = useState(false);
 
   const { user, token } = useSelector((state) => state.Auth);
   const { singleProductId } = useSelector((state) => state.globalStates);
   const { singleProduct, singleProductLoading } = useSelector(
     (state) => state.products
   );
-  const { quantity, orderType, cart, cartItems } = useSelector(
-    (state) => state.cart
-  );
+  const { cart, cartItems } = useSelector((state) => state.cart);
 
   const prevRef = useRef(null);
   const nextRef = useRef(null);
@@ -110,18 +113,23 @@ const ProductDetailPopup = ({}) => {
     } else if (selectedItemType === "pk" && ctnItemQuantity > 0) {
       toast.error("Please enter quantity in PK, you choose PK");
       setCtnItemQuantity("");
+      setCtnCount(0);
       return true;
     } else if (selectedItemType === "ctn" && pkitemsQuantity > 0) {
       toast.error("Please enter quantity in CTN, you choose CTN");
       setpkItemsQuantity("");
+      setPkCount(0);
       return true;
     } else if (
       !/^\d+$/.test(pkitemsQuantity !== "" ? pkitemsQuantity : ctnItemQuantity)
     ) {
       setCtnItemQuantity("");
       setpkItemsQuantity("");
+      setPkCount(0);
+      setCtnCount(0);
       return toast.error("Please enter valid value!!!");
     }
+    setSelectedProductId(singleProduct?._id);
     setAddProductToCartLoading(true);
     const response = dispatch(
       handleAddProductToCart({
@@ -129,7 +137,7 @@ const ProductDetailPopup = ({}) => {
         id,
         signal: AbortControllerRef,
         type: selectedItemType,
-        quantity: selectedItemType === "pk" ? pkitemsQuantity : ctnItemQuantity,
+        quantity: selectedItemType === "pk" ? pkCount : ctnCount,
       })
     );
     if (response) {
@@ -140,12 +148,11 @@ const ProductDetailPopup = ({}) => {
             dispatch(handleUpdateTotalQuantityAndAmount({ quantity, amount }));
             setCtnItemQuantity("");
             setpkItemsQuantity("");
+            setCtnCount(0);
+            setPkCount(0);
             setSelectedItemType("pk");
             setSelectedProductId(null);
             setAddProductToCartLoading(false);
-            // dispatch(handleGetNewArrivals({ token }));
-            // dispatch(handleGetTopSellers({ token }));
-            // dispatch(handleGetAllProducts({ token }));
           }
         })
         .catch((err) => {
@@ -203,12 +210,82 @@ const ProductDetailPopup = ({}) => {
     }
   };
 
-  const handleChangePkCount = (e) => {
-    if (pkCount < 0) {
-      setPkCount(0);
+  const handleChangeAddedItemInCart = (action, type) => {
+    toast.remove();
+    if (
+      findInCart !== null &&
+      findInCart?.product?._id === singleProduct?._id
+    ) {
+      if (findInCart?.type === type) {
+        if (action == "plus") {
+          setChangeTo(true);
+          setFindInCart({ ...findInCart, quantity: findInCart?.quantity + 1 });
+        } else if (action === "minus") {
+          setChangeTo(true);
+          if (findInCart?.quantity == 1) {
+            toast.error("Minimum quantity should be more than 0!!!");
+            return true;
+          }
+          setFindInCart({
+            ...findInCart,
+            quantity: findInCart?.quantity == 1 ? 1 : findInCart?.quantity - 1,
+          });
+        }
+      } else {
+        toast.error(`Please change quantity in ${findInCart?.type}`);
+        return true;
+      }
+    }
+  };
+
+  const handleSubmitAddProduct = () => {
+    if (singleProduct?._id !== findInCart?.product?._id) {
+      handleAddProduct(
+        singleProduct?._id,
+        singleProduct?.name,
+        selectedItemType === "pk" ? pkitemsQuantity : ctnItemQuantity,
+        selectedItemType === "pk"
+          ? pkitemsQuantity * singleProduct?.price
+          : ctnItemQuantity * singleProduct?.price
+      );
+    } else if (
+      changeTo &&
+      findInCart !== null &&
+      singleProduct?._id === findInCart?.product?._id
+    ) {
+      setChangingLoading(true);
+      const response = dispatch(
+        handleAddProductToCart({
+          token,
+          id: findInCart?.product?._id,
+          signal: AbortControllerRef,
+          type: findInCart?.type,
+          quantity: findInCart?.quantity,
+        })
+      );
+      if (response) {
+        response
+          .then((res) => {
+            if (res.payload.status === "success") {
+              toast.success(`${findInCart?.product?.name}'s quantity updated.`);
+              dispatch(
+                handleUpdateTotalQuantityAndAmount({
+                  quantity: findInCart?.quantity,
+                  id: findInCart?.product?._id,
+                })
+              );
+              setChangingLoading(false);
+              setChangeTo(false);
+            }
+          })
+          .catch((err) => {
+            toast.error(err.payload.message);
+            setChangingLoading(false);
+            setChangeTo(false);
+          });
+      }
     } else {
-      setPkCount(e.target.value);
-      setpkItemsQuantity(singleProduct?.PK * e.target.value);
+      dispatch(handleChangeActiveComponent("Shopping Cart"));
     }
   };
 
@@ -216,6 +293,7 @@ const ProductDetailPopup = ({}) => {
     dispatch(handleGetProductById({ id: singleProductId, token }));
     return () => {
       AbortControllerRef.current !== null && AbortControllerRef.current.abort();
+      setFindInCart(null);
     };
   }, []);
 
@@ -317,34 +395,7 @@ const ProductDetailPopup = ({}) => {
                 <AiOutlineRight className="w-4 h-4 text-white" />
               </button>
             </div>
-            {/* <Swiper
-              onSwiper={(swiper) => {
-                // swiper.activeIndex
-                if (swiper && swiper.thumbs) {
-                  setThumbsSwiper(swiper);
-                  console.log(swiper);
-                }
-              }}
-              loop={true}
-              spaceBetween={10}
-              slidesPerView={4}
-              modules={[Navigation, Thumbs]}
-            >
-              {singleProductLoading ? (
-                <p>Loading...</p>
-              ) : (
-                singleProduct?.images.map((image, i) => (
-                  <SwiperSlide key={i}>
-                    <img
-                      src={BaseUrl.concat(image)}
-                      alt={singleProduct?.title}
-                      className="h-20 w-20 object-contain object-center"
-                      loading="lazy"
-                    />
-                  </SwiperSlide>
-                ))
-              )}
-            </Swiper> */}
+
             {/* <div className="flex items-center gap-x-2 pt-5">
               {singleProduct?.images.map((image, index) => (
                 <img
@@ -416,121 +467,168 @@ const ProductDetailPopup = ({}) => {
                   defaultChecked={true}
                   onChange={(e) => setSelectedItemType(e.target.value)}
                   value="pk"
-                  disabled={addProductToCartLoading}
+                  disabled={
+                    addProductToCartLoading ||
+                    findInCart?.product?._id === singleProduct?._id
+                  }
                 />
                 <span>Order By PK*</span>
               </p>
-              <div className="flex items-center gap-x-4 ">
-                <button
-                  type="button"
-                  className={`${
-                    selectedItemType === "ctn" && "cursor-not-allowed"
-                  }`}
-                  disabled={addProductToCartLoading}
-                >
+              {/* pk */}
+              <div className="flex w-full items-center gap-x-4">
+                <button type="button" disabled={addProductToCartLoading}>
                   <AiOutlineMinus
-                    onClick={() =>
+                    onClick={() => {
                       !addProductToCartLoading &&
-                      handleMinusPkQuantity(
-                        parseFloat(singleProduct?.PK),
-                        parseFloat(pkCount - 1)
-                      )
-                    }
+                        selectedProductId !== findInCart?.product?._id &&
+                        handleMinusPkQuantity(
+                          parseFloat(singleProduct?.PK),
+                          parseFloat(pkCount - 1)
+                        );
+                      findInCart?.product?._id === singleProduct?._id &&
+                        handleChangeAddedItemInCart("minus", "pk");
+                    }}
                     className="w-7 h-7"
                   />
                 </button>
-                <div className="w-auto min-w-[10rem] flex items-center justify-between rounded-md border p-3 pr-12 h-12 outline-none border-BORDERGRAY text-black">
+                <p
+                  className={`lg:w-1/3 md:w-1/2 w-10/12 relative  ${
+                    selectedItemType === "ctn" && "cursor-not-allowed"
+                  }`}
+                >
+                  <span
+                    className={`absolute  top-1/2 w-full max-w-[4rem] text-sm ${
+                      pkitemsQuantity === ""
+                        ? "text-gray-400 font-normal"
+                        : "text-BLACK font-semibold"
+                    } ${
+                      selectedItemType === "ctn"
+                        ? "cursor-not-allowed"
+                        : "cursor-default"
+                    }
+                    -translate-y-1/2 left-2`}
+                  >
+                    {`${
+                      pkitemsQuantity === ""
+                        ? singleProduct?.PK
+                        : pkitemsQuantity
+                    } PC`}
+                  </span>
                   <input
-                    className={`w-1/2 outline-none text-black ${
+                    className={`w-full font-semibold text-right p-3 pr-7 pl-16 placeholder:text-black rounded-md border outline-none border-BORDERGRAY text-black ${
                       selectedItemType === "ctn" && "cursor-not-allowed"
                     }`}
-                    readOnly={true}
-                    placeholder={`${singleProduct?.PK} PC`}
-                    value={pkitemsQuantity}
-                    // onChange={(e) => {
-                    //   !addProductToCartLoading &&
-                    //     setpkItemsQuantity(e.target.value);
-                    //   !addProductToCartLoading &&
-                    //     setPkCount(
-                    //       e.target.value >= singleProduct?.PK
-                    //         ? parseFloat(
-                    //             (e.target.value / singleProduct?.PK)
-                    //               .toFixed(1)
-                    //               .toString()
-                    //               .split(".")[0]
-                    //           )
-                    //         : 0
-                    //     );
-                    //   if (
-                    //     !/^\d+$/.test(e.target.value) &&
-                    //     e.target.value !== ""
-                    //   ) {
-                    //     toast.dismiss();
-                    //     return toast.error("Please enter valid value.");
-                    //   }
-                    // }}
+                    type="number"
+                    placeholder="0"
+                    min="0"
+                    value={pkCount}
+                    onChange={(e) => {
+                      if (
+                        !/^(?=.*[1-9])\d{1,8}(?:\.\d\d?)?$/.test(e.target.value)
+                      ) {
+                        toast.remove();
+                        toast.error("Please enter valid value.");
+                        setPkCount(0);
+                        setpkItemsQuantity("");
+                        return true;
+                      }
+                      if (e.target.value.length > 7) {
+                        toast.remove();
+                        toast.error("Can't add more than 7 numbers !!!");
+                        return true;
+                      }
+                      setPkCount(e.target.value.replace(/^0+/, ""));
+                      setpkItemsQuantity(
+                        e.target.value.replace(/^0+/, "") * singleProduct?.PK
+                      );
+                    }}
                     disabled={
-                      selectedItemType === "ctn" ||
-                      findInCart?.product?._id === singleProduct?._id ||
-                      addProductToCartLoading
+                      selectedItemType === "ctn" || addProductToCartLoading
                     }
                   />
-                  <p>
-                    <input
-                      type="text"
-                      value={pkCount}
-                      className="outline-none"
-                      onChange={(e) => {
-                        handleChangePkCount(e);
-                        // !addProductToCartLoading &&
-                        //   setpkItemsQuantity(e.target.value);
-                        // !addProductToCartLoading &&
-                        //   setPkCount(
-                        //     e.target.value >= singleProduct?.PK
-                        //       ? parseFloat(
-                        //           (e.target.value / singleProduct?.PK)
-                        //             .toFixed(1)
-                        //             .toString()
-                        //             .split(".")[0]
-                        //         )
-                        //       : 0
-                        //   );
-                        if (
-                          !/^\d+$/.test(e.target.value) &&
-                          e.target.value !== ""
-                        ) {
-                          toast.dismiss();
-                          return toast.error("Please enter valid value.");
-                        }
-                      }}
-                      disabled={
-                        selectedItemType === "ctn" ||
-                        findInCart?.product?._id === singleProduct?._id ||
-                        addProductToCartLoading
-                      }
-                      // className="absolute z-20 bg-transparent font-semibold top-1/2 -translate-y-1/2 left-36 max-w-[2rem] outline-none"
-                    ></input>
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  className={`${
-                    selectedItemType === "ctn" && "cursor-not-allowed"
-                  } relative`}
-                  disabled={addProductToCartLoading}
-                >
+                  <span className="absolute font-semibold right-2 top-1/2 -translate-y-1/2">
+                    PK
+                  </span>
+                </p>
+                <button type="button" disabled={addProductToCartLoading}>
                   <AiOutlinePlus
-                    onClick={() =>
+                    onClick={() => {
+                      if (pkCount.length >= 7) {
+                        toast.remove();
+                        toast.error("Can't add more than 7 numbers !!!");
+                        return true;
+                      }
                       !addProductToCartLoading &&
-                      handlePlusPkQuantity(
-                        parseFloat(singleProduct?.PK),
-                        parseFloat(pkCount + 1)
-                      )
-                    }
-                    className="w-7 h-7 absolute z-10 -top-4"
+                        selectedProductId !== findInCart?.product?._id &&
+                        handlePlusPkQuantity(
+                          parseInt(singleProduct?.PK),
+                          parseInt(pkCount + 1)
+                        );
+                      findInCart?.product?._id === singleProduct?._id &&
+                        handleChangeAddedItemInCart("plus", "pk");
+                    }}
+                    className="w-7 h-7"
                   />
                 </button>
               </div>
+              {/* old pk */}
+              {/* <div className="flex w-full items-center gap-x-4 ">
+                <button type="button" disabled={addProductToCartLoading}>
+                  <AiOutlineMinus
+                    onClick={() => {
+                      !addProductToCartLoading &&
+                        selectedProductId !== findInCart?.product?._id &&
+                        handleMinusPkQuantity(
+                          parseFloat(singleProduct?.PK),
+                          parseFloat(pkCount - 1)
+                        );
+                      findInCart?.product?._id === singleProduct?._id &&
+                        handleChangeAddedItemInCart("minus", "pk");
+                    }}
+                    className="w-7 h-7"
+                  />
+                </button>
+                <p className="lg:w-1/3 md:w-1/2 w-10/12 relative">
+                  <input
+                    className={`w-full p-3 pr-14 rounded-md border outline-none border-BORDERGRAY text-black ${
+                      selectedItemType === "pk" && "cursor-not-allowed"
+                    }`}
+                    placeholder={`${singleProduct?.PK} PC`}
+                    value={pkitemsQuantity}
+                    onChange={(e) => {
+                      setpkItemsQuantity(e.target.value);
+                      if (
+                        !/^\d+$/.test(e.target.value) &&
+                        e.target.value !== ""
+                      ) {
+                        toast.dismiss();
+                        return toast.error("Please enter valid value.");
+                      }
+                    }}
+                    disabled={
+                      selectedItemType === "ctn" || addProductToCartLoading
+                    }
+                  />
+                  <span className="absolute font-semibold top-1/2 -translate-y-1/2 right-2">
+                    {pkCount} PK
+                  </span>
+                </p>
+                <button type="button" disabled={addProductToCartLoading}>
+                  <AiOutlinePlus
+                    onClick={() => {
+                      !addProductToCartLoading &&
+                        selectedProductId !== findInCart?.product?._id &&
+                        handlePlusPkQuantity(
+                          parseFloat(singleProduct?.PK),
+                          parseFloat(pkCount + 1)
+                        );
+                      findInCart?.product?._id === singleProduct?._id &&
+                        handleChangeAddedItemInCart("plus", "pk");
+                    }}
+                    className="w-7 h-7"
+                  />
+                </button>
+              </div> */}
               {/* ctn */}
               <p className="flex items-center gap-x-4">
                 <input
@@ -539,26 +637,26 @@ const ProductDetailPopup = ({}) => {
                   className="h-5 w-5 inline-block"
                   onChange={(e) => setSelectedItemType(e.target.value)}
                   value="ctn"
-                  disabled={addProductToCartLoading}
+                  disabled={
+                    addProductToCartLoading ||
+                    findInCart?.product?._id === singleProduct?._id
+                  }
                 />
                 <span>Order By CTN*</span>
               </p>
-              <div className="flex w-full items-center gap-x-4 ">
-                <button
-                  type="button"
-                  className={`${
-                    selectedItemType === "pk" && "cursor-not-allowed"
-                  }`}
-                  disabled={addProductToCartLoading}
-                >
+              {/* old ctn */}
+              {/* <div className="flex w-full items-center gap-x-4 ">
+                <button type="button" disabled={addProductToCartLoading}>
                   <AiOutlineMinus
-                    onClick={() =>
+                    onClick={() => {
                       !addProductToCartLoading &&
-                      handleMinusCTNQuantity(
-                        parseFloat(singleProduct?.CTN),
-                        parseFloat(ctnCount - 1)
-                      )
-                    }
+                        handleMinusCTNQuantity(
+                          parseFloat(singleProduct?.CTN),
+                          parseFloat(ctnCount - 1)
+                        );
+                      findInCart?.product?._id === singleProduct?._id &&
+                        handleChangeAddedItemInCart("minus", "ctn");
+                    }}
                     className="w-7 h-7"
                   />
                 </button>
@@ -587,64 +685,159 @@ const ProductDetailPopup = ({}) => {
                     {ctnCount} CTN
                   </span>
                 </p>
-                <button
-                  type="button"
-                  className={`${
-                    selectedItemType === "pk" && "cursor-not-allowed"
-                  }`}
-                  disabled={addProductToCartLoading}
-                >
+                <button type="button" disabled={addProductToCartLoading}>
                   <AiOutlinePlus
-                    onClick={() =>
+                    onClick={() => {
                       !addProductToCartLoading &&
-                      handlePlusCTNQuantity(
-                        parseFloat(singleProduct?.CTN),
-                        parseFloat(ctnCount + 1)
-                      )
+                        handlePlusCTNQuantity(
+                          parseFloat(singleProduct?.CTN),
+                          parseFloat(ctnCount + 1)
+                        );
+                      findInCart?.product?._id === singleProduct?._id &&
+                        handleChangeAddedItemInCart("plus", "ctn");
+                    }}
+                    className="w-7 h-7"
+                  />
+                </button>
+              </div> */}
+              <div className="flex w-full items-center gap-x-4 ">
+                <button type="button" disabled={addProductToCartLoading}>
+                  <AiOutlineMinus
+                    onClick={() => {
+                      !addProductToCartLoading &&
+                        handleMinusCTNQuantity(
+                          parseFloat(singleProduct?.CTN),
+                          parseFloat(ctnCount - 1)
+                        );
+                      findInCart?.product?._id === singleProduct?._id &&
+                        handleChangeAddedItemInCart("minus", "ctn");
+                    }}
+                    className="w-7 h-7"
+                  />
+                </button>
+                <p
+                  className={`lg:w-1/3 md:w-1/2 w-10/12 relative
+                ${selectedItemType === "pk" && "cursor-not-allowed"}
+                `}
+                >
+                  <span
+                    className={`absolute  top-1/2 w-full max-w-[4rem] text-sm ${
+                      ctnItemQuantity === ""
+                        ? "text-gray-400 font-normal"
+                        : "text-BLACK font-semibold"
+                    } ${
+                      selectedItemType === "pk"
+                        ? "cursor-not-allowed"
+                        : "cursor-default"
                     }
+                    -translate-y-1/2 left-2`}
+                  >
+                    {`${
+                      ctnItemQuantity === ""
+                        ? singleProduct?.CTN
+                        : ctnItemQuantity
+                    } PC`}
+                  </span>
+                  <input
+                    className={`w-full font-semibold text-right p-3 pr-9 pl-16 placeholder:text-black rounded-md border outline-none border-BORDERGRAY text-black ${
+                      selectedItemType === "pk" && "cursor-not-allowed"
+                    }`}
+                    placeholder="0"
+                    value={ctnCount}
+                    onChange={(e) => {
+                      if (
+                        !/^(?=.*[1-9])\d{1,8}(?:\.\d\d?)?$/.test(e.target.value)
+                      ) {
+                        toast.remove();
+                        toast.error("Please enter valid value.");
+                        setCtnCount(0);
+                        setCtnItemQuantity("");
+                        return true;
+                      }
+                      if (e.target.value.length > 7) {
+                        toast.remove();
+                        toast.error("Can't add more than 7 numbers !!!");
+                        return true;
+                      }
+                      setCtnCount(e.target.value.replace(/^0+/, ""));
+                      setCtnItemQuantity(
+                        e.target.value.replace(/^0+/, "") * singleProduct?.CTN
+                      );
+                    }}
+                    disabled={
+                      selectedItemType === "pk" || addProductToCartLoading
+                    }
+                  />
+                  <span className="absolute font-semibold right-1 top-1/2 -translate-y-1/2">
+                    CTN
+                  </span>
+                </p>
+                <button type="button" disabled={addProductToCartLoading}>
+                  <AiOutlinePlus
+                    onClick={() => {
+                      if (ctnCount.length >= 7) {
+                        toast.remove();
+                        toast.error("Can't add more than 7 numbers !!!");
+                        return true;
+                      }
+                      !addProductToCartLoading &&
+                        handlePlusCTNQuantity(
+                          parseFloat(singleProduct?.CTN),
+                          parseFloat(ctnCount + 1)
+                        );
+                      findInCart?.product?._id === singleProduct?._id &&
+                        handleChangeAddedItemInCart("plus", "ctn");
+                    }}
                     className="w-7 h-7"
                   />
                 </button>
               </div>
+              {/* cart btn */}
               <p className="flex items-center gap-x-3 pb-3">
                 <Link
                   to={
                     user === null
                       ? "/sign-in"
                       : findInCart !== null &&
-                        singleProduct?._id === findInCart?.product?._id
+                        singleProduct?._id === findInCart?.product?._id &&
+                        !changeTo
                       ? "/cart"
                       : null
                   }
                 >
-                  <button
-                    type="button"
-                    className="bg-DARKRED text-white w-60 p-3 rounded-md hover:text-DARKRED hover:bg-white border border-DARKRED duration-300 ease-linear"
-                    onClick={() => {
-                      handleAddProduct(
-                        singleProduct?._id,
-                        singleProduct?.name,
-                        selectedItemType === "pk"
-                          ? pkitemsQuantity
-                          : ctnItemQuantity
-                      );
-                      setSelectedProductId(singleProduct?._id);
-                    }}
-                    disabled={addProductToCartLoading}
-                  >
-                    {addProductToCartLoading &&
-                    selectedProductId === singleProduct?._id ? (
-                      "Adding..."
-                    ) : findInCart !== null &&
-                      singleProduct?._id === findInCart?.product?._id ? (
-                      "Added"
-                    ) : (
-                      <>
-                        {t("add_to_cart")}
-                        <AiOutlineShoppingCart className="w-6 h-6 ml-2 inline-block" />
-                      </>
-                    )}
-                  </button>
+                  {changingLoading ? (
+                    <button
+                      type="button"
+                      className="bg-DARKRED text-white w-60 p-3 rounded-md hover:text-DARKRED hover:bg-white border border-DARKRED duration-300 ease-linear"
+                      disabled={changingLoading}
+                    >
+                      {t("Changing").concat("...")}
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className="bg-DARKRED text-white w-60 p-3 rounded-md hover:text-DARKRED hover:bg-white border border-DARKRED duration-300 ease-linear"
+                      onClick={() => {
+                        handleSubmitAddProduct();
+                      }}
+                      disabled={addProductToCartLoading}
+                    >
+                      {addProductToCartLoading &&
+                      selectedProductId === singleProduct?._id ? (
+                        t("Adding").concat("...")
+                      ) : findInCart !== null &&
+                        singleProduct?._id === findInCart?.product?._id ? (
+                        `${changeTo ? t("Change to") : t("Added")} ${
+                          findInCart?.quantity
+                        } ${findInCart?.type}`
+                      ) : (
+                        <>
+                          {t("add_to_cart")}
+                          <AiOutlineShoppingCart className="w-6 h-6 ml-2 inline-block" />
+                        </>
+                      )}
+                    </button>
+                  )}
                 </Link>
                 {favouriteLoading ? (
                   "..."

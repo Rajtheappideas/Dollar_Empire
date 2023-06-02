@@ -53,8 +53,9 @@ const ProductListing = () => {
     (state) => state.products
   );
 
-  const { token } = useSelector((state) => state.Auth);
+  const { token, user } = useSelector((state) => state.Auth);
   const {
+    multipleLoading,
     loading,
     cartItems,
     cart,
@@ -389,8 +390,6 @@ const ProductListing = () => {
   useEffect(() => {
     dispatch(handleGetNewArrivals({ token }));
     dispatch(handleGetTopSellers({ token }));
-    dispatch(calculateTotalAmount());
-    dispatch(calculateTotalQuantity());
     const response = dispatch(handleGetAllProducts({ token }));
     if (response) {
       response
@@ -409,13 +408,20 @@ const ProductListing = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (user !== null) {
+      dispatch(calculateTotalQuantity());
+      dispatch(calculateTotalAmount());
+    }
+  }, [user]);
+
   // find items in cart added
   useEffect(() => {
     if (cart !== null && cartItems.length > 0) {
       const findItemInCart = cartItems.filter(
         (i) => !selectedItems.includes(i?.product?._id)
       );
-      console.log("findincart", findItemInCart);
+      // console.log("findincart", findItemInCart);
     }
   }, [loading, selectedItems]);
 
@@ -462,7 +468,6 @@ const ProductListing = () => {
       })
     );
   }, [title, pageNumber]);
-console.log(selectedItems);
   return (
     <>
       <Helmet title={`product-listing-${title}`} />
@@ -593,7 +598,7 @@ console.log(selectedItems);
                     handleSubmitMulitpleProductToCart();
                   }}
                 >
-                  {loading ? (
+                  {multipleLoading ? (
                     t("loading").concat("...")
                   ) : (
                     <>
@@ -699,7 +704,7 @@ console.log(selectedItems);
                     handleSubmitMulitpleProductToCart();
                   }}
                 >
-                  {loading ? (
+                  {multipleLoading ? (
                     t("loading").concat("...")
                   ) : (
                     <>

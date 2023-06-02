@@ -49,10 +49,12 @@ const SpecialOrder = lazy(() => import("./pages/SpecialOrder"));
 const Favourites = lazy(() => import("./pages/Favourites"));
 
 function App() {
-  const { showProductDetailsPopup, activeComponentForCart, showEnlargeImage } =
-    useSelector((state) => state.globalStates);
+  const { showProductDetailsPopup } = useSelector(
+    (state) => state.globalStates
+  );
 
   const { token, user } = useSelector((state) => state.Auth);
+  const cart = useSelector((state) => state.cart);
 
   const dispatch = useDispatch();
 
@@ -82,6 +84,11 @@ function App() {
   useEffect(() => {
     if (user !== null) {
       dispatch(handleGetCart({ token }));
+    }
+  }, [user, showProductDetailsPopup]);
+
+  useEffect(() => {
+    if (user !== null) {
       dispatch(calculateTotalQuantity());
       dispatch(calculateTotalAmount());
     }
