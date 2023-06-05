@@ -113,7 +113,7 @@ const PaymentInfo = ({ summaryFixed }) => {
                   }
                   name="checkout"
                   type="radio"
-                  className="w-6 h-6"
+                  className="w-6 h-6 cursor-pointer"
                   checked={paymentOption === "contactForPayment"}
                   disabled={loading}
                 />
@@ -136,7 +136,7 @@ const PaymentInfo = ({ summaryFixed }) => {
                   checked={paymentOption === "cardPayment"}
                   name="checkout"
                   type="radio"
-                  className="w-6 h-6"
+                  className="w-6 h-6 cursor-pointer"
                   disabled={loading}
                 />
                 <p>

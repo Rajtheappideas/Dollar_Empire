@@ -56,7 +56,10 @@ const FilterComponent = ({
             <>
               <p
                 role="button"
-                onClick={() => setActiveSubCategory("")}
+                onClick={() => {
+                  setActiveSubCategory("");
+                  setActiveCategory("");
+                }}
                 className="text-PRIMARY text-left text-base font-semibold"
               >
                 {categories.includes(title) && title}
@@ -69,8 +72,8 @@ const FilterComponent = ({
                       key={category?._id}
                       className={`${
                         activeCategory === category?.name &&
-                        "text-BLACK font-semibold"
-                      } cursor-pointer hover:bg-gray-100 hover:text-black`}
+                        "text-BLACK font-semibold bg-gray-100"
+                      } cursor-pointer hover:bg-gray-100 hover:text-black `}
                       onClick={() => {
                         setActiveCategory(category?.name);
                         setActiveSubCategory(category?.name);

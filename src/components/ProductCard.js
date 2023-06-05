@@ -89,7 +89,7 @@ const ProductCard = ({
         .then((res) => {
           if (res.payload.status === "success") {
             setisFavourite(!isFavourite);
-            toast.success(res.payload.message);
+            toast.success(`${product?.name} Added to favourites.`);
           } else if (res.payload.status === "fail") {
             toast.error(res.payload.message);
           }
@@ -112,7 +112,7 @@ const ProductCard = ({
         .then((res) => {
           if (res.payload.status === "success") {
             setisFavourite(!isFavourite);
-            toast.success(res.payload.message);
+            toast.success(`${product?.name} Removed from favourites.`);
           } else {
             toast.error(res.payload.message);
           }
