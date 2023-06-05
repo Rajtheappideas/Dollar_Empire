@@ -74,7 +74,7 @@ const Checkout = ({ summaryFixed }) => {
                 dispatch(handleChangeShippingMethod("pickup"));
               }}
               type="radio"
-              className="w-6 h-6"
+              className="w-6 h-6 cursor-pointer"
               checked={shipphingMethod === "pickup"}
             />
             <p>
@@ -94,7 +94,7 @@ const Checkout = ({ summaryFixed }) => {
                 dispatch(handleChangeShippingMethod("freight"));
               }}
               type="radio"
-              className="w-6 h-6"
+              className="w-6 h-6 cursor-pointer"
               checked={shipphingMethod === "freight"}
             />
             <p>

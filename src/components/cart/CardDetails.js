@@ -396,6 +396,11 @@ const CardDetails = ({ summaryFixed }) => {
                   placeholder={t("Card number")}
                   name="cardNumber"
                   {...getFieldProps("cardNumber")}
+                  onInput={(e) => {
+                    if (e.target.value.length > 19) {
+                      return e.target.value.slice(0, 19);
+                    }
+                  }}
                 />
                 <ErrorMessage name="cardNumber" component={TextError} />
               </>
@@ -458,7 +463,10 @@ const CardDetails = ({ summaryFixed }) => {
             </p>
             <p className="w-full flex items-center justify-between text-base">
               <span className="font-normal">{t("Freight")}</span>
-              <span className="ml-auto font-semibold text-base">$10.00</span>
+              <span className="ml-auto font-semibold text-base">
+                {" "}
+                ${shipphingMethod === "pickup" ? "0.00" : "10.00"}
+              </span>
             </p>
             <hr className="w-full" />
             <p className="w-full flex items-center justify-between text-2xl font-bold">
