@@ -3,12 +3,16 @@ import EditAddress from "./EditAddress";
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import AddNewAddress from "./AddNewAddress";
-import { handlePostDeleteAddress } from "../../redux/FeatureSlice";
+import {
+  handleDefaultSelecteAddress,
+  handlePostDeleteAddress,
+} from "../../redux/FeatureSlice";
 import { useRef } from "react";
 import { useEffect } from "react";
 import { handleGetAddresses } from "../../redux/GetContentSlice";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import { CheckCircleIcon } from "@heroicons/react/24/outline";
 
 const Address = () => {
   const [showEditAddres, setShowEditAddres] = useState(false);
@@ -45,6 +49,21 @@ const Address = () => {
     }
   };
 
+  const handleSelectDefaultAddress = (id) => {
+    const response = dispatch(
+      handleDefaultSelecteAddress({ id, token, signal: AbortControllerRef })
+    );
+    if (response) {
+      response.then((res) => {
+        if (res.payload.status === "success") {
+          toast.success("Selected as default shipping address.");
+          setDeleteLoading(false);
+        } else {
+          toast.error(res.payload.message);
+        }
+      });
+    }
+  };
   useEffect(() => {
     return () => {
       AbortControllerRef.current !== null && AbortControllerRef.current.abort();
@@ -69,19 +88,41 @@ const Address = () => {
             addressList.map((address) => (
               <div
                 key={address?._id}
-                className=" capitalize border border-BORDERGRAY rounded-md p-3 text-BLACK space-y-2 text-left md:w-2/5 w-full min-h-[13rem]"
+                className={` ${
+                  address?.selected && "bg-gray-100"
+                } capitalize relative border border-BORDERGRAY rounded-md p-3 text-BLACK space-y-2 text-left md:w-2/5 w-full min-h-[13rem]`}
               >
-                <p className="font-semibold text-lg capitalize">
-                  {address?.fname}
-                </p>
-                <p className="font-normal capitalize">{address?.lname}</p>
-                <p className="font-normal">
-                  <span>{address?.location},</span>
-                  <span>{address?.state},</span>{" "}
-                  <span>{address?.postalCode},</span>{" "}
-                  <span>{address?.country}</span>
-                </p>
-                <p className="font-normal">{address?.phone}</p>
+                {/* default address */}
+                <div
+                  className="space-y-2 cursor-pointer"
+                  onClick={() => {
+                    toast.remove();
+                    address?.selected
+                      ? toast.error("Address is already selected as default.")
+                      : handleSelectDefaultAddress(address?._id);
+                  }}
+                >
+                  {address?.selected && (
+                    <CheckCircleIcon
+                      title="selected address"
+                      className="absolute top-2 right-3 w-8 h-8 text-green-500 bg-white rounded-full p-1"
+                    ></CheckCircleIcon>
+                  )}
+                  <p className="font-semibold text-lg capitalize">
+                    {address?.fname} {address?.lname}
+                  </p>
+                  <p className="font-normal capitalize">
+                    {address?.companyName}
+                  </p>
+                  <p className="font-normal">
+                    <span>{address?.location},</span>
+                    <span>{address?.state},</span>{" "}
+                    <span>{address?.postalCode},</span>{" "}
+                    <span>{address?.country}</span>
+                  </p>
+                  <p className="font-normal">{address?.phone}</p>
+                </div>
+
                 <p className="flex items-center gap-x-3">
                   <span
                     role="button"
@@ -114,7 +155,9 @@ const Address = () => {
             className="border cursor-pointer border-BORDERGRAY rounded-md text-BLACK gap-y-2 text-center md:w-2/5 w-full min-h-[13rem] flex flex-col items-center justify-center"
           >
             <AiOutlinePlusCircle className="h-10 w-10 text-TEXTGRAY block" />
-            <p className="font-semibold text-TEXTGRAY">{t("Add new address")}</p>
+            <p className="font-semibold text-TEXTGRAY">
+              {t("Add new address")}
+            </p>
           </div>
         </div>
       )}

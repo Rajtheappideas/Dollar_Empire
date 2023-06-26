@@ -9,6 +9,7 @@ import {
   calculateTotalQuantity,
   handleAddProductToCart,
   handleDecreaseQuantityAndAmount,
+  handleRemoveOneProductFromSelected,
   handleRemoveProductToCart,
   handleUpdateTotalQuantityAndAmount,
 } from "../../redux/CartSlice";
@@ -30,6 +31,7 @@ const ShoppingCart = ({ summaryFixed }) => {
   const { token } = useSelector((state) => state.Auth);
   const { productListingPageLink } = useSelector((state) => state.globalStates);
   const { shipphingMethod } = useSelector((state) => state.orders);
+  const { minOrderAmount } = useSelector((state) => state.products);
 
   const dispatch = useDispatch();
 
@@ -53,7 +55,7 @@ const ShoppingCart = ({ summaryFixed }) => {
     if (response) {
       response
         .then((res) => {
-          dispatch(handleDecreaseQuantityAndAmount({ quantity, amount, id }));
+          dispatch(handleDecreaseQuantityAndAmount({ quantity, amount }));
           setDeleteLoading(false);
         })
         .catch((err) => {
@@ -152,7 +154,7 @@ const ShoppingCart = ({ summaryFixed }) => {
             </tr>
           </thead>
           <tbody>
-            {loading || updateLoading ? (
+            {loading && !updateLoading ? (
               <tr>
                 <td
                   colSpan="100%"
@@ -202,53 +204,84 @@ const ShoppingCart = ({ summaryFixed }) => {
                   </td>
                   <td className="lg:p-5 p-3">#{item?.product?.number}</td>
                   <td className="lg:p-5 p-3">${item?.product?.price}</td>
-                  <td className="whitespace-nowrap lg:p-5 p-3 uppercase">
-                    {productId !== item?.product?._id ? (
-                      item?.type === "pk" ? (
-                        `${item?.quantity} ${item?.type}`
+                  {updateLoading && item?.product?._id === productId ? (
+                    <td className="lg:p-5 p-3 ">{t("updating")}</td>
+                  ) : (
+                    <td className="whitespace-nowrap lg:p-5 p-3 uppercase">
+                      {productId !== item?.product?._id ? (
+                        item?.type === "pk" ? (
+                          `${item?.quantity} ${item?.type}`
+                        ) : (
+                          `${item?.quantity} ${item?.type}`
+                        )
                       ) : (
-                        `${item?.quantity} ${item?.type}`
-                      )
-                    ) : (
-                      <input
-                        type="number"
-                        className="bg-gray-300 outline-none text-black placeholder:text-BLACK h-10 rounded-md w-16 p-1"
-                        value={productQuantity}
-                        onChange={(e) => {
-                          handleOnChangeProductQuantity(e);
-                        }}
-                      />
-                    )}
-                    {showChangeField && productId === item?.product?._id ? (
-                      <span
-                        role="button"
-                        className="text-PRIMARY underline ml-1 capitalize"
-                        onClick={() =>
-                          handleUpdateProduct(
-                            item?.product?._id,
-                            item?.product?.name,
-                            item.type,
-                            item?.product?.price * productQuantity,
-                            item?.quantity
-                          )
-                        }
-                      >
-                        {t("Update")}
-                      </span>
-                    ) : (
-                      <span
-                        role="button"
-                        className="text-PRIMARY underline ml-1 capitalize"
-                        onClick={() => {
-                          setShowChangeField(true);
-                          setProductQuantity(item?.quantity);
-                          setProductId(item?.product?._id);
-                        }}
-                      >
-                        {t("Change")}
-                      </span>
-                    )}
-                  </td>
+                        <form
+                          className="inline-block"
+                          onSubmit={(e) => {
+                            e.preventDefault();
+                            handleUpdateProduct(
+                              item?.product?._id,
+                              item?.product?.name,
+                              item.type,
+                              item?.product?.price * productQuantity,
+                              item?.quantity
+                            );
+                          }}
+                        >
+                          <input
+                            min="0"
+                            type="number"
+                            className="bg-gray-300 outline-none text-black placeholder:text-BLACK h-10 rounded-md w-16 p-1"
+                            value={productQuantity}
+                            onChange={(e) => {
+                              handleOnChangeProductQuantity(e);
+                            }}
+                          />
+                        </form>
+                      )}
+                      {showChangeField && productId === item?.product?._id ? (
+                        <>
+                          <span
+                            role="button"
+                            className="text-PRIMARY underline ml-1 capitalize"
+                            onClick={() =>
+                              handleUpdateProduct(
+                                item?.product?._id,
+                                item?.product?.name,
+                                item.type,
+                                item?.product?.price * productQuantity,
+                                item?.quantity
+                              )
+                            }
+                          >
+                            {t("Update")}
+                          </span>
+                          <span
+                            className="ml-2 cursor-pointer"
+                            role="button"
+                            onClick={() => {
+                              setShowChangeField(false);
+                              setProductId(null);
+                            }}
+                          >
+                            x
+                          </span>
+                        </>
+                      ) : (
+                        <span
+                          role="button"
+                          className="text-PRIMARY underline ml-1 capitalize"
+                          onClick={() => {
+                            setShowChangeField(true);
+                            setProductQuantity(item?.quantity);
+                            setProductId(item?.product?._id);
+                          }}
+                        >
+                          {t("Change")}
+                        </span>
+                      )}
+                    </td>
+                  )}
                   <td className="lg:p-5 p-3 uppercase">
                     {item?.type === "pk"
                       ? (
@@ -298,7 +331,7 @@ const ShoppingCart = ({ summaryFixed }) => {
         {/* for mobile */}
         <table className="w-full md:hidden overflow-hidden">
           <tbody>
-            {loading || updateLoading ? (
+            {loading && !updateLoading ? (
               <tr>
                 <td
                   colSpan="100%"
@@ -373,49 +406,83 @@ const ShoppingCart = ({ summaryFixed }) => {
                     <th className="bg-PRIMARY min-w-[5rem] max-w-[5rem] p-2 text-center text-white">
                       {t("Quantity")}
                     </th>
-                    <td className="lg:p-5 p-3  text-center w-full">
-                      {productId !== item?.product?._id ? (
-                        item.quantity
-                      ) : (
-                        <input
-                          type="number"
-                          className="bg-gray-300 outline-none text-black placeholder:text-BLACK h-10 rounded-md w-16 p-1"
-                          value={productQuantity}
-                          onChange={(e) => {
-                            handleOnChangeProductQuantity(e);
-                          }}
-                        />
-                      )}
-                      {showChangeField && productId === item?.product?._id ? (
-                        <span
-                          role="button"
-                          className="text-PRIMARY underline ml-1"
-                          onClick={() =>
-                            handleUpdateProduct(
-                              item?.product?._id,
-                              item?.product?.name,
-                              item.type,
-                              item?.product?.price * productQuantity,
-                              item?.quantity
-                            )
-                          }
-                        >
-                          {t("Update")}
-                        </span>
-                      ) : (
-                        <span
-                          role="button"
-                          className="text-PRIMARY underline ml-1"
-                          onClick={() => {
-                            setShowChangeField(true);
-                            setProductQuantity(item?.quantity);
-                            setProductId(item?.product?._id);
-                          }}
-                        >
-                          {t("Change")}
-                        </span>
-                      )}
-                    </td>
+                    {updateLoading && item?.product?._id === productId ? (
+                      <td className="lg:p-5 p-3 text-center w-full">
+                        {t("updating")}
+                      </td>
+                    ) : (
+                      <td className="lg:p-5 p-3  text-center w-full">
+                        {productId !== item?.product?._id ? (
+                          item.quantity
+                        ) : (
+                          <form
+                            className="inline-block"
+                            onSubmit={(e) => {
+                              e.preventDefault();
+                              handleUpdateProduct(
+                                item?.product?._id,
+                                item?.product?.name,
+                                item.type,
+                                item?.product?.price * productQuantity,
+                                item?.quantity
+                              );
+                            }}
+                          >
+                            {" "}
+                            <input
+                              type="number"
+                              className="bg-gray-300 outline-none text-black placeholder:text-BLACK h-10 rounded-md w-16 p-1"
+                              value={productQuantity}
+                              onChange={(e) => {
+                                handleOnChangeProductQuantity(e);
+                              }}
+                              min="0"
+                            />
+                          </form>
+                        )}
+                        {showChangeField && productId === item?.product?._id ? (
+                          <>
+                            <span
+                              role="button"
+                              className="text-PRIMARY underline ml-1"
+                              onClick={() =>
+                                handleUpdateProduct(
+                                  item?.product?._id,
+                                  item?.product?.name,
+                                  item.type,
+                                  item?.product?.price * productQuantity,
+                                  item?.quantity
+                                )
+                              }
+                            >
+                              {t("Update")}
+                            </span>
+                            <span
+                              className="ml-2 text-2xl cursor-pointer"
+                              role="button"
+                              onClick={() => {
+                                setShowChangeField(false);
+                                setProductId(null);
+                              }}
+                            >
+                              x
+                            </span>
+                          </>
+                        ) : (
+                          <span
+                            role="button"
+                            className="text-PRIMARY underline ml-1"
+                            onClick={() => {
+                              setShowChangeField(true);
+                              setProductQuantity(item?.quantity);
+                              setProductId(item?.product?._id);
+                            }}
+                          >
+                            {t("Change")}
+                          </span>
+                        )}
+                      </td>
+                    )}
                   </tr>
 
                   <tr>
@@ -502,6 +569,11 @@ const ShoppingCart = ({ summaryFixed }) => {
           <span className="ml-auto">${parseFloat(grandTotal).toFixed(2)}</span>
         </p>
         <hr className="w-full" />
+        {grandTotal < minOrderAmount && (
+          <p className="text-DARKRED text-center font-semibold">
+            Minimum Order Of ${minOrderAmount}.00
+          </p>
+        )}
         <button
           type="button"
           onClick={() => {
@@ -511,7 +583,9 @@ const ShoppingCart = ({ summaryFixed }) => {
               : toast.error("Your Cart is empty!!!");
           }}
           className="font-semibold bg-PRIMARY text-white hover:bg-white hover:text-PRIMARY border border-PRIMARY duration-300 ease-in-out w-full p-3 text-center"
-          disabled={loading || deleteLoading || updateLoading}
+          disabled={
+            loading || deleteLoading || updateLoading || grandTotal < 250
+          }
         >
           {t("Proceed to checkout")}
         </button>

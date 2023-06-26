@@ -232,6 +232,13 @@ const CartSlice = createSlice({
       state.selectedItems = filterArr;
     },
 
+    handleRemoveItemFromCart: (state, { payload }) => {
+      const filterArr = state.cartItems.filter(
+        (item) => item?.product?._id !== payload
+      );
+      state.cartItems = filterArr;
+    },
+
     handleRemoveAllProducts: (state) => {
       state.selectedItems = [];
     },
@@ -382,6 +389,7 @@ export const {
   handlechangeTotalQuantityAndAmountOfmultipleProducts,
   handleRemoveFromTotalQuantityAndAmountOfmultipleProducts,
   handleRemoveAllTotalQuantityAndTotalAmount,
+  handleRemoveItemFromCart,
 } = CartSlice.actions;
 
 export default CartSlice.reducer;

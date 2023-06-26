@@ -36,7 +36,7 @@ const CardDetails = ({ summaryFixed }) => {
   const [confirmOrderLoading, setConfirmOrderLoading] = useState(false);
   const [country, setCountry] = useState("");
 
-  const { token } = useSelector((state) => state.Auth);
+  const { token, user } = useSelector((state) => state.Auth);
   const { grandTotal } = useSelector((state) => state.cart);
   const {
     cardDetails,
@@ -46,7 +46,6 @@ const CardDetails = ({ summaryFixed }) => {
     paymentOption,
     orderId,
   } = useSelector((state) => state.orders);
-
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
@@ -137,15 +136,28 @@ const CardDetails = ({ summaryFixed }) => {
       .test("test-cvv", "CVV is invalid", (value) => valid.cvv(value).isValid)
       .required("CVV is required"),
   });
-
+  
   const formik = useFormik({
     initialValues: {
-      nameOnCard: "",
-      street: "",
-      city: "",
-      state: selectedData.state,
-      country: country === "" ? "United States" : country,
-      postalCode: "",
+      nameOnCard: cardDetails === null ? user?.fname : cardDetails?.nameOnCard,
+      street: cardDetails === null ? user?.location : cardDetails?.street,
+      city: cardDetails === null ? user?.city : cardDetails?.city,
+      state:
+        cardDetails === null
+          ? user?.state
+          : cardDetails?.state !== ""
+          ? cardDetails?.state
+          : selectedData.state,
+      country:
+        cardDetails === null
+          ? user?.country
+          : cardDetails?.country !== ""
+          ? cardDetails?.country
+          : country === ""
+          ? "United States"
+          : country,
+      postalCode:
+        cardDetails === null ? user?.postalCode : cardDetails?.postalCode,
       cardNumber: "",
       expiry: "",
       cvv: "",
@@ -188,9 +200,7 @@ const CardDetails = ({ summaryFixed }) => {
               toast.error("Request Cancelled.");
             }
             if (res.payload.status === "success") {
-              toast.success("Card Details Saved successfully.", {
-                duration: 2000,
-              });
+              return true;
             } else {
               return toast.error(res.payload.message);
             }
@@ -227,7 +237,6 @@ const CardDetails = ({ summaryFixed }) => {
       }
     },
   });
-
   const { getFieldProps, handleSubmit, setFieldValue, values, resetForm } =
     formik;
 
@@ -240,13 +249,14 @@ const CardDetails = ({ summaryFixed }) => {
       AbortControllerRef.current !== null && AbortControllerRef.current.abort();
     };
   }, []);
-
   // for country , state , city selection
   useEffect(() => {
     const country = Country.getAllCountries().find(
       (country) => country.name === values.country
     );
-    setCountry(country?.name);
+    if (cardDetails?.country === "") {
+      setCountry(country?.name);
+    }
     const states = State.getStatesOfCountry(country?.isoCode);
 
     setSelectedData({ ...selectedData, state: states.map((s) => s.name) });
@@ -254,17 +264,19 @@ const CardDetails = ({ summaryFixed }) => {
 
   function orderID(length) {
     let result = "";
-    const characters =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    const charactersLength = characters.length;
+    const numbres = "0123456789";
+    const charactersLength = numbres.length;
     let counter = 0;
     while (counter < length) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      result += numbres.charAt(Math.floor(Math.random() * charactersLength));
       counter += 1;
     }
     dispatch(handleChangeOrderId(result));
     return result;
   }
+
+  const aTenYearFromNow = new Date();
+  aTenYearFromNow.setFullYear(aTenYearFromNow.getFullYear() + 10);
   return (
     <>
       <FormikProvider value={formik}>
@@ -330,6 +342,7 @@ const CardDetails = ({ summaryFixed }) => {
                   name="state"
                   {...getFieldProps("state")}
                 >
+                  <option value={values?.state}>{values?.state}</option>
                   <option label="Select state"></option>
                   {selectedData?.state.length > 0 &&
                     selectedData.state.map((state) => (
@@ -417,16 +430,18 @@ const CardDetails = ({ summaryFixed }) => {
                   name="expiry"
                 /> */}
                 <DatePicker
+                  adjustDateOnChange={true}
                   selected={values.expiry}
                   onChange={(date) => {
                     setFieldValue("expiry", date);
-                    // setexpireDate()
                   }}
+                  closeOnScroll={true}
                   dateFormat="MM/yyyy"
                   showMonthYearPicker
-                  // {...getFieldProps("expiry")}
+                  maxDate={aTenYearFromNow}
                   minDate={new Date()}
                   name="expiry"
+                  placeholderText="select expiry date"
                   className="bg-LIGHTGRAY xl:w-1/2 w-full text-black placeholder:text-gray-400 rounded-md p-3"
                 />
                 <ErrorMessage name="expiry" component={TextError} />

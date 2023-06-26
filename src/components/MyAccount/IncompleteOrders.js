@@ -22,7 +22,6 @@ const IncompleteOrders = () => {
       setIncompleteOrders(findOrders);
     }
   }, [loading, orders]);
-
   return (
     <div className="w-full xl:overflow-auto overflow-x-scroll">
       {showSingleOrder ? (

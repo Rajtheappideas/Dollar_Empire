@@ -1,10 +1,11 @@
 import React from "react";
+import BaseUrl from "../BaseUrl";
 
-const TItleSection = ({ title, image }) => {
+const TItleSection = ({ title, image, dynamicImage }) => {
   return (
     <div className="relative md:h-80 h-60">
       <img
-        src={image}
+        src={dynamicImage ? BaseUrl.concat(dynamicImage) : image}
         alt={title}
         className="w-full h-full object-cover object-center opacity-100"
         loading="lazy"

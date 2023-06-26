@@ -15,13 +15,12 @@ const OrderHIstory = () => {
   const { orders, loading } = useSelector((state) => state.orders);
   useEffect(() => {
     if (orders.length > 0 && !loading) {
-      const findOrders = orders.filter(
-        (order) => order?.status === "Completed"
-      );
-      setCompletedOrders(findOrders);
+      // const findOrders = orders.filter(
+      //   (order) => order?.status === "Completed"
+      // );
+      setCompletedOrders(orders);
     }
   }, [loading, orders]);
-
   return (
     <div className="w-full xl:overflow-auto overflow-x-scroll">
       {showSingleOrder ? (
@@ -37,6 +36,7 @@ const OrderHIstory = () => {
       ) : (
         <>
           <div className="md:block hidden">
+            {/* for desktop & tablet */}
             <table className="w-full table-auto overflow-x-scroll">
               <thead>
                 <tr className="w-full bg-PRIMARY text-white font-normal">
@@ -52,7 +52,7 @@ const OrderHIstory = () => {
               </thead>
               <tbody className="bg-white text-BLACK text-base">
                 {completedOrders.length > 0 && !loading ? (
-                  completedOrders.reverse().map((order) => (
+                  completedOrders.slice().reverse().map((order) => (
                     <tr className="text-center" key={order?._id}>
                       <td
                         onClick={() => {
@@ -114,10 +114,11 @@ const OrderHIstory = () => {
               </tbody>
             </table>
           </div>
+          {/* for mobile */}
           <table className="w-full table-auto overflow-hidden md:hidden">
             <tbody className="bg-white text-BLACK text-base">
               {completedOrders.length > 0 && !loading ? (
-                completedOrders.reverse().map((order) => (
+                completedOrders.slice().reverse().map((order) => (
                   <tr className="flex flex-col w-full" key={order?._id}>
                     <tr className="text-center w-full flex flex-row">
                       <th className="bg-PRIMARY text-white p-2 text-center min-w-[5rem] max-w-[5rem]">

@@ -21,6 +21,7 @@
   "subscribe_to_our_newsletter": "Suscríbase a nuestro boletín",
   "subscribe": "Suscríbase",
   "loading": "Cargando",
+  "updating": "actualizando",
   "any": "Cualquier",
   "login_to_order": "Conectarse para pedirLogin to order",
   "top_seller": "Más vendidos",
@@ -178,5 +179,6 @@
   "Product Not Found in Top Sellers, Try something else.": "Producto no encontrado en los más vendidos, Pruebe otra cosa.",
   "Product Not Found, Try with different price.": "Producto no encontrado, Pruebe con otro precio.",
   "Product Not Found, Try something else.": "Producto no encontrado, Pruebe con otro.",
-  "Product Not Found, Try other filter.": "Producto no encontrado, Pruebe con otro filtro."
+  "Product Not Found, Try other filter.": "Producto no encontrado, Pruebe con otro filtro.",
+  "See All": "Ver Todo"
 }

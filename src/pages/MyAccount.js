@@ -17,7 +17,7 @@ import { useTranslation } from "react-i18next";
 import { handleGetOrders } from "../redux/OrderSlice";
 
 const MyAccount = () => {
-  const [activeComponent, setActiveComponent] = useState("incomplete_orders");
+  const [activeComponent, setActiveComponent] = useState("order_history");
 
   const { token } = useSelector((state) => state.Auth);
 
@@ -44,7 +44,8 @@ const MyAccount = () => {
               <p className="font-semibold md:text-2xl text-lg text-left pb-2">
                 {t("Navigation")}
               </p>
-              <p
+              
+              {/* <p
                 role="button"
                 className={`md:text-lg text-base relative group ${
                   activeComponent === "incomplete_orders"
@@ -57,7 +58,7 @@ const MyAccount = () => {
                 {activeComponent === "incomplete_orders" && (
                   <span className="h-full w-1 bg-PRIMARY absolute top-0 -left-3"></span>
                 )}
-              </p>
+              </p> */}
               <p
                 role="button"
                 className={`md:text-lg text-base relative group ${

@@ -4,22 +4,17 @@
 
 @layer utilities {
   .scrollbar::-webkit-scrollbar {
-    width: 10px;
+    width: 8px;
     height: 10px;
+    border-radius: 10px;
   }
   .scrollbar::-webkit-scrollbar-track {
-    border-radius: 100vh;
-    background: #f7f4ed;
+    border-radius: 10px;
+    background: transparent;
   }
-
   .scrollbar::-webkit-scrollbar-thumb {
     background: #1b599e;
-    border-radius: 100vh;
-    border: 3px solid #f6f7ed;
-  }
-
-  .scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #c0a0b9;
+    border-radius: 10px;
   }
   .submenu {
     position: relative;
@@ -31,13 +26,14 @@
     background-color: white;
     display: none;
   }
+  @media (hover: hover) and (pointer: fine) {
+    .submenu:hover > .submenu2 {
+      display: block;
+    }
 
-  .submenu:hover > .submenu2 {
-    display: block;
-  }
-
-  .submenu2 a span {
-    padding: 4px 0;
+    .submenu2 a span {
+      padding: 4px 0;
+    }
   }
 
   /* for remove up & down arrow in number input */
@@ -50,8 +46,8 @@
     display: none;
   }
 }
-input[type=number] {
-  -moz-appearance:textfield;
+input[type="number"] {
+  -moz-appearance: textfield;
 }
 
 body {
@@ -62,6 +58,36 @@ body {
     src: url("./assets/fonts/SFProText-Semibold.ttf");
     src: url("./assets/fonts/SFProText-Bold.ttf");
   }
+  position: relative;
+  height: auto;
+  top: 0;
+  left: 0;
+}
+html {
+  overflow-x: hidden;
+}
+
+.ReactModal__Overlay {
+  z-index: 99999 !important;
+  overflow: hidden !important;
+}
+.ReactModal__Overlay--after-open {
+  z-index: 99999 !important;
+  overflow: hidden !important;
+}
+
+body::-webkit-scrollbar {
+  width: 8px;
+  height: 10px;
+  border-radius: 10px;
+}
+body::-webkit-scrollbar-track {
+  border-radius: 10px;
+  background: transparent;
+}
+body::-webkit-scrollbar-thumb {
+  background: #1b599e;
+  border-radius: 10px;
 }
 .open {
   background-color: #f5f5f5 !important;

@@ -1,7 +1,6 @@
 import React, { useRef } from "react";
 import { TiArrowBack } from "react-icons/ti";
 import { AiOutlineShoppingCart, AiOutlineUser } from "react-icons/ai";
-import { HiOutlineBars3, HiXMark } from "react-icons/hi2";
 import {
   BsCurrencyDollar,
   BsSearch,
@@ -13,7 +12,9 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  handleChangeActiveCategory,
   handleChangeActiveComponent,
+  handleChangeActiveSubcategory,
   handleChangeSearchProducts,
   handleChangeSearchTerm,
 } from "../redux/GlobalStates";
@@ -28,41 +29,48 @@ import { toast } from "react-hot-toast";
 import { number } from "card-validator";
 
 const Header = () => {
-  const [openSidebar, setOpenSidebar] = useState(false);
-  const [activeCategory, setActiveCategory] = useState("");
+  const [activeCategoryForHover, setActiveCategory] = useState("");
   const [subCategoryProducts, setSubCategoryProducts] = useState([]);
-  // const [searchTerm, setSearchTerm] = useState("");
+  const [showCategoryDropdown, setshowCategoryDropdown] = useState(false);
+  const [showSecondCategoryDropDown, setshowSecondCategoryDropDown] =
+    useState(false);
+  const [showOnMouseOver, setShowOnMouseOver] = useState(false);
 
   const { user, userLanguage } = useSelector((state) => state.Auth);
-  const { searchTerm } = useSelector((state) => state.globalStates);
+  const { searchTerm, activeSubcategory, activeCategory } = useSelector(
+    (state) => state.globalStates
+  );
   const { totalQuantity, grandTotal } = useSelector((state) => state.cart);
-  const { allProducts } = useSelector((state) => state.products);
+  const { allProducts, minOrderAmount } = useSelector(
+    (state) => state.products
+  );
   const { categories, loading, subCategories } = useSelector(
     (state) => state.getContent
   );
   const { t } = useTranslation();
 
   const searchRef = useRef(null);
+  const dropDownRef = useRef(null);
+  const secondDropDownRef = useRef(null);
 
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
 
-  // for stop scroll when sidebar open
   useEffect(() => {
-    if (openSidebar) {
+    if (showCategoryDropdown || showSecondCategoryDropDown) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "unset";
     }
-  }, [openSidebar]);
+  }, [showCategoryDropdown, showSecondCategoryDropDown]);
 
   // set active subcategory
   useEffect(() => {
-    if (activeCategory !== "") {
-      setSubCategoryProducts(subCategories[activeCategory]);
+    if (activeCategoryForHover !== "") {
+      setSubCategoryProducts(subCategories[activeCategoryForHover]);
     }
-  }, [activeCategory]);
+  }, [activeCategoryForHover]);
 
   useEffect(() => {
     if (user !== null) {
@@ -71,7 +79,8 @@ const Header = () => {
     }
   }, [user]);
 
-  const handleSearchProducts = () => {
+  const handleSearchProducts = (e) => {
+    e.preventDefault();
     toast.dismiss();
     if (searchTerm === "") {
       searchRef.current.focus();
@@ -111,10 +120,57 @@ const Header = () => {
       window.location.reload();
     }
   };
+
+  // outside click for first dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropDownRef.current && !dropDownRef.current.contains(event.target)) {
+        onClickOutsideForFirstDropdown && onClickOutsideForFirstDropdown();
+      }
+    };
+    document.addEventListener("click", handleClickOutside, true);
+    return () => {
+      document.removeEventListener("click", handleClickOutside, true);
+    };
+  }, [onClickOutsideForFirstDropdown]);
+
+  // outside click for second dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        secondDropDownRef.current &&
+        !secondDropDownRef.current.contains(event.target)
+      ) {
+        onClickOutsideForSecondDropdown && onClickOutsideForSecondDropdown();
+      }
+    };
+    document.addEventListener("click", handleClickOutside, true);
+    return () => {
+      document.removeEventListener("click", handleClickOutside, true);
+    };
+  }, [onClickOutsideForSecondDropdown]);
+
+  function onClickOutsideForFirstDropdown() {
+    setshowCategoryDropdown(false);
+  }
+  function onClickOutsideForSecondDropdown() {
+    setshowSecondCategoryDropDown(false);
+  }
+  useEffect(() => {
+    window.addEventListener("resize", () => {
+      if (window.screen.width > 600) return setShowOnMouseOver(true);
+      else return setShowOnMouseOver(false);
+    });
+    return () => window.removeEventListener("resize", () => {});
+  }, []);
+
   return (
-    <div>
+    <div className="h-auto w-auto">
+      {(showCategoryDropdown || showSecondCategoryDropDown) && (
+        <div className="absolute z-30 inset-0 bg-black bg-opacity-20 backdrop-blur-sm max-w-screen-[100%] h-full" />
+      )}
       {/* first section */}
-      <div className="flex relative z-30 w-full justify-stretch items-center md:h-auto h-14 md:py-2 xl:px-20 md:px-10 px-3 md:gap-x-0 gap-x-1">
+      <div className="flex relative z-20 w-full justify-stretch items-center md:h-auto h-14 md:py-2 xl:px-20 md:px-10 px-3 md:gap-x-0 gap-x-1">
         {/* first logo */}
         <div className="flex-grow">
           <Link to="/" className="inline-block">
@@ -159,7 +215,9 @@ const Header = () => {
             <>
               <button type="button" className="">
                 <Link to="/sign-in">{t("login")}</Link>
-                <Link to="/sign-up" className="md:inline-block hidden">/ {t("register")}</Link>
+                <Link to="/sign-up" className="md:inline-block hidden">
+                  / {t("register")}
+                </Link>
               </button>
             </>
           ) : (
@@ -220,137 +278,200 @@ const Header = () => {
       <div className="bg-PRIMARY text-white w-full flex lg:flex-row flex-col justify-between lg:items-center items-start gap-5 lg:gap-0 md:py-5 py-2 xl:px-20 md:px-10 px-3">
         {/* left side div */}
         <div className="lg:w-1/2 w-full text-black">
-          <div className="capitalize font-semibold relative z-30 flex items-center w-full bg-white rounded-md p-3">
+          <div
+            className={`capitalize font-semibold relative ${
+              showCategoryDropdown ? "z-30" : "z-20"
+            } flex items-center w-full bg-white rounded-md p-1`}
+          >
             {/* menu */}
-            <div className="relative z-0 group md:min-w-[10rem]">
-              <p className="cursor-pointer flex items-center justify-between flex-row text-black font-normal ">
+            <div ref={dropDownRef} className="relative z-0 md:min-w-[10rem]">
+              <p
+                onClick={() => setshowCategoryDropdown(true)}
+                className="cursor-pointer hover:border-[3px] rounded-lg border-dotted p-2 border-black flex items-center justify-between flex-row text-black font-normal "
+              >
                 <span className="text-base whitespace-nowrap">
                   {t("all_categories")}
                 </span>
                 <BsChevronDown className="md:min-h-[1rem] md:min-w-[1rem] ml-1" />
               </p>
               {/* menu */}
-              <div className="text-left p-2 absolute top-9 -left-3 z-20 bg-white md:min-w-[14rem] min-w-[10rem] rounded-md group-hover:scale-100 scale-0 transform duration-300 ease-in origin-top-left">
-                <div className="pl-3 text-base font-normal text-gray-400 capitalize space-y-1 min-md:w-[14rem]  min-w-[10rem]">
-                  {loading ? (
-                    <SkeletonTheme
-                      baseColor="lightgray"
-                      highlightColor="white"
-                      duration={0.5}
-                      borderRadius="5px"
-                    >
-                      <Skeleton className=" h-4" />
-                      <Skeleton className=" h-4" />
-                      <Skeleton className=" h-4" />
-                      <Skeleton className=" h-4" />
-                      <Skeleton className=" h-4" />
-                      <Skeleton className=" h-4" />
-                    </SkeletonTheme>
-                  ) : (
-                    <>
-                      <Link to={`/product-listing/all-products`}>
-                        {" "}
-                        <span className="cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold whitespace-nowrap block">
-                          {t("all_categories")}
-                        </span>
-                      </Link>
-                      {categories.map((category) => (
-                        <div
-                          className={`submenu z-20 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
-                          key={category?._id}
-                          onMouseOver={() => setActiveCategory(category.name)}
-                        >
-                          <Link
+              {showCategoryDropdown && (
+                <div
+                  className="text-left md:p-2 p-0.5 absolute top-11 -left-1 z-20 bg-white md:min-w-[14rem] min-w-[12rem] rounded-md transform duration-300 ease-in origin-top-left"
+                  onClick={() => {
+                    setshowCategoryDropdown(false);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                >
+                  <div className="pl-3 text-base font-normal text-gray-400 capitalize space-y-1">
+                    {loading ? (
+                      <SkeletonTheme
+                        baseColor="lightgray"
+                        highlightColor="white"
+                        duration={0.5}
+                        borderRadius="5px"
+                      >
+                        <Skeleton className=" h-4" />
+                        <Skeleton className=" h-4" />
+                        <Skeleton className=" h-4" />
+                        <Skeleton className=" h-4" />
+                        <Skeleton className=" h-4" />
+                        <Skeleton className=" h-4" />
+                      </SkeletonTheme>
+                    ) : (
+                      <>
+                        <Link to={`/product-listing/all-products`}>
+                          {" "}
+                          <span className="cursor-pointer hover:font-bold hover:bg-gray-200 py-1 text-BLACK font-semibold whitespace-nowrap block">
+                            {t("all_categories")}
+                          </span>
+                        </Link>
+                        {categories.map((category) => (
+                          <div
+                            className={`submenu z-20 cursor-pointer hover:font-bold ${
+                              activeCategory === category?.name && "bg-gray-200"
+                            } hover:bg-gray-200 md:whitespace-nowrap py-1 text-BLACK font-semibold flex items-center gap-x-2`}
                             key={category?._id}
-                            to={`/product-listing/${category.name}`}
+                            onMouseOver={() =>
+                              showOnMouseOver &&
+                              setActiveCategory(category.name)
+                            }
+                            // onClick={() => {
+                            //   setshowCategoryDropdown(false);
+                            // }}
                           >
-                            {category.name} ({category?.productCount})
-                          </Link>
-                          <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
-                          {/* side dropdown */}
-                          <div className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white md:min-w-[10rem] min-w-[3rem] ">
-                            <span className="font-semibold text-black text-xl">
-                              {activeCategory}
-                            </span>
-
-                            {subCategoryProducts?.subcategories !== undefined &&
-                              subCategoryProducts?.subcategories.map((item) => (
-                                <Link
-                                  key={item?._id}
-                                  to={`/product-listing/${category.name}`}
-                                  state={{
-                                    title: category.name,
-                                    price: null,
-                                    searchQuery: "",
-                                  }}
-                                >
-                                  <span className="font-normal md:whitespace-nowrap block hover:font-semibold">
-                                    {item.name} ({item?.productCount})
-                                  </span>
-                                </Link>
-                              ))}
-
-                            <Link to={`/product-listing/low-to-high`}>
-                              {" "}
-                              <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                                {t("View all")} ({t("Low to high")})
-                              </span>
+                            <Link
+                              key={category?._id}
+                              to={`/product-listing/${category.name}`}
+                              onClick={() => {
+                                dispatch(handleChangeActiveSubcategory(""));
+                                dispatch(
+                                  handleChangeActiveCategory(category?.name)
+                                );
+                              }}
+                              className="w-10/12"
+                            >
+                              {category.name} ({category?.productCount})
                             </Link>
-                            <Link to={`/product-listing/high-to-low`}>
-                              <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                                {t("View all")} ({t("High to low")})
+                            <BsChevronRight
+                              onClick={() => {
+                                console.log("btn");
+                              }}
+                              className="inline-block ml-auto h-5 w-5 text-gray-400 cursor-pointer"
+                            />
+                            {/* side dropdown */}
+                            <div className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white md:min-w-[10rem] min-w-[3rem] ">
+                              <span className="font-semibold text-black text-xl">
+                                {activeCategoryForHover}
                               </span>
-                            </Link>
+
+                              {subCategoryProducts?.subcategories !==
+                                undefined &&
+                                subCategoryProducts?.subcategories.map(
+                                  (item) => (
+                                    <Link
+                                      key={item?._id}
+                                      to={`/product-listing/${category.name}`}
+                                      state={{
+                                        title: category.name,
+                                        price: null,
+                                        searchQuery: "",
+                                      }}
+                                      onClick={() =>
+                                        dispatch(
+                                          handleChangeActiveSubcategory(
+                                            item?.name
+                                          )
+                                        )
+                                      }
+                                    >
+                                      <span
+                                        className={`font-normal md:whitespace-nowrap block hover:font-semibold ${
+                                          activeSubcategory === item?.name &&
+                                          "bg-gray-200"
+                                        } `}
+                                      >
+                                        {item.name} ({item?.productCount})
+                                      </span>
+                                    </Link>
+                                  )
+                                )}
+
+                              <Link to={`/product-listing/low-to-high`}>
+                                {" "}
+                                <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                                  {t("View all")} ({t("Low to high")})
+                                </span>
+                              </Link>
+                              <Link to={`/product-listing/high-to-low`}>
+                                <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                                  {t("View all")} ({t("High to low")})
+                                </span>
+                              </Link>
+                            </div>
                           </div>
-                        </div>
-                      ))}
-                    </>
-                  )}
-                  {/* low to high */}
-                  <div
-                    className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
-                  >
-                    <Link to={`/product-listing/low-to-high`}>
-                      {t("View all")} ({t("Low to high")})
-                    </Link>
-                    {/* View all (Low to high) */}
-                    <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
-                  </div>
-                  {/* high to low */}
-                  <div
-                    className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
-                  >
-                    <Link to={`/product-listing/high-to-low`}>
-                      {t("View all")} ({t("High to low")})
-                    </Link>
-                    <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
+                        ))}
+                      </>
+                    )}
+                    {/* low to high */}
+                    <div
+                      className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
+                      onClick={() => {
+                        setshowCategoryDropdown(false);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }}
+                    >
+                      <Link to={`/product-listing/low-to-high`}>
+                        {t("View all")} ({t("Low to high")})
+                      </Link>
+                      {/* View all (Low to high) */}
+                      <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
+                    </div>
+                    {/* high to low */}
+                    <div
+                      className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
+                      onClick={() => {
+                        setshowCategoryDropdown(false);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }}
+                    >
+                      <Link to={`/product-listing/high-to-low`}>
+                        {t("View all")} ({t("High to low")})
+                      </Link>
+                      <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
 
             <span className="md:px-4 px-2 text-gray-400">|</span>
             {/* input field */}
-            <input
-              ref={searchRef}
-              type="text"
-              className="rounded-tr-lg rounded-br-lg outline-none md:w-3/4 w-1/2 text-black pr-7"
-              placeholder={t("search_products").concat("...")}
-              value={searchTerm}
-              onChange={(e) => {
-                dispatch(
-                  handleChangeSearchTerm(
-                    e.target.value.toLocaleLowerCase().trim()
-                  )
-                );
-              }}
-            />
-
-            <BsSearch
-              role="button"
-              className="h-5 w-5 absolute top-1/2 -translate-y-1/2 right-3 z-10 text-black"
-              onClick={() => handleSearchProducts()}
-            />
+            <form onSubmit={(e) => handleSearchProducts(e)}>
+              <input
+                ref={searchRef}
+                type="text"
+                className="rounded-tr-lg z-0 rounded-br-lg outline-none md:w-3/4 w-full text-black pr-7"
+                placeholder={t("search_products").concat("...")}
+                value={searchTerm}
+                onChange={(e) => {
+                  dispatch(
+                    handleChangeSearchTerm(
+                      e.target.value.toLocaleLowerCase().trim()
+                    )
+                  );
+                }}
+              />
+              <button type="submit">
+                <BsSearch
+                  className="h-5 w-5 absolute top-1/2 -translate-y-1/2 right-3 z-10 text-black"
+                  onClick={() => {
+                    handleSearchProducts();
+                    setshowCategoryDropdown(false);
+                  }}
+                />
+              </button>
+            </form>
           </div>
         </div>
         {/* cart + amount */}
@@ -395,111 +516,146 @@ const Header = () => {
         }`}
       >
         {/* all categories */}
-        <div className="capitalize font-semibold relative z-20 group md:min-w-[13rem]">
-          <p className="cursor-pointer flex items-center justify-between flex-row w-auto md:p-3 p-2 bg-black text-white ">
+        <div
+          className={`capitalize font-semibold relative ${
+            showSecondCategoryDropDown ? "z-30" : "z-20"
+          } md:min-w-[13rem]`}
+        >
+          <p
+            onClick={() => setshowSecondCategoryDropDown(true)}
+            className="cursor-pointer flex items-center justify-between flex-row w-auto md:p-3 p-2 bg-black text-white "
+          >
             <span className="md:text-xl text-lg whitespace-nowrap">
               {t("all_categories")}
             </span>
             <BsChevronDown className="h-4 w-4 ml-2" />
           </p>
           {/* menu */}
-          <div className="text-left p-2 absolute top-14 left-0 z-10 bg-white md:min-w-[14rem] min-w-[10rem] rounded-md group-hover:scale-100 scale-0 transform duration-300 ease-in origin-top-left">
-            <div className="pl-3 text-base font-normal text-gray-400 capitalize space-y-1 min-md:w-[14rem]  min-w-[10rem]">
-              {loading ? (
-                <SkeletonTheme
-                  baseColor="lightgray"
-                  highlightColor="white"
-                  duration={0.5}
-                  borderRadius="5px"
-                >
-                  <Skeleton className=" h-4" />
-                  <Skeleton className=" h-4" />
-                  <Skeleton className=" h-4" />
-                  <Skeleton className=" h-4" />
-                  <Skeleton className=" h-4" />
-                  <Skeleton className=" h-4" />
-                </SkeletonTheme>
-              ) : (
-                <>
-                  <Link to={`/product-listing/all-products`}>
-                    <span className="cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold whitespace-nowrap block">
-                      {t("all_categories")}
-                    </span>
-                  </Link>
-                  {categories.map((category) => (
-                    <div
-                      className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
-                      key={category?._id}
-                      onMouseOver={() => setActiveCategory(category.name)}
-                    >
-                      <Link
+          {showSecondCategoryDropDown && (
+            <div
+              ref={secondDropDownRef}
+              className="text-left p-2 h-auto top-14 left-0 z-20 bg-white md:min-w-[14rem] min-w-[10rem] rounded-md transform duration-300 ease-in origin-top-left"
+              onClick={() => {
+                setshowSecondCategoryDropDown(false);
+              }}
+            >
+              <div className="pl-3 text-base font-normal text-gray-400 capitalize space-y-1 min-md:w-[14rem]  min-w-[10rem]">
+                {loading ? (
+                  <SkeletonTheme
+                    baseColor="lightgray"
+                    highlightColor="white"
+                    duration={0.5}
+                    borderRadius="5px"
+                  >
+                    <Skeleton className=" h-4" />
+                    <Skeleton className=" h-4" />
+                    <Skeleton className=" h-4" />
+                    <Skeleton className=" h-4" />
+                    <Skeleton className=" h-4" />
+                    <Skeleton className=" h-4" />
+                  </SkeletonTheme>
+                ) : (
+                  <>
+                    <Link to={`/product-listing/all-products`}>
+                      <span className="cursor-pointer hover:font-bold hover:bg-gray-200 py-1 text-BLACK font-semibold whitespace-nowrap block">
+                        {t("all_categories")}
+                      </span>
+                    </Link>
+                    {categories.map((category) => (
+                      <div
+                        className={`submenu z-30 cursor-pointer hover:font-bold ${
+                          activeCategory === category?.name && "bg-gray-200"
+                        } hover:bg-gray-200 py-1 text-BLACK font-semibold flex items-center gap-x-2`}
                         key={category?._id}
-                        to={`/product-listing/${category.name}`}
+                        onMouseOver={() => {
+                          setActiveCategory(category.name);
+                        }}
                       >
-                        {category.name} ({category?.productCount})
-                      </Link>
-                      <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
-                      {/* side dropdown */}
-                      <div className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-50 bg-white md:min-w-[10rem] min-w-[3rem] ">
-                        <span className="font-semibold text-black text-xl">
-                          {activeCategory}
-                        </span>
-
-                        {subCategoryProducts?.subcategories !== undefined &&
-                          subCategoryProducts?.subcategories.map((item) => (
-                            <Link
-                              key={item?._id}
-                              to={`/product-listing/${category.name}`}
-                              state={{
-                                title: category.name,
-                                price: null,
-                                searchQuery: "",
-                              }}
-                            >
-                              <span className="font-normal md:whitespace-nowrap block hover:font-semibold">
-                                {item.name} ({item?.productCount})
-                              </span>
-                            </Link>
-                          ))}
-
-                        <Link to={`/product-listing/low-to-high`}>
-                          {" "}
-                          <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                            {t("View all")} ({t("Low to high")})
-                          </span>
+                        <Link
+                          key={category?._id}
+                          to={`/product-listing/${category.name}`}
+                          onClick={() => {
+                            dispatch(handleChangeActiveSubcategory(""));
+                            dispatch(
+                              handleChangeActiveCategory(category?.name)
+                            );
+                          }}
+                        >
+                          {category.name} ({category?.productCount})
                         </Link>
-                        <Link to={`/product-listing/high-to-low`}>
-                          {" "}
-                          <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                            {t("View all")} ({t("High to low")})
+                        <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
+                        {/* side dropdown */}
+                        <div className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-30 bg-white md:min-w-[10rem] min-w-[3rem] ">
+                          <span className="font-semibold text-black text-xl">
+                            {activeCategoryForHover}
                           </span>
-                        </Link>
+
+                          {subCategoryProducts?.subcategories !== undefined &&
+                            subCategoryProducts?.subcategories.map((item) => (
+                              <Link
+                                key={item?._id}
+                                to={`/product-listing/${category.name}`}
+                                state={{
+                                  title: category.name,
+                                  price: null,
+                                  searchQuery: "",
+                                }}
+                                onClick={() => {
+                                  dispatch(
+                                    handleChangeActiveSubcategory(item?.name)
+                                  );
+                                }}
+                              >
+                                <span
+                                  className={`font-normal md:whitespace-nowrap block hover:font-semibold ${
+                                    activeSubcategory === item?.name &&
+                                    "bg-gray-200"
+                                  } `}
+                                >
+                                  {item.name} ({item?.productCount})
+                                </span>
+                              </Link>
+                            ))}
+
+                          <Link to={`/product-listing/low-to-high`}>
+                            {" "}
+                            <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                              {t("View all")} ({t("Low to high")})
+                            </span>
+                          </Link>
+                          <Link to={`/product-listing/high-to-low`}>
+                            {" "}
+                            <span className="font-normal whitespace-nowrap block hover:font-semibold">
+                              {t("View all")} ({t("High to low")})
+                            </span>
+                          </Link>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </>
-              )}
-              {/* low to high */}
-              <div
-                className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
-              >
-                <Link to={`/product-listing/low-to-high`}>
-                  View all (Low to high)
-                </Link>
-                {/* View all (Low to high) */}
-                <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
-              </div>
-              {/* high to low */}
-              <div
-                className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
-              >
-                <Link to={`/product-listing/high-to-low`}>
-                  View all (High to low)
-                </Link>
-                <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
+                    ))}
+                  </>
+                )}
+                {/* low to high */}
+                <div
+                  className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
+                >
+                  <Link to={`/product-listing/low-to-high`}>
+                    View all (Low to high)
+                  </Link>
+                  {/* View all (Low to high) */}
+                  <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
+                </div>
+                {/* high to low */}
+                <div
+                  className={`submenu z-50 cursor-pointer hover:font-bold hover:bg-BACKGROUNDGRAY py-1 text-BLACK font-semibold flex items-center gap-x-2`}
+                >
+                  <Link to={`/product-listing/high-to-low`}>
+                    View all (High to low)
+                  </Link>
+                  <BsChevronRight className="inline-block ml-auto h-5 w-5 text-gray-400" />
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* new arrivals */}
@@ -533,23 +689,36 @@ const Header = () => {
               <li
                 className={`cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
               >
-                <Link to={`/product-listing/$0.70 - $0.89`}>$0.70 - $0.89</Link>
+                <Link to={`/product-listing/Below $0.49`}>Below $0.49</Link>
               </li>
               <li
                 className={`cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
               >
-                <Link to={`/product-listing/$0.90 - $1.99`}>$0.90 - $1.99</Link>
+                <Link to={`/product-listing/$0.50 - $0.79`}>$0.50 - $0.79</Link>
               </li>
               <li
                 className={`cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
               >
-                <Link to={`/product-listing/$2.00 - $2.99`}>$2.00 - $2.99</Link>
+                <Link to={`/product-listing/$0.80 - $0.99`}>$0.80 - $0.99</Link>
               </li>
               <li
                 className={`cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
               >
-                <Link to={`/product-listing/Over $3.00`}>
-                  {t("Over")} $3.00
+                <Link to={`/product-listing/$1.00 - $1.49`}>$1.00 - $1.49</Link>
+              </li>
+              <li
+                className={`cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
+              >
+                <Link to={`/product-listing/$1.50 - $1.99`}>$1.50 - $1.99</Link>
+              </li>
+              <li
+                className={`cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
+              >
+                <Link
+                  to={`/product-listing/$2.00 And Above
+`}
+                >
+                  $2.00 And {t("Above")}
                 </Link>
               </li>
               <li
@@ -574,7 +743,7 @@ const Header = () => {
           <Link to="/favourites">{t("your_favourites")}</Link>
         </p>
         <p className="bg-DARKYELLOW text-black p-2 whitespace-nowrap">
-          {t("minimum_order")} $250
+          {t("minimum_order")} ${minOrderAmount}
         </p>
       </div>
     </div>

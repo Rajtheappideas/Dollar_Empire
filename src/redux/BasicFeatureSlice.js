@@ -5,7 +5,6 @@ import { PostUrl } from "../BaseUrl";
 export const handlePostContactUs = createAsyncThunk(
   "basicFeature/handlePostContactUs",
   async ({ fname, lname, email, comments, phone, signal }) => {
-    toast.dismiss();
     signal.current = new AbortController();
 
     const response = await PostUrl("contact", {
@@ -31,7 +30,6 @@ export const handlePostContactUs = createAsyncThunk(
 export const handleChangePassword = createAsyncThunk(
   "basicFeature/handleChangePassword",
   async ({ oldPassword, newPassword, token, signal }) => {
-    toast.dismiss();
     signal.current = new AbortController();
 
     const response = await PostUrl("change-password", {
@@ -57,7 +55,6 @@ export const handleChangePassword = createAsyncThunk(
 export const handleForgotPassword = createAsyncThunk(
   "basicFeature/handleForgotPassword",
   async ({ email, signal }) => {
-    toast.dismiss();
     signal.current = new AbortController();
 
     const response = await PostUrl("forgot-password", {
@@ -91,7 +88,6 @@ export const handleEditProfile = createAsyncThunk(
     signal,
     token,
   }) => {
-    toast.dismiss();
     signal.current = new AbortController();
 
     const response = await PostUrl("profile", {

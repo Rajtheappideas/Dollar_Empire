@@ -28,7 +28,10 @@ const SpecialOrder = () => {
         </div>
       ) : (
         <div className="w-full space-y-5 md:pb-20 pb-10 ">
-          <TItleSection title={specialOrders?.title} image={bgImg} />
+          <TItleSection
+            title={specialOrders?.title}
+            dynamicImage={specialOrders?.image}
+          />
           <section
             className="container mx-auto md:space-y-5 space-y-3 space_for_div"
             dangerouslySetInnerHTML={{ __html: specialOrders?.content }}

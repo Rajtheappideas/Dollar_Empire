@@ -10,6 +10,8 @@ import {
   calculateTotalQuantity,
   handleAddProductToCart,
   handleChangeAddProduct,
+  handleRemoveItemFromCart,
+  handleRemoveProductToCart,
   handleUpdateTotalQuantityAndAmount,
 } from "../redux/CartSlice";
 import { toast } from "react-hot-toast";
@@ -22,8 +24,9 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { handleChangeActiveComponent } from "../redux/GlobalStates";
+import { useCallback } from "react";
 
-const Favourite = ({ favourite }) => {
+const Favourite = ({ favourite, handleAddSelectedItem }) => {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteProductId, setDeleteProductId] = useState(null);
   const [selectedItemType, setSelectedItemType] = useState("pk");
@@ -35,15 +38,23 @@ const Favourite = ({ favourite }) => {
   const [ctnCount, setCtnCount] = useState(0);
   const [changeTo, setChangeTo] = useState(false);
   const [changingLoading, setChangingLoading] = useState(false);
+  const [alreadyInCartPkCount, setAlreadyInCartPkCount] = useState(null);
+  const [alreadyInCartCtnCount, setAlreadyInCartCtnCount] = useState(null);
+  const [alreadyInCartPkItems, setAlreadyInCartPkItems] = useState("");
+  const [alreadyInCartCtnItems, setAlreadyInCartCtnItems] = useState("");
 
   const { t } = useTranslation();
 
   const AbortControllerRef = useRef(null);
+  const pkRef = useRef(null);
+  const ctnRef = useRef(null);
 
   const { token, user } = useSelector((state) => state.Auth);
 
   const { favourites } = useSelector((state) => state.favourite);
-  const { cartItems, loading } = useSelector((state) => state.cart);
+  const { cartItems, loading, selectedItems } = useSelector(
+    (state) => state.cart
+  );
 
   const dispatch = useDispatch();
 
@@ -77,18 +88,26 @@ const Favourite = ({ favourite }) => {
       setpkItemsQuantity("");
       setPkCount(0);
       setCtnCount(0);
+      setAlreadyInCartCtnCount(null);
+      setAlreadyInCartPkCount(null);
+      setAlreadyInCartCtnItems("");
+      setAlreadyInCartPkItems("");
       return toast.error("Please add some quantity And enter valid value.");
     } else if (selectedItemType === "pk" && ctnItemQuantity > 0) {
       toast.dismiss();
       toast.error("Please enter quantity in PK, you choose PK");
       setCtnItemQuantity("");
       setCtnCount(0);
+      setAlreadyInCartCtnCount(0);
+      setAlreadyInCartCtnItems("");
       return true;
     } else if (selectedItemType === "ctn" && pkitemsQuantity > 0) {
       toast.dismiss();
       toast.error("Please enter quantity in CTN, you choose CTN");
       setpkItemsQuantity("");
       setPkCount(0);
+      setAlreadyInCartPkCount(null);
+      setAlreadyInCartPkItems("");
       return true;
     } else if (
       !/^\d+$/.test(pkitemsQuantity !== "" ? pkitemsQuantity : ctnItemQuantity)
@@ -98,10 +117,13 @@ const Favourite = ({ favourite }) => {
       setCtnItemQuantity("");
       setPkCount(0);
       setCtnCount(0);
+      setAlreadyInCartCtnCount(null);
+      setAlreadyInCartPkCount(null);
+      setAlreadyInCartCtnItems("");
+      setAlreadyInCartPkItems("");
       return toast.error("Please enter valid value!!!");
     }
     setSelectedProductId(favourite?._id);
-
     const response = dispatch(
       handleAddProductToCart({
         token,
@@ -121,6 +143,10 @@ const Favourite = ({ favourite }) => {
             setSelectedProductId(null);
             setPkCount(0);
             setCtnCount(0);
+            setAlreadyInCartCtnCount(null);
+            setAlreadyInCartPkCount(null);
+            setAlreadyInCartCtnItems("");
+            setAlreadyInCartPkItems("");
             toast.success(`${title} added to cart successfully.`);
             dispatch(handleChangeAddProduct({ quantity, amount }));
           }
@@ -131,21 +157,27 @@ const Favourite = ({ favourite }) => {
     }
   };
 
-  const handlePlusPkQuantity = (quantity, count) => {
-    if (
-      selectedItemType === "pk" &&
-      findInCart?.product?._id !== favourite?._id
-    ) {
+  const handlePlusPkQuantity = (quantity, count, id) => {
+    if (id === favourite?._id && findInCart?.type === "pk") {
+      pkRef.current.checked = true;
+      setSelectedItemType("pk");
+    }
+    if (findInCart?.product?._id !== favourite?._id) {
+      setSelectedItemType("pk");
+      pkRef.current.checked = true;
       setPkCount(count);
       setpkItemsQuantity(quantity * count);
     }
   };
 
-  const handleMinusPkQuantity = (quantity, count) => {
-    if (
-      selectedItemType === "pk" &&
-      findInCart?.product?._id !== favourite?._id
-    ) {
+  const handleMinusPkQuantity = (quantity, count, id) => {
+    if (id === favourite?._id && findInCart?.product?._id !== id) {
+      pkRef.current.checked = true;
+      setSelectedItemType("pk");
+    }
+    if (findInCart?.product?._id !== favourite?._id) {
+      setSelectedItemType("pk");
+      pkRef.current.checked = true;
       if (pkCount === 0) {
         setPkCount(0);
       } else {
@@ -155,21 +187,27 @@ const Favourite = ({ favourite }) => {
     }
   };
 
-  const handlePlusCTNQuantity = (quantity, count) => {
-    if (
-      selectedItemType === "ctn" &&
-      findInCart?.product?._id !== favourite?._id
-    ) {
+  const handlePlusCTNQuantity = (quantity, count, id) => {
+    if (id === favourite?._id && findInCart?.product?._id !== id) {
+      ctnRef.current.checked = true;
+      setSelectedItemType("ctn");
+    }
+    if (findInCart?.product?._id !== favourite?._id) {
+      ctnRef.current.checked = true;
+      setSelectedItemType("ctn");
       setCtnCount(count);
       setCtnItemQuantity(quantity * count);
     }
   };
 
-  const handleMinusCTNQuantity = (quantity, count) => {
-    if (
-      selectedItemType === "ctn" &&
-      findInCart?.product?._id !== favourite?._id
-    ) {
+  const handleMinusCTNQuantity = (quantity, count, id) => {
+    if (id === favourite?._id && findInCart?.product?._id !== id) {
+      ctnRef.current.checked = true;
+      setSelectedItemType("ctn");
+    }
+    if (findInCart?.product?._id !== favourite?._id) {
+      setSelectedItemType("ctn");
+      ctnRef.current.checked = true;
       if (ctnCount === 0) {
         setCtnCount(0);
       } else {
@@ -179,25 +217,16 @@ const Favourite = ({ favourite }) => {
     }
   };
 
-  const handleChangeAddedItemInCart = (action, type) => {
-    toast.remove();
+  const handleChangeAddedItemInCart = (action, type, value) => {
     if (findInCart !== null && findInCart?.product?._id === favourite?._id) {
       if (findInCart?.type === type) {
-        if (action == "plus") {
-          setChangeTo(true);
-          setFindInCart({ ...findInCart, quantity: findInCart?.quantity + 1 });
-        } else if (action === "minus") {
-          setChangeTo(true);
-          if (findInCart?.quantity == 1) {
-            toast.error("Minimum quantity should be more than 0!!!");
-            return true;
-          }
-          setFindInCart({
-            ...findInCart,
-            quantity: findInCart?.quantity == 1 ? 1 : findInCart?.quantity - 1,
-          });
-        }
+        setChangeTo(true);
+        setFindInCart({
+          ...findInCart,
+          quantity: value,
+        });
       } else {
+        toast.remove();
         toast.error(`Please change quantity in ${findInCart?.type}`);
         return true;
       }
@@ -219,41 +248,380 @@ const Favourite = ({ favourite }) => {
       findInCart !== null &&
       favourite?._id === findInCart?.product?._id
     ) {
-      setChangingLoading(true);
-      const response = dispatch(
-        handleAddProductToCart({
-          token,
-          id: findInCart?.product?._id,
-          signal: AbortControllerRef,
-          type: findInCart?.type,
-          quantity: findInCart?.quantity,
-        })
-      );
-      if (response) {
-        response
-          .then((res) => {
-            if (res.payload.status === "success") {
-              toast.success(`${findInCart?.product?.name}'s quantity updated.`);
-              dispatch(
-                handleUpdateTotalQuantityAndAmount({
-                  quantity: findInCart?.quantity,
-                  id: findInCart?.product?._id,
-                })
-              );
+      if (alreadyInCartPkCount === 0 || alreadyInCartCtnCount === 0) {
+        const response = dispatch(
+          handleRemoveProductToCart({
+            token,
+            id: favourite?._id,
+            signal: AbortControllerRef,
+          })
+        );
+        setChangingLoading(true);
+        if (response) {
+          response
+            .then((res) => {
+              if (res.payload.status === "success") {
+                toast.success(
+                  `${findInCart?.product?.name} removed from cart.`
+                );
+                dispatch(handleRemoveItemFromCart(findInCart?.product?._id));
+                dispatch(calculateTotalAmount());
+                dispatch(calculateTotalQuantity());
+                setAlreadyInCartPkCount(null);
+                setAlreadyInCartCtnCount(null);
+                setAlreadyInCartPkItems("");
+                setAlreadyInCartCtnItems("");
+                setChangeTo(false);
+              }
+              setChangingLoading(false);
+            })
+            .catch((err) => {
+              toast.error(err.payload.message);
               setChangingLoading(false);
               setChangeTo(false);
-            }
+            });
+        }
+      } else {
+        const response = dispatch(
+          handleAddProductToCart({
+            token,
+            id: findInCart?.product?._id,
+            signal: AbortControllerRef,
+            type: findInCart?.type,
+            quantity:
+              findInCart?.type === "pk"
+                ? alreadyInCartPkCount
+                : alreadyInCartCtnCount,
           })
-          .catch((err) => {
-            toast.error(err.payload.message);
-            setChangingLoading(false);
-            setChangeTo(false);
-          });
+        );
+        setChangingLoading(true);
+
+        if (response) {
+          response
+            .then((res) => {
+              if (res.payload.status === "success") {
+                toast.success(
+                  `${findInCart?.product?.name}'s quantity updated.`
+                );
+                dispatch(
+                  handleUpdateTotalQuantityAndAmount({
+                    quantity:
+                      findInCart?.type === "pk"
+                        ? alreadyInCartPkCount
+                        : alreadyInCartCtnCount,
+                    id: findInCart?.product?._id,
+                  })
+                );
+                setChangingLoading(false);
+                setChangeTo(false);
+                dispatch(calculateTotalAmount());
+                dispatch(calculateTotalQuantity());
+                setAlreadyInCartPkCount(null);
+                setAlreadyInCartCtnCount(null);
+                setAlreadyInCartPkItems("");
+                setAlreadyInCartCtnItems("");
+              }
+            })
+            .catch((err) => {
+              toast.error(err.payload.message);
+              setChangingLoading(false);
+              setChangeTo(false);
+            });
+        }
       }
     } else {
       dispatch(handleChangeActiveComponent("Shopping Cart"));
     }
   };
+
+  const handleOnchangePkCountField = (e) => {
+    setSelectedItemType("pk");
+    pkRef.current.checked = true;
+
+    if (!/^(?=.*[1-9])\d{1,8}(?:\.\d\d?)?$/.test(e.target.value)) {
+      toast.remove();
+      toast.error(
+        "Please enter valid value and value can't be less than zero!!!"
+      );
+      setPkCount(0);
+      setpkItemsQuantity("");
+      setAlreadyInCartPkCount(0);
+      setAlreadyInCartPkItems("");
+      return true;
+    }
+    if (e.target.value.length > 6) {
+      toast.remove();
+      toast.error("Can't add more than 6 numbers !!!");
+      return true;
+    }
+    if (
+      !loading &&
+      selectedProductId?._id !== favourite?._id &&
+      findInCart?.product?._id !== favourite?._id
+    ) {
+      setPkCount(parseFloat(e.target.value.replace(/^0+/, "")));
+      setpkItemsQuantity(
+        parseFloat(e.target.value.replace(/^0+/, "") * favourite?.PK)
+      );
+    }
+    if (
+      !loading &&
+      selectedProductId?._id !== favourite?._id &&
+      findInCart?.product?._id === favourite?._id
+    ) {
+      setChangeTo(true);
+      setAlreadyInCartPkCount(parseFloat(e.target.value.replace(/^0+/, "")));
+      setAlreadyInCartPkItems(
+        parseFloat(e.target.value.replace(/^0+/, "") * favourite?.PK)
+      );
+    }
+  };
+
+  const handleOnchangeCtnCountField = (e) => {
+    setSelectedItemType("ctn");
+    ctnRef.current.checked = true;
+
+    if (!/^(?=.*[1-9])\d{1,8}(?:\.\d\d?)?$/.test(e.target.value)) {
+      toast.remove();
+      toast.error(
+        "Please enter valid value and value can't be less than zero!!!"
+      );
+      setCtnCount(0);
+      setCtnItemQuantity("");
+      setAlreadyInCartCtnCount(0);
+      setAlreadyInCartCtnItems("");
+      return true;
+    }
+    if (e.target.value.length > 6) {
+      toast.remove();
+      toast.error("Can't add more than 6 numbers !!!");
+      return true;
+    }
+    if (!loading && selectedProductId?._id !== favourite?._id) {
+      setCtnCount(e.target.value.replace(/^0+/, ""));
+      setCtnItemQuantity(e.target.value.replace(/^0+/, "") * favourite?.CTN);
+    }
+    if (
+      !loading &&
+      selectedProductId?._id !== favourite?._id &&
+      findInCart?.product?._id === favourite?._id
+    ) {
+      setChangeTo(true);
+      setAlreadyInCartCtnCount(parseFloat(e.target.value.replace(/^0+/, "")));
+      setAlreadyInCartCtnItems(
+        parseFloat(e.target.value.replace(/^0+/, "") * favourite?.CTN)
+      );
+    }
+  };
+
+  const handleOnClickFieldForBoth = (action, type) => {
+    if (type === "pk") {
+      if (
+        !loading &&
+        selectedProductId !== favourite?._id &&
+        findInCart?.product?._id !== favourite?._id
+      ) {
+        if (action === "minus") {
+          handleMinusPkQuantity(
+            parseFloat(favourite?.PK),
+            parseFloat(pkCount - 1),
+            favourite?._id
+          );
+        } else {
+          if (pkCount.length >= 6) {
+            toast.remove();
+            toast.error("Can't add more than 6 numbers !!!");
+            return true;
+          }
+          handlePlusPkQuantity(
+            parseFloat(favourite?.PK),
+            parseFloat(pkCount + 1),
+            favourite?._id
+          );
+        }
+      } else if (
+        !loading &&
+        selectedProductId !== favourite?._id &&
+        findInCart?.product?._id === favourite?._id
+      ) {
+        if (findInCart?.type !== type) {
+          toast.remove();
+          toast.error("Please change in ctn quantity!!!");
+          return true;
+        } else {
+          setChangeTo(true);
+          if (action === "minus") {
+            if (alreadyInCartPkCount === 0 && alreadyInCartPkCount !== null) {
+              return true;
+            }
+            if (alreadyInCartPkCount !== null) {
+              setAlreadyInCartPkCount(parseFloat(alreadyInCartPkCount) - 1);
+              setAlreadyInCartPkItems(
+                parseFloat(favourite?.PK) * parseFloat(alreadyInCartPkCount - 1)
+              );
+              handleChangeAddedItemInCart(
+                null,
+                "pk",
+                parseFloat(alreadyInCartPkCount) - 1
+              );
+            } else {
+              setAlreadyInCartPkCount(parseFloat(findInCart?.quantity) - 1);
+              setAlreadyInCartPkItems(
+                parseFloat(favourite?.PK) * parseFloat(findInCart?.quantity - 1)
+              );
+              handleChangeAddedItemInCart(
+                null,
+                "pk",
+                parseFloat(findInCart?.quantity) - 1
+              );
+            }
+          } else if (action === "plus") {
+            if (
+              alreadyInCartPkCount !== null &&
+              alreadyInCartPkCount.toString().length >= 6
+            ) {
+              toast.remove();
+              toast.error("Can't add more than 6 numbers !!!");
+              return true;
+            }
+            if (alreadyInCartPkCount !== null) {
+              setAlreadyInCartPkCount(parseFloat(alreadyInCartPkCount) + 1);
+              setAlreadyInCartPkItems(
+                parseFloat(favourite?.PK) * parseFloat(alreadyInCartPkCount + 1)
+              );
+              handleChangeAddedItemInCart(
+                null,
+                "pk",
+                parseFloat(alreadyInCartPkCount) + 1
+              );
+            } else {
+              setAlreadyInCartPkCount(parseFloat(findInCart?.quantity) + 1);
+              setAlreadyInCartPkItems(
+                parseFloat(favourite?.PK) * parseFloat(findInCart?.quantity + 1)
+              );
+              handleChangeAddedItemInCart(
+                null,
+                "pk",
+                parseFloat(findInCart?.quantity) + 1
+              );
+            }
+          }
+        }
+      }
+    } else if (type === "ctn") {
+      if (
+        !loading &&
+        selectedProductId !== favourite?._id &&
+        findInCart?.product?._id !== favourite?._id
+      ) {
+        if (action === "minus") {
+          handleMinusCTNQuantity(
+            parseFloat(favourite?.CTN),
+            parseFloat(ctnCount - 1),
+            favourite?._id
+          );
+        } else {
+          if (ctnCount.length >= 6) {
+            toast.remove();
+            toast.error("Can't add more than 6 numbers !!!");
+            return true;
+          }
+          handlePlusCTNQuantity(
+            parseFloat(favourite?.CTN),
+            parseFloat(ctnCount + 1),
+            favourite?._id
+          );
+        }
+      } else if (
+        !loading &&
+        selectedProductId !== favourite?._id &&
+        findInCart?.product?._id === favourite?._id &&
+        type === "ctn"
+      ) {
+        if (findInCart?.type !== type) {
+          toast.remove();
+          toast.error("Please change in pk quantity!!!");
+          return true;
+        } else {
+          setChangeTo(true);
+          if (action === "minus") {
+            if (alreadyInCartCtnCount === 0 && alreadyInCartCtnCount !== null) {
+              return true;
+            }
+            if (alreadyInCartCtnCount !== null) {
+              setAlreadyInCartCtnCount(parseFloat(alreadyInCartCtnCount) - 1);
+              setAlreadyInCartCtnItems(
+                parseFloat(favourite?.CTN) *
+                  parseFloat(alreadyInCartCtnCount - 1)
+              );
+              handleChangeAddedItemInCart(
+                null,
+                "ctn",
+                parseFloat(alreadyInCartCtnCount) - 1
+              );
+            } else {
+              setAlreadyInCartCtnCount(parseFloat(findInCart?.quantity) - 1);
+              setAlreadyInCartCtnItems(
+                parseFloat(favourite?.CTN) *
+                  parseFloat(findInCart?.quantity - 1)
+              );
+              handleChangeAddedItemInCart(
+                null,
+                "ctn",
+                parseFloat(findInCart?.quantity) - 1
+              );
+            }
+          } else {
+            if (
+              alreadyInCartCtnCount !== null &&
+              alreadyInCartCtnCount.toString().length >= 6
+            ) {
+              toast.remove();
+              toast.error("Can't add more than 6 numbers !!!");
+              return true;
+            }
+            if (alreadyInCartCtnCount !== null) {
+              setAlreadyInCartCtnCount(parseFloat(alreadyInCartCtnCount) + 1);
+              setAlreadyInCartCtnItems(
+                parseFloat(favourite?.CTN) *
+                  parseFloat(alreadyInCartCtnCount + 1)
+              );
+              handleChangeAddedItemInCart(
+                null,
+                "ctn",
+                parseFloat(alreadyInCartCtnCount) + 1
+              );
+            } else {
+              setAlreadyInCartCtnCount(parseFloat(findInCart?.quantity) + 1);
+              setAlreadyInCartCtnItems(
+                parseFloat(favourite?.CTN) *
+                  parseFloat(findInCart?.quantity + 1)
+              );
+              handleChangeAddedItemInCart(
+                null,
+                "ctn",
+                parseFloat(findInCart?.quantity) + 1
+              );
+            }
+          }
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (handleAddSelectedItem !== "") {
+      handleAddSelectedItem(
+        pkitemsQuantity,
+        ctnItemQuantity,
+        favourite?._id,
+        selectedItemType,
+        pkCount,
+        ctnCount,
+        favourite?.price
+      );
+    }
+  }, [pkitemsQuantity, ctnItemQuantity, selectedItemType]);
 
   useEffect(() => {
     if (favourites.length !== 0 && cartItems.length > 0) {
@@ -262,14 +630,31 @@ const Favourite = ({ favourite }) => {
       );
       setFindInCart(findItemInCart);
     }
-  }, [pkitemsQuantity, ctnItemQuantity, favourites]);
+  }, [pkitemsQuantity, ctnItemQuantity, favourites, selectedItems]);
 
-  useEffect(() => {
-    if (user !== null) {
-      dispatch(calculateTotalQuantity());
-      dispatch(calculateTotalAmount());
-    }
-  }, [user]);
+  // set checked if already in cart
+  // const findItems = useCallback(() => {
+  //   if (
+  //     findInCart?.product?._id === favourite?._id &&
+  //     findInCart?.type === "pk"
+  //   ) {
+  //     pkRef.current.checked = true;
+  //     setSelectedItemType("pk");
+  //   } else if (
+  //     findInCart?.product?._id === favourite?._id &&
+  //     findInCart?.type === "ctn"
+  //   ) {
+  //     ctnRef.current.checked = true;
+  //     setSelectedItemType("ctn");
+  //   } else if (findInCart?.product?._id !== favourite?._id) {
+  //     pkRef.current.defaultChecked = true;
+  //   }
+  // }, [findInCart]);
+
+  // useEffect(() => {
+  //   findItems();
+  // });
+
   return (
     <>
       <td className="lg:p-3 p-2">
@@ -300,9 +685,9 @@ const Favourite = ({ favourite }) => {
               <input
                 name={favourite?._id}
                 type="radio"
-                className="md:w-6 md:h-6 w-7 h-7"
+                className="w-5 h-5"
+                ref={pkRef}
                 onChange={(e) => setSelectedItemType(e.target.value)}
-                defaultChecked={true}
                 value="pk"
                 id={favourite?._id}
                 disabled={
@@ -316,98 +701,75 @@ const Favourite = ({ favourite }) => {
               <div className="w-full relative z-0">
                 <span
                   className={`absolute text-left top-1/2 w-full max-w-[4rem] text-sm ${
-                    pkitemsQuantity === ""
+                    pkitemsQuantity === "" && alreadyInCartPkItems === ""
                       ? "text-gray-400 font-normal"
                       : "text-BLACK font-semibold"
-                  } ${
-                    selectedItemType === "ctn"
-                      ? "cursor-not-allowed"
-                      : "cursor-default"
-                  }
-                    -translate-y-1/2 left-5`}
+                  } 
+                    -translate-y-1/2 left-6`}
                 >
                   {`${
-                    pkitemsQuantity === "" ? favourite?.PK : pkitemsQuantity
+                    pkitemsQuantity === "" && alreadyInCartPkItems === ""
+                      ? favourite?.PK
+                      : findInCart?.product?._id === favourite?._id
+                      ? alreadyInCartPkItems
+                      : pkitemsQuantity
                   } PC`}
                 </span>
                 <input
                   type="number"
-                  className={`w-full text-right h-11 text-sm pr-10 pl-10 rounded-md outline-none border border-BORDERGRAY ${
-                    (selectedItemType === "ctn" ||
-                      findInCart?.product?._id === favourite?._id) &&
-                    "cursor-not-allowed"
-                  }`}
+                  className={`w-full text-right h-10 text-sm pr-10 pl-10 rounded-md outline-none border border-BORDERGRAY`}
                   placeholder="0"
-                  value={pkCount}
+                  value={
+                    findInCart?.product?._id === favourite?._id &&
+                    alreadyInCartPkCount !== null
+                      ? alreadyInCartPkCount
+                      : pkCount
+                  }
                   onChange={(e) => {
-                    if (
-                      !/^(?=.*[1-9])\d{1,8}(?:\.\d\d?)?$/.test(e.target.value)
-                    ) {
-                      toast.remove();
-                      toast.error("Please enter valid value.");
-                      setPkCount(0);
-                      setpkItemsQuantity("");
-                      return true;
-                    }
-                    if (e.target.value.length > 6) {
-                      toast.remove();
-                      toast.error("Can't add more than 6 numbers !!!");
-                      return true;
-                    }
-                    !loading &&
-                      selectedProductId?._id !== favourite?._id &&
-                      setPkCount(e.target.value.replace(/^0+/, ""));
-                    !loading &&
-                      selectedProductId?._id !== favourite?._id &&
-                      setpkItemsQuantity(
-                        e.target.value.replace(/^0+/, "") * favourite?.PK
-                      );
+                    handleOnchangePkCountField(e);
                   }}
                   disabled={
-                    selectedItemType === "ctn" ||
-                    findInCart?.product?._id === favourite?._id ||
-                    (loading && selectedProductId === favourite?._id)
+                    (loading && selectedProductId === favourite?._id) ||
+                    findInCart?.type === "ctn"
                   }
                 />
                 <span className="font-semibold  text-BLACK text-xs absolute top-1/2 -translate-y-1/2 right-6">
                   PK
                 </span>
-                <button type="button" disabled={loading}>
+                <button
+                  type="button"
+                  disabled={
+                    (!loading && selectedProductId === favourite?._id) ||
+                    findInCart?.type === "ctn"
+                  }
+                >
                   <AiOutlineMinus
-                    role="button"
                     className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 left-1`}
                     onClick={() => {
-                      !loading &&
-                        handleMinusPkQuantity(
-                          parseFloat(favourite?.PK),
-                          parseFloat(pkCount - 1)
-                        );
-                      findInCart !== null &&
-                        handleChangeAddedItemInCart("minus", "pk");
+                      handleOnClickFieldForBoth("minus", "pk");
                     }}
-                    disabled={loading && selectedProductId === favourite?._id}
+                    disabled={
+                      (!loading && selectedProductId === favourite?._id) ||
+                      findInCart?.type === "ctn"
+                    }
                   />
                 </button>
-                <button type="button" disabled={loading}>
+                <button
+                  type="button"
+                  disabled={
+                    (!loading && selectedProductId === favourite?._id) ||
+                    findInCart?.type === "ctn"
+                  }
+                >
                   <AiOutlinePlus
-                    role="button"
                     className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2`}
                     onClick={() => {
-                      if (pkCount.length >= 6) {
-                        toast.remove();
-                        toast.error("Can't add more than 6 numbers !!!");
-                        return true;
-                      }
-                      !loading &&
-                        selectedProductId !== favourite?._id &&
-                        handlePlusPkQuantity(
-                          parseFloat(favourite?.PK),
-                          parseFloat(pkCount + 1)
-                        );
-                      findInCart !== null &&
-                        handleChangeAddedItemInCart("plus", "pk");
+                      handleOnClickFieldForBoth("plus", "pk");
                     }}
-                    disabled={loading && selectedProductId === favourite?._id}
+                    disabled={
+                      (!loading && selectedProductId === favourite?._id) ||
+                      findInCart?.type === "ctn"
+                    }
                   />
                 </button>
               </div>
@@ -417,9 +779,10 @@ const Favourite = ({ favourite }) => {
               <input
                 name={favourite?._id}
                 type="radio"
-                className="md:w-6 md:h-6 w-7 h-7"
+                className="w-5 h-5"
                 onChange={(e) => setSelectedItemType(e.target.value)}
                 value="ctn"
+                ref={ctnRef}
                 id={favourite?._id}
                 disabled={
                   (loading && selectedProductId === favourite?._id) ||
@@ -432,98 +795,75 @@ const Favourite = ({ favourite }) => {
               <div className="w-full relative z-0">
                 <span
                   className={`absolute text-left top-1/2 w-full max-w-[4rem] text-sm ${
-                    ctnItemQuantity === ""
+                    ctnItemQuantity === "" && alreadyInCartCtnItems === ""
                       ? "text-gray-400 font-normal"
                       : "text-BLACK font-semibold"
-                  } ${
-                    selectedItemType === "ctn"
-                      ? "cursor-not-allowed"
-                      : "cursor-default"
                   }
-                    -translate-y-1/2 left-5`}
+                    -translate-y-1/2 left-6`}
                 >
                   {`${
-                    ctnItemQuantity === "" ? favourite?.CTN : ctnItemQuantity
+                    ctnItemQuantity === "" && alreadyInCartCtnItems === ""
+                      ? favourite?.CTN
+                      : findInCart?.product?._id === favourite?._id
+                      ? alreadyInCartCtnItems
+                      : ctnItemQuantity
                   } PC`}
                 </span>
                 <input
                   type="number"
-                  className={`w-full text-right h-11 text-sm pr-12 pl-10 rounded-md outline-none border border-BORDERGRAY ${
-                    (selectedItemType === "pk" ||
-                      findInCart?.product?._id === favourite?._id) &&
-                    "cursor-not-allowed"
-                  }`}
+                  className={`w-full text-right h-10 text-sm pr-12 pl-10 rounded-md outline-none border border-BORDERGRAY`}
                   placeholder="0"
-                  value={ctnCount}
+                  value={
+                    findInCart?.product?._id === favourite?._id &&
+                    alreadyInCartCtnCount !== null
+                      ? alreadyInCartCtnCount
+                      : ctnCount
+                  }
                   onChange={(e) => {
-                    if (
-                      !/^(?=.*[1-9])\d{1,8}(?:\.\d\d?)?$/.test(e.target.value)
-                    ) {
-                      toast.remove();
-                      toast.error("Please enter valid value.");
-                      setCtnCount(0);
-                      setCtnItemQuantity("");
-                      return true;
-                    }
-                    if (e.target.value.length > 6) {
-                      toast.remove();
-                      toast.error("Can't add more than 6 numbers !!!");
-                      return true;
-                    }
-                    !loading &&
-                      selectedProductId?._id !== favourite?._id &&
-                      setCtnCount(e.target.value.replace(/^0+/, ""));
-                    !loading &&
-                      selectedProductId?._id !== favourite?._id &&
-                      setCtnItemQuantity(
-                        e.target.value.replace(/^0+/, "") * favourite?.CTN
-                      );
+                    handleOnchangeCtnCountField(e);
                   }}
                   disabled={
-                    selectedItemType === "pk" ||
-                    findInCart?.product?._id === favourite?._id ||
-                    (loading && selectedProductId === favourite?._id)
+                    (loading && selectedProductId === favourite?._id) ||
+                    findInCart?.type === "pk"
                   }
                 />
                 <span className="font-semibold text-BLACK text-xs absolute top-1/2 -translate-y-1/2 right-6">
                   CTN
                 </span>
-                <button type="button" disabled={loading}>
+                <button
+                  type="button"
+                  disabled={
+                    (!loading && selectedProductId === favourite?._id) ||
+                    findInCart?.type === "pk"
+                  }
+                >
                   <AiOutlineMinus
                     className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 left-1`}
                     onClick={() => {
-                      !loading &&
-                        selectedProductId !== favourite?._id &&
-                        handleMinusCTNQuantity(
-                          parseFloat(favourite?.CTN),
-                          parseFloat(ctnCount - 1)
-                        );
-                      findInCart !== null &&
-                        handleChangeAddedItemInCart("minus", "ctn");
+                      handleOnClickFieldForBoth("minus", "ctn");
                     }}
-                    disabled={loading && selectedProductId === favourite?._id}
+                    disabled={
+                      (!loading && selectedProductId === favourite?._id) ||
+                      findInCart?.type === "pk"
+                    }
                   />
                 </button>
-                <button type="button" disabled={loading}>
+                <button
+                  type="button"
+                  disabled={
+                    (!loading && selectedProductId === favourite?._id) ||
+                    findInCart?.type === "pk"
+                  }
+                >
                   <AiOutlinePlus
-                    role="button"
                     className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2`}
                     onClick={() => {
-                      if (ctnCount.length >= 6) {
-                        toast.remove();
-                        toast.error("Can't add more than 6 numbers !!!");
-                        return true;
-                      }
-                      !loading &&
-                        selectedProductId !== favourite?._id &&
-                        handlePlusCTNQuantity(
-                          parseFloat(favourite?.CTN),
-                          parseFloat(ctnCount + 1)
-                        );
-                      findInCart !== null &&
-                        handleChangeAddedItemInCart("plus", "ctn");
+                      handleOnClickFieldForBoth("plus", "ctn");
                     }}
-                    disabled={loading && selectedProductId === favourite?._id}
+                    disabled={
+                      (!loading && selectedProductId === favourite?._id) ||
+                      findInCart?.type === "pk"
+                    }
                   />
                 </button>
               </div>
@@ -542,10 +882,14 @@ const Favourite = ({ favourite }) => {
                 }
                 className="w-full"
               >
-                {changingLoading ? (
+                {changingLoading && findInCart?.quantity !== 0 ? (
                   <button
                     type="button"
-                    className="bg-DARKRED text-white text-center w-full p-2 rounded-lg"
+                    className={` ${
+                      findInCart?.product?._id === favourite?._id
+                        ? "bg-rose-500"
+                        : "bg-DARKRED"
+                    } text-white text-center w-full p-2 rounded-lg`}
                     disabled={
                       (loading && selectedProductId === favourite?._id) ||
                       changingLoading
@@ -553,10 +897,36 @@ const Favourite = ({ favourite }) => {
                   >
                     {t("Changing").concat("...")}
                   </button>
+                ) : (changeTo &&
+                    (alreadyInCartPkCount === 0 ||
+                      alreadyInCartCtnCount === 0)) ||
+                  changingLoading ? (
+                  <button
+                    type="button"
+                    className={` ${
+                      findInCart?.product?._id === favourite?._id
+                        ? "bg-rose-500"
+                        : "bg-DARKRED"
+                    } text-white text-center w-full p-2 rounded-lg`}
+                    disabled={loading && selectedProductId === favourite?._id}
+                    onClick={() => {
+                      handleSubmitAddProduct();
+                    }}
+                  >
+                    {loading && selectedProductId === favourite?._id
+                      ? t("Removing").concat("...")
+                      : findInCart !== null &&
+                        favourite?._id === findInCart?.product?._id &&
+                        t("Remove from cart")}
+                  </button>
                 ) : (
                   <button
                     type="button"
-                    className="bg-DARKRED text-white text-center w-full p-2 rounded-lg"
+                    className={` ${
+                      findInCart?.product?._id === favourite?._id
+                        ? "bg-rose-500"
+                        : "bg-DARKRED"
+                    } text-white text-center w-full p-2 rounded-lg`}
                     onClick={() => handleSubmitAddProduct()}
                     disabled={loading && selectedProductId === favourite?._id}
                   >
@@ -565,7 +935,13 @@ const Favourite = ({ favourite }) => {
                     ) : findInCart !== null &&
                       favourite?._id === findInCart?.product?._id ? (
                       `${changeTo ? t("Change to") : t("Added")} ${
-                        findInCart?.quantity
+                        findInCart?.type === "pk"
+                          ? alreadyInCartPkCount === null
+                            ? findInCart?.quantity
+                            : alreadyInCartPkCount
+                          : alreadyInCartCtnCount === null
+                          ? findInCart?.quantity
+                          : alreadyInCartCtnCount
                       } ${findInCart?.type}`
                     ) : (
                       <>

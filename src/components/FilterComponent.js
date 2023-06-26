@@ -3,21 +3,29 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  handleChangeActiveCategory,
+  handleChangeActiveSubcategory,
+} from "../redux/GlobalStates";
 
 const FilterComponent = ({
   setActivePrice,
   activePrice,
   title,
   categories,
-  setActiveSubCategory,
+  // setActiveSubCategory,
+  // setActiveCategory,
+  // activeCategory,
 }) => {
   const [shownCategories, setShownCategories] = useState([]);
-  const [activeCategory, setActiveCategory] = useState("");
   const [isOpenCategory, setIsOpenCategory] = useState(true);
   const [isOpenPrice, setIsOpenPrice] = useState(true);
 
   const { subCategories, loading } = useSelector((state) => state.getContent);
+  const { activeCategory, activeSubcategory } = useSelector(
+    (state) => state.globalStates
+  );
 
   const { t } = useTranslation();
 
@@ -29,9 +37,11 @@ const FilterComponent = ({
       shownCategories.length !== 0 &&
       categories.includes(title)
     ) {
-      setActiveCategory(shownCategories[0]?.name);
+      // setActiveCategory(shownCategories[0]?.name);
     }
   }, [loading, title]);
+
+  const dispatch = useDispatch();
   return (
     <div className="w-full border border-BORDERGRAY bg-white">
       <p className="text-xl font-semibold text-left border-b border-BORDERGRAY py-4 px-3">
@@ -57,8 +67,10 @@ const FilterComponent = ({
               <p
                 role="button"
                 onClick={() => {
-                  setActiveSubCategory("");
-                  setActiveCategory("");
+                  // setActiveSubCategory("");
+                  // setActiveCategory("");
+                  dispatch(handleChangeActiveCategory(title));
+                  dispatch(handleChangeActiveSubcategory(""));
                 }}
                 className="text-PRIMARY text-left text-base font-semibold"
               >
@@ -71,12 +83,13 @@ const FilterComponent = ({
                     <li
                       key={category?._id}
                       className={`${
-                        activeCategory === category?.name &&
-                        "text-BLACK font-semibold bg-gray-100"
+                        activeSubcategory === category?.name &&
+                        "text-BLACK font-semibold bg-gray-200"
                       } cursor-pointer hover:bg-gray-100 hover:text-black `}
                       onClick={() => {
-                        setActiveCategory(category?.name);
-                        setActiveSubCategory(category?.name);
+                        // setActiveCategory(category?.name);
+                        // setActiveSubCategory(category?.name);
+                        dispatch(handleChangeActiveSubcategory(category?.name));
                       }}
                     >
                       {category?.name}
@@ -118,7 +131,7 @@ const FilterComponent = ({
             </li>
             <li
               className={`text-BLACK font-semibold flex items-center gap-x-2`}
-              onClick={() => setActivePrice("Below $0.70")}
+              onClick={() => setActivePrice("Below $0.49")}
             >
               <input
                 name="price"
@@ -126,11 +139,11 @@ const FilterComponent = ({
                 value={activePrice}
                 className="h-5 w-5 cursor-pointer"
               />
-              <span>{t("Below")} $0.70</span>
+              <span>{t("Below")} $0.49</span>
             </li>
             <li
               className={`text-BLACK font-semibold flex items-center gap-x-2`}
-              onClick={() => setActivePrice("$0.70 - $0.89")}
+              onClick={() => setActivePrice("$0.50 - $0.79")}
             >
               <input
                 name="price"
@@ -138,11 +151,11 @@ const FilterComponent = ({
                 value={activePrice}
                 className="h-5 w-5 cursor-pointer"
               />
-              <span>$0.70 - $0.89</span>
+              <span>$0.50 - $0.79</span>
             </li>
             <li
               className={`text-BLACK font-semibold flex items-center gap-x-2`}
-              onClick={() => setActivePrice("$0.90 - $1.99")}
+              onClick={() => setActivePrice("$0.80 - $0.99")}
             >
               <input
                 name="price"
@@ -150,11 +163,11 @@ const FilterComponent = ({
                 value={activePrice}
                 className="h-5 w-5 cursor-pointer"
               />
-              <span>$0.90 - $1.99</span>
+              <span>$0.80 - $0.99</span>
             </li>
             <li
               className={`text-BLACK font-semibold flex items-center gap-x-2`}
-              onClick={() => setActivePrice("$2 - $2.99")}
+              onClick={() => setActivePrice("$1.00 - $1.49")}
             >
               <input
                 name="price"
@@ -162,7 +175,31 @@ const FilterComponent = ({
                 value={activePrice}
                 className="h-5 w-5 cursor-pointer"
               />
-              <span>$2 - $2.99</span>
+              <span>$1.00 - $1.49</span>
+            </li>
+            <li
+              className={`text-BLACK font-semibold flex items-center gap-x-2`}
+              onClick={() => setActivePrice("$1.50 - $1.99")}
+            >
+              <input
+                name="price"
+                type="radio"
+                value={activePrice}
+                className="h-5 w-5 cursor-pointer"
+              />
+              <span>$1.50 - $1.99</span>
+            </li>
+            <li
+              className={`text-BLACK font-semibold flex items-center gap-x-2`}
+              onClick={() => setActivePrice("$2.00 And Above")}
+            >
+              <input
+                name="price"
+                type="radio"
+                value={activePrice}
+                className="h-5 w-5 cursor-pointer"
+              />
+              <span>$2.00 And {t("Above")}</span>
             </li>
             <li
               className={`text-BLACK font-semibold flex items-center gap-x-2`}

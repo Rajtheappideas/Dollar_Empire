@@ -5,7 +5,6 @@ import { toast } from "react-hot-toast";
 export const handleGetUserFavourites = createAsyncThunk(
   "favourite/handleGetUserFavourites",
   async ({ token }) => {
-    toast.dismiss();
     const response = await GetUrl(`favourite`, {
       headers: {
         Authorization: token,
@@ -24,7 +23,6 @@ export const handleGetUserFavourites = createAsyncThunk(
 export const handleAddProductToFavourites = createAsyncThunk(
   "features/handleAddProductToFavourites",
   async ({ signal, token, id }) => {
-    toast.dismiss();
     signal.current = new AbortController();
 
     const response = await GetUrl(`/favourite/add/${id}`, {
@@ -46,7 +44,6 @@ export const handleAddProductToFavourites = createAsyncThunk(
 export const handleRemoveProductToFavourites = createAsyncThunk(
   "features/handleRemoveProductToFavourites",
   async ({ signal, token, id }) => {
-    toast.dismiss();
     signal.current = new AbortController();
 
     const response = await GetUrl(`/favourite/remove/${id}`, {

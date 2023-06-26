@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { Pagination } from "swiper";
+import { Pagination, Autoplay } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 // Import Swiper styles
 import "swiper/css";
@@ -39,13 +39,20 @@ const Herosection = () => {
       ) : (
         <>
           <Swiper
-            modules={[Pagination]}
+            modules={[Pagination, Autoplay]}
+            speed={2000}
+            autoplay={{
+              pauseOnMouseEnter: true,
+              delay: 500,
+              disableOnInteraction: false,
+              waitForTransition: true,
+            }}
             spaceBetween={0}
             slidesPerView={1}
             loop={true}
             direction={"horizontal"}
-            pagination
-            className="w-full"
+            pagination={{ clickable: true }}
+            className="w-full z-0 relative"
             ref={swiperRef}
           >
             {banners.map((banner, index) => (
@@ -63,7 +70,7 @@ const Herosection = () => {
           </Swiper>
           <div className="grid place-items-start justify-items-start grid-cols-4 w-full gap-x-1 items-start justify-start">
             {featured.map((img, i) => (
-              <Link key={i} to={img?.link} target="_blank" className="w-full">
+              <Link key={i} to={img?.link}  className="w-full">
                 <img
                   src={BaseUrl.concat(img.image)}
                   alt={img?.imageAlt}

@@ -35,7 +35,7 @@ const PaymentInfo = ({ summaryFixed }) => {
 
   const handleConfirmOrder = () => {
     toast.dismiss();
-    if (shippingAddressId === "") {
+    if (shippingAddressId === "" && shipphingMethod === "freight") {
       return toast.error("Please select the shipping address!!!");
     } else if (shipphingMethod === "") {
       return toast.error("Please select the shipping method!!!");
@@ -74,8 +74,7 @@ const PaymentInfo = ({ summaryFixed }) => {
 
   function orderID(length) {
     let result = "";
-    const characters =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const characters = "0123456789";
     const charactersLength = characters.length;
     let counter = 0;
     while (counter < length) {
@@ -149,6 +148,20 @@ const PaymentInfo = ({ summaryFixed }) => {
                   </span>
                 </p>
               </div>
+            </div>
+            <div className="w-full space-y-2">
+              <label className="font-semibold tracking-normal text-lg">
+                Note:
+              </label>
+              <textarea
+                // onChange={(e) =>
+                //   dispatch(handleChangePaymentOption("cardPayment"))
+                // }
+                name="note"
+                className="w-full border max-h-60 min-h-[5rem] border-gray-300 outline-none focus:border-gray-500 rounded-md p-5"
+                // disabled={loading}
+                placeholder="Any note for your order..."
+              />
             </div>
           </div>
           {/* summary */}

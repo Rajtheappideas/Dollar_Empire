@@ -24,7 +24,10 @@ const PrivayPolicy = () => {
         </div>
       ) : (
         <div className="w-full space-y-5 md:pb-20 pb-10 text-[#272727] ">
-          <TItleSection title={privacyNotice?.title} image={bgImg} />
+          <TItleSection
+            title={privacyNotice?.title}
+            dynamicImage={privacyNotice?.image}
+          />
           <section
             className="container mx-auto md:space-y-5 space-y-3 space_for_div"
             dangerouslySetInnerHTML={{ __html: privacyNotice?.content }}

@@ -5,7 +5,6 @@ import { toast } from "react-hot-toast";
 export const handleGetOrders = createAsyncThunk(
   "orders/handleGetOrders",
   async ({ token }) => {
-    toast.dismiss();
     const response = await GetUrl(`order`, {
       headers: { Authorization: token },
     })
@@ -22,7 +21,6 @@ export const handleGetOrders = createAsyncThunk(
 export const handleGetOrderbyId = createAsyncThunk(
   "orders/handleGetOrderbyId",
   async ({ token, id }) => {
-    toast.dismiss();
     const response = await GetUrl(`order/${id}`, {
       headers: { Authorization: token },
     })
@@ -39,7 +37,6 @@ export const handleGetOrderbyId = createAsyncThunk(
 export const handleGetCard = createAsyncThunk(
   "orders/handleGetCard",
   async ({ token }) => {
-    toast.dismiss();
     const response = await GetUrl(`card`, {
       headers: { Authorization: token },
     })
@@ -63,7 +60,6 @@ export const handleCreateOrder = createAsyncThunk(
     paymentMethod,
     orderId,
   }) => {
-    toast.dismiss();
     signal.current = new AbortController();
 
     const response = await PostUrl(`order`, {
@@ -103,7 +99,6 @@ export const handleCreateOrUpdateCard = createAsyncThunk(
     state,
     city,
   }) => {
-    toast.dismiss();
     signal.current = new AbortController();
 
     const response = await PostUrl(`card`, {

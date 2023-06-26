@@ -32,6 +32,7 @@ import {
   handleGetTopSellers,
 } from "./redux/ProductSlice";
 import { handleGetVisitCount, handleRegisterUser } from "./redux/AuthSlice";
+import ScrollToTop from "./components/ScrollToTop";
 
 const Home = lazy(() => import("./pages/Home"));
 const PrivayPolicy = lazy(() => import("./pages/PrivayPolicy"));
@@ -74,11 +75,6 @@ function App() {
     if (!window.navigator.onLine) {
       toast.error("Check your internet connection!!!", { duration: "5000" });
     }
-    // return () => {
-    //   window.onbeforeunload = function () {
-    //     localStorage.removeItem("visited");
-    //   };
-    // };
   }, []);
 
   useEffect(() => {
@@ -102,18 +98,22 @@ function App() {
           window.location.reload();
         }}
       >
+        <ScrollToTop />
+
         <Suspense
           fallback={
-            <Lottie
-              style={{
-                pointerEvents: "none",
-                height: "300px",
-                width: "300px",
-              }}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-screen"
-              animationData={loading}
-              loop
-            />
+            <div className="relative top-0 left-0 w-screen h-screen">
+              <Lottie
+                style={{
+                  pointerEvents: "none",
+                  height: "300px",
+                  width: "300px",
+                }}
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-screen h-full"
+                animationData={loading}
+                loop
+              />
+            </div>
           }
         >
           {showProductDetailsPopup && <ProductDetailPopup />}

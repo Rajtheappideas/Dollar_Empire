@@ -10,7 +10,10 @@ import {
   handleChangeShippingMethod,
 } from "../../redux/OrderSlice";
 import { useTranslation } from "react-i18next";
-import { CheckCircleIcon } from "@heroicons/react/24/outline";
+import {
+  CheckCircleIcon,
+  ArrowLongLeftIcon,
+} from "@heroicons/react/24/outline";
 
 const Checkout = ({ summaryFixed }) => {
   const [showPopup, setShowPopup] = useState(false);
@@ -36,14 +39,24 @@ const Checkout = ({ summaryFixed }) => {
 
   const handlechangeActiveComponent = () => {
     toast.dismiss();
-    if (shippingAddressId === "") {
+    if (
+      (shippingAddressId === "" || shippingAddressId === undefined) &&
+      shipphingMethod === "freight"
+    ) {
+      document.getElementById("address").scrollIntoView({ behavior: "smooth" });
       return toast.error("Please select the shipping address.");
+    } else {
+      return dispatch(handleChangeActiveComponent("Payment Info"));
     }
-    dispatch(handleChangeActiveComponent("Payment Info"));
   };
   useEffect(() => {
-    setAddressId(addressList[0]?._id);
-    dispatch(handleChangeShippingAddressId(addressList[0]?._id));
+    if (addressList.length > 0) {
+      const findArr = addressList.find((address) => address?.selected === true);
+      setAddressId(findArr?._id);
+      dispatch(handleChangeShippingAddressId(findArr?._id));
+    } else {
+      dispatch(handleChangeShippingAddressId(""));
+    }
   }, []);
   return (
     <div className="w-full flex xl:flex-row flex-col items-start justify-start gap-4 pb-10">
@@ -131,9 +144,15 @@ const Checkout = ({ summaryFixed }) => {
         </div>
         {loading ? (
           <p>{t("loading")}...</p>
+        ) : (addressList.length > 0 || addressList !== undefined) &&
+          addressList.length === 0 ? (
+          <div
+            id="address"
+            className="w-full border border-gray-300 font-semibold rounded-md p-5 text-left space-y-3 text-[#282828]"
+          >
+            No address here!! You can also add new address from below.
+          </div>
         ) : (
-          addressList.length > 0 &&
-          addressList !== undefined &&
           addressList.map((address) => (
             <div
               key={address?._id}

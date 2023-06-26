@@ -27,7 +27,10 @@ const ShippingAndFreight = () => {
         </div>
       ) : (
         <div className="w-full space-y-5 md:pb-20 pb-10 text-[#272727]">
-          <TItleSection title={shippingAndFreight?.title} image={bgImg} />
+          <TItleSection
+            title={shippingAndFreight?.title}
+            dynamicImage={shippingAndFreight?.image}
+          />
           <section
             dangerouslySetInnerHTML={{ __html: shippingAndFreight?.content }}
             className="container mx-auto md:space-y-5 space-y-3 space_for_div"

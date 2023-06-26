@@ -59,7 +59,7 @@ const EditProfile = ({ setShowEditProfile }) => {
     location: yup
       .string()
       .required("location is required")
-      .matches(/^[0-9A-Za-z\s\-]+$/g, "That doesn't look location")
+      .matches(/^[0-9A-Za-z\s\-\,]+$/g, "That doesn't look address")
       .trim("The contact name cannot include leading and trailing spaces"),
     postalCode: yup
       .string()

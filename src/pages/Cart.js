@@ -15,6 +15,7 @@ import { handleGetAddresses } from "../redux/GetContentSlice";
 import { useRef } from "react";
 import { handleChangeShippingMethod } from "../redux/OrderSlice";
 import { handleChangeActiveComponent } from "../redux/GlobalStates";
+import { ArrowLongLeftIcon } from "@heroicons/react/24/outline";
 
 const Cart = () => {
   const [summaryFixed, setSummaryFixed] = useState(false);
@@ -63,6 +64,26 @@ const Cart = () => {
       <section className="bg-white w-full lg:pb-20 lg:py-0 py-10">
         <div className="container mx-auto space_for_div space-y-5 w-full bg-white ">
           <h1 className="block font-semibold md:text-4xl text-2xl text-left py-1">
+            {activeComponentForCart === "Check Out" ? (
+              <ArrowLongLeftIcon
+                className="h-8 w-8 inline-block mr-2"
+                role="button"
+                title="back ot previous section"
+                onClick={() =>
+                  dispatch(handleChangeActiveComponent("Shopping Cart"))
+                }
+              />
+            ) : activeComponentForCart === "Payment Info" ? (
+              <ArrowLongLeftIcon
+                className="h-8 w-8 inline-block mr-2"
+                role="button"
+                title="back ot previous section"
+                onClick={() =>
+                  dispatch(handleChangeActiveComponent("Check Out"))
+                }
+              />
+            ) : null}
+
             {activeComponentForCart === "Success"
               ? null
               : activeComponentForCart === "Shopping Cart"

@@ -17,9 +17,8 @@ const initialState = {
     : "128",
   productListingPageLink: "",
   pagination: 0,
-  // visited: window.localStorage.getItem("persist:globalStates")
-  //   ? JSON.parse(window.localStorage.getItem("persist:globalStates")).visited
-  //   : 0,
+  activeSubcategory: "",
+  activeCategory: "",
 };
 const logoutChannel = new BroadcastChannel("handleLogout");
 const loginChannel = new BroadcastChannel("handleSuccess");
@@ -94,6 +93,12 @@ const GlobalStates = createSlice({
     handleChangeSearchTerm: (state, { payload }) => {
       state.searchTerm = payload;
     },
+    handleChangeActiveSubcategory: (state, { payload }) => {
+      state.activeSubcategory = payload;
+    },
+    handleChangeActiveCategory: (state, { payload }) => {
+      state.activeCategory = payload;
+    },
   },
 });
 
@@ -115,6 +120,8 @@ export const {
   handleChangeSingleProductEnlargeImageId,
   handleChangeSearchProducts,
   handleChangeSearchTerm,
+  handleChangeActiveSubcategory,
+  handleChangeActiveCategory,
 } = GlobalStates.actions;
 
 export default GlobalStates.reducer;

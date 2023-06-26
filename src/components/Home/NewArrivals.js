@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { Link } from "react-router-dom";
 
 const NewArrivals = ({}) => {
   const { newArrivals, productLoading } = useSelector(
@@ -24,9 +25,20 @@ const NewArrivals = ({}) => {
       id="New-Arrivals"
       className="md:space-y-5 space-y-3 relative z-20 container mx-auto xl:px-0 md:px-10 px-3 w-full"
     >
-      <h2 className="font-bold md:text-3xl text-xl uppercase text-center ">
-        {t("new_arrivals")}
-      </h2>
+      <div className="flex w-full items-center justify-between">
+        <div />
+        <h2 className="font-bold md:text-3xl text-xl uppercase text-center md:ml-48 ml-24">
+          {t("new_arrivals")}
+        </h2>
+        <Link to={`/product-listing/new-arrivals`}>
+          <button
+            type="button"
+            className="bg-PRIMARY text-white rounded-lg lg:w-40 md:w-32 w-20 md:h-10 h-8 float-right"
+          >
+            See All
+          </button>
+        </Link>
+      </div>
       {newArrivals !== undefined &&
       newArrivals.length === 0 &&
       !productLoading ? (
@@ -127,7 +139,7 @@ const NewArrivals = ({}) => {
                 </SwiperSlide>
               </>
             ) : (
-              newArrivals.map((product) => (
+              newArrivals.slice(0, 20).map((product) => (
                 <SwiperSlide key={product?._id}>
                   <ProductCard
                     handleAddSelectedItem=""

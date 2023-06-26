@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { Link } from "react-router-dom";
 
 const TopSellers = ({}) => {
   const { topSellers, productLoading } = useSelector((state) => state.products);
@@ -21,9 +22,21 @@ const TopSellers = ({}) => {
   return (
     <section className="bg-LIGHTGRAY md:py-5 py-2 w-full" id="Top-Sellers">
       <div className="md:space-y-5  space-y-3 relative z-0 container mx-auto xl:px-0 md:px-10 px-3 w-full">
-        <h2 className="font-bold md:text-3xl text-xl uppercase text-center ">
-          {t("top_sellers")}
-        </h2>
+        <div className="flex w-full items-center justify-between">
+          <div />
+          <h2 className="font-bold md:text-3xl text-xl uppercase text-center ">
+            {t("top_sellers")}
+          </h2>
+          <Link to={`/product-listing/top-sellers`}>
+            <button
+              type="button"
+              className="bg-PRIMARY text-white rounded-lg lg:w-40 md:w-32 w-20 md:h-10 h-8 float-right"
+            >
+              See All
+            </button>
+          </Link>
+        </div>
+
         {topSellers !== undefined &&
         topSellers.length === 0 &&
         !productLoading ? (
@@ -124,7 +137,7 @@ const TopSellers = ({}) => {
                   </SwiperSlide>
                 </>
               ) : (
-                topSellers.map((product) => (
+                topSellers.slice(0, 20).map((product) => (
                   <SwiperSlide key={product?._id}>
                     <ProductCard
                       handleAddSelectedItem=""

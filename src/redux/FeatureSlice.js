@@ -21,7 +21,6 @@ export const handlePostNewAddress = createAsyncThunk(
     phone,
     token,
   }) => {
-    toast.dismiss();
     signal.current = new AbortController();
 
     const response = await PostUrl("address", {
@@ -68,7 +67,6 @@ export const handlePostEditAddress = createAsyncThunk(
     id,
     rejectWithValue,
   }) => {
-    toast.dismiss();
     signal.current = new AbortController();
 
     const response = await PostUrl(`address/${id}`, {
@@ -101,10 +99,30 @@ export const handlePostEditAddress = createAsyncThunk(
 export const handlePostDeleteAddress = createAsyncThunk(
   "features/handlePostDeleteAddress",
   async ({ signal, token, id }) => {
-    toast.dismiss();
     signal.current = new AbortController();
 
     const response = await GetUrl(`/address/delete/${id}`, {
+      signal: signal.current.signal,
+      headers: {
+        Authorization: token,
+      },
+    })
+      .then((res) => {
+        return res.data;
+      })
+      .catch((err) => {
+        return err.response.data;
+      });
+    return response;
+  }
+);
+
+export const handleDefaultSelecteAddress = createAsyncThunk(
+  "features/handleDefaultSelecteAddress",
+  async ({ signal, token, id }) => {
+    signal.current = new AbortController();
+
+    const response = await GetUrl(`/address/select/${id}`, {
       signal: signal.current.signal,
       headers: {
         Authorization: token,
@@ -179,6 +197,25 @@ const FeatureSlice = createSlice({
       state.success = false;
       state.error = error;
     });
+    // set default address
+    builder.addCase(handleDefaultSelecteAddress.pending, (state) => {
+      state.loading = true;
+      state.success = false;
+      state.error = null;
+    });
+    builder.addCase(handleDefaultSelecteAddress.fulfilled, (state, {}) => {
+      state.loading = false;
+      state.success = true;
+      state.error = null;
+    });
+    builder.addCase(
+      handleDefaultSelecteAddress.rejected,
+      (state, { error }) => {
+        state.loading = false;
+        state.success = false;
+        state.error = error;
+      }
+    );
   },
 });
 

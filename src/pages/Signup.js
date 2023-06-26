@@ -27,6 +27,7 @@ const Signup = () => {
   const [allCountries, setAllCountries] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [country, setCountry] = useState("");
+  const [message, setMessage] = useState("");
 
   const { user, loading } = useSelector((state) => state.Auth);
 
@@ -163,8 +164,18 @@ const Signup = () => {
                 toast.success("Sign up successfully.");
                 navigate("/");
               } else {
-                if (res.payload.message) toast.error(res.payload.message);
-                toast.error("Something went try again!!!");
+                if (res.payload.message) {
+                  if (
+                    res.payload.message === "Email is already registerd." ||
+                    res.payload.message ===
+                      "El correo electrónico ya está registrado."
+                  ) {
+                    setMessage(res.payload.message);
+                    toast.error(res.payload.message);
+                  } else {
+                    toast.error(res.payload.message);
+                  }
+                }
               }
             })
             .catch((err) => {});
@@ -218,6 +229,18 @@ const Signup = () => {
             {t("login")}
           </Link>
         </p>
+        {message !== "" && (
+          <p className="font-semibold text-center text-lg ">
+            <span className="text-red-500">{message}</span>&nbsp;
+            <Link to="/sign-in" className="underline text-blue-400">
+              {t("login")}
+            </Link>
+            &nbsp;OR&nbsp;
+            <Link to="/forgot-password" className="underline text-blue-400">
+              {t("Forgot-password")}
+            </Link>
+          </p>
+        )}
         <hr />
         <FormikProvider value={formik}>
           <Form

@@ -25,7 +25,7 @@ const AboutUs = () => {
         </div>
       ) : (
         <div className="w-full space-y-5 md:pb-20 pb-10">
-          <TItleSection title={aboutUs?.title} image={bgImg} />
+          <TItleSection title={aboutUs?.title} dynamicImage={aboutUs?.image} />
           <section
             dangerouslySetInnerHTML={{ __html: aboutUs?.content }}
             className="container mx-auto md:space-y-5 space-y-3 space_for_div"

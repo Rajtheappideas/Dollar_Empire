@@ -144,7 +144,9 @@ const AuthSlice = createSlice({
     handleLogoutReducer: (state) => {
       toast.dismiss();
       state.user = null;
-      window.localStorage.clear();
+      window.localStorage.removeItem("user");
+      window.localStorage.removeItem("token");
+      window.localStorage.removeItem("orderId");
       window.location.href = window.location.origin;
       toast.success("Logout Successfully.", { duration: 3000 });
     },
