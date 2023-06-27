@@ -128,7 +128,7 @@ const ProductListing = () => {
         handleFilterProductsByPrice(byPrice);
 
         if (allProducts.length === 0) {
-          return setMessage("Product Not Found, Try with different price.");
+          return setMessage("Product Not Found, Try with different filters.");
         }
       } else if (title.toLocaleLowerCase().includes("below")) {
         // over by price

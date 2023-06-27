@@ -462,8 +462,8 @@ const Header = () => {
               <button type="submit">
                 <BsSearch
                   className="h-5 w-5 absolute top-1/2 -translate-y-1/2 right-3 z-10 text-black"
-                  onClick={() => {
-                    handleSearchProducts();
+                  onClick={(e) => {
+                    handleSearchProducts(e);
                     setshowCategoryDropdown(false);
                   }}
                 />
