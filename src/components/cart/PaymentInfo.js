@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 
 const PaymentInfo = ({ summaryFixed }) => {
   const [showCardDetails, setShowCardDetails] = useState(false);
+  const [additionalNotes, setAdditionalNotes] = useState("");
 
   const dispatch = useDispatch();
 
@@ -25,13 +26,8 @@ const PaymentInfo = ({ summaryFixed }) => {
 
   const { grandTotal } = useSelector((state) => state.cart);
 
-  const {
-    paymentOption,
-    loading,
-    shipphingMethod,
-    shippingAddressId,
-    orderId,
-  } = useSelector((state) => state.orders);
+  const { paymentOption, loading, shipphingMethod, shippingAddressId } =
+    useSelector((state) => state.orders);
 
   const handleConfirmOrder = () => {
     toast.dismiss();
@@ -49,7 +45,7 @@ const PaymentInfo = ({ summaryFixed }) => {
         shippingMethod: shipphingMethod,
         shippingAddress: shippingAddressId,
         paymentMethod: paymentOption,
-        orderId: orderId,
+        additionalNotes,
       })
     );
     if (response) {
@@ -72,32 +68,16 @@ const PaymentInfo = ({ summaryFixed }) => {
     }
   };
 
-  function orderID(length) {
-    let result = "";
-    const characters = "0123456789";
-    const charactersLength = characters.length;
-    let counter = 0;
-    while (counter < length) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-      counter += 1;
-    }
-    dispatch(handleChangeOrderId(result));
-    return result;
-  }
-
-  useEffect(() => {
-    orderID(9);
-    return () => {
-      AbortControllerRef.current !== null && AbortControllerRef.current.abort();
-    };
-  }, []);
   return (
     <div className="w-full pb-10">
       {/* table */}
       <Toaster />
 
       {showCardDetails && paymentOption === "cardPayment" ? (
-        <CardDetails summaryFixed={summaryFixed} />
+        <CardDetails
+          summaryFixed={summaryFixed}
+          additionalNotes={additionalNotes}
+        />
       ) : (
         <div className="w-full flex xl:flex-row flex-col items-start justify-start gap-4 pb-10">
           <div className="xl:w-9/12 w-full space-y-3">
@@ -154,12 +134,10 @@ const PaymentInfo = ({ summaryFixed }) => {
                 Note:
               </label>
               <textarea
-                // onChange={(e) =>
-                //   dispatch(handleChangePaymentOption("cardPayment"))
-                // }
+                onChange={(e) => setAdditionalNotes(e.target.value.trim())}
                 name="note"
                 className="w-full border max-h-60 min-h-[5rem] border-gray-300 outline-none focus:border-gray-500 rounded-md p-5"
-                // disabled={loading}
+                disabled={loading}
                 placeholder="Any note for your order..."
               />
             </div>

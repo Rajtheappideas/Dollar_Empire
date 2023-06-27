@@ -428,7 +428,7 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
             favourite?._id
           );
         } else {
-          if (pkCount.length >= 6) {
+          if (pkCount.toString().length >= 6) {
             toast.remove();
             toast.error("Can't add more than 6 numbers !!!");
             return true;
@@ -521,7 +521,7 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
             favourite?._id
           );
         } else {
-          if (ctnCount.length >= 6) {
+          if (ctnCount.toString().length >= 6) {
             toast.remove();
             toast.error("Can't add more than 6 numbers !!!");
             return true;

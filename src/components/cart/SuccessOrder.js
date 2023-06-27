@@ -16,7 +16,9 @@ const SuccessOrder = () => {
         style={{ pointerEvents: "none", width: "300px", height: "300px" }}
       />
       <p className="font-bold text-2xl">{t("Thank you for purchase")} !</p>
-      <p className="font-semibold text-lg">{t("Your order id")} : {orderId}</p>
+      <p className="font-semibold text-lg">
+        {t("Your order id")} : {orderId}
+      </p>
       <Link to="/my-account">
         <button
           type="button"

@@ -57,7 +57,7 @@ export const handleCreateOrder = createAsyncThunk(
     shippingMethod,
     shippingAddress,
     paymentMethod,
-    orderId,
+    additionalNotes,
   }) => {
     signal.current = new AbortController();
 
@@ -66,7 +66,7 @@ export const handleCreateOrder = createAsyncThunk(
         shippingAddress,
         shippingMethod,
         paymentMethod,
-        orderId,
+        additionalNotes,
       },
       signal: signal.current.signal,
       headers: {
@@ -136,10 +136,8 @@ const initialState = {
   shipphingMethod: "pickup",
   shippingAddressId: "",
   paymentOption: "cardPayment",
-  orderId: window.localStorage.getItem("orderId")
-    ? JSON.parse(window.localStorage.getItem("orderId"))
-    : "",
   singleOrder: null,
+  orderId: null,
 };
 
 const OrderSlice = createSlice({
@@ -250,6 +248,7 @@ const OrderSlice = createSlice({
       } else {
         state.error = null;
         state.success = true;
+        state.orderId = payload?.order?.orderId;
       }
     });
     builder.addCase(handleCreateOrder.rejected, (state, { error }) => {

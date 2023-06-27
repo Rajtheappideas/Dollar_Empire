@@ -505,7 +505,7 @@ const ProductCard = ({
             product?._id
           );
         } else {
-          if (pkCount.toString().length > 6) {
+          if (pkCount.toString().length >= 6) {
             toast.remove();
             toast.error("Can't add more than 6 numbers !!!");
             return true;

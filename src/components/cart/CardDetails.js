@@ -27,7 +27,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment/moment";
 
-const CardDetails = ({ summaryFixed }) => {
+const CardDetails = ({ summaryFixed, additionalNotes }) => {
   const [selectedData, setSelectedData] = useState({
     state: "",
     city: "",
@@ -44,7 +44,6 @@ const CardDetails = ({ summaryFixed }) => {
     shippingAddressId,
     shipphingMethod,
     paymentOption,
-    orderId,
   } = useSelector((state) => state.orders);
   const dispatch = useDispatch();
 
@@ -136,7 +135,7 @@ const CardDetails = ({ summaryFixed }) => {
       .test("test-cvv", "CVV is invalid", (value) => valid.cvv(value).isValid)
       .required("CVV is required"),
   });
-  
+
   const formik = useFormik({
     initialValues: {
       nameOnCard: cardDetails === null ? user?.fname : cardDetails?.nameOnCard,
@@ -166,7 +165,7 @@ const CardDetails = ({ summaryFixed }) => {
     enableReinitialize: true,
     onSubmit: (values) => {
       setConfirmOrderLoading(true);
-      if (shippingAddressId === "" && shipphingMethod==="freight") {
+      if (shippingAddressId === "" && shipphingMethod === "freight") {
         toast.dismiss();
         return toast.error("Please select the shipping address!!!");
       } else if (shipphingMethod === "") {
@@ -213,7 +212,7 @@ const CardDetails = ({ summaryFixed }) => {
                 shippingMethod: shipphingMethod,
                 shippingAddress: shippingAddressId,
                 paymentMethod: paymentOption,
-                orderId: orderId,
+                additionalNotes,
               })
             );
             if (response) {
@@ -243,7 +242,6 @@ const CardDetails = ({ summaryFixed }) => {
   useEffect(() => {
     setAllCountries(Country.getAllCountries());
     dispatch(handleGetCard({ token }));
-    orderID(9);
 
     return () => {
       AbortControllerRef.current !== null && AbortControllerRef.current.abort();
@@ -262,19 +260,6 @@ const CardDetails = ({ summaryFixed }) => {
 
     setSelectedData({ ...selectedData, state: states.map((s) => s.name) });
   }, [values.country]);
-
-  function orderID(length) {
-    let result = "";
-    const numbres = "0123456789";
-    const charactersLength = numbres.length;
-    let counter = 0;
-    while (counter < length) {
-      result += numbres.charAt(Math.floor(Math.random() * charactersLength));
-      counter += 1;
-    }
-    dispatch(handleChangeOrderId(result));
-    return result;
-  }
 
   const aTenYearFromNow = new Date();
   aTenYearFromNow.setFullYear(aTenYearFromNow.getFullYear() + 10);
