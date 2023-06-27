@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { GetUrl, PostUrl } from "../BaseUrl";
-import { toast } from "react-hot-toast";
 
 export const handleGetOrders = createAsyncThunk(
   "orders/handleGetOrders",

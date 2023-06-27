@@ -51,7 +51,7 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
 
   const { token, user } = useSelector((state) => state.Auth);
 
-  const { favourites } = useSelector((state) => state.favourite);
+  const favourites = useSelector((state) => state.favourite);
   const { cartItems, loading, selectedItems } = useSelector(
     (state) => state.cart
   );
@@ -633,27 +633,27 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
   }, [pkitemsQuantity, ctnItemQuantity, favourites, selectedItems]);
 
   // set checked if already in cart
-  // const findItems = useCallback(() => {
-  //   if (
-  //     findInCart?.product?._id === favourite?._id &&
-  //     findInCart?.type === "pk"
-  //   ) {
-  //     pkRef.current.checked = true;
-  //     setSelectedItemType("pk");
-  //   } else if (
-  //     findInCart?.product?._id === favourite?._id &&
-  //     findInCart?.type === "ctn"
-  //   ) {
-  //     ctnRef.current.checked = true;
-  //     setSelectedItemType("ctn");
-  //   } else if (findInCart?.product?._id !== favourite?._id) {
-  //     pkRef.current.defaultChecked = true;
-  //   }
-  // }, [findInCart]);
+  const findItems = useCallback(async () => {
+    if (
+      findInCart?.product?._id === favourite?._id &&
+      findInCart?.type === "pk"
+    ) {
+      pkRef.current.checked = await true;
+      setSelectedItemType("pk");
+    } else if (
+      findInCart?.product?._id === favourite?._id &&
+      findInCart?.type === "ctn"
+    ) {
+      ctnRef.current.checked = await true;
+      setSelectedItemType("ctn");
+    } else if (findInCart?.product?._id !== favourite?._id) {
+      pkRef.current.defaultChecked = await true;
+    }
+  }, [findInCart]);
 
-  // useEffect(() => {
-  //   findItems();
-  // });
+  useEffect(() => {
+    findItems();
+  });
 
   return (
     <>
@@ -887,8 +887,8 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                     type="button"
                     className={` ${
                       findInCart?.product?._id === favourite?._id
-                        ? "bg-rose-500"
-                        : "bg-DARKRED"
+                        ? "bg-rose-500 text-black"
+                        : "bg-DARKRED text-white"
                     } text-white text-center w-full p-2 rounded-lg`}
                     disabled={
                       (loading && selectedProductId === favourite?._id) ||
@@ -905,9 +905,9 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                     type="button"
                     className={` ${
                       findInCart?.product?._id === favourite?._id
-                        ? "bg-rose-500"
-                        : "bg-DARKRED"
-                    } text-white text-center w-full p-2 rounded-lg`}
+                        ? "bg-rose-500 text-black"
+                        : "bg-DARKRED text-white"
+                    } text-center w-full p-2 rounded-lg`}
                     disabled={loading && selectedProductId === favourite?._id}
                     onClick={() => {
                       handleSubmitAddProduct();
@@ -924,9 +924,9 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                     type="button"
                     className={` ${
                       findInCart?.product?._id === favourite?._id
-                        ? "bg-rose-500"
-                        : "bg-DARKRED"
-                    } text-white text-center w-full p-2 rounded-lg`}
+                        ? "bg-rose-500 text-black"
+                        : "bg-DARKRED text-white"
+                    } text-center w-full p-2 rounded-lg`}
                     onClick={() => handleSubmitAddProduct()}
                     disabled={loading && selectedProductId === favourite?._id}
                   >

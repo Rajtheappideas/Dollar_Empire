@@ -166,7 +166,7 @@ const CardDetails = ({ summaryFixed }) => {
     enableReinitialize: true,
     onSubmit: (values) => {
       setConfirmOrderLoading(true);
-      if (shippingAddressId === "") {
+      if (shippingAddressId === "" && shipphingMethod==="freight") {
         toast.dismiss();
         return toast.error("Please select the shipping address!!!");
       } else if (shipphingMethod === "") {
@@ -249,6 +249,7 @@ const CardDetails = ({ summaryFixed }) => {
       AbortControllerRef.current !== null && AbortControllerRef.current.abort();
     };
   }, []);
+
   // for country , state , city selection
   useEffect(() => {
     const country = Country.getAllCountries().find(

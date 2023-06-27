@@ -907,9 +907,9 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                       type="button"
                       className={` ${
                         findInCart?.product?._id === favourite?._id
-                          ? "bg-rose-500"
-                          : "bg-DARKRED"
-                      } text-white text-center w-full p-2 rounded-lg`}
+                        ? "bg-rose-500 text-black"
+                        : "bg-DARKRED text-white"
+                      } text-center w-full p-2 rounded-lg`}
                       disabled={
                         (loading && selectedProductId === favourite?._id) ||
                         changingLoading
@@ -925,9 +925,9 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                       type="button"
                       className={` ${
                         findInCart?.product?._id === favourite?._id
-                          ? "bg-rose-500"
-                          : "bg-DARKRED"
-                      } text-white text-center w-full p-2 rounded-lg`}
+                        ? "bg-rose-500 text-black"
+                        : "bg-DARKRED text-white"
+                      } text-center w-full p-2 rounded-lg`}
                       disabled={loading && selectedProductId === favourite?._id}
                       onClick={() => {
                         handleSubmitAddProduct();
@@ -944,9 +944,9 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                       type="button"
                       className={` ${
                         findInCart?.product?._id === favourite?._id
-                          ? "bg-rose-500"
-                          : "bg-DARKRED"
-                      } text-white text-center w-full p-2 rounded-lg`}
+                        ? "bg-rose-500 text-black"
+                        : "bg-DARKRED text-white"
+                      } text-center w-full p-2 rounded-lg`}
                       onClick={() => handleSubmitAddProduct()}
                       disabled={loading && selectedProductId === favourite?._id}
                     >

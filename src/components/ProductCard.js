@@ -102,7 +102,7 @@ const ProductCard = ({
         .then((res) => {
           if (res.payload.status === "success") {
             setisFavourite(!isFavourite);
-            toast.success(`${product?.name} Added to favourites.`);
+            toast.success(`${product?.name} Added to favorites.`);
           } else if (res.payload.status === "fail") {
             toast.error(res.payload.message);
           }
@@ -125,7 +125,7 @@ const ProductCard = ({
         .then((res) => {
           if (res.payload.status === "success") {
             setisFavourite(!isFavourite);
-            toast.success(`${product?.name} Removed from favourites.`);
+            toast.success(`${product?.name} Removed from favorites.`);
           } else {
             toast.error(res.payload.message);
           }
@@ -505,7 +505,7 @@ const ProductCard = ({
             product?._id
           );
         } else {
-          if (pkCount.length >= 6) {
+          if (pkCount.toString().length > 6) {
             toast.remove();
             toast.error("Can't add more than 6 numbers !!!");
             return true;
@@ -598,7 +598,7 @@ const ProductCard = ({
             product?._id
           );
         } else {
-          if (ctnCount.length >= 6) {
+          if (ctnCount.toString().length >= 6) {
             toast.remove();
             toast.error("Can't add more than 6 numbers !!!");
             return true;
@@ -731,6 +731,7 @@ const ProductCard = ({
     alreadyInCartPkCount,
     alreadyInCartCtnCount,
   ]);
+
   // set product to favourite item
   useEffect(() => {
     setisFavourite(product?.isFavourite);
@@ -1354,9 +1355,9 @@ const ProductCard = ({
                       type="button"
                       className={` ${
                         findInCart?.product?._id === product?._id
-                          ? "bg-rose-500"
-                          : "bg-DARKRED"
-                      } text-white text-center w-full p-2 rounded-lg`}
+                          ? "bg-rose-500 text-black"
+                          : "bg-DARKRED text-white"
+                      }  text-center w-full p-2 rounded-lg`}
                       disabled={
                         (loading && selectedProductId === product?._id) ||
                         changingLoading
@@ -1372,9 +1373,9 @@ const ProductCard = ({
                       type="button"
                       className={` ${
                         findInCart?.product?._id === product?._id
-                          ? "bg-rose-500"
-                          : "bg-DARKRED"
-                      } text-white text-center w-full p-2 rounded-lg`}
+                          ? "bg-rose-500 text-black"
+                          : "bg-DARKRED text-white"
+                      }  text-center w-full p-2 rounded-lg`}
                       disabled={loading && selectedProductId === product?._id}
                       onClick={() => {
                         handleSubmitAddProduct();
@@ -1391,9 +1392,9 @@ const ProductCard = ({
                       type="button"
                       className={` ${
                         findInCart?.product?._id === product?._id
-                          ? "bg-rose-500"
-                          : "bg-DARKRED"
-                      } text-white text-center w-full p-2 rounded-lg`}
+                        ? "bg-rose-500 text-black"
+                        : "bg-DARKRED text-white"
+                      } text-center w-full p-2 rounded-lg`}
                       onClick={() => handleSubmitAddProduct()}
                       disabled={loading && selectedProductId === product?._id}
                     >
@@ -1493,7 +1494,7 @@ const ProductCard = ({
               )}
           </div>
           {/* mulitple images */}
-          <p className="flex items-center gap-x-1">
+          <p className="flex items-center gap-x-1 h-10">
             {product?.images.map((image, index) => (
               <img
                 key={index}
@@ -1974,9 +1975,9 @@ const ProductCard = ({
                       type="button"
                       className={` ${
                         findInCart?.product?._id === product?._id
-                          ? "bg-rose-500"
-                          : "bg-DARKRED"
-                      } text-white text-center w-full p-2 rounded-lg`}
+                        ? "bg-rose-500 text-black"
+                        : "bg-DARKRED text-white"
+                      } text-center w-full p-2 rounded-lg`}
                       disabled={
                         (loading && selectedProductId === product?._id) ||
                         changingLoading
@@ -1992,9 +1993,9 @@ const ProductCard = ({
                       type="button"
                       className={` ${
                         findInCart?.product?._id === product?._id
-                          ? "bg-rose-500"
-                          : "bg-DARKRED"
-                      } text-white text-center w-full p-2 rounded-lg`}
+                          ? "bg-rose-500 text-black" 
+                          : "bg-DARKRED text-white"
+                      }  text-center w-full p-2 rounded-lg`}
                       disabled={loading && selectedProductId === product?._id}
                       onClick={() => {
                         handleSubmitAddProduct();
@@ -2011,9 +2012,9 @@ const ProductCard = ({
                       type="button"
                       className={` ${
                         findInCart?.product?._id === product?._id
-                          ? "bg-rose-500"
-                          : "bg-DARKRED"
-                      } text-white text-center w-full p-2 rounded-lg`}
+                          ? "bg-rose-500 text-black"
+                          : "bg-DARKRED text-white"
+                      } text-center w-full p-2 rounded-lg`}
                       onClick={() => handleSubmitAddProduct()}
                       disabled={loading && selectedProductId === product?._id}
                     >

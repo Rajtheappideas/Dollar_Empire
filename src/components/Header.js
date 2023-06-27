@@ -156,13 +156,13 @@ const Header = () => {
   function onClickOutsideForSecondDropdown() {
     setshowSecondCategoryDropDown(false);
   }
-  useEffect(() => {
-    window.addEventListener("resize", () => {
-      if (window.screen.width > 600) return setShowOnMouseOver(true);
-      else return setShowOnMouseOver(false);
-    });
-    return () => window.removeEventListener("resize", () => {});
-  }, []);
+  // useEffect(() => {
+  //   window.addEventListener("resize", () => {
+  //     if (window.screen.width > 600) return setShowOnMouseOver(true);
+  //     else return setShowOnMouseOver(false);
+  //   });
+  //   return () => window.removeEventListener("resize", () => {});
+  // }, []);
 
   return (
     <div className="h-auto w-auto">
@@ -332,10 +332,7 @@ const Header = () => {
                               activeCategory === category?.name && "bg-gray-200"
                             } hover:bg-gray-200 md:whitespace-nowrap py-1 text-BLACK font-semibold flex items-center gap-x-2`}
                             key={category?._id}
-                            onMouseOver={() =>
-                              showOnMouseOver &&
-                              setActiveCategory(category.name)
-                            }
+                            onMouseOver={() => setActiveCategory(category.name)}
                             // onClick={() => {
                             //   setshowCategoryDropdown(false);
                             // }}

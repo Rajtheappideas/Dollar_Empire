@@ -81,14 +81,14 @@ function App() {
     if (user !== null) {
       dispatch(handleGetCart({ token }));
     }
-  }, [user, showProductDetailsPopup]);
+  }, [user]);
 
   useEffect(() => {
     if (user !== null) {
       dispatch(calculateTotalQuantity());
       dispatch(calculateTotalAmount());
     }
-  }, [user, showProductDetailsPopup]);
+  });
 
   return (
     <BrowserRouter>

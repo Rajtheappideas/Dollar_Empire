@@ -46,9 +46,7 @@ const ProductListing = () => {
   const [filterValue, setFilterValue] = useState("newest");
   const [message, setMessage] = useState("");
   const [activePrice, setActivePrice] = useState("Any");
-  // const [activeSubCategory, setActiveSubCategory] = useState("");
   const [countTotalQuantity, setCountTotalQuantity] = useState([]);
-  // const [activeCategory, setActiveCategory] = useState("");
 
   const { newArrivals, productLoading, allProducts, topSellers } = useSelector(
     (state) => state.products
@@ -95,7 +93,7 @@ const ProductListing = () => {
     toast.dismiss();
     dispatch(handleRemoveAllProducts());
     dispatch(handleRemoveAllTotalQuantityAndTotalAmount());
-    if (await productLoading) {
+    if (productLoading) {
       return true;
     } else if (title.includes("new-arrivals")) {
       // new arrivals
@@ -222,7 +220,8 @@ const ProductListing = () => {
         products.length === 0 ||
         newArrivals.length === 0 ||
         topSellers.length === 0) &&
-      !productLoading
+      !productLoading &&
+      !loading
     ) {
       setProducts([]);
       toast.error("Products Not Found!!!");
@@ -393,7 +392,7 @@ const ProductListing = () => {
       dispatch(
         handleAddMultipleProducts(result.filter((i) => i.quantity !== 0))
       );
-      console.log(pkQuantity, ctnQuantity);
+      // console.log(pkQuantity, ctnQuantity);
       // for count total quanitty
       const countTotalQuantityOfProducts = [
         ...countTotalQuantity,
@@ -525,11 +524,7 @@ const ProductListing = () => {
     activeCategory,
     activeSubcategory,
   ]);
-  console.log(
-    selectedItems,
-    totalQuantityMultipleProducts,
-    totalAmountMultipleProducts
-  );
+
   // filter by new , old, hightolow ,lowtohigh
   useEffect(() => {
     if (filterValue == "newest") {

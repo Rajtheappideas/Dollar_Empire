@@ -30,10 +30,10 @@ const Footer = () => {
       .then((res) => {
         setEmail("");
         setLoading(false);
-        toast.success(res.data.message);
+        toast.success(res?.data?.message);
       })
       .catch((err) => {
-        toast.error(err.response.data.message);
+        toast.error(err?.response?.data?.message);
         setLoading(false);
       });
   };
@@ -45,12 +45,12 @@ const Footer = () => {
         if (res.data?.status === "success") {
           setLinks(res.data.pages);
         } else {
-          toast.error(res.data.message);
+          toast.error(res?.data?.message);
         }
         setLinkLoading(false);
       })
       .catch((err) => {
-        toast.error(err.response.data.message);
+        toast.error(err?.response?.data?.message);
         setLinkLoading(false);
       });
   }, []);
