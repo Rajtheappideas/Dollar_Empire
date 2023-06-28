@@ -233,7 +233,13 @@ const ShoppingCart = ({ summaryFixed }) => {
                             type="number"
                             className="bg-gray-300 outline-none text-black placeholder:text-BLACK h-10 rounded-md w-16 p-1"
                             value={productQuantity}
+                            max="999999"
                             onChange={(e) => {
+                              if (e.target.value.length > 6) {
+                                toast.remove();
+                                toast.error("Can't add more than 6 numbers");
+                                return true;
+                              }
                               handleOnChangeProductQuantity(e);
                             }}
                           />
@@ -584,7 +590,10 @@ const ShoppingCart = ({ summaryFixed }) => {
           }}
           className="font-semibold bg-PRIMARY text-white hover:bg-white hover:text-PRIMARY border border-PRIMARY duration-300 ease-in-out w-full p-3 text-center"
           disabled={
-            loading || deleteLoading || updateLoading || grandTotal < 250
+            loading ||
+            deleteLoading ||
+            updateLoading ||
+            grandTotal < minOrderAmount
           }
         >
           {t("Proceed to checkout")}

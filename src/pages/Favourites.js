@@ -146,6 +146,7 @@ const Favourites = () => {
                 })
               );
               setCountTotalQuantity([]);
+              dispatch(handleAddMultipleProducts([]));
               dispatch(handleRemoveAllProducts());
               dispatch(handleRemoveAllTotalQuantityAndTotalAmount());
             }
@@ -187,7 +188,10 @@ const Favourites = () => {
           </div>
 
           {/* table  desk & tablet*/}
-          <div className="w-full hidden md:inline-block xl:overflow-hidden overflow-x-scroll scrollbar">
+          <div
+            key="forDesk"
+            className="w-full hidden md:inline-block xl:overflow-hidden overflow-x-scroll scrollbar"
+          >
             <table className="w-full">
               <thead className="bg-PRIMARY text-white p-2 w-full">
                 <tr>
@@ -247,22 +251,18 @@ const Favourites = () => {
                   </tr>
                 ) : (
                   favourites?.favourites.map((favourite) => (
-                    <tr
-                      className="bg-white font-normal text-base border-b border-gray-200"
+                    <Favourite
                       key={favourite?._id}
-                    >
-                      <Favourite
-                        handleAddSelectedItem={handleAddSelectedItem}
-                        favourite={favourite}
-                      />
-                    </tr>
+                      handleAddSelectedItem={handleAddSelectedItem}
+                      favourite={favourite}
+                    />
                   ))
                 )}
               </tbody>
             </table>
           </div>
           {/* for mobile table */}
-          <div className="w-full overflow-hidden md:hidden">
+          <div key="forMobile" className="w-full overflow-hidden md:hidden">
             <table className="flex flex-row bg-white">
               <tbody className="flex flex-col">
                 {favourites?.loading ? (

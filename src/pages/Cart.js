@@ -22,7 +22,6 @@ const Cart = () => {
 
   const { activeComponentForCart } = useSelector((state) => state.globalStates);
   const { token } = useSelector((state) => state.Auth);
-  const { loading } = useSelector((state) => state.cart);
 
   const { t } = useTranslation();
 
@@ -42,8 +41,6 @@ const Cart = () => {
       AbortControllerRef.current !== null && AbortControllerRef.current.abort();
     };
   }, []);
-
-  // useEffect(() => {}, []);
 
   // for sticky summary component
   useEffect(() => {

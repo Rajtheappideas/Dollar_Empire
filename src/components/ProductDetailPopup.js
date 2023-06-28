@@ -70,7 +70,7 @@ const ProductDetailPopup = ({}) => {
   const { singleProduct, singleProductLoading } = useSelector(
     (state) => state.products
   );
-  const { cart, cartItems } = useSelector((state) => state.cart);
+  const { cart, cartItems, loading } = useSelector((state) => state.cart);
 
   const prevRef = useRef(null);
   const nextRef = useRef(null);
@@ -270,10 +270,7 @@ const ProductDetailPopup = ({}) => {
   };
 
   const handleSubmitAddProduct = () => {
-    if (
-      !addProductToCartLoading &&
-      singleProduct?._id !== findInCart?.product?._id
-    ) {
+    if (!loading && singleProduct?._id !== findInCart?.product?._id) {
       handleAddProduct(
         singleProduct?._id,
         singleProduct?.name,
@@ -303,7 +300,7 @@ const ProductDetailPopup = ({}) => {
                 toast.success(
                   `${findInCart?.product?.name} removed from cart.`
                 );
-                dispatch(handleRemoveItemFromCart(findInCart?.prodcut?._id));
+                dispatch(handleRemoveItemFromCart(findInCart?.product?._id));
                 dispatch(calculateTotalAmount());
                 dispatch(calculateTotalQuantity());
                 setAlreadyInCartPkCount(null);
@@ -458,10 +455,210 @@ const ProductDetailPopup = ({}) => {
     }
   };
 
+  // const handleOnClickFieldForBoth = (action, type) => {
+  //   console.log(type,action);
+  //   if (type === "pk") {
+  //     if (
+  //       !addProductToCartLoading &&
+  //       selectedProductId !== singleProduct?._id &&
+  //       findInCart?.product?._id !== singleProduct?._id
+  //     ) {
+  //       if (action === "minus") {
+  //         handleMinusPkQuantity(
+  //           parseFloat(singleProduct?.PK),
+  //           parseFloat(pkCount - 1),
+  //           singleProduct?._id
+  //         );
+  //       } else {
+  //         if (pkCount.length >= 6) {
+  //           toast.remove();
+  //           toast.error("Can't add more than 6 numbers !!!");
+  //           return true;
+  //         }
+  //         handlePlusPkQuantity(
+  //           parseFloat(singleProduct?.PK),
+  //           parseFloat(pkCount + 1),
+  //           singleProduct?._id
+  //         );
+  //       }
+  //     } else if (
+  //       !addProductToCartLoading &&
+  //       selectedProductId !== singleProduct?._id &&
+  //       findInCart?.product?._id === singleProduct?._id
+  //     ) {
+  //       if (findInCart?.type !== type) {
+  //         toast.remove();
+  //         toast.error("Please change in ctn quantity!!!");
+  //         return true;
+  //       } else {
+  //         setChangeTo(true);
+  //         if (action === "minus") {
+  //           if (alreadyInCartPkCount === 0 && alreadyInCartPkCount !== null) {
+  //             return true;
+  //           }
+  //           if (alreadyInCartPkCount !== null) {
+  //             setAlreadyInCartPkCount(parseFloat(alreadyInCartPkCount) - 1);
+  //             setAlreadyInCartPkItems(
+  //               parseFloat(singleProduct?.PK) *
+  //                 parseFloat(alreadyInCartPkCount - 1)
+  //             );
+  //             handleChangeAddedItemInCart(
+  //               null,
+  //               "pk",
+  //               parseFloat(alreadyInCartPkCount) - 1
+  //             );
+  //           } else {
+  //             setAlreadyInCartPkCount(parseFloat(findInCart?.quantity) - 1);
+  //             setAlreadyInCartPkItems(
+  //               parseFloat(singleProduct?.PK) *
+  //                 parseFloat(findInCart?.quantity - 1)
+  //             );
+  //             handleChangeAddedItemInCart(
+  //               null,
+  //               "pk",
+  //               parseFloat(findInCart?.quantity) - 1
+  //             );
+  //           }
+  //         } else if (action === "plus") {
+  //           if (
+  //             alreadyInCartPkCount !== null &&
+  //             alreadyInCartPkCount.toString().length >= 6
+  //           ) {
+  //             toast.remove();
+  //             toast.error("Can't add more than 6 numbers !!!");
+  //             return true;
+  //           }
+  //           if (alreadyInCartPkCount !== null) {
+  //             setAlreadyInCartPkCount(parseFloat(alreadyInCartPkCount) + 1);
+  //             setAlreadyInCartPkItems(
+  //               parseFloat(singleProduct?.PK) *
+  //                 parseFloat(alreadyInCartPkCount + 1)
+  //             );
+  //             handleChangeAddedItemInCart(
+  //               null,
+  //               "pk",
+  //               parseFloat(alreadyInCartPkCount) + 1
+  //             );
+  //           } else {
+  //             setAlreadyInCartPkCount(parseFloat(findInCart?.quantity) + 1);
+  //             setAlreadyInCartPkItems(
+  //               parseFloat(singleProduct?.PK) *
+  //                 parseFloat(findInCart?.quantity + 1)
+  //             );
+  //             handleChangeAddedItemInCart(
+  //               null,
+  //               "pk",
+  //               parseFloat(findInCart?.quantity) + 1
+  //             );
+  //           }
+  //         }
+  //       }
+  //     }
+  //   } else if (type === "ctn") {
+  //     if (
+  //       !addProductToCartLoading &&
+  //       selectedProductId !== singleProduct?._id &&
+  //       findInCart?.product?._id !== singleProduct?._id
+  //     ) {
+  //       if (action === "minus") {
+  //         handleMinusCTNQuantity(
+  //           parseFloat(singleProduct?.CTN),
+  //           parseFloat(ctnCount - 1),
+  //           singleProduct?._id
+  //         );
+  //       } else {
+  //         if (ctnCount.length >= 6) {
+  //           toast.remove();
+  //           toast.error("Can't add more than 6 numbers !!!");
+  //           return true;
+  //         }
+  //         handlePlusCTNQuantity(
+  //           parseFloat(singleProduct?.CTN),
+  //           parseFloat(ctnCount + 1),
+  //           singleProduct?._id
+  //         );
+  //       }
+  //     } else if (
+  //       !addProductToCartLoading &&
+  //       selectedProductId !== singleProduct?._id &&
+  //       findInCart?.product?._id === singleProduct?._id &&
+  //       type === "ctn"
+  //     ) {
+  //       if (findInCart?.type !== type) {
+  //         toast.remove();
+  //         toast.error("Please change in pk quantity!!!");
+  //         return true;
+  //       } else {
+  //         setChangeTo(true);
+  //         if (action === "minus") {
+  //           if (alreadyInCartCtnCount === 0 && alreadyInCartCtnCount !== null) {
+  //             return true;
+  //           }
+  //           if (alreadyInCartCtnCount !== null) {
+  //             setAlreadyInCartCtnCount(parseFloat(alreadyInCartCtnCount) - 1);
+  //             setAlreadyInCartCtnItems(
+  //               parseFloat(singleProduct?.CTN) *
+  //                 parseFloat(alreadyInCartCtnCount - 1)
+  //             );
+  //             handleChangeAddedItemInCart(
+  //               null,
+  //               "ctn",
+  //               parseFloat(alreadyInCartCtnCount) - 1
+  //             );
+  //           } else {
+  //             setAlreadyInCartCtnCount(parseFloat(findInCart?.quantity) - 1);
+  //             setAlreadyInCartCtnItems(
+  //               parseFloat(singleProduct?.CTN) *
+  //                 parseFloat(findInCart?.quantity - 1)
+  //             );
+  //             handleChangeAddedItemInCart(
+  //               null,
+  //               "ctn",
+  //               parseFloat(findInCart?.quantity) - 1
+  //             );
+  //           }
+  //         } else {
+  //           if (
+  //             alreadyInCartCtnCount !== null &&
+  //             alreadyInCartCtnCount.toString().length >= 6
+  //           ) {
+  //             toast.remove();
+  //             toast.error("Can't add more than 6 numbers !!!");
+  //             return true;
+  //           }
+  //           if (alreadyInCartCtnCount !== null) {
+  //             setAlreadyInCartCtnCount(parseFloat(alreadyInCartCtnCount) + 1);
+  //             setAlreadyInCartCtnItems(
+  //               parseFloat(singleProduct?.CTN) *
+  //                 parseFloat(alreadyInCartCtnCount + 1)
+  //             );
+  //             handleChangeAddedItemInCart(
+  //               null,
+  //               "ctn",
+  //               parseFloat(alreadyInCartCtnCount) + 1
+  //             );
+  //           } else {
+  //             setAlreadyInCartCtnCount(parseFloat(findInCart?.quantity) + 1);
+  //             setAlreadyInCartCtnItems(
+  //               parseFloat(singleProduct?.CTN) *
+  //                 parseFloat(findInCart?.quantity + 1)
+  //             );
+  //             handleChangeAddedItemInCart(
+  //               null,
+  //               "ctn",
+  //               parseFloat(findInCart?.quantity) + 1
+  //             );
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  // };
+
   const handleOnClickFieldForBoth = (action, type) => {
     if (type === "pk") {
       if (
-        !addProductToCartLoading &&
+        !loading &&
         selectedProductId !== singleProduct?._id &&
         findInCart?.product?._id !== singleProduct?._id
       ) {
@@ -472,7 +669,7 @@ const ProductDetailPopup = ({}) => {
             singleProduct?._id
           );
         } else {
-          if (pkCount.length >= 6) {
+          if (pkCount.toString().length >= 6) {
             toast.remove();
             toast.error("Can't add more than 6 numbers !!!");
             return true;
@@ -484,7 +681,7 @@ const ProductDetailPopup = ({}) => {
           );
         }
       } else if (
-        !addProductToCartLoading &&
+        !loading &&
         selectedProductId !== singleProduct?._id &&
         findInCart?.product?._id === singleProduct?._id
       ) {
@@ -558,7 +755,7 @@ const ProductDetailPopup = ({}) => {
       }
     } else if (type === "ctn") {
       if (
-        !addProductToCartLoading &&
+        !loading &&
         selectedProductId !== singleProduct?._id &&
         findInCart?.product?._id !== singleProduct?._id
       ) {
@@ -569,7 +766,7 @@ const ProductDetailPopup = ({}) => {
             singleProduct?._id
           );
         } else {
-          if (ctnCount.length >= 6) {
+          if (ctnCount.toString().length >= 6) {
             toast.remove();
             toast.error("Can't add more than 6 numbers !!!");
             return true;
@@ -581,7 +778,7 @@ const ProductDetailPopup = ({}) => {
           );
         }
       } else if (
-        !addProductToCartLoading &&
+        !loading &&
         selectedProductId !== singleProduct?._id &&
         findInCart?.product?._id === singleProduct?._id &&
         type === "ctn"
@@ -675,8 +872,16 @@ const ProductDetailPopup = ({}) => {
         (i) => i.product?._id === singleProduct?._id
       );
       setFindInCart(findItemInCart);
+    } else {
+      setFindInCart(null);
     }
-  }, [pkitemsQuantity, ctnItemQuantity, singleProductLoading]);
+  }, [
+    changingLoading,
+    loading,
+    alreadyInCartPkCount,
+    alreadyInCartCtnCount,
+    singleProductLoading,
+  ]);
 
   useEffect(() => {
     if (showProductDetailsPopup === true) {
@@ -698,7 +903,7 @@ const ProductDetailPopup = ({}) => {
     } else if (
       findInCart?.product?._id === singleProduct?._id &&
       findInCart?.type === "ctn" &&
-      pkRef.current
+      ctnRef.current
     ) {
       ctnRef.current.checked = await true;
       setSelectedItemType("ctn");
@@ -706,10 +911,9 @@ const ProductDetailPopup = ({}) => {
       findInCart?.product?._id !== singleProduct?._id &&
       pkRef.current
     ) {
-      setSelectedItemType("pk")
       pkRef.current.defaultChecked = await true;
     }
-  }, [findInCart,singleProductLoading]);
+  }, [findInCart, singleProductLoading, addProductToCartLoading]);
 
   useEffect(() => {
     findItems();
@@ -731,7 +935,7 @@ const ProductDetailPopup = ({}) => {
   function handleClickOutside() {
     dispatch(closePopup());
   }
-  // console.log(pkCount, ctnCount);
+
   return (
     <ReactModal
       className={` overflow-hidden scrollbar bg-black/30 z-50 w-full min-h-screen max-h-screen inset-0 backdrop-blur-sm`}
@@ -926,10 +1130,6 @@ const ProductDetailPopup = ({}) => {
                   <AiOutlineMinus
                     onClick={() => {
                       handleOnClickFieldForBoth("minus", "pk");
-                      // handleMinusPkQuantity(
-                      //   parseFloat(pkCount - 1),
-                      //   singleProduct?._id
-                      // );
                     }}
                     className="w-7 h-7"
                   />
@@ -956,6 +1156,7 @@ const ProductDetailPopup = ({}) => {
                     type="number"
                     placeholder="0"
                     min="0"
+                    max="999999"
                     value={
                       findInCart?.product?._id === singleProduct?._id &&
                       alreadyInCartPkCount !== null
@@ -963,6 +1164,11 @@ const ProductDetailPopup = ({}) => {
                         : pkCount
                     }
                     onChange={(e) => {
+                      if (e.target.value.length > 6) {
+                        toast.remove();
+                        toast.error("Can't add more than 6 numbers");
+                        return true;
+                      }
                       handleOnchangePkCountField(e);
                     }}
                     disabled={
@@ -986,10 +1192,6 @@ const ProductDetailPopup = ({}) => {
                   <AiOutlinePlus
                     onClick={() => {
                       handleOnClickFieldForBoth("plus", "pk");
-                      // handlePlusPkQuantity(
-                      //   parseFloat(pkCount + 1),
-                      //   singleProduct?._id
-                      // );
                     }}
                     className="w-7 h-7"
                   />
@@ -1026,10 +1228,6 @@ const ProductDetailPopup = ({}) => {
                   <AiOutlineMinus
                     onClick={() => {
                       handleOnClickFieldForBoth("minus", "ctn");
-                      // handleMinusCTNQuantity(
-                      //   parseFloat(ctnCount - 1),
-                      //   singleProduct?._id
-                      // );
                     }}
                     className="w-7 h-7"
                   />
@@ -1055,6 +1253,8 @@ const ProductDetailPopup = ({}) => {
                     className={`w-full font-semibold text-right p-3 pr-9 pl-16 placeholder:text-black rounded-md border outline-none border-BORDERGRAY text-black`}
                     placeholder="0"
                     type="number"
+                    min="0"
+                    max="999999"
                     value={
                       findInCart?.product?._id === singleProduct?._id &&
                       alreadyInCartCtnCount !== null
@@ -1062,6 +1262,11 @@ const ProductDetailPopup = ({}) => {
                         : ctnCount
                     }
                     onChange={(e) => {
+                      if (e.target.value.length > 6) {
+                        toast.remove();
+                        toast.error("Can't add more than 6 numbers");
+                        return true;
+                      }
                       handleOnchangeCtnCountField(e);
                     }}
                     disabled={
@@ -1085,10 +1290,6 @@ const ProductDetailPopup = ({}) => {
                   <AiOutlinePlus
                     onClick={() => {
                       handleOnClickFieldForBoth("plus", "ctn");
-                      // handlePlusCTNQuantity(
-                      //   parseFloat(ctnCount + 1),
-                      //   singleProduct?._id
-                      // );
                     }}
                     disabled={
                       (!addProductToCartLoading &&
@@ -1119,10 +1320,9 @@ const ProductDetailPopup = ({}) => {
                         findInCart?.product?._id === singleProduct?._id
                           ? "bg-rose-500 text-black"
                           : "bg-DARKRED text-white"
-                      }  text-center w-60 p-3 rounded-md hover:text-DARKRED hover:bg-white border border-DARKRED duration-300 ease-linear`}
+                      } text-center w-60 p-3 rounded-lg`}
                       disabled={
-                        (addProductToCartLoading &&
-                          selectedProductId === singleProduct?._id) ||
+                        (loading && selectedProductId === singleProduct?._id) ||
                         changingLoading
                       }
                     >
@@ -1138,17 +1338,15 @@ const ProductDetailPopup = ({}) => {
                         findInCart?.product?._id === singleProduct?._id
                           ? "bg-rose-500 text-black"
                           : "bg-DARKRED text-white"
-                      } text-center w-60 p-3 rounded-md hover:text-DARKRED hover:bg-white border border-DARKRED duration-300 ease-linear`}
+                      }  text-center w-60 p-3 rounded-lg`}
                       disabled={
-                        addProductToCartLoading &&
-                        selectedProductId === singleProduct?._id
+                        loading && selectedProductId === singleProduct?._id
                       }
                       onClick={() => {
                         handleSubmitAddProduct();
                       }}
                     >
-                      {addProductToCartLoading &&
-                      selectedProductId === singleProduct?._id
+                      {loading && selectedProductId === singleProduct?._id
                         ? t("Removing").concat("...")
                         : findInCart !== null &&
                           singleProduct?._id === findInCart?.product?._id &&
@@ -1161,15 +1359,13 @@ const ProductDetailPopup = ({}) => {
                         findInCart?.product?._id === singleProduct?._id
                           ? "bg-rose-500 text-black"
                           : "bg-DARKRED text-white"
-                      } text-center w-60 p-3 rounded-md`}
+                      } text-center rounded-lg w-60 p-3 `}
                       onClick={() => handleSubmitAddProduct()}
                       disabled={
-                        addProductToCartLoading &&
-                        selectedProductId === singleProduct?._id
+                        loading && selectedProductId === singleProduct?._id
                       }
                     >
-                      {addProductToCartLoading &&
-                      selectedProductId === singleProduct?._id ? (
+                      {loading && selectedProductId === singleProduct?._id ? (
                         t("Adding").concat("...")
                       ) : findInCart !== null &&
                         singleProduct?._id === findInCart?.product?._id ? (

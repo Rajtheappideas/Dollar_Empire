@@ -26,7 +26,8 @@ import { Link } from "react-router-dom";
 import { handleChangeActiveComponent } from "../redux/GlobalStates";
 import { useCallback } from "react";
 
-const Favourite = ({ favourite, handleAddSelectedItem }) => {
+const FavouriteForMobile
+ = ({ favourite, handleAddSelectedItem }) => {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteProductId, setDeleteProductId] = useState(null);
   const [selectedItemType, setSelectedItemType] = useState("pk");
@@ -629,14 +630,22 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
         (i) => i.product?._id === favourite?._id
       );
       setFindInCart(findItemInCart);
+    } else {
+      setFindInCart(null);
     }
-  }, [pkitemsQuantity, ctnItemQuantity, favourites, selectedItems]);
-
+  }, [
+    alreadyInCartCtnCount,
+    alreadyInCartPkCount,
+    favourites,
+    selectedItems,
+    changingLoading,
+    loading,
+  ]);
   // set checked if already in cart
   const findItems = useCallback(async () => {
     if (
       findInCart?.product?._id === favourite?._id &&
-      findInCart?.type === "pk"
+      findInCart?.type === "pk" 
     ) {
       pkRef.current.checked = await true;
       setSelectedItemType("pk");
@@ -745,7 +754,14 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                         ? alreadyInCartPkCount
                         : pkCount
                     }
+                    min="0"
+                    max="999999"
                     onChange={(e) => {
+                      if (e.target.value.length > 6) {
+                        toast.remove();
+                        toast.error("Can't add more than 6 numbers");
+                        return true;
+                      }
                       handleOnchangePkCountField(e);
                     }}
                     disabled={
@@ -833,6 +849,8 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                     type="number"
                     className={`w-full text-right h-10 text-sm pr-12 pl-10 rounded-md outline-none border border-BORDERGRAY`}
                     placeholder="0"
+                    min="0"
+                    max="999999"
                     value={
                       findInCart?.product?._id === favourite?._id &&
                       alreadyInCartCtnCount !== null
@@ -840,6 +858,11 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                         : ctnCount
                     }
                     onChange={(e) => {
+                      if (e.target.value.length > 6) {
+                        toast.remove();
+                        toast.error("Can't add more than 6 numbers");
+                        return true;
+                      }
                       handleOnchangeCtnCountField(e);
                     }}
                     disabled={
@@ -907,8 +930,8 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                       type="button"
                       className={` ${
                         findInCart?.product?._id === favourite?._id
-                        ? "bg-rose-500 text-black"
-                        : "bg-DARKRED text-white"
+                          ? "bg-rose-500 text-black"
+                          : "bg-DARKRED text-white"
                       } text-center w-full p-2 rounded-lg`}
                       disabled={
                         (loading && selectedProductId === favourite?._id) ||
@@ -925,8 +948,8 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                       type="button"
                       className={` ${
                         findInCart?.product?._id === favourite?._id
-                        ? "bg-rose-500 text-black"
-                        : "bg-DARKRED text-white"
+                          ? "bg-rose-500 text-black"
+                          : "bg-DARKRED text-white"
                       } text-center w-full p-2 rounded-lg`}
                       disabled={loading && selectedProductId === favourite?._id}
                       onClick={() => {
@@ -944,8 +967,8 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                       type="button"
                       className={` ${
                         findInCart?.product?._id === favourite?._id
-                        ? "bg-rose-500 text-black"
-                        : "bg-DARKRED text-white"
+                          ? "bg-rose-500 text-black"
+                          : "bg-DARKRED text-white"
                       } text-center w-full p-2 rounded-lg`}
                       onClick={() => handleSubmitAddProduct()}
                       disabled={loading && selectedProductId === favourite?._id}
@@ -998,4 +1021,5 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
   );
 };
 
-export default Favourite;
+export default FavouriteForMobile
+;

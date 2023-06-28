@@ -609,6 +609,7 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
     }
   };
 
+  // add item for multiple product to cart
   useEffect(() => {
     if (handleAddSelectedItem !== "") {
       handleAddSelectedItem(
@@ -623,40 +624,51 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
     }
   }, [pkitemsQuantity, ctnItemQuantity, selectedItemType]);
 
+  // find item in cart
   useEffect(() => {
     if (favourites.length !== 0 && cartItems.length > 0) {
       const findItemInCart = cartItems.find(
         (i) => i.product?._id === favourite?._id
       );
       setFindInCart(findItemInCart);
+    } else {
+      setFindInCart(null);
     }
-  }, [pkitemsQuantity, ctnItemQuantity, favourites, selectedItems]);
+  }, [
+    alreadyInCartCtnCount,
+    alreadyInCartPkCount,
+    favourites,
+    selectedItems,
+    changingLoading,
+    loading,
+    selectedItems,
+  ]);
 
   // set checked if already in cart
   const findItems = useCallback(async () => {
     if (
       findInCart?.product?._id === favourite?._id &&
-      findInCart?.type === "pk"
+      findInCart?.type === "pk" &&
+      pkRef.current
     ) {
       pkRef.current.checked = await true;
-      setSelectedItemType("pk");
     } else if (
       findInCart?.product?._id === favourite?._id &&
-      findInCart?.type === "ctn"
+      findInCart?.type === "ctn" &&
+      ctnRef.current
     ) {
       ctnRef.current.checked = await true;
-      setSelectedItemType("ctn");
-    } else if (findInCart?.product?._id !== favourite?._id) {
+    } else if (findInCart?.product?._id !== favourite?._id && pkRef.current) {
       pkRef.current.defaultChecked = await true;
     }
-  }, [findInCart]);
+  }, [alreadyInCartCtnCount, alreadyInCartPkCount, findInCart, pkRef, ctnRef]);
 
   useEffect(() => {
     findItems();
-  });
+  }, [alreadyInCartCtnCount, alreadyInCartPkCount, findInCart, pkRef, ctnRef]);
 
   return (
-    <>
+    <tr className="bg-white font-normal text-base border-b border-gray-200">
       <td className="lg:p-3 p-2">
         <img
           src={BaseUrl.concat(favourite?.images[0])}
@@ -674,7 +686,7 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
             {favourite?.PK} PC/PK , {favourite?.CTN} PC/CTN
           </p>
           <div className="xl:w-7/12 w-8/12 space-y-3">
-            <p className="font-bold md:text-base text-sm">
+            <p className="font-bold text-xs text-center">
               ${favourite?.price}/PC, $
               {parseFloat(favourite?.price * favourite?.PK).toFixed(2)}
               /PK, $ {parseFloat(favourite?.price * favourite?.CTN).toFixed(2)}
@@ -687,6 +699,7 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                 type="radio"
                 className="w-5 h-5"
                 ref={pkRef}
+                defaultChecked={true}
                 onChange={(e) => setSelectedItemType(e.target.value)}
                 value="pk"
                 id={favourite?._id}
@@ -695,7 +708,7 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                   findInCart?.product?._id === favourite?._id
                 }
               />
-              <span className="font-semibold text-sm whitespace-nowrap pr-2">
+              <span className="font-semibold text-xs whitespace-nowrap pr-2">
                 PC QTY
               </span>
               <div className="w-full relative z-0">
@@ -725,7 +738,14 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                       ? alreadyInCartPkCount
                       : pkCount
                   }
+                  min="0"
+                  max="999999"
                   onChange={(e) => {
+                    if (e.target.value.length > 6) {
+                      toast.remove();
+                      toast.error("Can't add more than 6 numbers");
+                      return true;
+                    }
                     handleOnchangePkCountField(e);
                   }}
                   disabled={
@@ -733,7 +753,7 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                     findInCart?.type === "ctn"
                   }
                 />
-                <span className="font-semibold  text-BLACK text-xs absolute top-1/2 -translate-y-1/2 right-6">
+                <span className="font-semibold text-BLACK text-xs absolute top-1/2 -translate-y-1/2 right-6">
                   PK
                 </span>
                 <button
@@ -789,7 +809,7 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                   findInCart?.product?._id === favourite?._id
                 }
               />
-              <span className="font-semibold text-sm whitespace-nowrap">
+              <span className="font-semibold text-xs whitespace-nowrap">
                 CTN QTY
               </span>
               <div className="w-full relative z-0">
@@ -813,6 +833,8 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                   type="number"
                   className={`w-full text-right h-10 text-sm pr-12 pl-10 rounded-md outline-none border border-BORDERGRAY`}
                   placeholder="0"
+                  min="0"
+                  max="999999"
                   value={
                     findInCart?.product?._id === favourite?._id &&
                     alreadyInCartCtnCount !== null
@@ -820,6 +842,11 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                       : ctnCount
                   }
                   onChange={(e) => {
+                    if (e.target.value.length > 6) {
+                      toast.remove();
+                      toast.error("Can't add more than 6 numbers");
+                      return true;
+                    }
                     handleOnchangeCtnCountField(e);
                   }}
                   disabled={
@@ -889,7 +916,7 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                       findInCart?.product?._id === favourite?._id
                         ? "bg-rose-500 text-black"
                         : "bg-DARKRED text-white"
-                    } text-white text-center w-full p-2 rounded-lg`}
+                    } text-center w-full p-2 rounded-lg`}
                     disabled={
                       (loading && selectedProductId === favourite?._id) ||
                       changingLoading
@@ -967,7 +994,7 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
           />
         </td>
       )}
-    </>
+    </tr>
   );
 };
 

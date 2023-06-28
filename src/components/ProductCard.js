@@ -341,7 +341,7 @@ const ProductCard = ({
                 toast.success(
                   `${findInCart?.product?.name} removed from cart.`
                 );
-                dispatch(handleRemoveItemFromCart(findInCart?.prodcut?._id));
+                dispatch(handleRemoveItemFromCart(findInCart?.product?._id));
                 dispatch(calculateTotalAmount());
                 dispatch(calculateTotalQuantity());
                 setAlreadyInCartPkCount(null);
@@ -707,19 +707,6 @@ const ProductCard = ({
         (i) => i.product?._id === product?._id
       );
       setFindInCart(findItemInCart);
-      // if (findItemInCart) {
-      //   if (findItemInCart?.type === "pk") {
-      //     setAlreadyInCartPkCount(findItemInCart?.quantity);
-      //     setAlreadyInCartPkItems(
-      //       findItemInCart?.quantity * findItemInCart?.product?.PK
-      //     );
-      //   } else {
-      //     setAlreadyInCartCtnCount(findItemInCart?.quantity);
-      //     setAlreadyInCartCtnItems(
-      //       findItemInCart?.quantity * findItemInCart?.product?.CTN
-      //     );
-      //   }
-      // }
     } else {
       setFindInCart(null);
     }
@@ -1127,214 +1114,6 @@ const ProductCard = ({
                   </button>
                 </div>
               </div>
-              {/* old pk */}
-              {/* <div className="flex xl:w-64 w-full items-center gap-x-2 relative z-0 ml-auto">
-                <input
-                  name={
-                    from === "TopSellers"
-                      ? product?.name.concat(from)
-                      : product?.name
-                  }
-                  type="radio"
-                  className="md:w-6 md:h-6 w-7 h-7"
-                  onChange={(e) => setSelectedItemType(e.target.value)}
-                  defaultChecked={true}
-                  value="pk"
-                  id={
-                    from === "TopSellers"
-                      ? product?.name.concat(from)
-                      : product?.name
-                  }
-                  disabled={
-                    (loading && selectedProductId?._id === product?._id) ||
-                    findInCart?.product?._id === product?._id
-                  }
-                />{" "}
-                <span className="font-semibold text-sm whitespace-nowrap pr-2">
-                  PC QTY
-                </span>
-                <div className="w-full relative z-0">
-                  <input
-                    type="number"
-                    className={`w-full h-10 text-sm pr-[4.5rem] pl-5 rounded-md outline-none border border-BORDERGRAY ${
-                      (selectedItemType === "ctn" ||
-                        findInCart?.product?._id === product?._id) &&
-                      "cursor-not-allowed"
-                    }`}
-                    placeholder={`${product?.PK} PC`}
-                    value={pkitemsQuantity}
-                    onChange={(e) => {
-                      !loading && setpkItemsQuantity(e.target.value);
-                      !loading &&
-                        setPkCount(
-                          e.target.value >= product?.PK
-                            ? parseFloat(
-                                (e.target.value / product?.PK)
-                                  .toFixed(1)
-                                  .toString()
-                                  .split(".")[0]
-                              )
-                            : 0
-                        );
-                      if (
-                        !/^\d+$/.test(e.target.value) &&
-                        e.target.value !== ""
-                      ) {
-                        toast.dismiss();
-                        return toast.error("Please enter valid value.");
-                      }
-                    }}
-                    disabled={
-                      selectedItemType === "ctn" ||
-                      findInCart?.product?._id === product?._id ||
-                      (loading && selectedProductId?._id === product?._id)
-                    }
-                  />
-                  <span className="font-semibold text-BLACK w-14 text-xs absolute top-1/2 -translate-y-1/2 right-6">
-                    {pkCount} PK
-                  </span>
-                  <button
-                    type="button"
-                    disabled={
-                      loading && selectedProductId?._id === product?._id
-                    }
-                  >
-                    <AiOutlineMinus
-                      className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 left-1`}
-                      onClick={() => {
-                        !loading &&
-                          selectedProductId?._id !== product?._id &&
-                          handleMinusPkQuantity(
-                            parseFloat(product?.PK),
-                            parseFloat(pkCount - 1)
-                          );
-                        findInCart !== null &&
-                          handleChangeAddedItemInCart("minus", "pk");
-                      }}
-                    />
-                  </button>
-                  <button
-                    type="button"
-                    disabled={
-                      loading && selectedProductId?._id === product?._id
-                    }
-                  >
-                    <AiOutlinePlus
-                      className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2 `}
-                      onClick={() => {
-                        !loading &&
-                          selectedProductId?._id !== product?._id &&
-                          handlePlusPkQuantity(
-                            parseFloat(product?.PK),
-                            parseFloat(pkCount + 1)
-                          );
-                        findInCart !== null &&
-                          handleChangeAddedItemInCart("plus", "pk");
-                      }}
-                    />
-                  </button>
-                </div>
-              </div> */}
-              {/* old ctn */}
-              {/* <div className="flex xl:w-64 w-full items-center gap-x-2 relative z-0 ml-auto">
-                <input
-                  name={
-                    from === "TopSellers"
-                      ? product?.name.concat(from)
-                      : product?.name
-                  }
-                  type="radio"
-                  className="md:w-6 md:h-6 w-7 h-7"
-                  onChange={(e) => setSelectedItemType(e.target.value)}
-                  value="ctn"
-                  id={
-                    from === "TopSellers"
-                      ? product?.name.concat(from)
-                      : product?.name
-                  }
-                  disabled={loading && selectedProductId?._id === product?._id}
-                />{" "}
-                <span className="font-semibold text-sm whitespace-nowrap">
-                  CTN QTY
-                </span>
-                <div className="w-full relative z-0">
-                  <input
-                    type="number"
-                    className={`w-full h-10 text-sm pr-[4.5rem] pl-5 rounded-md outline-none border border-BORDERGRAY`}
-                    placeholder={`${product?.CTN} PC`}
-                    value={ctnItemQuantity}
-                    onChange={(e) => {
-                      !loading && setCtnItemQuantity(e.target.value);
-                      !loading &&
-                        setCtnCount(
-                          e.target.value >= product?.CTN
-                            ? parseFloat(
-                                (e.target.value / product?.CTN)
-                                  .toFixed(1)
-                                  .toString()
-                                  .split(".")[0]
-                              )
-                            : 0
-                        );
-                      if (
-                        !/^\d+$/.test(e.target.value) &&
-                        e.target.value !== ""
-                      ) {
-                        toast.dismiss();
-                        return toast.error("Please enter valid value.");
-                      }
-                    }}
-                    disabled={
-                      selectedItemType === "pk" ||
-                      findInCart?.product?._id === product?._id ||
-                      (loading && selectedProductId?._id === product?._id)
-                    }
-                  />
-                  <span className="font-semibold w-14 text-BLACK text-xs absolute top-1/2 -translate-y-1/2 right-6">
-                    {ctnCount} CTN
-                  </span>
-                  <button
-                    type="button"
-                    disabled={
-                      loading && selectedProductId?._id === product?._id
-                    }
-                  >
-                    <AiOutlineMinus
-                      className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 left-1`}
-                      onClick={() => {
-                        !loading &&
-                          selectedProductId?._id !== product?._id &&
-                          handleMinusCTNQuantity(
-                            parseFloat(product?.CTN),
-                            parseFloat(ctnCount - 1)
-                          );
-                        findInCart !== null &&
-                          handleChangeAddedItemInCart("minus", "ctn");
-                      }}
-                    />
-                  </button>
-                  <button
-                    type="button"
-                    disabled={
-                      loading && selectedProductId?._id === product?._id
-                    }
-                  >
-                    <AiOutlinePlus
-                      className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2`}
-                      onClick={() => {
-                        !loading &&
-                          selectedProductId?._id !== product?._id &&
-                          handlePlusCTNQuantity(
-                            parseFloat(product?.CTN),
-                            parseFloat(ctnCount + 1)
-                          );
-                        findInCart !== null &&
-                          handleChangeAddedItemInCart("plus", "ctn");
-                      }}
-                    />
-                  </button>
-                </div>
-              </div> */}
 
               {/* btn */}
               <p className="flex items-center gap-x-2">
@@ -1392,8 +1171,8 @@ const ProductCard = ({
                       type="button"
                       className={` ${
                         findInCart?.product?._id === product?._id
-                        ? "bg-rose-500 text-black"
-                        : "bg-DARKRED text-white"
+                          ? "bg-rose-500 text-black"
+                          : "bg-DARKRED text-white"
                       } text-center w-full p-2 rounded-lg`}
                       onClick={() => handleSubmitAddProduct()}
                       disabled={loading && selectedProductId === product?._id}
@@ -1447,7 +1226,7 @@ const ProductCard = ({
               {t("top_seller")}
             </p>
           )}
-          {/* prodcut img */}
+          {/* product img */}
           <div className="relative w-auto z-20 pt-3">
             <img
               src={BaseUrl.concat(product?.images[0])}
@@ -1545,219 +1324,6 @@ const ProductCard = ({
                   </li>
                 </ul>
               )}
-              {/* pk old*/}
-              {/* <div className="flex w-full items-center lg:gap-x-1 md:gap-x-0 gap-x-1 relative z-0">
-                <input
-                  name={
-                    from === "TopSellers"
-                      ? product?.name.concat(from)
-                      : product?.name
-                  }
-                  type="radio"
-                  className="md:w-6 md:h-6 w-7 h-7"
-                  onChange={(e) => setSelectedItemType(e.target.value)}
-                  defaultChecked={true}
-                  value="pk"
-                  id={
-                    from === "TopSellers"
-                      ? product?.name.concat(from)
-                      : product?.name
-                  }
-                  disabled={
-                    (loading && selectedProductId === product?._id) ||
-                    findInCart?.product?._id === product?._id
-                  }
-                />
-                <span className="font-semibold text-xs whitespace-nowrap">
-                  PK QTY
-                </span>
-                <input
-                  type="number"
-                  className={`w-11/12 h-10 text-sm pl-5 pr-16 rounded-md outline-none border border-BORDERGRAY ${
-                    (selectedItemType === "ctn" ||
-                      findInCart?.product?._id === product?._id) &&
-                    "cursor-not-allowed"
-                  }`}
-                  placeholder={`${product?.PK} PC`}
-                  value={pkitemsQuantity}
-                  onChange={(e) => {
-                    setpkItemsQuantity(e.target.value);
-                    setPkCount(
-                      e.target.value >= product?.PK
-                        ? parseFloat(
-                            (e.target.value / product?.PK)
-                              .toFixed(1)
-                              .toString()
-                              .split(".")[0]
-                          )
-                        : 0
-                    );
-                    if (
-                      !/^\d+$/.test(e.target.value) &&
-                      e.target.value !== ""
-                    ) {
-                      toast.dismiss();
-                      return toast.error("Please enter valid value.");
-                    }
-                  }}
-                  disabled={
-                    selectedItemType === "ctn" ||
-                    findInCart?.product?._id === product?._id ||
-                    (loading && selectedProductId === product?._id)
-                  }
-                />
-                <span className="font-semibold w-10 text-BLACK text-xs absolute top-1/2 -translate-y-1/2 right-4">
-                  {pkCount} PK
-                </span>
-                <button
-                  type="button"
-                  disabled={!loading && selectedProductId === product?._id}
-                >
-                  <AiOutlineMinus
-                    role="button"
-                    className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 lg:left-[65px] left-[73px] ${
-                      selectedView === "grid3"
-                        ? " md:left-[60px]"
-                        : " md:left-[55px]"
-                    } 
-                  `}
-                    onClick={() => {
-                      !loading &&
-                        selectedProductId !== product?._id &&
-                        handleMinusPkQuantity(
-                          parseFloat(product?.PK),
-                          parseFloat(pkCount - 1)
-                        );
-                      findInCart !== null &&
-                        handleChangeAddedItemInCart("minus", "pk");
-                    }}
-                  />
-                </button>
-                <button
-                  type="button"
-                  disabled={!loading && selectedProductId === product?._id}
-                >
-                  <AiOutlinePlus
-                    role="button"
-                    className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 right-3 `}
-                    onClick={() => {
-                      !loading &&
-                        selectedProductId !== product?._id &&
-                        handlePlusPkQuantity(
-                          parseFloat(product?.PK),
-                          parseFloat(pkCount + 1)
-                        );
-                      findInCart !== null &&
-                        handleChangeAddedItemInCart("plus", "pk");
-                    }}
-                  />
-                </button>
-              </div> */}
-
-              {/*old ctn */}
-              {/* <div className="flex w-full items-center lg:gap-x-1 md:gap-x-0 gap-x-1 relative z-0">
-                <input
-                  name={
-                    from === "TopSellers"
-                      ? product?.name.concat(from)
-                      : product?.name
-                  }
-                  type="radio"
-                  className="md:w-6 md:h-6 w-7 h-7"
-                  onChange={(e) => setSelectedItemType(e.target.value)}
-                  value="ctn"
-                  id={
-                    from === "TopSellers"
-                      ? product?.name.concat(from)
-                      : product?.name
-                  }
-                  disabled={
-                    (loading && selectedProductId === product?._id) ||
-                    findInCart?.product?._id === product?._id
-                  }
-                />
-                <span className="font-semibold text-xs whitespace-nowrap">
-                  CTN QTY
-                </span>
-                <input
-                  type="text"
-                  className={`w-11/12  h-10 text-sm pl-5 pr-[74px] rounded-md outline-none border border-BORDERGRAY ${
-                    (selectedItemType === "pk" ||
-                      findInCart?.product?._id === product?._id) &&
-                    "cursor-not-allowed"
-                  }`}
-                  placeholder={`${product?.CTN} PC`}
-                  value={ctnItemQuantity}
-                  onChange={(e) => {
-                    setCtnItemQuantity(e.target.value);
-                    setCtnCount(
-                      e.target.value >= product?.CTN
-                        ? parseFloat(
-                            (e.target.value / product?.CTN)
-                              .toFixed(1)
-                              .toString()
-                              .split(".")[0]
-                          )
-                        : 0
-                    );
-                    if (
-                      !/^\d+$/.test(e.target.value) &&
-                      e.target.value !== ""
-                    ) {
-                      toast.dismiss();
-                      return toast.error("Please enter valid value.");
-                    }
-                  }}
-                  disabled={
-                    selectedItemType === "pk" ||
-                    findInCart?.product?._id === product?._id ||
-                    (loading && selectedProductId === product?._id)
-                  }
-                />
-                <span className="font-semibold w-12 text-xs text-BLACK absolute top-1/2 -translate-y-1/2 right-3">
-                  {ctnCount} CTN
-                </span>
-                <button
-                  type="button"
-                  disabled={!loading && selectedProductId === product?._id}
-                >
-                  <AiOutlineMinus
-                    role="button"
-                    className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 lg:left-[73px] md:left-[66px] left-[79px]`}
-                    onClick={() => {
-                      !loading &&
-                        selectedProductId !== product?._id &&
-                        handleMinusCTNQuantity(
-                          parseFloat(product?.CTN),
-                          parseFloat(ctnCount - 1)
-                        );
-                      findInCart !== null &&
-                        handleChangeAddedItemInCart("minus", "ctn");
-                    }}
-                  />
-                </button>
-                <button
-                  type="button"
-                  disabled={!loading && selectedProductId === product?._id}
-                >
-                  <AiOutlinePlus
-                    role="button"
-                    className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2
-                
-                  `}
-                    onClick={() => {
-                      !loading &&
-                        selectedProductId !== product?._id &&
-                        handlePlusCTNQuantity(
-                          parseFloat(product?.CTN),
-                          parseFloat(ctnCount + 1)
-                        );
-                      findInCart !== null &&
-                        handleChangeAddedItemInCart("plus", "ctn");
-                    }}
-                  />
-                </button>
-              </div> */}
               {/* new pk */}
               <div className="flex w-full h-full items-center lg:gap-x-1 md:gap-x-0 gap-x-1 relative z-0">
                 <input
@@ -1805,6 +1371,8 @@ const ProductCard = ({
                     type="number"
                     className={`w-full text-right h-11 text-sm pr-10 pl-12 rounded-md outline-none border border-BORDERGRAY`}
                     placeholder="0"
+                    min="0"
+                    max="999999"
                     value={
                       findInCart?.product?._id === product?._id &&
                       alreadyInCartPkCount !== null
@@ -1812,6 +1380,11 @@ const ProductCard = ({
                         : pkCount
                     }
                     onChange={(e) => {
+                      if (e.target.value.length > 6) {
+                        toast.remove();
+                        toast.error("Can't add more than 6 numbers");
+                        return true;
+                      }
                       handleOnchangePkCountField(e);
                     }}
                     disabled={
@@ -1975,8 +1548,8 @@ const ProductCard = ({
                       type="button"
                       className={` ${
                         findInCart?.product?._id === product?._id
-                        ? "bg-rose-500 text-black"
-                        : "bg-DARKRED text-white"
+                          ? "bg-rose-500 text-black"
+                          : "bg-DARKRED text-white"
                       } text-center w-full p-2 rounded-lg`}
                       disabled={
                         (loading && selectedProductId === product?._id) ||
@@ -1993,7 +1566,7 @@ const ProductCard = ({
                       type="button"
                       className={` ${
                         findInCart?.product?._id === product?._id
-                          ? "bg-rose-500 text-black" 
+                          ? "bg-rose-500 text-black"
                           : "bg-DARKRED text-white"
                       }  text-center w-full p-2 rounded-lg`}
                       disabled={loading && selectedProductId === product?._id}

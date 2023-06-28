@@ -34,7 +34,6 @@ const Header = () => {
   const [showCategoryDropdown, setshowCategoryDropdown] = useState(false);
   const [showSecondCategoryDropDown, setshowSecondCategoryDropDown] =
     useState(false);
-  const [showOnMouseOver, setShowOnMouseOver] = useState(false);
 
   const { user, userLanguage } = useSelector((state) => state.Auth);
   const { searchTerm, activeSubcategory, activeCategory } = useSelector(
@@ -156,13 +155,6 @@ const Header = () => {
   function onClickOutsideForSecondDropdown() {
     setshowSecondCategoryDropDown(false);
   }
-  // useEffect(() => {
-  //   window.addEventListener("resize", () => {
-  //     if (window.screen.width > 600) return setShowOnMouseOver(true);
-  //     else return setShowOnMouseOver(false);
-  //   });
-  //   return () => window.removeEventListener("resize", () => {});
-  // }, []);
 
   return (
     <div className="h-auto w-auto">
