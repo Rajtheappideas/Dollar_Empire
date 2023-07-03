@@ -31,29 +31,29 @@ const SingleOrderHistory = ({ setShowSingleOrder, orderId, setOrderId }) => {
               {t("Order ID")} : {singleOrder?.orderId}
             </p>
             <p className="flex items-center w-full text-lg">
-              <span className="font-bold md:w-60 w-40">
+              <span className="font-bold md:w-40 w-fit mr-2 md:mr-0">
                 {t("Shipping method")}:
               </span>{" "}
               <span className="font-normal">{singleOrder?.shippingMethod}</span>
             </p>
             <p className="flex items-center w-full text-lg">
-              <span className="font-bold md:w-60 w-40">{t("Order date")}:</span>{" "}
+              <span className="font-bold md:w-40 w-fit mr-2 md:mr-0">{t("Order date")}:</span>{" "}
               <span className="font-normal">
                 {moment(singleOrder?.orderDate).format("lll")}
               </span>
             </p>
             <p className="flex items-center w-full text-lg">
-              <span className="font-bold md:w-60 w-40">{t("Items")}:</span>{" "}
+              <span className="font-bold md:w-40 w-fit mr-2 md:mr-0">{t("Items")}:</span>{" "}
               <span className="font-normal">{singleOrder?.items.length}</span>
             </p>
             <p className="flex items-center w-full text-lg">
-              <span className="font-bold md:w-60 w-40">{t("Quantity")}:</span>{" "}
+              <span className="font-bold md:w-40 w-fit mr-2 md:mr-0">{t("Quantity")}:</span>{" "}
               <span className="font-normal">
                 {singleOrder?.totalQuantity} PC
               </span>
             </p>
             <p className="flex items-center w-full text-lg">
-              <span className="font-bold md:w-60 w-40">{t("Total")}:</span>{" "}
+              <span className="font-bold md:w-40 w-fit mr-2 md:mr-0">{t("Total")}:</span>{" "}
               <span className="font-normal">
                 ${parseInt(singleOrder?.total).toFixed(2)}
               </span>

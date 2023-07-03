@@ -15,8 +15,8 @@ const ScrollToTop = () => {
   return (
     <div
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-      className={`fixed z-40 transition ease-in active:scale-90 duration-100 hover:bg-black/80 bottom-5 right-5  font-semibold md:leading-[48px] leading-10 bg-black text-white text-center md:w-40 w-32 md:h-12 h-10 rounded-lg ${
-        showButton ? "block" : "hidden"
+      className={`fixed z-40 transition ease-in-out active:scale-90 duration-100 bottom-5 right-5  font-semibold md:leading-[48px] leading-10 bg-black text-white text-center md:w-40 w-32 md:h-12 h-10 rounded-lg ${
+        showButton ? "scale-100" : "scale-0"
       }`}
       role="button"
     >

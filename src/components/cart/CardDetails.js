@@ -407,13 +407,6 @@ const CardDetails = ({ summaryFixed, additionalNotes }) => {
                 <label className="text-black font-medium block text-left text-lg">
                   {t("Expiration Date")}*
                 </label>
-                {/* <input
-                  type="month"
-                  datatype="MM/yyyy"
-                  className="bg-LIGHTGRAY xl:w-1/2 w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                  {...getFieldProps("expiry")}
-                  name="expiry"
-                /> */}
                 <DatePicker
                   adjustDateOnChange={true}
                   selected={values.expiry}
@@ -421,12 +414,13 @@ const CardDetails = ({ summaryFixed, additionalNotes }) => {
                     setFieldValue("expiry", date);
                   }}
                   closeOnScroll={true}
-                  dateFormat="MM/yyyy"
+                  dateFormat="MM/yy"
                   showMonthYearPicker
                   maxDate={aTenYearFromNow}
                   minDate={new Date()}
                   name="expiry"
-                  placeholderText="select expiry date"
+                  placeholderText="mm/yy"
+                  dropdownMode="scroll"
                   className="bg-LIGHTGRAY xl:w-1/2 w-full text-black placeholder:text-gray-400 rounded-md p-3"
                 />
                 <ErrorMessage name="expiry" component={TextError} />

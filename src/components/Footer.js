@@ -6,6 +6,7 @@ import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { GetUrl, PostUrl } from "../BaseUrl";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
 
 const Footer = () => {
   const [email, setEmail] = useState("");
@@ -15,9 +16,12 @@ const Footer = () => {
 
   const toTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
+  const { contact } = useSelector((state) => state.getContent);
+
   const { t } = useTranslation();
 
-  const handleSubscribeNewsletter = () => {
+  const handleSubscribeNewsletter = (e) => {
+    e.preventDefault();
     toast.dismiss();
     if (email === "") {
       return toast.error("Please Enter email!!!");
@@ -69,19 +73,16 @@ const Footer = () => {
         {/* details */}
         <div className="space-y-3 w-full">
           <p className="flex items-start">
-            <MdLocationOn className="w-5 h-5 text-black inline-block mt-2 mr-2" />
-            4423 E. Bandini Blvd.
-            <br /> Los Angeles, CA 90058
+            <MdLocationOn className="w-8 h-8 text-black inline-block mt-2 mr-2" />
+            {contact?.address}
           </p>
           <p>
             <GrMail className="w-5 h-5 text-black inline-block mr-2" />
-            <a href="mailto:sales@dollarempirellc.com">
-              sales@dollarempirellc.com
-            </a>
+            <a href="mailto:sales@dollarempirellc.com">{contact?.email}</a>
           </p>
           <p>
             <MdCall className="w-5 h-5 text-black inline-block mr-2" />
-            <a href="tel:323-268-8999">323-268-8999</a>
+            <a href="tel:323-268-8999">{contact?.phone}</a>
           </p>
         </div>
         {/* links */}
@@ -140,7 +141,7 @@ const Footer = () => {
         {/* subscibe */}
         <div className="space-y-3  w-full">
           <p>{t("subscribe_to_our_newsletter")}</p>
-          <div className="flex items-center w-full">
+          <form className="flex items-center w-full">
             <input
               type="email"
               className="pl-3 h-10 w-2/3 outline-none text-black font-normal"
@@ -151,14 +152,14 @@ const Footer = () => {
               onChange={(e) => setEmail(e.target.value)}
             />
             <button
-              type="button"
-              onClick={() => handleSubscribeNewsletter()}
-              className="bg-black text-white hover:bg-PRIMARY duration-300 ease-linear h-10 px-1 w-auto"
+              type="submit"
+              onClick={(e) => handleSubscribeNewsletter(e)}
+              className="bg-black text-white hover:bg-PRIMARY duration-100 ease-linear h-10 px-1 w-auto"
               disabled={loading}
             >
               {loading ? t("Submitting").concat("...") : t("subscribe")}
             </button>
-          </div>
+          </form>
         </div>
       </div>
       {/* bottom part */}

@@ -499,6 +499,18 @@ const Signup = () => {
                 <ErrorMessage name="checkBox" component={TextError} />
               )}
             </div>
+            {message !== "" && (
+              <p className="font-semibold text-center text-lg ">
+                <span className="text-red-500">{message}</span>&nbsp;
+                <Link to="/sign-in" className="underline text-blue-400">
+                  {t("login")}
+                </Link>
+                &nbsp;OR&nbsp;
+                <Link to="/forgot-password" className="underline text-blue-400">
+                  {t("Forgot-password")}
+                </Link>
+              </p>
+            )}
             {/* btn */}
             <button
               type="submit"

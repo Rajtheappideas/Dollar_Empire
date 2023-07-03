@@ -26,8 +26,7 @@ import { Link } from "react-router-dom";
 import { handleChangeActiveComponent } from "../redux/GlobalStates";
 import { useCallback } from "react";
 
-const FavouriteForMobile
- = ({ favourite, handleAddSelectedItem }) => {
+const FavouriteForMobile = ({ favourite, handleAddSelectedItem }) => {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteProductId, setDeleteProductId] = useState(null);
   const [selectedItemType, setSelectedItemType] = useState("pk");
@@ -624,28 +623,41 @@ const FavouriteForMobile
     }
   }, [pkitemsQuantity, ctnItemQuantity, selectedItemType]);
 
+  // find in cart
   useEffect(() => {
-    if (favourites.length !== 0 && cartItems.length > 0) {
+    if (
+      favourites.length !== 0 &&
+      cartItems.length > 0 &&
+      !changingLoading &&
+      !loading
+    ) {
       const findItemInCart = cartItems.find(
         (i) => i.product?._id === favourite?._id
       );
-      setFindInCart(findItemInCart);
+      if (findItemInCart !== undefined) {
+        setFindInCart(findItemInCart);
+        if (findItemInCart?.type === "pk") {
+          setAlreadyInCartPkItems(
+            findItemInCart?.quantity * findItemInCart?.product?.PK
+          );
+          setAlreadyInCartPkCount(findItemInCart?.quantity);
+        } else {
+          setAlreadyInCartCtnItems(
+            findItemInCart?.quantity * findItemInCart?.product?.CTN
+          );
+          setAlreadyInCartCtnCount(findItemInCart?.quantity);
+        }
+      }
     } else {
       setFindInCart(null);
     }
-  }, [
-    alreadyInCartCtnCount,
-    alreadyInCartPkCount,
-    favourites,
-    selectedItems,
-    changingLoading,
-    loading,
-  ]);
+  }, [favourites, selectedItems, changingLoading, loading]);
+  
   // set checked if already in cart
   const findItems = useCallback(async () => {
     if (
       findInCart?.product?._id === favourite?._id &&
-      findInCart?.type === "pk" 
+      findInCart?.type === "pk"
     ) {
       pkRef.current.checked = await true;
       setSelectedItemType("pk");
@@ -692,16 +704,16 @@ const FavouriteForMobile
         </th>
         <td className="lg:p-3 p-2 text-center w-full">#{favourite?.number}</td>
       </tr>
-      <tr>
+      <tr className="text-center w-full mx-auto">
         <th className="bg-PRIMARY p-2 min-w-[5rem] max-w-[5rem] text-white">
           {t("Packing")}
         </th>
-        <td className="lg:p-3 p-2 space-y-3">
-          <div className="text-right w-auto">
+        <td className="lg:p-3 p-2 space-y-3 text-center w-full">
+          <div className="text-center w-full">
             <p className="whitespace-nowrap text-center text-xs">
               {favourite?.PK} PC/PK , {favourite?.CTN} PC/CTN
             </p>
-            <div className=" space-y-3">
+            <div className="space-y-3 text-center w-full">
               <p className="font-bold text-xs text-center">
                 ${favourite?.price}/PC, $
                 {parseFloat(favourite?.price * favourite?.PK).toFixed(2)}
@@ -710,7 +722,7 @@ const FavouriteForMobile
                 /CTN
               </p>
               {/* pk */}
-              <div className="gap-x-1 w-auto items-center relative z-0 ml-auto flex">
+              <div className="gap-x-1 w-full mx-auto items-center justify-center relative z-0 flex">
                 <input
                   name={favourite?._id}
                   type="radio"
@@ -725,7 +737,7 @@ const FavouriteForMobile
                   }
                 />
                 <span className="font-semibold text-xs whitespace-nowrap pr-2">
-                  PC QTY
+                  PC
                 </span>
                 <div className="w-full relative z-0">
                   <span
@@ -734,7 +746,7 @@ const FavouriteForMobile
                         ? "text-gray-400 font-normal"
                         : "text-BLACK font-semibold"
                     } 
-                    -translate-y-1/2 left-6`}
+                    -translate-y-1/2 left-9`}
                   >
                     {`${
                       pkitemsQuantity === "" && alreadyInCartPkItems === ""
@@ -746,7 +758,7 @@ const FavouriteForMobile
                   </span>
                   <input
                     type="number"
-                    className={`w-full text-right h-10 text-sm pr-10 pl-10 rounded-md outline-none border border-BORDERGRAY`}
+                    className={`w-full text-right h-10 text-sm pr-14 pl-10 rounded-md outline-none border border-BORDERGRAY`}
                     placeholder="0"
                     value={
                       findInCart?.product?._id === favourite?._id &&
@@ -769,7 +781,7 @@ const FavouriteForMobile
                       findInCart?.type === "ctn"
                     }
                   />
-                  <span className="font-semibold text-BLACK text-xs absolute top-1/2 -translate-y-1/2 right-6">
+                  <span className="font-semibold text-BLACK text-xs absolute top-1/2 -translate-y-1/2 right-10">
                     PK
                   </span>
                   <button
@@ -778,16 +790,17 @@ const FavouriteForMobile
                       (!loading && selectedProductId === favourite?._id) ||
                       findInCart?.type === "ctn"
                     }
+                    className={`text-BLACK bg-blue-500 md:w-7 w-8 text-center h-full rounded-md absolute top-1/2 -translate-y-1/2 left-0`}
+                    onClick={() => {
+                      handleOnClickFieldForBoth("minus", "pk");
+                    }}
                   >
                     <AiOutlineMinus
-                      className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 left-1`}
-                      onClick={() => {
-                        handleOnClickFieldForBoth("minus", "pk");
-                      }}
                       disabled={
                         (!loading && selectedProductId === favourite?._id) ||
                         findInCart?.type === "ctn"
                       }
+                      className="mx-auto"
                     />
                   </button>
                   <button
@@ -796,22 +809,23 @@ const FavouriteForMobile
                       (!loading && selectedProductId === favourite?._id) ||
                       findInCart?.type === "ctn"
                     }
+                    className={`text-BLACK bg-blue-500 md:w-7 w-8 text-center h-full rounded-md absolute top-1/2 -translate-y-1/2 right-0`}
+                    onClick={() => {
+                      handleOnClickFieldForBoth("plus", "pk");
+                    }}
                   >
                     <AiOutlinePlus
-                      className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2`}
-                      onClick={() => {
-                        handleOnClickFieldForBoth("plus", "pk");
-                      }}
                       disabled={
                         (!loading && selectedProductId === favourite?._id) ||
                         findInCart?.type === "ctn"
                       }
+                      className="mx-auto"
                     />
                   </button>
                 </div>
               </div>
               {/* ctn */}
-              <div className="gap-x-1 flex w-auto items-center  relative z-0 ml-auto">
+              <div className="gap-x-1 flex w-full items-center  relative z-0 ml-auto">
                 <input
                   name={favourite?._id}
                   type="radio"
@@ -826,7 +840,7 @@ const FavouriteForMobile
                   }
                 />
                 <span className="font-semibold text-xs whitespace-nowrap">
-                  CTN QTY
+                  CTN
                 </span>
                 <div className="w-full relative z-0">
                   <span
@@ -835,7 +849,7 @@ const FavouriteForMobile
                         ? "text-gray-400 font-normal"
                         : "text-BLACK font-semibold"
                     }
-                    -translate-y-1/2 left-6`}
+                    -translate-y-1/2 left-10`}
                   >
                     {`${
                       ctnItemQuantity === "" && alreadyInCartCtnItems === ""
@@ -847,7 +861,7 @@ const FavouriteForMobile
                   </span>
                   <input
                     type="number"
-                    className={`w-full text-right h-10 text-sm pr-12 pl-10 rounded-md outline-none border border-BORDERGRAY`}
+                    className={`w-full text-right h-10 text-sm pr-16 pl-10 rounded-md outline-none border border-BORDERGRAY`}
                     placeholder="0"
                     min="0"
                     max="999999"
@@ -870,7 +884,7 @@ const FavouriteForMobile
                       findInCart?.type === "pk"
                     }
                   />
-                  <span className="font-semibold text-BLACK text-xs absolute top-1/2 -translate-y-1/2 right-6">
+                  <span className="font-semibold text-BLACK text-xs absolute top-1/2 -translate-y-1/2 right-10">
                     CTN
                   </span>
                   <button
@@ -879,16 +893,17 @@ const FavouriteForMobile
                       (!loading && selectedProductId === favourite?._id) ||
                       findInCart?.type === "pk"
                     }
+                    className={`text-BLACK bg-blue-500 md:w-7 w-8 text-center h-full rounded-md absolute top-1/2 -translate-y-1/2 left-0`}
+                    onClick={() => {
+                      handleOnClickFieldForBoth("minus", "ctn");
+                    }}
                   >
                     <AiOutlineMinus
-                      className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 left-1`}
-                      onClick={() => {
-                        handleOnClickFieldForBoth("minus", "ctn");
-                      }}
                       disabled={
                         (!loading && selectedProductId === favourite?._id) ||
                         findInCart?.type === "pk"
                       }
+                      className="mx-auto"
                     />
                   </button>
                   <button
@@ -897,22 +912,23 @@ const FavouriteForMobile
                       (!loading && selectedProductId === favourite?._id) ||
                       findInCart?.type === "pk"
                     }
+                    className={`text-BLACK bg-blue-500 md:w-7 w-8 text-center h-full rounded-md absolute top-1/2 -translate-y-1/2 right-0`}
+                    onClick={() => {
+                      handleOnClickFieldForBoth("plus", "ctn");
+                    }}
                   >
                     <AiOutlinePlus
-                      className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2`}
-                      onClick={() => {
-                        handleOnClickFieldForBoth("plus", "ctn");
-                      }}
                       disabled={
                         (!loading && selectedProductId === favourite?._id) ||
                         findInCart?.type === "pk"
                       }
+                      className="mx-auto"
                     />
                   </button>
                 </div>
               </div>
               {/* btn */}
-              <p className="w-10/12 h-auto ml-auto">
+              <p className="w-11/12 h-auto ml-auto">
                 <Link
                   to={
                     user === null
@@ -1021,5 +1037,4 @@ const FavouriteForMobile
   );
 };
 
-export default FavouriteForMobile
-;
+export default FavouriteForMobile;

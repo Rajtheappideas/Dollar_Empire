@@ -9,6 +9,7 @@ import {
   calculateTotalQuantity,
   handleAddProductToCart,
   handleDecreaseQuantityAndAmount,
+  handleRemoveItemFromCart,
   handleRemoveOneProductFromSelected,
   handleRemoveProductToCart,
   handleUpdateTotalQuantityAndAmount,
@@ -55,7 +56,8 @@ const ShoppingCart = ({ summaryFixed }) => {
     if (response) {
       response
         .then((res) => {
-          dispatch(handleDecreaseQuantityAndAmount({ quantity, amount }));
+          dispatch(handleRemoveItemFromCart(id));
+          // dispatch(handleDecreaseQuantityAndAmount({ quantity, amount }));
           setDeleteLoading(false);
         })
         .catch((err) => {
@@ -125,6 +127,7 @@ const ShoppingCart = ({ summaryFixed }) => {
       return toast.error("Please enter valid value.");
     }
   };
+
   return (
     <div className="relative w-full flex xl:flex-row flex-col items-start justify-start gap-4 pb-10 max-h-fit">
       {/* table */}
@@ -210,9 +213,13 @@ const ShoppingCart = ({ summaryFixed }) => {
                     <td className="whitespace-nowrap lg:p-5 p-3 uppercase">
                       {productId !== item?.product?._id ? (
                         item?.type === "pk" ? (
-                          `${item?.quantity} ${item?.type}`
+                          `${item?.quantity} ${item?.type} (${
+                            item?.quantity * item?.product?.PK
+                          }PC)`
                         ) : (
-                          `${item?.quantity} ${item?.type}`
+                          `${item?.quantity} ${item?.type} (${
+                            item?.quantity * item?.product?.CTN
+                          }PC)`
                         )
                       ) : (
                         <form
@@ -247,6 +254,13 @@ const ShoppingCart = ({ summaryFixed }) => {
                       )}
                       {showChangeField && productId === item?.product?._id ? (
                         <>
+                          <span className="text-xs">
+                            (
+                            {item?.type === "pk"
+                              ? productQuantity * item?.product?.PK
+                              : productQuantity * item?.product?.CTN}
+                            PC)
+                          </span>
                           <span
                             role="button"
                             className="text-PRIMARY underline ml-1 capitalize"

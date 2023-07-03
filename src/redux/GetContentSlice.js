@@ -145,6 +145,21 @@ export const handleGetSpecialOrders = createAsyncThunk(
   }
 );
 
+export const handleGetContactUsDetails = createAsyncThunk(
+  "getContent/handleGetContactUsDetails",
+  async () => {
+    toast.dismiss();
+    const response = await GetUrl(`contact`, {})
+      .then((res) => {
+        return res.data;
+      })
+      .catch((err) => {
+        return err.response.data;
+      });
+    return response;
+  }
+);
+
 const initialState = {
   loading: false,
   success: false,
@@ -159,6 +174,7 @@ const initialState = {
   shippingAndFreight: null,
   aboutUs: null,
   specialOrders: null,
+  contact: null,
 };
 
 const GetContentSlice = createSlice({
@@ -385,6 +401,33 @@ const GetContentSlice = createSlice({
       state.success = false;
       state.error = error;
       state.specialOrders = null;
+    });
+    // get contact us details
+    builder.addCase(handleGetContactUsDetails.pending, (state) => {
+      state.loading = true;
+      state.success = false;
+      state.error = null;
+      state.contact = null;
+    });
+    builder.addCase(
+      handleGetContactUsDetails.fulfilled,
+      (state, { payload }) => {
+        state.loading = false;
+        state.success = true;
+        if (payload.status === "fail") {
+          state.error = payload;
+          state.contact = null;
+        } else {
+          state.error = null;
+          state.contact = payload?.contact;
+        }
+      }
+    );
+    builder.addCase(handleGetContactUsDetails.rejected, (state, { error }) => {
+      state.loading = false;
+      state.success = false;
+      state.error = error;
+      state.contact = null;
     });
   },
 });

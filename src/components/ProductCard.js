@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { Link } from "react-router-dom";
+import { Link, useBeforeUnload } from "react-router-dom";
 import {
   AiOutlineShoppingCart,
   AiOutlineHeart,
@@ -58,8 +58,8 @@ const ProductCard = ({
   const [ctnItemQuantity, setCtnItemQuantity] = useState("");
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [findInCart, setFindInCart] = useState(null);
-  const [pkCount, setPkCount] = useState(0);
-  const [ctnCount, setCtnCount] = useState(0);
+  const [pkCount, setPkCount] = useState(null);
+  const [ctnCount, setCtnCount] = useState(null);
   const [isFavourite, setisFavourite] = useState(false);
   const [activeEnlargeImage, setActiveEnlargeImage] = useState(0);
   const [changeTo, setChangeTo] = useState(false);
@@ -146,8 +146,8 @@ const ProductCard = ({
       toast.remove();
       setpkItemsQuantity("");
       setCtnItemQuantity("");
-      setPkCount(0);
-      setCtnCount(0);
+      setPkCount(null);
+      setCtnCount(null);
       return toast.error(
         "Minimum Quantity should be more than 0 And enter a valid value."
       );
@@ -155,13 +155,13 @@ const ProductCard = ({
       toast.remove();
       toast.error("Please enter quantity in PK, you choose PK");
       setCtnItemQuantity("");
-      setCtnCount(0);
+      setCtnCount(null);
       return true;
     } else if (selectedItemType === "ctn" && pkitemsQuantity > 0) {
       toast.remove();
       toast.error("Please enter quantity in CTN, you choose CTN");
       setpkItemsQuantity("");
-      setPkCount(0);
+      setPkCount(null);
       return true;
     } else if (
       !/^\d+$/.test(pkitemsQuantity !== "" ? pkitemsQuantity : ctnItemQuantity)
@@ -169,8 +169,8 @@ const ProductCard = ({
       toast.remove();
       setpkItemsQuantity("");
       setCtnItemQuantity("");
-      setPkCount(0);
-      setCtnCount(0);
+      setPkCount(null);
+      setCtnCount(null);
       return toast.error("Please enter valid value!!!");
     }
     setSelectedProductId(id);
@@ -255,7 +255,7 @@ const ProductCard = ({
     if (findInCart?.product?._id !== product?._id) {
       setSelectedItemType("pk");
       pkRef.current.checked = true;
-      if (pkCount === 0) {
+      if (pkCount === 0 || pkCount == null) {
         setPkCount(0);
       } else {
         setPkCount(count);
@@ -285,7 +285,7 @@ const ProductCard = ({
     if (findInCart?.product?._id !== product?._id) {
       setSelectedItemType("ctn");
       ctnRef.current.checked = true;
-      if (ctnCount === 0) {
+      if (ctnCount === 0 || ctnCount === null) {
         setCtnCount(0);
       } else {
         setCtnCount(count);
@@ -348,6 +348,8 @@ const ProductCard = ({
                 setAlreadyInCartCtnCount(null);
                 setAlreadyInCartPkItems("");
                 setAlreadyInCartCtnItems("");
+                setPkCount(null);
+                setCtnCount(null);
                 setChangeTo(false);
               }
               setChangingLoading(false);
@@ -397,6 +399,8 @@ const ProductCard = ({
                 setAlreadyInCartCtnCount(null);
                 setAlreadyInCartPkItems("");
                 setAlreadyInCartCtnItems("");
+                setPkCount(null);
+                setCtnCount(null);
               }
             })
             .catch((err) => {
@@ -420,9 +424,9 @@ const ProductCard = ({
       toast.error(
         "Please enter valid value and value can't be less than zero!!!"
       );
-      setPkCount(0);
+      setPkCount(null);
       setpkItemsQuantity("");
-      setAlreadyInCartPkCount(0);
+      setAlreadyInCartPkCount(null);
       setAlreadyInCartPkItems("");
       return true;
     }
@@ -463,9 +467,9 @@ const ProductCard = ({
       toast.error(
         "Please enter valid value and value can't be less than zero!!!"
       );
-      setCtnCount(0);
+      setCtnCount(null);
       setCtnItemQuantity("");
-      setAlreadyInCartCtnCount(0);
+      setAlreadyInCartCtnCount(null);
       setAlreadyInCartCtnItems("");
       return true;
     }
@@ -505,14 +509,14 @@ const ProductCard = ({
             product?._id
           );
         } else {
-          if (pkCount.toString().length >= 6) {
+          if (pkCount !== null && pkCount.toString().length >= 6) {
             toast.remove();
             toast.error("Can't add more than 6 numbers !!!");
             return true;
           }
           handlePlusPkQuantity(
             parseFloat(product?.PK),
-            parseFloat(pkCount + 1),
+            parseFloat(pkCount === null ? 1 : pkCount + 1),
             product?._id
           );
         }
@@ -594,18 +598,18 @@ const ProductCard = ({
         if (action === "minus") {
           handleMinusCTNQuantity(
             parseFloat(product?.CTN),
-            parseFloat(ctnCount - 1),
+            parseFloat(ctnCount !== null && ctnCount - 1),
             product?._id
           );
         } else {
-          if (ctnCount.toString().length >= 6) {
+          if (ctnCount !== null && ctnCount.toString().length >= 6) {
             toast.remove();
             toast.error("Can't add more than 6 numbers !!!");
             return true;
           }
           handlePlusCTNQuantity(
             parseFloat(product?.CTN),
-            parseFloat(ctnCount + 1),
+            parseFloat(ctnCount === null ? 1 : ctnCount + 1),
             product?._id
           );
         }
@@ -686,7 +690,6 @@ const ProductCard = ({
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (popImageRef.current && !popImageRef.current.contains(event?.target)) {
-        // handleClickOutside();
         dispatch(closeEnlargeImagePopup());
       }
     };
@@ -702,22 +705,28 @@ const ProductCard = ({
 
   // find items already in cart
   useEffect(() => {
-    if (cart !== null && cartItems.length > 0) {
+    if (cart !== null && cartItems.length > 0 && !loading && !changingLoading) {
       const findItemInCart = cartItems.find(
         (i) => i.product?._id === product?._id
       );
-      setFindInCart(findItemInCart);
+      if (findItemInCart !== undefined) {
+        setFindInCart(findItemInCart);
+        if (findItemInCart?.type === "pk") {
+          setAlreadyInCartPkItems(
+            findItemInCart?.quantity * findItemInCart?.product?.PK
+          );
+          setAlreadyInCartPkCount(findItemInCart?.quantity);
+        } else {
+          setAlreadyInCartCtnItems(
+            findItemInCart?.quantity * findItemInCart?.product?.CTN
+          );
+          setAlreadyInCartCtnCount(findItemInCart?.quantity);
+        }
+      }
     } else {
       setFindInCart(null);
     }
-  }, [
-    showProductDetailsPopup,
-    selectedItems,
-    changingLoading,
-    loading,
-    alreadyInCartPkCount,
-    alreadyInCartCtnCount,
-  ]);
+  }, [showProductDetailsPopup, selectedItems, changingLoading, loading]);
 
   // set product to favourite item
   useEffect(() => {
@@ -788,6 +797,7 @@ const ProductCard = ({
     calculateTotalAmount();
     calculateTotalQuantity();
   });
+
   return (
     <>
       {selectedView === "gridsingle" ? (
@@ -811,7 +821,6 @@ const ProductCard = ({
               onClick={() => {
                 dispatch(showPopup());
                 dispatch(handleSetSingelProductId(product?._id));
-                window.scrollTo({ top: 0, behavior: "smooth" });
               }}
               loading="lazy"
             />
@@ -920,13 +929,17 @@ const ProductCard = ({
           {/* right side */}
           {user !== null && (
             <div className="h-auto xl:w-auto w-full space-y-3 xl:text-right text-left">
+              <p className="font-bold">
+                {product?.PK} PC / PK,
+                {product?.CTN} PC / CTN{" "}
+              </p>
               <p className="font-bold md:text-lg">
                 ${product?.price}/PC, $
                 {(product?.price * product?.PK).toFixed(2)}
                 /PK, ${(product?.price * product?.CTN).toFixed(2)}/CTN
               </p>
               {/* new pk */}
-              <div className="flex xl:w-64 w-full items-center gap-x-2 relative z-0 ml-auto">
+              <div className="flex xl:w-11/12 w-full items-center gap-x-1 relative z-0 ml-auto">
                 <input
                   name={
                     from === "TopSellers"
@@ -950,16 +963,16 @@ const ProductCard = ({
                   }
                 />{" "}
                 <span className="font-semibold text-sm whitespace-nowrap pr-2">
-                  PC QTY
+                  PC
                 </span>
                 <div className="w-full relative z-0">
                   <span
-                    className={`absolute text-left top-1/2 w-full max-w-[4rem] text-sm ${
+                    className={`absolute text-left top-1/2 w-fit sm:text-sm text-xs ${
                       pkitemsQuantity === "" && alreadyInCartPkItems === ""
                         ? "text-gray-400 font-normal"
                         : "text-BLACK font-semibold"
                     }
-                    -translate-y-1/2 left-5`}
+                    -translate-y-1/2 md:left-12 left-9`}
                   >
                     {`${
                       pkitemsQuantity === "" && alreadyInCartPkItems === ""
@@ -971,7 +984,7 @@ const ProductCard = ({
                   </span>
                   <input
                     type="number"
-                    className={`w-full text-right h-10 text-sm pr-10 pl-12 rounded-md outline-none border border-BORDERGRAY`}
+                    className={`w-full text-right h-10 sm:text-sm text-xs md:pr-16 pr-14 pl-12 rounded-md outline-none border border-BORDERGRAY`}
                     placeholder="0"
                     value={
                       findInCart?.product?._id === product?._id &&
@@ -987,7 +1000,7 @@ const ProductCard = ({
                       findInCart?.type === "ctn"
                     }
                   />
-                  <span className="font-semibold text-BLACK text-xs absolute top-1/2 -translate-y-1/2 right-6">
+                  <span className="font-semibold text-BLACK text-xs absolute top-1/2 -translate-y-1/2 md:right-12 right-10">
                     PK
                   </span>
                   <button
@@ -996,13 +1009,12 @@ const ProductCard = ({
                       (!loading && selectedProductId === product?._id) ||
                       findInCart?.type === "ctn"
                     }
+                    className={`text-BLACK md:w-10 w-8 bg-blue-500 rounded-md h-full absolute top-1/2 -translate-y-1/2 left-0`}
+                    onClick={() => {
+                      handleOnClickFieldForBoth("minus", "pk");
+                    }}
                   >
-                    <AiOutlineMinus
-                      className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 left-1`}
-                      onClick={() => {
-                        handleOnClickFieldForBoth("minus", "pk");
-                      }}
-                    />
+                    <AiOutlineMinus className="w-5 h-5 mx-auto" />
                   </button>
                   <button
                     type="button"
@@ -1010,18 +1022,17 @@ const ProductCard = ({
                       (!loading && selectedProductId === product?._id) ||
                       findInCart?.type === "ctn"
                     }
+                    className={`text-BLACK md:w-10 w-8 bg-blue-500 rounded-md h-full absolute top-1/2 -translate-y-1/2 right-0`}
+                    onClick={() => {
+                      handleOnClickFieldForBoth("plus", "pk");
+                    }}
                   >
-                    <AiOutlinePlus
-                      className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2 `}
-                      onClick={() => {
-                        handleOnClickFieldForBoth("plus", "pk");
-                      }}
-                    />
+                    <AiOutlinePlus className="w-4 h-4 mx-auto" />
                   </button>
                 </div>
               </div>
               {/* new ctn */}
-              <div className="flex xl:w-64 w-full items-center gap-x-2 relative z-0 ml-auto">
+              <div className="flex xl:w-11/12 w-full items-center gap-x-2 relative z-0 ml-auto">
                 <input
                   name={
                     from === "TopSellers"
@@ -1044,16 +1055,16 @@ const ProductCard = ({
                   }
                 />{" "}
                 <span className="font-semibold text-sm whitespace-nowrap">
-                  CTN QTY
+                  CTN
                 </span>
                 <div className="w-full relative z-0">
                   <span
-                    className={`absolute text-left top-1/2 w-full max-w-[3.5rem] text-sm ${
+                    className={`absolute text-left top-1/2 w-fit sm:text-sm text-xs ${
                       ctnItemQuantity === "" && alreadyInCartCtnItems === ""
                         ? "text-gray-400 font-normal"
                         : "text-BLACK font-semibold"
                     }
-                    -translate-y-1/2 left-5`}
+                    -translate-y-1/2 md:left-12 left-9`}
                   >
                     {`${
                       ctnItemQuantity === "" && alreadyInCartCtnItems === ""
@@ -1065,7 +1076,7 @@ const ProductCard = ({
                   </span>
                   <input
                     type="number"
-                    className={`w-full h-10 text-right text-sm pr-12 pl-12 rounded-md outline-none border border-BORDERGRAY`}
+                    className={`w-full h-10 text-right sm:text-sm text-xs md:pr-[68px] pr-16 pl-12 rounded-md outline-none border border-BORDERGRAY`}
                     placeholder="0"
                     value={
                       findInCart?.product?._id === product?._id &&
@@ -1081,7 +1092,7 @@ const ProductCard = ({
                       findInCart?.type === "pk"
                     }
                   />
-                  <span className="font-semibold text-BLACK text-xs absolute top-1/2 -translate-y-1/2 right-6">
+                  <span className="font-semibold text-BLACK text-xs absolute top-1/2 -translate-y-1/2 md:right-11 right-9">
                     CTN
                   </span>
                   <button
@@ -1090,13 +1101,12 @@ const ProductCard = ({
                       (!loading && selectedProductId === product?._id) ||
                       findInCart?.type === "pk"
                     }
+                    className={`text-BLACK md:w-10 w-8 bg-blue-500 rounded-md h-full absolute top-1/2 -translate-y-1/2 left-0`}
+                    onClick={() => {
+                      handleOnClickFieldForBoth("minus", "ctn");
+                    }}
                   >
-                    <AiOutlineMinus
-                      className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 left-1`}
-                      onClick={() => {
-                        handleOnClickFieldForBoth("minus", "ctn");
-                      }}
-                    />
+                    <AiOutlineMinus className="w-5 h-5 mx-auto" />
                   </button>
                   <button
                     type="button"
@@ -1104,13 +1114,12 @@ const ProductCard = ({
                       (!loading && selectedProductId === product?._id) ||
                       findInCart?.type === "pk"
                     }
+                    className={`text-BLACK md:w-10 w-8 bg-blue-500 rounded-md h-full absolute top-1/2 -translate-y-1/2 right-0`}
+                    onClick={() => {
+                      handleOnClickFieldForBoth("plus", "ctn");
+                    }}
                   >
-                    <AiOutlinePlus
-                      className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2`}
-                      onClick={() => {
-                        handleOnClickFieldForBoth("plus", "ctn");
-                      }}
-                    />
+                    <AiOutlinePlus className="h-4 w-4 mx-auto" />
                   </button>
                 </div>
               </div>
@@ -1227,7 +1236,7 @@ const ProductCard = ({
             </p>
           )}
           {/* product img */}
-          <div className="relative w-auto z-20 pt-3">
+          <div className="relative z-0 w-auto pt-3">
             <img
               src={BaseUrl.concat(product?.images[0])}
               alt={product?.name}
@@ -1236,7 +1245,6 @@ const ProductCard = ({
               onClick={() => {
                 dispatch(showPopup());
                 dispatch(handleSetSingelProductId(product?._id));
-                // window.scrollTo({ top: 0, behavior: "smooth" });
               }}
               loading="lazy"
             />
@@ -1253,7 +1261,7 @@ const ProductCard = ({
               showEnlargeImage && (
                 <div
                   ref={popImageRef}
-                  className="absolute bg-black/30 z-50 xl:w-[200%] w-full xl:min-h-[30rem] lg:min-h-[20rem] min-h-[22rem] max-h-screen top-0 md:-right-5 right-0 backdrop-blur-sm"
+                  className="absolute bg-black/30 z-40 xl:w-[200%] w-full xl:min-h-[30rem] lg:min-h-[20rem] min-h-[22rem] max-h-screen top-0 md:-right-5 right-0 backdrop-blur-sm"
                 >
                   <AiOutlineClose
                     role="button"
@@ -1290,17 +1298,17 @@ const ProductCard = ({
             ITEM NO.{product?.number}
           </p>
           <p
-            className="font-bold tracking-normal truncate"
+            className="font-bold tracking-normal text-base break-words line_camp max-h-12 md:min-h-[3rem] min-h-[1rem] "
             title={product?.name}
           >
             {product?.name}
           </p>
-          <p className="font-bold tracking-normal text-sm">
+          <p className="tracking-normal text-sm font-bold">
             {`${product?.PK} PC / PK | ${product?.CTN} PC / CTN`}
           </p>
           {user !== null ? (
             <Fragment>
-              <p className="md:text-base text-xs font-bold text-left">
+              <p className="lg:text-[13px] md:text-xs text-sm font-bold whitespace-nowrap text-left">
                 ${product?.price}/PC | $
                 {(product?.price * product?.PK).toFixed(2)}
                 /PK | $ {(product?.price * product?.CTN).toFixed(2)}/CTN
@@ -1325,7 +1333,7 @@ const ProductCard = ({
                 </ul>
               )}
               {/* new pk */}
-              <div className="flex w-full h-full items-center lg:gap-x-1 md:gap-x-0 gap-x-1 relative z-0">
+              <div className="flex w-full h-full items-center gap-x-1 relative z-0">
                 <input
                   name={
                     from === "TopSellers"
@@ -1337,6 +1345,7 @@ const ProductCard = ({
                   className="md:w-6 md:h-6 w-7 h-7"
                   onChange={(e) => setSelectedItemType(e.target.value)}
                   value="pk"
+                  style={{ backgroundColor: "red", color: "red" }}
                   id={
                     from === "TopSellers"
                       ? product?.name.concat(from)
@@ -1348,16 +1357,20 @@ const ProductCard = ({
                   }
                 />
                 <span className="font-semibold text-xs whitespace-nowrap">
-                  PK QTY
+                  PK
                 </span>
                 <div className="relative h-full w-full">
                   <span
-                    className={`absolute  top-1/2 w-full max-w-[4rem] text-sm ${
+                    className={`absolute top-1/2 text-xs sm:text-sm ${
+                      selectedView === "grid3"
+                        ? "w-fit"
+                        : "md:max-w-[3rem] w-fit"
+                    } text-sm ${
                       pkitemsQuantity === "" && alreadyInCartPkItems === ""
                         ? "text-gray-400 font-normal"
                         : "text-BLACK font-semibold"
                     } 
-                    -translate-y-1/2 lg:left-4 left-5`}
+                    -translate-y-1/2 lg:left-8 md:left-7 left-10`}
                   >
                     {`${
                       pkitemsQuantity === "" && alreadyInCartPkItems === ""
@@ -1369,7 +1382,7 @@ const ProductCard = ({
                   </span>
                   <input
                     type="number"
-                    className={`w-full text-right h-11 text-sm pr-10 pl-12 rounded-md outline-none border border-BORDERGRAY`}
+                    className={`w-full text-right h-11 sm:text-sm text-xs lg:pr-[52px] md:pr-12 pr-14 pl-12 rounded-md outline-none border border-BORDERGRAY`}
                     placeholder="0"
                     min="0"
                     max="999999"
@@ -1392,7 +1405,7 @@ const ProductCard = ({
                       findInCart?.type === "ctn"
                     }
                   />
-                  <span className="font-semibold text-BLACK text-xs absolute top-1/2 -translate-y-[39%] right-6">
+                  <span className="font-semibold text-BLACK text-xs absolute top-1/2 -translate-y-1/2 lg:right-9 md:right-8 right-10">
                     PK
                   </span>
                 </div>
@@ -1403,18 +1416,12 @@ const ProductCard = ({
                     (!loading && selectedProductId === product?._id) ||
                     findInCart?.type === "ctn"
                   }
+                  className={`text-BLACK h-full bg-blue-500 md:w-7 w-8 text-center rounded-md absolute top-1/2 -translate-y-1/2 md:left-10 left-12`}
+                  onClick={() => {
+                    handleOnClickFieldForBoth("minus", "pk");
+                  }}
                 >
-                  <AiOutlineMinus
-                    className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-[39%] lg:left-[65px] left-[75px] ${
-                      selectedView === "grid3"
-                        ? " md:left-[60px]"
-                        : " md:left-[62px]"
-                    } 
-                  `}
-                    onClick={() => {
-                      handleOnClickFieldForBoth("minus", "pk");
-                    }}
-                  />
+                  <AiOutlineMinus className="h-5 w-5 mx-auto" />
                 </button>
                 <button
                   type="button"
@@ -1422,13 +1429,12 @@ const ProductCard = ({
                     (!loading && selectedProductId === product?._id) ||
                     findInCart?.type === "ctn"
                   }
+                  className={`text-BLACK h-full rounded-md bg-blue-500 md:w-7 w-8 absolute top-1/2 -translate-y-1/2 right-0 `}
+                  onClick={() => {
+                    handleOnClickFieldForBoth("plus", "pk");
+                  }}
                 >
-                  <AiOutlinePlus
-                    className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 lg:right-3 md:right-1 right-3 `}
-                    onClick={() => {
-                      handleOnClickFieldForBoth("plus", "pk");
-                    }}
-                  />
+                  <AiOutlinePlus className="h-4 w-4 mx-auto" />
                 </button>
               </div>
               {/* new ctn */}
@@ -1456,16 +1462,20 @@ const ProductCard = ({
                   }
                 />
                 <span className="font-semibold text-xs whitespace-nowrap">
-                  CTN QTY
+                  CTN
                 </span>
                 <div className="relative w-full">
                   <span
-                    className={`absolute  top-1/2 w-full max-w-[3.5rem] text-sm ${
+                    className={`absolute top-1/2 sm:text-sm text-xs ${
+                      selectedView === "grid3"
+                        ? "w-fit"
+                        : "md:max-w-[3rem] w-fit"
+                    } text-sm ${
                       ctnItemQuantity === "" && alreadyInCartCtnItems === ""
                         ? "text-gray-400 font-normal"
                         : "text-BLACK font-semibold"
                     }
-                    -translate-y-1/2 lg:left-4 left-5`}
+                    -translate-y-1/2 lg:left-9 md:left-8 left-10`}
                   >
                     {`${
                       ctnItemQuantity === "" && alreadyInCartCtnItems === ""
@@ -1477,7 +1487,7 @@ const ProductCard = ({
                   </span>
                   <input
                     type="number"
-                    className={`w-full text-right h-11 text-sm pr-11 pl-12 rounded-md outline-none border border-BORDERGRAY`}
+                    className={`w-full text-right h-11 sm:text-sm text-xs lg:pr-[60px] md:pr-14 pr-16 pl-12 rounded-md outline-none border border-BORDERGRAY`}
                     placeholder="0"
                     value={
                       findInCart?.product?._id === product?._id &&
@@ -1493,7 +1503,7 @@ const ProductCard = ({
                       findInCart?.type === "pk"
                     }
                   />
-                  <span className="font-semibold text-BLACK text-xs absolute top-1/2 -translate-y-1/2 right-5">
+                  <span className="font-semibold text-BLACK text-xs absolute top-1/2 -translate-y-1/2 lg:right-9 md:right-8 right-10">
                     CTN
                   </span>
                 </div>
@@ -1504,13 +1514,12 @@ const ProductCard = ({
                     (!loading && selectedProductId === product?._id) ||
                     findInCart?.type === "pk"
                   }
+                  className={`text-BLACK h-full bg-blue-500 md:w-7 w-8 text-center rounded-md absolute top-1/2 -translate-y-1/2 lg:left-[50px] md:left-11 left-14`}
+                  onClick={() => {
+                    handleOnClickFieldForBoth("minus", "ctn");
+                  }}
                 >
-                  <AiOutlineMinus
-                    className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 lg:left-[73px] md:left-[70px] left-[79px]`}
-                    onClick={() => {
-                      handleOnClickFieldForBoth("minus", "ctn");
-                    }}
-                  />
+                  <AiOutlineMinus className="w-5 h-5 mx-auto" />
                 </button>
                 <button
                   type="button"
@@ -1518,15 +1527,12 @@ const ProductCard = ({
                     (!loading && selectedProductId === product?._id) ||
                     findInCart?.type === "pk"
                   }
+                  className={`text-BLACK h-full rounded-md bg-blue-500 md:w-7 w-8 absolute top-1/2 -translate-y-1/2 right-0 `}
+                  onClick={() => {
+                    handleOnClickFieldForBoth("plus", "ctn");
+                  }}
                 >
-                  <AiOutlinePlus
-                    className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 lg:right-3 md:right-1 right-3
-                
-                  `}
-                    onClick={() => {
-                      handleOnClickFieldForBoth("plus", "ctn");
-                    }}
-                  />
+                  <AiOutlinePlus className="h-4 w-4 mx-auto" />
                 </button>
               </div>
               {/* add to cart btn */}

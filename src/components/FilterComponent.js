@@ -9,46 +9,42 @@ import {
   handleChangeActiveSubcategory,
 } from "../redux/GlobalStates";
 
-const FilterComponent = ({
-  setActivePrice,
-  activePrice,
-  title,
-  categories,
-  // setActiveSubCategory,
-  // setActiveCategory,
-  // activeCategory,
-}) => {
+const FilterComponent = ({ setActivePrice, activePrice, title }) => {
   const [shownCategories, setShownCategories] = useState([]);
   const [isOpenCategory, setIsOpenCategory] = useState(true);
   const [isOpenPrice, setIsOpenPrice] = useState(true);
+  const [isCategoryThere, setIsCategoryThere] = useState(false);
 
-  const { subCategories, loading } = useSelector((state) => state.getContent);
+  const { subCategories, loading, categories } = useSelector(
+    (state) => state.getContent
+  );
   const { activeCategory, activeSubcategory } = useSelector(
     (state) => state.globalStates
   );
 
   const { t } = useTranslation();
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
     const category = subCategories[title];
     setShownCategories(category?.subcategories);
-    if (
-      shownCategories !== undefined &&
-      shownCategories.length !== 0 &&
-      categories.includes(title)
-    ) {
-      // setActiveCategory(shownCategories[0]?.name);
+
+    const titleIsThere = categories.find((cate) => cate?.name.includes(title));
+    if (!titleIsThere) {
+      setIsCategoryThere(false);
+    } else {
+      setIsCategoryThere(true);
     }
   }, [loading, title]);
 
-  const dispatch = useDispatch();
   return (
     <div className="w-full border border-BORDERGRAY bg-white">
       <p className="text-xl font-semibold text-left border-b border-BORDERGRAY py-4 px-3">
         {t("Filters")}
       </p>
       {/* categories */}
-      {!loading && categories.includes(title) && (
+      {!loading && isCategoryThere && (
         <div className="w-full space-y-2 px-3 py-3 border-b border-BORDERGRAY">
           <p
             role="button"
@@ -56,29 +52,27 @@ const FilterComponent = ({
             onClick={() => setIsOpenCategory(!isOpenCategory)}
           >
             <span>Categories</span>
-            {isOpenCategory ? (
-              <FiChevronUp className="h-6 w-6" />
-            ) : (
-              <FiChevronDown className="h-6 w-6" />
-            )}
+            <FiChevronUp
+              className={`h-6 w-6 ${
+                isOpenCategory ? "rotate-0" : "rotate-180"
+              }  transition duration-100`}
+            />
           </p>
           {isOpenCategory && (
             <>
               <p
                 role="button"
                 onClick={() => {
-                  // setActiveSubCategory("");
-                  // setActiveCategory("");
                   dispatch(handleChangeActiveCategory(title));
                   dispatch(handleChangeActiveSubcategory(""));
                 }}
                 className="text-PRIMARY text-left text-base font-semibold"
               >
-                {categories.includes(title) && title}
+                {activeCategory}
               </p>
               <ul className="pl-3 text-lg font-normal text-gray-400 capitalize">
-                {shownCategories !== undefined &&
-                  shownCategories.length !== 0 &&
+                {shownCategories.length !== 0 &&
+                  shownCategories !== undefined &&
                   shownCategories.map((category) => (
                     <li
                       key={category?._id}
@@ -87,12 +81,13 @@ const FilterComponent = ({
                         "text-BLACK font-semibold bg-gray-200"
                       } cursor-pointer hover:bg-gray-100 hover:text-black `}
                       onClick={() => {
-                        // setActiveCategory(category?.name);
-                        // setActiveSubCategory(category?.name);
                         dispatch(handleChangeActiveSubcategory(category?.name));
                       }}
                     >
                       {category?.name}
+                      <span className="text-black text-sm float-right">
+                        ({category?.productCount})
+                      </span>
                     </li>
                   ))}
               </ul>
@@ -108,11 +103,11 @@ const FilterComponent = ({
           onClick={() => setIsOpenPrice(!isOpenPrice)}
         >
           <span>{t("Price")}</span>
-          {isOpenPrice ? (
-            <FiChevronUp className="h-6 w-6" />
-          ) : (
-            <FiChevronDown className="h-6 w-6" />
-          )}
+          <FiChevronUp
+            className={`h-6 w-6 ${
+              isOpenPrice ? "rotate-0" : "rotate-180"
+            }  transition duration-100`}
+          />
         </p>
         {isOpenPrice && (
           <ul className="pl-3 text-lg font-normal text-gray-400 capitalize space-y-1">
@@ -126,8 +121,11 @@ const FilterComponent = ({
                 value={activePrice}
                 className="h-5 w-5 cursor-pointer"
                 defaultChecked
+                id="any"
               />
-              <span>{t("Any")}</span>
+              <label htmlFor="any" className="cursor-pointer">
+                {t("Any")}
+              </label>
             </li>
             <li
               className={`text-BLACK font-semibold flex items-center gap-x-2`}
@@ -138,8 +136,11 @@ const FilterComponent = ({
                 type="radio"
                 value={activePrice}
                 className="h-5 w-5 cursor-pointer"
+                id="below $0.49"
               />
-              <span>{t("Below")} $0.49</span>
+              <label htmlFor="below $0.49" className="cursor-pointer">
+                {t("Below")} $0.49
+              </label>
             </li>
             <li
               className={`text-BLACK font-semibold flex items-center gap-x-2`}
@@ -150,8 +151,11 @@ const FilterComponent = ({
                 type="radio"
                 value={activePrice}
                 className="h-5 w-5 cursor-pointer"
+                id="$0.50 - $0.79"
               />
-              <span>$0.50 - $0.79</span>
+              <label htmlFor="$0.50 - $0.79" className="cursor-pointer">
+                $0.50 - $0.79
+              </label>
             </li>
             <li
               className={`text-BLACK font-semibold flex items-center gap-x-2`}
@@ -162,8 +166,11 @@ const FilterComponent = ({
                 type="radio"
                 value={activePrice}
                 className="h-5 w-5 cursor-pointer"
+                id="$0.80 - $0.99"
               />
-              <span>$0.80 - $0.99</span>
+              <label htmlFor="$0.80 - $0.99" className="cursor-pointer">
+                $0.80 - $0.99
+              </label>
             </li>
             <li
               className={`text-BLACK font-semibold flex items-center gap-x-2`}
@@ -174,8 +181,11 @@ const FilterComponent = ({
                 type="radio"
                 value={activePrice}
                 className="h-5 w-5 cursor-pointer"
+                id="$1.00 - $1.49"
               />
-              <span>$1.00 - $1.49</span>
+              <label htmlFor="$1.00 - $1.49" className="cursor-pointer">
+                $1.00 - $1.49
+              </label>
             </li>
             <li
               className={`text-BLACK font-semibold flex items-center gap-x-2`}
@@ -186,8 +196,11 @@ const FilterComponent = ({
                 type="radio"
                 value={activePrice}
                 className="h-5 w-5 cursor-pointer"
+                id="$1.50 - $1.99"
               />
-              <span>$1.50 - $1.99</span>
+              <label htmlFor="$1.50 - $1.99" className="cursor-pointer">
+                $1.50 - $1.99
+              </label>
             </li>
             <li
               className={`text-BLACK font-semibold flex items-center gap-x-2`}
@@ -198,8 +211,11 @@ const FilterComponent = ({
                 type="radio"
                 value={activePrice}
                 className="h-5 w-5 cursor-pointer"
+                id="$2.00 above"
               />
-              <span>$2.00 And {t("Above")}</span>
+              <label htmlFor="$2.00 above" className="cursor-pointer">
+                $2.00 And {t("Above")}
+              </label>
             </li>
             <li
               className={`text-BLACK font-semibold flex items-center gap-x-2`}
@@ -210,8 +226,11 @@ const FilterComponent = ({
                 type="radio"
                 value={activePrice}
                 className="h-5 w-5 cursor-pointer"
+                id="lowtohigh"
               />
-              <span>{t("Low to high")}</span>
+              <label htmlFor="lowtohigh" className="cursor-pointer">
+                {t("Low to high")}
+              </label>
             </li>
             <li
               className={`text-BLACK font-semibold flex items-center gap-x-2`}
@@ -222,8 +241,11 @@ const FilterComponent = ({
                 type="radio"
                 value={activePrice}
                 className="h-5 w-5 cursor-pointer"
+                id="hightolow"
               />
-              <span>{t("High to low")}</span>
+              <label htmlFor="hightolow" className="cursor-pointer">
+                {t("High to low")}
+              </label>
             </li>
           </ul>
         )}

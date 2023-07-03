@@ -17,8 +17,12 @@ import "swiper/css/navigation";
 import "swiper/css/thumbs";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  closeEnlargeImagePopup,
   closePopup,
   handleChangeActiveComponent,
+  handleChangeEnlargeImageFrom,
+  handleChangeEnlargeImageId,
+  showEnlargeImagePopup,
   showPopup,
 } from "../redux/GlobalStates";
 import { Link } from "react-router-dom";
@@ -53,8 +57,8 @@ const ProductDetailPopup = ({}) => {
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [findInCart, setFindInCart] = useState(null);
   const [addProductToCartLoading, setAddProductToCartLoading] = useState(false);
-  const [pkCount, setPkCount] = useState(0);
-  const [ctnCount, setCtnCount] = useState(0);
+  const [pkCount, setPkCount] = useState(null);
+  const [ctnCount, setCtnCount] = useState(null);
   const [isFavourite, setIsFavourite] = useState(false);
   const [changeTo, setChangeTo] = useState(false);
   const [changingLoading, setChangingLoading] = useState(false);
@@ -62,11 +66,19 @@ const ProductDetailPopup = ({}) => {
   const [alreadyInCartCtnCount, setAlreadyInCartCtnCount] = useState(null);
   const [alreadyInCartPkItems, setAlreadyInCartPkItems] = useState("");
   const [alreadyInCartCtnItems, setAlreadyInCartCtnItems] = useState("");
+  const [activeEnlargeImage, setActiveEnlargeImage] = useState(0);
 
   const { user, token } = useSelector((state) => state.Auth);
-  const { singleProductId, showProductDetailsPopup } = useSelector(
-    (state) => state.globalStates
-  );
+
+  const {
+    showProductDetailsPopup,
+    showEnlargeImage,
+    singleProductId,
+    activeEnlargeImageId,
+    activeEnlargeImageFrom,
+    singleProductEnlargeImageId,
+  } = useSelector((state) => state.globalStates);
+
   const { singleProduct, singleProductLoading } = useSelector(
     (state) => state.products
   );
@@ -78,6 +90,7 @@ const ProductDetailPopup = ({}) => {
   const AbortControllerRef = useRef(null);
   const pkRef = useRef(null);
   const ctnRef = useRef(null);
+  const popImageRef = useRef(null);
 
   const dispatch = useDispatch();
 
@@ -128,7 +141,7 @@ const ProductDetailPopup = ({}) => {
     } else if (selectedItemType === "pk" && ctnItemQuantity > 0) {
       toast.error("Please enter quantity in PK, you choose PK");
       setCtnItemQuantity("");
-      setCtnCount(0);
+      setCtnCount(null);
       setAlreadyInCartCtnCount(null);
       setAlreadyInCartCtnItems("");
       return true;
@@ -144,8 +157,8 @@ const ProductDetailPopup = ({}) => {
     ) {
       setCtnItemQuantity("");
       setpkItemsQuantity("");
-      setPkCount(0);
-      setCtnCount(0);
+      setPkCount(null);
+      setCtnCount(null);
       setAlreadyInCartPkItems("");
       setAlreadyInCartPkCount(null);
       setAlreadyInCartCtnCount(null);
@@ -171,8 +184,8 @@ const ProductDetailPopup = ({}) => {
             dispatch(handleUpdateTotalQuantityAndAmount({ quantity, amount }));
             setCtnItemQuantity("");
             setpkItemsQuantity("");
-            setCtnCount(0);
-            setPkCount(0);
+            setCtnCount(null);
+            setPkCount(null);
             setSelectedItemType("pk");
             setSelectedProductId(null);
             setAlreadyInCartCtnCount(null);
@@ -455,206 +468,6 @@ const ProductDetailPopup = ({}) => {
     }
   };
 
-  // const handleOnClickFieldForBoth = (action, type) => {
-  //   console.log(type,action);
-  //   if (type === "pk") {
-  //     if (
-  //       !addProductToCartLoading &&
-  //       selectedProductId !== singleProduct?._id &&
-  //       findInCart?.product?._id !== singleProduct?._id
-  //     ) {
-  //       if (action === "minus") {
-  //         handleMinusPkQuantity(
-  //           parseFloat(singleProduct?.PK),
-  //           parseFloat(pkCount - 1),
-  //           singleProduct?._id
-  //         );
-  //       } else {
-  //         if (pkCount.length >= 6) {
-  //           toast.remove();
-  //           toast.error("Can't add more than 6 numbers !!!");
-  //           return true;
-  //         }
-  //         handlePlusPkQuantity(
-  //           parseFloat(singleProduct?.PK),
-  //           parseFloat(pkCount + 1),
-  //           singleProduct?._id
-  //         );
-  //       }
-  //     } else if (
-  //       !addProductToCartLoading &&
-  //       selectedProductId !== singleProduct?._id &&
-  //       findInCart?.product?._id === singleProduct?._id
-  //     ) {
-  //       if (findInCart?.type !== type) {
-  //         toast.remove();
-  //         toast.error("Please change in ctn quantity!!!");
-  //         return true;
-  //       } else {
-  //         setChangeTo(true);
-  //         if (action === "minus") {
-  //           if (alreadyInCartPkCount === 0 && alreadyInCartPkCount !== null) {
-  //             return true;
-  //           }
-  //           if (alreadyInCartPkCount !== null) {
-  //             setAlreadyInCartPkCount(parseFloat(alreadyInCartPkCount) - 1);
-  //             setAlreadyInCartPkItems(
-  //               parseFloat(singleProduct?.PK) *
-  //                 parseFloat(alreadyInCartPkCount - 1)
-  //             );
-  //             handleChangeAddedItemInCart(
-  //               null,
-  //               "pk",
-  //               parseFloat(alreadyInCartPkCount) - 1
-  //             );
-  //           } else {
-  //             setAlreadyInCartPkCount(parseFloat(findInCart?.quantity) - 1);
-  //             setAlreadyInCartPkItems(
-  //               parseFloat(singleProduct?.PK) *
-  //                 parseFloat(findInCart?.quantity - 1)
-  //             );
-  //             handleChangeAddedItemInCart(
-  //               null,
-  //               "pk",
-  //               parseFloat(findInCart?.quantity) - 1
-  //             );
-  //           }
-  //         } else if (action === "plus") {
-  //           if (
-  //             alreadyInCartPkCount !== null &&
-  //             alreadyInCartPkCount.toString().length >= 6
-  //           ) {
-  //             toast.remove();
-  //             toast.error("Can't add more than 6 numbers !!!");
-  //             return true;
-  //           }
-  //           if (alreadyInCartPkCount !== null) {
-  //             setAlreadyInCartPkCount(parseFloat(alreadyInCartPkCount) + 1);
-  //             setAlreadyInCartPkItems(
-  //               parseFloat(singleProduct?.PK) *
-  //                 parseFloat(alreadyInCartPkCount + 1)
-  //             );
-  //             handleChangeAddedItemInCart(
-  //               null,
-  //               "pk",
-  //               parseFloat(alreadyInCartPkCount) + 1
-  //             );
-  //           } else {
-  //             setAlreadyInCartPkCount(parseFloat(findInCart?.quantity) + 1);
-  //             setAlreadyInCartPkItems(
-  //               parseFloat(singleProduct?.PK) *
-  //                 parseFloat(findInCart?.quantity + 1)
-  //             );
-  //             handleChangeAddedItemInCart(
-  //               null,
-  //               "pk",
-  //               parseFloat(findInCart?.quantity) + 1
-  //             );
-  //           }
-  //         }
-  //       }
-  //     }
-  //   } else if (type === "ctn") {
-  //     if (
-  //       !addProductToCartLoading &&
-  //       selectedProductId !== singleProduct?._id &&
-  //       findInCart?.product?._id !== singleProduct?._id
-  //     ) {
-  //       if (action === "minus") {
-  //         handleMinusCTNQuantity(
-  //           parseFloat(singleProduct?.CTN),
-  //           parseFloat(ctnCount - 1),
-  //           singleProduct?._id
-  //         );
-  //       } else {
-  //         if (ctnCount.length >= 6) {
-  //           toast.remove();
-  //           toast.error("Can't add more than 6 numbers !!!");
-  //           return true;
-  //         }
-  //         handlePlusCTNQuantity(
-  //           parseFloat(singleProduct?.CTN),
-  //           parseFloat(ctnCount + 1),
-  //           singleProduct?._id
-  //         );
-  //       }
-  //     } else if (
-  //       !addProductToCartLoading &&
-  //       selectedProductId !== singleProduct?._id &&
-  //       findInCart?.product?._id === singleProduct?._id &&
-  //       type === "ctn"
-  //     ) {
-  //       if (findInCart?.type !== type) {
-  //         toast.remove();
-  //         toast.error("Please change in pk quantity!!!");
-  //         return true;
-  //       } else {
-  //         setChangeTo(true);
-  //         if (action === "minus") {
-  //           if (alreadyInCartCtnCount === 0 && alreadyInCartCtnCount !== null) {
-  //             return true;
-  //           }
-  //           if (alreadyInCartCtnCount !== null) {
-  //             setAlreadyInCartCtnCount(parseFloat(alreadyInCartCtnCount) - 1);
-  //             setAlreadyInCartCtnItems(
-  //               parseFloat(singleProduct?.CTN) *
-  //                 parseFloat(alreadyInCartCtnCount - 1)
-  //             );
-  //             handleChangeAddedItemInCart(
-  //               null,
-  //               "ctn",
-  //               parseFloat(alreadyInCartCtnCount) - 1
-  //             );
-  //           } else {
-  //             setAlreadyInCartCtnCount(parseFloat(findInCart?.quantity) - 1);
-  //             setAlreadyInCartCtnItems(
-  //               parseFloat(singleProduct?.CTN) *
-  //                 parseFloat(findInCart?.quantity - 1)
-  //             );
-  //             handleChangeAddedItemInCart(
-  //               null,
-  //               "ctn",
-  //               parseFloat(findInCart?.quantity) - 1
-  //             );
-  //           }
-  //         } else {
-  //           if (
-  //             alreadyInCartCtnCount !== null &&
-  //             alreadyInCartCtnCount.toString().length >= 6
-  //           ) {
-  //             toast.remove();
-  //             toast.error("Can't add more than 6 numbers !!!");
-  //             return true;
-  //           }
-  //           if (alreadyInCartCtnCount !== null) {
-  //             setAlreadyInCartCtnCount(parseFloat(alreadyInCartCtnCount) + 1);
-  //             setAlreadyInCartCtnItems(
-  //               parseFloat(singleProduct?.CTN) *
-  //                 parseFloat(alreadyInCartCtnCount + 1)
-  //             );
-  //             handleChangeAddedItemInCart(
-  //               null,
-  //               "ctn",
-  //               parseFloat(alreadyInCartCtnCount) + 1
-  //             );
-  //           } else {
-  //             setAlreadyInCartCtnCount(parseFloat(findInCart?.quantity) + 1);
-  //             setAlreadyInCartCtnItems(
-  //               parseFloat(singleProduct?.CTN) *
-  //                 parseFloat(findInCart?.quantity + 1)
-  //             );
-  //             handleChangeAddedItemInCart(
-  //               null,
-  //               "ctn",
-  //               parseFloat(findInCart?.quantity) + 1
-  //             );
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  // };
-
   const handleOnClickFieldForBoth = (action, type) => {
     if (type === "pk") {
       if (
@@ -854,6 +667,18 @@ const ProductDetailPopup = ({}) => {
     }
   };
 
+  function handleShowEnlargeImage(index) {
+    dispatch(handleChangeEnlargeImageId(""));
+    dispatch(handleChangeEnlargeImageFrom(""));
+    if (index > 0) {
+      setActiveEnlargeImage(index);
+      dispatch(handleChangeEnlargeImageId(singleProduct?._id));
+    } else {
+      setActiveEnlargeImage(0);
+      dispatch(handleChangeEnlargeImageId(singleProduct?._id));
+    }
+  }
+
   useEffect(() => {
     dispatch(handleGetProductById({ id: singleProductId, token }));
     return () => {
@@ -871,7 +696,20 @@ const ProductDetailPopup = ({}) => {
       const findItemInCart = cartItems.find(
         (i) => i.product?._id === singleProduct?._id
       );
-      setFindInCart(findItemInCart);
+      if (findItemInCart !== undefined) {
+        setFindInCart(findItemInCart);
+        if (findItemInCart?.type === "pk") {
+          setAlreadyInCartPkItems(
+            findItemInCart?.quantity * findItemInCart?.product?.PK
+          );
+          setAlreadyInCartPkCount(findItemInCart?.quantity);
+        } else {
+          setAlreadyInCartCtnItems(
+            findItemInCart?.quantity * findItemInCart?.product?.CTN
+          );
+          setAlreadyInCartCtnCount(findItemInCart?.quantity);
+        }
+      }
     } else {
       setFindInCart(null);
     }
@@ -936,6 +774,23 @@ const ProductDetailPopup = ({}) => {
     dispatch(closePopup());
   }
 
+   // outside click for pop image
+   useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popImageRef.current && !popImageRef.current.contains(event?.target)) {
+        dispatch(closeEnlargeImagePopup());
+      }
+    };
+    document.addEventListener("click", handleClickOutside, true);
+    return () => {
+      document.removeEventListener("click", handleClickOutside, true);
+    };
+  }, [handleClickOutside]);
+
+  function handleClickOutside() {
+    dispatch(closeEnlargeImagePopup());
+  }
+
   return (
     <ReactModal
       className={` overflow-hidden scrollbar bg-black/30 z-50 w-full min-h-screen max-h-screen inset-0 backdrop-blur-sm`}
@@ -952,7 +807,11 @@ const ProductDetailPopup = ({}) => {
         <div className="absolute overflow-scroll scrollbar top-5 left-1/2 -translate-x-1/2 z-50 md:p-5 py-10 px-5 bg-white md:text-2xl font-semibold text-lg text-black flex md:flex-row flex-col items-center justify-center gap-x-3 xl:w-2/3 lg:w-10/12 w-11/12 min-h-[95%] text-center max-h-[95%]">
           <AiOutlineClose
             role="button"
-            onClick={() => dispatch(closePopup())}
+            onClick={() => {
+              dispatch(closePopup());
+              dispatch(handleChangeEnlargeImageId(""));
+              dispatch(closeEnlargeImagePopup());
+            }}
             className="absolute md:top-6 top-2 md:left-[94%] left-[90%] w-7 h-7 text-black z-40"
           />
           Loading...
@@ -968,7 +827,7 @@ const ProductDetailPopup = ({}) => {
             className="absolute md:top-6 top-2 md:left-[94%] left-[90%] w-7 h-7 text-black z-40"
           />
           {/* images */}
-          <div className="md:w-5/12 w-full">
+          <div className="md:w-5/12 w-full relative z-40">
             <div className="w-full space-y-4 relative z-0">
               <Swiper
                 modules={[Navigation, FreeMode, Thumbs]}
@@ -1011,6 +870,10 @@ const ProductDetailPopup = ({}) => {
                         alt={singleProduct?.title}
                         className="h-fit w-full object-contain object-center"
                         addProductToCartLoading="lazy"
+                        onClick={() => {
+                          dispatch(showEnlargeImagePopup());
+                          handleShowEnlargeImage(i);
+                        }}
                       />
                     </SwiperSlide>
                   ))
@@ -1033,20 +896,30 @@ const ProductDetailPopup = ({}) => {
                 <AiOutlineRight className="w-4 h-4 text-white" />
               </button>
             </div>
-
-            {/* <div className="flex items-center gap-x-2 pt-5">
-              {singleProduct?.images.map((image, index) => (
-                <img
-                  key={index}
-                  src={BaseUrl.concat(image)}
-                  className="h-20 w-20 border-2 border-PRIMARY p-2 rounded-lg cursor-pointer"
-                  onClick={() => {
-                    // handleChangeActiveSlide(index);
-                    setActiveSlide(index);
-                  }}
-                />
-              ))}
-            </div> */}
+            {activeEnlargeImageId === singleProduct?._id &&
+              showEnlargeImage && (
+                <div
+                  ref={popImageRef}
+                  className="absolute bg-black/30 z-30 md:w-[200%] w-[110%] xl:min-h-[30rem] md:min-h-[28rem] min-h-[26rem] max-h-screen md:-top-3 -top-8 -left-4 md:-right-5 right-0 backdrop-blur-sm"
+                >
+                  <AiOutlineClose
+                    role="button"
+                    onClick={() => {
+                      dispatch(closeEnlargeImagePopup());
+                    }}
+                    className="absolute top-1 right-2 w-7 h-7 text-white z-50"
+                  />
+                  <img
+                    src={BaseUrl.concat(
+                      singleProduct?.images[activeEnlargeImage]
+                    )}
+                    alt={singleProduct?.name}
+                    className="md:max-h-[25rem] max-h-screen px-2 w-full rounded-none object-contain object-center absolute top-10"
+                    title={singleProduct?.name}
+                    loading="lazy"
+                  />
+                </div>
+              )}
           </div>
           <hr className="md:hidden block my-3 bg-black w-full" />
           {/* details */}
@@ -1077,7 +950,9 @@ const ProductDetailPopup = ({}) => {
             </div>
           ) : (
             <div className="md:w-7/12 w-full space-y-2">
-              {/* <p className="text-black font-semibold">#12345677</p> */}
+              <p className="text-black font-semibold">
+                {singleProduct?.number}
+              </p>{" "}
               <p className="font-bold text-2xl">{singleProduct?.name}</p>
               <p className="font-medium text-lg whitespace-pre-line">
                 {singleProduct?.longDesc}
@@ -1094,6 +969,9 @@ const ProductDetailPopup = ({}) => {
               </p>
               <p className="font-medium">
                 CTN WT : {singleProduct?.CTNWeight} LBS
+              </p>
+              <p className="text-black font-semibold text-base">
+                {singleProduct?.PK} PC / PK | {singleProduct?.CTN} PC / CTN
               </p>
               <p className="text-PRIMARY font-semibold text-lg pb-3">
                 ${singleProduct?.price}/PC | $
@@ -1155,13 +1033,13 @@ const ProductDetailPopup = ({}) => {
                     className={`w-full font-semibold text-right p-3 pr-7 pl-16 placeholder:text-black rounded-md border outline-none border-BORDERGRAY text-black`}
                     type="number"
                     placeholder="0"
-                    min="0"
                     max="999999"
+                    min="0"
                     value={
                       findInCart?.product?._id === singleProduct?._id &&
                       alreadyInCartPkCount !== null
                         ? alreadyInCartPkCount
-                        : pkCount
+                        : pkCount !== null && pkCount
                     }
                     onChange={(e) => {
                       if (e.target.value.length > 6) {
@@ -1197,7 +1075,6 @@ const ProductDetailPopup = ({}) => {
                   />
                 </button>
               </div>
-
               {/* ctn */}
               <p className="flex items-center gap-x-4">
                 <input
@@ -1215,7 +1092,6 @@ const ProductDetailPopup = ({}) => {
                 />
                 <span>Order By CTN*</span>
               </p>
-
               <div className="flex w-full items-center gap-x-4 ">
                 <button
                   type="button"
@@ -1406,7 +1282,6 @@ const ProductDetailPopup = ({}) => {
                 )}{" "}
               </p>
               <hr className="pt-3" />
-
               <p className="text-2xl font-bold">Specification</p>
               <p className="flex items-center justify-between w-full">
                 <span className="font-normal">PK</span>
@@ -1419,8 +1294,12 @@ const ProductDetailPopup = ({}) => {
               <p className="flex items-center justify-between w-full">
                 <span className="font-normal">CTN Dimensions</span>
                 <span className="font-semibold">
-                  {singleProduct?.length}’’ x {singleProduct?.width}’’ x{" "}
-                  {singleProduct?.height}’’
+                  {singleProduct?.length}{" "}
+                  {singleProduct?.UoM === "Feet" ? "ft" : "inch"} x{" "}
+                  {singleProduct?.width}{" "}
+                  {singleProduct?.UoM === "Feet" ? "ft" : "inch"} x{" "}
+                  {singleProduct?.height}{" "}
+                  {singleProduct?.UoM === "Feet" ? "ft" : "inch"}
                 </span>
               </p>
               <p className="flex items-center justify-between w-full">
@@ -1451,14 +1330,6 @@ const ProductDetailPopup = ({}) => {
                 <span className="font-normal">Category</span>
                 <span className="font-semibold">{singleProduct?.category}</span>
               </p>
-              {/* <p className="flex items-center justify-between w-full">
-                 <span className="font-normal">UPC Code</span>
-                 <span className="font-semibold">6973096824116</span>
-               </p>
-               <p className="flex items-center justify-between w-full">
-                 <span className="font-normal">Made by</span>
-                 <span className="font-semibold">China</span>
-               </p> */}
             </div>
           )}
         </div>

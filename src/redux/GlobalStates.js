@@ -9,6 +9,7 @@ const initialState = {
   singleProductEnlargeImageId: "",
   searchProducts: [],
   searchTerm: "",
+  searchTitle: "",
   activeComponentForCart: "Shopping Cart",
   singleProductId: null,
   perPageItemView: window.localStorage.getItem("persist:globalStates")
@@ -93,6 +94,9 @@ const GlobalStates = createSlice({
     handleChangeSearchTerm: (state, { payload }) => {
       state.searchTerm = payload;
     },
+    handleChangeSearchTitle: (state, { payload }) => {
+      state.searchTitle = payload;
+    },
     handleChangeActiveSubcategory: (state, { payload }) => {
       state.activeSubcategory = payload;
     },
@@ -122,6 +126,7 @@ export const {
   handleChangeSearchTerm,
   handleChangeActiveSubcategory,
   handleChangeActiveCategory,
+  handleChangeSearchTitle,
 } = GlobalStates.actions;
 
 export default GlobalStates.reducer;

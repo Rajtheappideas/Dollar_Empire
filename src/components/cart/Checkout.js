@@ -228,7 +228,11 @@ const Checkout = ({ summaryFixed }) => {
           <span className="ml-auto">${parseFloat(grandTotal).toFixed(2)}</span>
         </p>
         <hr className="w-full" />
-
+        {shippingAddressId==="" && shipphingMethod==="freight"  && (
+          <p className="text-DARKRED text-center font-semibold">
+            Please select a shipping address
+          </p>
+        )}
         <button
           type="button"
           className="font-semibold bg-PRIMARY text-white hover:bg-white hover:text-PRIMARY border border-PRIMARY duration-300 ease-in-out w-full p-3 text-center"

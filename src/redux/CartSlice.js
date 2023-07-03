@@ -200,6 +200,7 @@ const CartSlice = createSlice({
     },
 
     handleDecreaseQuantityAndAmount: (state, { payload }) => {
+      console.log(payload);
       if (state.totalQuantity <= 0) {
         state.totalQuantity = 0;
         return true;

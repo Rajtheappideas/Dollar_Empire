@@ -24,7 +24,7 @@ const TopSellers = ({}) => {
       <div className="md:space-y-5  space-y-3 relative z-0 container mx-auto xl:px-0 md:px-10 px-3 w-full">
         <div className="flex w-full items-center justify-between">
           <div />
-          <h2 className="font-bold md:text-3xl text-xl uppercase text-center ">
+          <h2 className="font-bold md:text-3xl text-xl uppercase text-center md:ml-48 ml-24 ">
             {t("top_sellers")}
           </h2>
           <Link to={`/product-listing/top-sellers`}>

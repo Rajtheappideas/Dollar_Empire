@@ -190,7 +190,7 @@ const Favourites = () => {
           {/* table  desk & tablet*/}
           <div
             key="forDesk"
-            className="w-full hidden md:inline-block xl:overflow-hidden overflow-x-scroll scrollbar"
+            className="w-full hidden lg:inline-block xl:overflow-hidden overflow-x-scroll scrollbar"
           >
             <table className="w-full">
               <thead className="bg-PRIMARY text-white p-2 w-full">
@@ -251,20 +251,24 @@ const Favourites = () => {
                   </tr>
                 ) : (
                   favourites?.favourites.map((favourite) => (
-                    <Favourite
+                    <tr
+                      className="bg-white font-normal text-base border-b border-gray-200"
                       key={favourite?._id}
-                      handleAddSelectedItem={handleAddSelectedItem}
-                      favourite={favourite}
-                    />
+                    >
+                      <Favourite
+                        handleAddSelectedItem={handleAddSelectedItem}
+                        favourite={favourite}
+                      />
+                    </tr>
                   ))
                 )}
               </tbody>
             </table>
           </div>
           {/* for mobile table */}
-          <div key="forMobile" className="w-full overflow-hidden md:hidden">
-            <table className="flex flex-row bg-white">
-              <tbody className="flex flex-col">
+          <div key="forMobile" className="w-full overflow-hidden lg:hidden wf">
+            <table className="flex flex-row bg-white w-full">
+              <tbody className="flex flex-col w-full">
                 {favourites?.loading ? (
                   <tr>
                     <td
@@ -306,6 +310,7 @@ const Favourites = () => {
                 }
                 state={{ title: "all-products", price: null, searchQuery: "" }}
                 className="ml-auto"
+                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
               >
                 <button
                   type="button"

@@ -38,6 +38,7 @@ const Categories = () => {
             categories.map((category) => (
               <Link
                 to={`/product-listing/${category.name}`}
+                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
                 key={category?._id}
                 className={`space-y-3 w-full text-center ${
                   category.id === 9 &&

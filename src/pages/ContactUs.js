@@ -18,12 +18,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { handlePostContactUs } from "../redux/BasicFeatureSlice";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import { handleGetContactUsDetails } from "../redux/GetContentSlice";
 
 const ContactUs = () => {
   function handlChange(value) {
     setFieldValue("captcha", value);
   }
   const { loading } = useSelector((state) => state.basicFeatures);
+  const Content = useSelector((state) => state.getContent);
 
   const dispatch = useDispatch();
 
@@ -112,6 +114,7 @@ const ContactUs = () => {
       AbortControllerRef.current !== null && AbortControllerRef.current.abort();
     };
   }, []);
+
   return (
     <>
       <Helmet title={t("contact_us")} />
@@ -135,7 +138,7 @@ const ContactUs = () => {
                   {t("Address")}:
                 </span>
                 <span className="font-semibold inline-block">
-                  4423 E. Bandini Blvd. Los Angeles, CA 90058
+                  {Content?.contact?.address}
                 </span>
               </p>
             </div>
@@ -149,7 +152,7 @@ const ContactUs = () => {
                   {t("Phone number")}:
                 </span>
                 <a href="tel:323-268-8999" className="font-semibold block">
-                  323-268-8999
+                  {Content?.contact?.phone}
                 </a>
               </p>
             </div>
@@ -164,7 +167,7 @@ const ContactUs = () => {
                   href="mailto:sales@dollarempirellc.com"
                   className="font-semibold block text-PRIMARY"
                 >
-                  sales@dollarempirellc.com
+                  {Content?.contact?.email}
                 </a>
               </p>
             </div>

@@ -64,7 +64,7 @@ const ProductListing = () => {
   } = useSelector((state) => state.cart);
   const {
     searchProducts,
-    searchTerm,
+    searchTitle,
     perPageItemView,
     activeSubcategory,
     activeCategory,
@@ -88,6 +88,7 @@ const ProductListing = () => {
   const changePage = ({ selected }) => {
     setPageNumber(selected);
   };
+
   // filter products
   const handleFilterProducts = async () => {
     toast.dismiss();
@@ -479,7 +480,7 @@ const ProductListing = () => {
         .then((res) => {
           if (res.payload.status === "success") {
             const Categories = res.payload.products.map((i) => i.category);
-            setCategories([...new Set(Categories)]);
+            setCategories([...new Set(Categories)])
           } else {
             toast.error(res.payload.message);
           }
@@ -562,12 +563,13 @@ const ProductListing = () => {
   return (
     <>
       <Helmet title={`product-listing-${title}`} />
+
       <section className="bg-BACKGROUNDGRAY lg:pb-20 lg:py-0 py-10">
         <div className="container mx-auto space_for_div space-y-5 w-full bg-BACKGROUNDGRAY">
           {/* title */}
           <h1 className="block font-semibold md:text-4xl text-2xl text-left capitalize">
             {title.includes("search")
-              ? `${t("Search for")}: ${searchTerm}`
+              ? `${t("Search for")}: ${searchTitle}`
               : /\d/.test(title)
               ? `${t("By Price")}: ${title}`
               : title.includes("new-arrivals")
@@ -589,7 +591,6 @@ const ProductListing = () => {
                 setActivePrice={setActivePrice}
                 activePrice={activePrice}
                 title={title}
-                categories={categories}
               />
             </section>
             {/* products listing*/}

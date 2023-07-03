@@ -34,8 +34,8 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
   const [ctnItemQuantity, setCtnItemQuantity] = useState("");
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [findInCart, setFindInCart] = useState(null);
-  const [pkCount, setPkCount] = useState(0);
-  const [ctnCount, setCtnCount] = useState(0);
+  const [pkCount, setPkCount] = useState(null);
+  const [ctnCount, setCtnCount] = useState(null);
   const [changeTo, setChangeTo] = useState(false);
   const [changingLoading, setChangingLoading] = useState(false);
   const [alreadyInCartPkCount, setAlreadyInCartPkCount] = useState(null);
@@ -51,7 +51,7 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
 
   const { token, user } = useSelector((state) => state.Auth);
 
-  const favourites = useSelector((state) => state.favourite);
+  const { favourites } = useSelector((state) => state.favourite);
   const { cartItems, loading, selectedItems } = useSelector(
     (state) => state.cart
   );
@@ -86,8 +86,8 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
       toast.dismiss();
       setCtnItemQuantity("");
       setpkItemsQuantity("");
-      setPkCount(0);
-      setCtnCount(0);
+      setPkCount(null);
+      setCtnCount(null);
       setAlreadyInCartCtnCount(null);
       setAlreadyInCartPkCount(null);
       setAlreadyInCartCtnItems("");
@@ -98,7 +98,7 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
       toast.error("Please enter quantity in PK, you choose PK");
       setCtnItemQuantity("");
       setCtnCount(0);
-      setAlreadyInCartCtnCount(0);
+      setAlreadyInCartCtnCount(null);
       setAlreadyInCartCtnItems("");
       return true;
     } else if (selectedItemType === "ctn" && pkitemsQuantity > 0) {
@@ -115,8 +115,8 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
       toast.dismiss();
       setpkItemsQuantity("");
       setCtnItemQuantity("");
-      setPkCount(0);
-      setCtnCount(0);
+      setPkCount(null);
+      setCtnCount(null);
       setAlreadyInCartCtnCount(null);
       setAlreadyInCartPkCount(null);
       setAlreadyInCartCtnItems("");
@@ -141,8 +141,8 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
             setpkItemsQuantity("");
             setSelectedItemType("pk");
             setSelectedProductId(null);
-            setPkCount(0);
-            setCtnCount(0);
+            setPkCount(null);
+            setCtnCount(null);
             setAlreadyInCartCtnCount(null);
             setAlreadyInCartPkCount(null);
             setAlreadyInCartCtnItems("");
@@ -178,7 +178,7 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
     if (findInCart?.product?._id !== favourite?._id) {
       setSelectedItemType("pk");
       pkRef.current.checked = true;
-      if (pkCount === 0) {
+      if (pkCount === 0 || pkCount == null) {
         setPkCount(0);
       } else {
         setPkCount(count);
@@ -208,7 +208,7 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
     if (findInCart?.product?._id !== favourite?._id) {
       setSelectedItemType("ctn");
       ctnRef.current.checked = true;
-      if (ctnCount === 0) {
+      if (ctnCount === 0 || ctnCount === null) {
         setCtnCount(0);
       } else {
         setCtnCount(count);
@@ -271,6 +271,8 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                 setAlreadyInCartCtnCount(null);
                 setAlreadyInCartPkItems("");
                 setAlreadyInCartCtnItems("");
+                setPkCount(null);
+                setCtnCount(null);
                 setChangeTo(false);
               }
               setChangingLoading(false);
@@ -320,6 +322,8 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                 setAlreadyInCartCtnCount(null);
                 setAlreadyInCartPkItems("");
                 setAlreadyInCartCtnItems("");
+                setPkCount(null);
+                setCtnCount(null);
               }
             })
             .catch((err) => {
@@ -343,9 +347,9 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
       toast.error(
         "Please enter valid value and value can't be less than zero!!!"
       );
-      setPkCount(0);
+      setPkCount(null);
       setpkItemsQuantity("");
-      setAlreadyInCartPkCount(0);
+      setAlreadyInCartPkCount(null);
       setAlreadyInCartPkItems("");
       return true;
     }
@@ -386,9 +390,9 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
       toast.error(
         "Please enter valid value and value can't be less than zero!!!"
       );
-      setCtnCount(0);
+      setCtnCount(null);
       setCtnItemQuantity("");
-      setAlreadyInCartCtnCount(0);
+      setAlreadyInCartCtnCount(null);
       setAlreadyInCartCtnItems("");
       return true;
     }
@@ -428,14 +432,14 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
             favourite?._id
           );
         } else {
-          if (pkCount.toString().length >= 6) {
+          if (pkCount !== null && pkCount.toString().length >= 6) {
             toast.remove();
             toast.error("Can't add more than 6 numbers !!!");
             return true;
           }
           handlePlusPkQuantity(
             parseFloat(favourite?.PK),
-            parseFloat(pkCount + 1),
+            parseFloat(pkCount === null ? 1 : pkCount + 1),
             favourite?._id
           );
         }
@@ -517,18 +521,18 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
         if (action === "minus") {
           handleMinusCTNQuantity(
             parseFloat(favourite?.CTN),
-            parseFloat(ctnCount - 1),
+            parseFloat(ctnCount !== null && ctnCount - 1),
             favourite?._id
           );
         } else {
-          if (ctnCount.toString().length >= 6) {
+          if (ctnCount !== null && ctnCount.toString().length >= 6) {
             toast.remove();
             toast.error("Can't add more than 6 numbers !!!");
             return true;
           }
           handlePlusCTNQuantity(
             parseFloat(favourite?.CTN),
-            parseFloat(ctnCount + 1),
+            parseFloat(ctnCount === null ? 1 : ctnCount + 1),
             favourite?._id
           );
         }
@@ -609,7 +613,6 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
     }
   };
 
-  // add item for multiple product to cart
   useEffect(() => {
     if (handleAddSelectedItem !== "") {
       handleAddSelectedItem(
@@ -624,51 +627,61 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
     }
   }, [pkitemsQuantity, ctnItemQuantity, selectedItemType]);
 
-  // find item in cart
+  // find in cart
   useEffect(() => {
-    if (favourites.length !== 0 && cartItems.length > 0) {
+    if (
+      favourites.length !== 0 &&
+      cartItems.length > 0 &&
+      !changingLoading &&
+      !loading
+    ) {
       const findItemInCart = cartItems.find(
         (i) => i.product?._id === favourite?._id
       );
-      setFindInCart(findItemInCart);
+      if (findItemInCart !== undefined) {
+        setFindInCart(findItemInCart);
+        if (findItemInCart?.type === "pk") {
+          setAlreadyInCartPkItems(
+            findItemInCart?.quantity * findItemInCart?.product?.PK
+          );
+          setAlreadyInCartPkCount(findItemInCart?.quantity);
+        } else {
+          setAlreadyInCartCtnItems(
+            findItemInCart?.quantity * findItemInCart?.product?.CTN
+          );
+          setAlreadyInCartCtnCount(findItemInCart?.quantity);
+        }
+      }
     } else {
       setFindInCart(null);
     }
-  }, [
-    alreadyInCartCtnCount,
-    alreadyInCartPkCount,
-    favourites,
-    selectedItems,
-    changingLoading,
-    loading,
-    selectedItems,
-  ]);
+  }, [favourites, selectedItems, changingLoading, loading]);
 
   // set checked if already in cart
   const findItems = useCallback(async () => {
     if (
       findInCart?.product?._id === favourite?._id &&
-      findInCart?.type === "pk" &&
-      pkRef.current
+      findInCart?.type === "pk"
     ) {
       pkRef.current.checked = await true;
+      setSelectedItemType("pk");
     } else if (
       findInCart?.product?._id === favourite?._id &&
-      findInCart?.type === "ctn" &&
-      ctnRef.current
+      findInCart?.type === "ctn"
     ) {
       ctnRef.current.checked = await true;
-    } else if (findInCart?.product?._id !== favourite?._id && pkRef.current) {
+      setSelectedItemType("ctn");
+    } else if (findInCart?.product?._id !== favourite?._id) {
       pkRef.current.defaultChecked = await true;
     }
-  }, [alreadyInCartCtnCount, alreadyInCartPkCount, findInCart, pkRef, ctnRef]);
+  }, [findInCart]);
 
   useEffect(() => {
     findItems();
-  }, [alreadyInCartCtnCount, alreadyInCartPkCount, findInCart, pkRef, ctnRef]);
-
+  });
+  
   return (
-    <tr className="bg-white font-normal text-base border-b border-gray-200">
+    <>
       <td className="lg:p-3 p-2">
         <img
           src={BaseUrl.concat(favourite?.images[0])}
@@ -680,13 +693,16 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
         {favourite.name}
       </td>
       <td className="lg:p-3 p-2 ">#{favourite?.number}</td>
-      <td className="lg:p-3 p-2">
+      <td className="lg:p-3 p-2 text-left">
         <div className="text-right w-full flex items-center justify-start gap-x-6">
-          <p className="xl:w-4/12 w-3/12 whitespace-nowrap text-right">
+          <p className="xl:w-4/12 w-3/12 whitespace-nowrap text-left">
             {favourite?.PK} PC/PK , {favourite?.CTN} PC/CTN
           </p>
-          <div className="xl:w-7/12 w-8/12 space-y-3">
-            <p className="font-bold text-xs text-center">
+          <div className="xl:w-7/12 w-8/12 space-y-3 text-left">
+            <p className="font-bold text-sm text-center">
+              {favourite?.PK} PC / PK, {favourite?.CTN} PC / CTN
+            </p>
+            <p className="font-bold text-sm text-center">
               ${favourite?.price}/PC, $
               {parseFloat(favourite?.price * favourite?.PK).toFixed(2)}
               /PK, $ {parseFloat(favourite?.price * favourite?.CTN).toFixed(2)}
@@ -695,21 +711,19 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
             {/* pk */}
             <div className="flex w-64 items-center gap-x-2 relative z-0 ml-auto">
               <input
-                name={favourite?._id}
+                name={favourite?.name}
                 type="radio"
                 className="w-5 h-5"
-                ref={pkRef}
-                defaultChecked={true}
                 onChange={(e) => setSelectedItemType(e.target.value)}
                 value="pk"
-                id={favourite?._id}
+                ref={pkRef}
                 disabled={
                   (loading && selectedProductId === favourite?._id) ||
                   findInCart?.product?._id === favourite?._id
                 }
               />
               <span className="font-semibold text-xs whitespace-nowrap pr-2">
-                PC QTY
+                PC
               </span>
               <div className="w-full relative z-0">
                 <span
@@ -718,7 +732,7 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                       ? "text-gray-400 font-normal"
                       : "text-BLACK font-semibold"
                   } 
-                    -translate-y-1/2 left-6`}
+                    -translate-y-1/2 left-8`}
                 >
                   {`${
                     pkitemsQuantity === "" && alreadyInCartPkItems === ""
@@ -730,7 +744,7 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                 </span>
                 <input
                   type="number"
-                  className={`w-full text-right h-10 text-sm pr-10 pl-10 rounded-md outline-none border border-BORDERGRAY`}
+                  className={`w-full text-right h-10 text-sm pr-12 pl-10 rounded-md outline-none border border-BORDERGRAY`}
                   placeholder="0"
                   value={
                     findInCart?.product?._id === favourite?._id &&
@@ -753,7 +767,7 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                     findInCart?.type === "ctn"
                   }
                 />
-                <span className="font-semibold text-BLACK text-xs absolute top-1/2 -translate-y-1/2 right-6">
+                <span className="font-semibold text-BLACK text-xs absolute top-1/2 -translate-y-1/2 right-8">
                   PK
                 </span>
                 <button
@@ -762,16 +776,17 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                     (!loading && selectedProductId === favourite?._id) ||
                     findInCart?.type === "ctn"
                   }
+                  className={`text-BLACK bg-blue-500 md:w-7 w-8 text-center h-full rounded-md absolute top-1/2 -translate-y-1/2 left-0`}
+                  onClick={() => {
+                    handleOnClickFieldForBoth("minus", "pk");
+                  }}
                 >
                   <AiOutlineMinus
-                    className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 left-1`}
-                    onClick={() => {
-                      handleOnClickFieldForBoth("minus", "pk");
-                    }}
                     disabled={
                       (!loading && selectedProductId === favourite?._id) ||
                       findInCart?.type === "ctn"
                     }
+                    className="mx-auto"
                   />
                 </button>
                 <button
@@ -780,16 +795,17 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                     (!loading && selectedProductId === favourite?._id) ||
                     findInCart?.type === "ctn"
                   }
+                  className={`text-BLACK bg-blue-500 md:w-7 w-8 text-center h-full rounded-md absolute top-1/2 -translate-y-1/2 right-0`}
+                  onClick={() => {
+                    handleOnClickFieldForBoth("plus", "pk");
+                  }}
                 >
                   <AiOutlinePlus
-                    className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2`}
-                    onClick={() => {
-                      handleOnClickFieldForBoth("plus", "pk");
-                    }}
                     disabled={
                       (!loading && selectedProductId === favourite?._id) ||
                       findInCart?.type === "ctn"
                     }
+                    className="mx-auto"
                   />
                 </button>
               </div>
@@ -797,20 +813,19 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
             {/* ctn */}
             <div className="flex w-64 items-center gap-x-2 relative z-0 ml-auto">
               <input
-                name={favourite?._id}
+                name={favourite?.name}
                 type="radio"
                 className="w-5 h-5"
                 onChange={(e) => setSelectedItemType(e.target.value)}
                 value="ctn"
                 ref={ctnRef}
-                id={favourite?._id}
                 disabled={
                   (loading && selectedProductId === favourite?._id) ||
                   findInCart?.product?._id === favourite?._id
                 }
               />
               <span className="font-semibold text-xs whitespace-nowrap">
-                CTN QTY
+                CTN
               </span>
               <div className="w-full relative z-0">
                 <span
@@ -819,7 +834,7 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                       ? "text-gray-400 font-normal"
                       : "text-BLACK font-semibold"
                   }
-                    -translate-y-1/2 left-6`}
+                    -translate-y-1/2 left-8`}
                 >
                   {`${
                     ctnItemQuantity === "" && alreadyInCartCtnItems === ""
@@ -831,7 +846,7 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                 </span>
                 <input
                   type="number"
-                  className={`w-full text-right h-10 text-sm pr-12 pl-10 rounded-md outline-none border border-BORDERGRAY`}
+                  className={`w-full text-right h-10 text-sm pr-14 pl-10 rounded-md outline-none border border-BORDERGRAY`}
                   placeholder="0"
                   min="0"
                   max="999999"
@@ -854,7 +869,7 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                     findInCart?.type === "pk"
                   }
                 />
-                <span className="font-semibold text-BLACK text-xs absolute top-1/2 -translate-y-1/2 right-6">
+                <span className="font-semibold text-BLACK text-xs absolute top-1/2 -translate-y-1/2 right-8">
                   CTN
                 </span>
                 <button
@@ -863,16 +878,17 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                     (!loading && selectedProductId === favourite?._id) ||
                     findInCart?.type === "pk"
                   }
+                  className={`text-BLACK bg-blue-500 md:w-7 w-8 text-center h-full rounded-md absolute top-1/2 -translate-y-1/2 left-0`}
+                  onClick={() => {
+                    handleOnClickFieldForBoth("minus", "ctn");
+                  }}
                 >
                   <AiOutlineMinus
-                    className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 left-1`}
-                    onClick={() => {
-                      handleOnClickFieldForBoth("minus", "ctn");
-                    }}
                     disabled={
                       (!loading && selectedProductId === favourite?._id) ||
                       findInCart?.type === "pk"
                     }
+                    className="mx-auto"
                   />
                 </button>
                 <button
@@ -881,16 +897,17 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                     (!loading && selectedProductId === favourite?._id) ||
                     findInCart?.type === "pk"
                   }
+                  className={`text-BLACK bg-blue-500 md:w-7 w-8 text-center h-full rounded-md absolute top-1/2 -translate-y-1/2 right-0`}
+                  onClick={() => {
+                    handleOnClickFieldForBoth("plus", "ctn");
+                  }}
                 >
                   <AiOutlinePlus
-                    className={`text-BLACK w-4 h-4 absolute top-1/2 -translate-y-1/2 right-2`}
-                    onClick={() => {
-                      handleOnClickFieldForBoth("plus", "ctn");
-                    }}
                     disabled={
                       (!loading && selectedProductId === favourite?._id) ||
                       findInCart?.type === "pk"
                     }
+                    className="mx-auto"
                   />
                 </button>
               </div>
@@ -909,7 +926,7 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                 }
                 className="w-full"
               >
-                {changingLoading && findInCart?.quantity !== 0 ? (
+                {changingLoading && findInCart?.quantity !== 0 && changeTo ? (
                   <button
                     type="button"
                     className={` ${
@@ -994,7 +1011,7 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
           />
         </td>
       )}
-    </tr>
+    </>
   );
 };
 

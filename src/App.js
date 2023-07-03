@@ -19,6 +19,7 @@ import {
 import {
   handleGetBanners,
   handleGetCategory,
+  handleGetContactUsDetails,
   handleGetSubCategory,
 } from "./redux/GetContentSlice";
 import {
@@ -67,6 +68,7 @@ function App() {
     dispatch(handleGetNewArrivals({ token }));
     dispatch(handleGetBanners());
     dispatch(handleGetTopSellers({ token }));
+    dispatch(handleGetContactUsDetails());
     dispatch(handleGetAllProducts({ token }));
 
     if (user !== null) {

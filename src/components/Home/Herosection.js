@@ -43,7 +43,7 @@ const Herosection = () => {
             speed={2000}
             autoplay={{
               pauseOnMouseEnter: true,
-              delay: 500,
+              delay: 5000,
               disableOnInteraction: false,
               waitForTransition: true,
             }}
