@@ -28,7 +28,7 @@ const Checkout = ({ summaryFixed }) => {
   );
   const { addressList, loading } = useSelector((state) => state.getContent);
   const dispatch = useDispatch();
-
+  console.log(shippingAddressId);
   useEffect(() => {
     if (shipphingMethod === "freight") {
       dispatch(changeGrandTotal("freight"));
@@ -49,15 +49,15 @@ const Checkout = ({ summaryFixed }) => {
       return dispatch(handleChangeActiveComponent("Payment Info"));
     }
   };
-  useEffect(() => {
-    if (addressList.length > 0) {
-      const findArr = addressList.find((address) => address?.selected === true);
-      setAddressId(findArr?._id);
-      dispatch(handleChangeShippingAddressId(findArr?._id));
-    } else {
-      dispatch(handleChangeShippingAddressId(""));
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (addressList.length > 0) {
+  //     const findArr = addressList.find((address) => address?.selected === true);
+  //     setAddressId(findArr?._id);
+  //     dispatch(handleChangeShippingAddressId(findArr?._id));
+  //   } else {
+  //     dispatch(handleChangeShippingAddressId(""));
+  //   }
+  // }, []);
   return (
     <div className="w-full flex xl:flex-row flex-col items-start justify-start gap-4 pb-10">
       {showPopup && (
@@ -155,6 +155,7 @@ const Checkout = ({ summaryFixed }) => {
         ) : (
           addressList.map((address) => (
             <div
+              id="address"
               key={address?._id}
               className={`${
                 shippingAddressId === address?._id && "bg-gray-200"
@@ -228,7 +229,7 @@ const Checkout = ({ summaryFixed }) => {
           <span className="ml-auto">${parseFloat(grandTotal).toFixed(2)}</span>
         </p>
         <hr className="w-full" />
-        {shippingAddressId==="" && shipphingMethod==="freight"  && (
+        {shippingAddressId === "" && shipphingMethod === "freight" && (
           <p className="text-DARKRED text-center font-semibold">
             Please select a shipping address
           </p>
@@ -236,7 +237,10 @@ const Checkout = ({ summaryFixed }) => {
         <button
           type="button"
           className="font-semibold bg-PRIMARY text-white hover:bg-white hover:text-PRIMARY border border-PRIMARY duration-300 ease-in-out w-full p-3 text-center"
-          onClick={() => handlechangeActiveComponent()}
+          onClick={() => {
+            handlechangeActiveComponent();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
         >
           {t("Continue")}
         </button>

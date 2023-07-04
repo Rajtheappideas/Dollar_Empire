@@ -58,6 +58,7 @@ const PaymentInfo = ({ summaryFixed }) => {
             dispatch(handleChangeActiveComponent("Success"));
             dispatch(handleClearCart());
             toast.success("Order Submitted successfully.");
+            window.scrollTo({ top: 0, behavior: "smooth" });
           } else {
             return toast.error(res.payload.message);
           }
@@ -178,6 +179,7 @@ const PaymentInfo = ({ summaryFixed }) => {
                 paymentOption === "cardPayment" && !showCardDetails
                   ? setShowCardDetails(true)
                   : handleConfirmOrder();
+                window.scrollTo({ top: 0, behavior: "smooth" });
               }}
               disabled={loading}
             >

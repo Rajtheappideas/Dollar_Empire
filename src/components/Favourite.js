@@ -693,16 +693,16 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
         {favourite.name}
       </td>
       <td className="lg:p-3 p-2 ">#{favourite?.number}</td>
-      <td className="lg:p-3 p-2 text-left">
+      <td className="lg:p-3 p-2 text-right">
         <div className="text-right w-full flex items-center justify-start gap-x-6">
-          <p className="xl:w-4/12 w-3/12 whitespace-nowrap text-left">
+          <p className="xl:w-4/12 w-3/12 whitespace-nowrap text-center">
             {favourite?.PK} PC/PK , {favourite?.CTN} PC/CTN
           </p>
-          <div className="xl:w-7/12 w-8/12 space-y-3 text-left">
-            <p className="font-bold text-sm text-center">
+          <div className="xl:w-7/12 w-8/12 space-y-3 text-right">
+            <p className="font-bold text-sm text-right">
               {favourite?.PK} PC / PK, {favourite?.CTN} PC / CTN
             </p>
-            <p className="font-bold text-sm text-center">
+            <p className="font-bold text-sm text-right">
               ${favourite?.price}/PC, $
               {parseFloat(favourite?.price * favourite?.PK).toFixed(2)}
               /PK, $ {parseFloat(favourite?.price * favourite?.CTN).toFixed(2)}
@@ -913,7 +913,7 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
               </div>
             </div>
             {/* btn */}
-            <p className="w-7/12 h-auto ml-auto">
+            <p className="md:w-8/12 w-full h-auto ml-auto">
               <Link
                 to={
                   user === null

@@ -37,7 +37,7 @@ const FilterComponent = ({ setActivePrice, activePrice, title }) => {
       setIsCategoryThere(true);
     }
   }, [loading, title]);
-
+  
   return (
     <div className="w-full border border-BORDERGRAY bg-white">
       <p className="text-xl font-semibold text-left border-b border-BORDERGRAY py-4 px-3">
@@ -71,8 +71,8 @@ const FilterComponent = ({ setActivePrice, activePrice, title }) => {
                 {activeCategory}
               </p>
               <ul className="pl-3 text-lg font-normal text-gray-400 capitalize">
-                {shownCategories.length !== 0 &&
-                  shownCategories !== undefined &&
+                {shownCategories !== undefined &&
+                  shownCategories.length !== 0 &&
                   shownCategories.map((category) => (
                     <li
                       key={category?._id}

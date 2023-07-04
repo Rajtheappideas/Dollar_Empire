@@ -601,6 +601,7 @@ const ShoppingCart = ({ summaryFixed }) => {
             cartItems?.length > 0
               ? dispatch(handleChangeActiveComponent("Check Out"))
               : toast.error("Your Cart is empty!!!");
+            window.scrollTo({ top: 0, behavior: "smooth" });
           }}
           className="font-semibold bg-PRIMARY text-white hover:bg-white hover:text-PRIMARY border border-PRIMARY duration-300 ease-in-out w-full p-3 text-center"
           disabled={
@@ -620,6 +621,9 @@ const ShoppingCart = ({ summaryFixed }) => {
                 : productListingPageLink
             }
             state={{ title: "all-products", price: null, searchQuery: "" }}
+            onClick={() => {
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
           >
             <button
               type="button"

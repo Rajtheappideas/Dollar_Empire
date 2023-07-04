@@ -225,6 +225,7 @@ const CardDetails = ({ summaryFixed, additionalNotes }) => {
                   toast.success("Order Submitted successfully.");
                   dispatch(handleChangeActiveComponent("Success"));
                   dispatch(handleClearCart());
+                  window.scrollTo({ top: 0, behavior: "smooth" });
                 } else {
                   setConfirmOrderLoading(false);
                   return toast.error(res.payload.message);

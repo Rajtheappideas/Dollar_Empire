@@ -159,17 +159,42 @@ const Header = () => {
     setshowSecondCategoryDropDown(false);
   }
 
-  function handleDynamicTop(index) {
-    if (index <= 3) {
-      setDynamicTop(index + 2);
-    } else if (index >= 4 && index <= 7) {
-      setDynamicTop(index + 5);
-    } else if (index >= 8 && index <= 11) {
-      setDynamicTop(index + 10);
-    } else if (index >= 12) {
-      setDynamicTop(index + 22);
+  function handleDynamicTop(index, from) {
+    if (window.screen.width > 600) {
+      if (index <= 3) {
+        setDynamicTop(index + 2);
+      } else if (index >= 4 && index <= 7) {
+        setDynamicTop(index + 5);
+      } else if (index >= 8 && index < 11) {
+        setDynamicTop(index + 10);
+      } else if (index >= 11) {
+        setDynamicTop(index + 25);
+      }
+    } else {
+      if (from !== "second") {
+        if (index <= 3) {
+          setDynamicTop(index + 2);
+        } else if (index >= 4 && index <= 7) {
+          setDynamicTop(index + 9);
+        } else if (index >= 8 && index < 11) {
+          setDynamicTop(index + 17);
+        } else if (index >= 11) {
+          setDynamicTop(index + 38);
+        }
+      } else {
+        if (index <= 3) {
+          setDynamicTop(index + 2);
+        } else if (index >= 4 && index <= 7) {
+          setDynamicTop(index + 5);
+        } else if (index >= 8 && index < 11) {
+          setDynamicTop(index + 10);
+        } else if (index >= 11) {
+          setDynamicTop(index + 25);
+        }
+      }
     }
   }
+
   return (
     <div className="h-auto w-auto">
       {(showCategoryDropdown || showSecondCategoryDropDown) && (
@@ -302,12 +327,7 @@ const Header = () => {
               </p>
               {/* menu */}
               {showCategoryDropdown && (
-                <div
-                  className="text-left md:p-2 p-0.5 absolute top-11 -left-1 z-20 bg-white md:min-w-[14rem] min-w-[12rem] rounded-md transform duration-300 ease-in origin-top-left"
-                  onClick={() => {
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                  }}
-                >
+                <div className="text-left md:p-2 p-0.5 absolute top-11 -left-1 z-20 bg-white md:min-w-[14rem] min-w-[12rem] rounded-md transform duration-300 ease-in origin-top-left">
                   <div className="pl-3 text-base font-normal text-gray-400 capitalize space-y-1 w-full">
                     {loading ? (
                       <SkeletonTheme
@@ -343,11 +363,11 @@ const Header = () => {
                             key={category?._id}
                             onMouseOver={() => {
                               setActiveCategory(category.name);
-                              handleDynamicTop(i);
+                              handleDynamicTop(i, "second");
                             }}
                             onClick={() => {
                               setActiveCategory(category.name);
-                              handleDynamicTop(i);
+                              handleDynamicTop(i, "second");
                             }}
                           >
                             <Link
@@ -603,7 +623,7 @@ const Header = () => {
           {showSecondCategoryDropDown && (
             <div
               ref={secondDropDownRef}
-              className="text-left md:p-2 p-1 h-auto absolute top-[52px] left-0 bg-white md:min-w-[14rem] min-w-[6rem] md:max-w-none max-w-[12rem] rounded-md transform duration-300 ease-in origin-top-left"
+              className="text-left md:p-2 p-1 h-auto absolute md:top-[52px] top-11 left-0 bg-white md:min-w-[14rem] sm:min-w-[6rem] md:max-w-none max-w-[12rem] rounded-md transform duration-300 ease-in origin-top-left"
             >
               <div className="pl-3 text-base font-normal text-gray-400 capitalize space-y-1 w-full">
                 {loading ? (
@@ -664,7 +684,7 @@ const Header = () => {
                           onClick={() => {
                             setActiveCategory(category.name);
                           }}
-                          className="inline-block ml-auto h-5 w-5 text-gray-400 bg-gray-100"
+                          className="inline-block ml-auto min-h-[20px] min-w-[20px] text-gray-400 bg-gray-100"
                         />
                         {/* side dropdown */}
                         {/* <div className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-30 bg-white md:min-w-[10rem] min-w-[3rem] ">

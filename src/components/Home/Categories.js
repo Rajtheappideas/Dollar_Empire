@@ -1,14 +1,16 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import baseUrl from "../../BaseUrl";
 import { Link } from "react-router-dom";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useTranslation } from "react-i18next";
+import { handleChangeActiveCategory } from "../../redux/GlobalStates";
 
 const Categories = () => {
   const { categories, loading } = useSelector((state) => state.getContent);
 
+  const dispatch = useDispatch();
   const { t } = useTranslation();
   return (
     <section className="container mx-auto w-full md:pt-5 pb-20 py-2 md:space-y-5 space-y-3 xl:px-0 md:px-10 px-3">
@@ -38,7 +40,10 @@ const Categories = () => {
             categories.map((category) => (
               <Link
                 to={`/product-listing/${category.name}`}
-                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                onClick={() => {
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                  dispatchEvent(handleChangeActiveCategory(category?.name));
+                }}
                 key={category?._id}
                 className={`space-y-3 w-full text-center ${
                   category.id === 9 &&
