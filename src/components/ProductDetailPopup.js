@@ -223,7 +223,7 @@ const ProductDetailPopup = ({}) => {
     if (findInCart?.product?._id !== singleProduct?._id) {
       setSelectedItemType("pk");
       pkRef.current.checked = true;
-      if (pkCount === 0) {
+      if (pkCount === 0 || pkCount == null) {
         setPkCount(0);
       } else {
         setPkCount(count);
@@ -253,7 +253,7 @@ const ProductDetailPopup = ({}) => {
     if (findInCart?.product?._id !== singleProduct?._id) {
       setSelectedItemType("ctn");
       ctnRef.current.checked = true;
-      if (ctnCount === 0) {
+      if (ctnCount === 0 || ctnCount === null) {
         setCtnCount(0);
       } else {
         setCtnCount(count);
@@ -276,7 +276,6 @@ const ProductDetailPopup = ({}) => {
       } else {
         toast.remove();
         toast.error(`Please change quantity in ${findInCart?.type}`);
-        console.log("asdds");
         return true;
       }
     }
@@ -482,14 +481,14 @@ const ProductDetailPopup = ({}) => {
             singleProduct?._id
           );
         } else {
-          if (pkCount.toString().length >= 6) {
+          if (pkCount !== null && pkCount.toString().length >= 6) {
             toast.remove();
             toast.error("Can't add more than 6 numbers !!!");
             return true;
           }
           handlePlusPkQuantity(
             parseFloat(singleProduct?.PK),
-            parseFloat(pkCount + 1),
+            parseFloat(pkCount === null ? 1 : pkCount + 1),
             singleProduct?._id
           );
         }
@@ -575,18 +574,18 @@ const ProductDetailPopup = ({}) => {
         if (action === "minus") {
           handleMinusCTNQuantity(
             parseFloat(singleProduct?.CTN),
-            parseFloat(ctnCount - 1),
+            parseFloat(ctnCount !== null && ctnCount - 1),
             singleProduct?._id
           );
         } else {
-          if (ctnCount.toString().length >= 6) {
+          if (ctnCount !== null && ctnCount.toString().length >= 6) {
             toast.remove();
             toast.error("Can't add more than 6 numbers !!!");
             return true;
           }
           handlePlusCTNQuantity(
             parseFloat(singleProduct?.CTN),
-            parseFloat(ctnCount + 1),
+            parseFloat(ctnCount === null ? 1 : ctnCount + 1),
             singleProduct?._id
           );
         }
@@ -691,13 +690,18 @@ const ProductDetailPopup = ({}) => {
     setIsFavourite(singleProduct?.isFavourite);
   }, [singleProductLoading]);
 
+  // find item in cart
   useEffect(() => {
-    if (cart !== null && cartItems.length > 0) {
+    if (cart !== null && cartItems.length > 0 && !changingLoading) {
       const findItemInCart = cartItems.find(
         (i) => i.product?._id === singleProduct?._id
       );
       if (findItemInCart !== undefined) {
         setFindInCart(findItemInCart);
+        setCtnCount(null);
+        setPkCount(null);
+        setpkItemsQuantity("");
+        setCtnItemQuantity("");
         if (findItemInCart?.type === "pk") {
           setAlreadyInCartPkItems(
             findItemInCart?.quantity * findItemInCart?.product?.PK
@@ -713,13 +717,7 @@ const ProductDetailPopup = ({}) => {
     } else {
       setFindInCart(null);
     }
-  }, [
-    changingLoading,
-    loading,
-    alreadyInCartPkCount,
-    alreadyInCartCtnCount,
-    singleProductLoading,
-  ]);
+  }, [changingLoading, loading, singleProductLoading, addProductToCartLoading]);
 
   useEffect(() => {
     if (showProductDetailsPopup === true) {
@@ -774,8 +772,8 @@ const ProductDetailPopup = ({}) => {
     dispatch(closePopup());
   }
 
-   // outside click for pop image
-   useEffect(() => {
+  // outside click for pop image
+  useEffect(() => {
     const handleClickOutside = (event) => {
       if (popImageRef.current && !popImageRef.current.contains(event?.target)) {
         dispatch(closeEnlargeImagePopup());
@@ -790,7 +788,6 @@ const ProductDetailPopup = ({}) => {
   function handleClickOutside() {
     dispatch(closeEnlargeImagePopup());
   }
-
   return (
     <ReactModal
       className={` overflow-hidden scrollbar bg-black/30 z-50 w-full min-h-screen max-h-screen inset-0 backdrop-blur-sm`}
@@ -1135,7 +1132,7 @@ const ProductDetailPopup = ({}) => {
                       findInCart?.product?._id === singleProduct?._id &&
                       alreadyInCartCtnCount !== null
                         ? alreadyInCartCtnCount
-                        : ctnCount
+                        : ctnCount !== null && ctnCount
                     }
                     onChange={(e) => {
                       if (e.target.value.length > 6) {
@@ -1194,7 +1191,7 @@ const ProductDetailPopup = ({}) => {
                       type="button"
                       className={` ${
                         findInCart?.product?._id === singleProduct?._id
-                          ? "bg-rose-500 text-black"
+                          ? "bg-REDPALE text-black"
                           : "bg-DARKRED text-white"
                       } text-center w-60 p-3 rounded-lg`}
                       disabled={
@@ -1212,7 +1209,7 @@ const ProductDetailPopup = ({}) => {
                       type="button"
                       className={` ${
                         findInCart?.product?._id === singleProduct?._id
-                          ? "bg-rose-500 text-black"
+                          ? "bg-REDPALE text-black"
                           : "bg-DARKRED text-white"
                       }  text-center w-60 p-3 rounded-lg`}
                       disabled={
@@ -1233,7 +1230,7 @@ const ProductDetailPopup = ({}) => {
                       type="button"
                       className={` ${
                         findInCart?.product?._id === singleProduct?._id
-                          ? "bg-rose-500 text-black"
+                          ? "bg-REDPALE text-black"
                           : "bg-DARKRED text-white"
                       } text-center rounded-lg w-60 p-3 `}
                       onClick={() => handleSubmitAddProduct()}

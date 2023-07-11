@@ -34,8 +34,8 @@ const FavouriteForMobile = ({ favourite, handleAddSelectedItem }) => {
   const [ctnItemQuantity, setCtnItemQuantity] = useState("");
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [findInCart, setFindInCart] = useState(null);
-  const [pkCount, setPkCount] = useState(0);
-  const [ctnCount, setCtnCount] = useState(0);
+  const [pkCount, setPkCount] = useState(null);
+  const [ctnCount, setCtnCount] = useState(null);
   const [changeTo, setChangeTo] = useState(false);
   const [changingLoading, setChangingLoading] = useState(false);
   const [alreadyInCartPkCount, setAlreadyInCartPkCount] = useState(null);
@@ -636,6 +636,10 @@ const FavouriteForMobile = ({ favourite, handleAddSelectedItem }) => {
       );
       if (findItemInCart !== undefined) {
         setFindInCart(findItemInCart);
+        setCtnCount(null);
+        setPkCount(null);
+        setpkItemsQuantity("");
+        setCtnItemQuantity("");
         if (findItemInCart?.type === "pk") {
           setAlreadyInCartPkItems(
             findItemInCart?.quantity * findItemInCart?.product?.PK
@@ -651,8 +655,8 @@ const FavouriteForMobile = ({ favourite, handleAddSelectedItem }) => {
     } else {
       setFindInCart(null);
     }
-  }, [favourites, selectedItems, changingLoading, loading]);
-  
+  }, [favourites, selectedItems, changingLoading]);
+
   // set checked if already in cart
   const findItems = useCallback(async () => {
     if (
@@ -764,7 +768,7 @@ const FavouriteForMobile = ({ favourite, handleAddSelectedItem }) => {
                       findInCart?.product?._id === favourite?._id &&
                       alreadyInCartPkCount !== null
                         ? alreadyInCartPkCount
-                        : pkCount
+                        : pkCount !== null && pkCount
                     }
                     min="0"
                     max="999999"
@@ -869,7 +873,7 @@ const FavouriteForMobile = ({ favourite, handleAddSelectedItem }) => {
                       findInCart?.product?._id === favourite?._id &&
                       alreadyInCartCtnCount !== null
                         ? alreadyInCartCtnCount
-                        : ctnCount
+                        : ctnCount !== null && ctnCount
                     }
                     onChange={(e) => {
                       if (e.target.value.length > 6) {
@@ -946,7 +950,7 @@ const FavouriteForMobile = ({ favourite, handleAddSelectedItem }) => {
                       type="button"
                       className={` ${
                         findInCart?.product?._id === favourite?._id
-                          ? "bg-rose-500 text-black"
+                          ? "bg-REDPALE text-black"
                           : "bg-DARKRED text-white"
                       } text-center w-full p-2 rounded-lg`}
                       disabled={
@@ -964,7 +968,7 @@ const FavouriteForMobile = ({ favourite, handleAddSelectedItem }) => {
                       type="button"
                       className={` ${
                         findInCart?.product?._id === favourite?._id
-                          ? "bg-rose-500 text-black"
+                          ? "bg-REDPALE text-black"
                           : "bg-DARKRED text-white"
                       } text-center w-full p-2 rounded-lg`}
                       disabled={loading && selectedProductId === favourite?._id}
@@ -983,7 +987,7 @@ const FavouriteForMobile = ({ favourite, handleAddSelectedItem }) => {
                       type="button"
                       className={` ${
                         findInCart?.product?._id === favourite?._id
-                          ? "bg-rose-500 text-black"
+                          ? "bg-REDPALE text-black"
                           : "bg-DARKRED text-white"
                       } text-center w-full p-2 rounded-lg`}
                       onClick={() => handleSubmitAddProduct()}

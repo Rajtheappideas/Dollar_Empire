@@ -133,7 +133,7 @@ const ShoppingCart = ({ summaryFixed }) => {
       {/* table */}
       <div className="xl:w-9/12 w-full xl:overflow-hidden overflow-x-scroll scrollbar">
         {/* for deskt & tablet */}
-        <table className="w-full md:inline-block hidden">
+        <table className="w-full lg:inline-block hidden">
           <thead className="bg-PRIMARY text-white p-2 w-full">
             <tr>
               <th className="lg:min-w-[20rem] min-w-[23rem] lg:p-3 p-2 font-semibold text-left text-base">
@@ -349,7 +349,7 @@ const ShoppingCart = ({ summaryFixed }) => {
           </tbody>
         </table>
         {/* for mobile */}
-        <table className="w-full md:hidden overflow-hidden">
+        <table className="w-full lg:hidden overflow-hidden">
           <tbody>
             {loading && !updateLoading ? (
               <tr>
@@ -431,9 +431,17 @@ const ShoppingCart = ({ summaryFixed }) => {
                         {t("updating")}
                       </td>
                     ) : (
-                      <td className="lg:p-5 p-3  text-center w-full">
+                      <td className="lg:p-5 p-3 text-center w-full uppercase">
                         {productId !== item?.product?._id ? (
-                          item.quantity
+                          item?.type === "pk" ? (
+                            `${item?.quantity} ${item?.type} (${
+                              item?.quantity * item?.product?.PK
+                            }PC)`
+                          ) : (
+                            `${item?.quantity} ${item?.type} (${
+                              item?.quantity * item?.product?.CTN
+                            }PC)`
+                          )
                         ) : (
                           <form
                             className="inline-block"
@@ -462,6 +470,13 @@ const ShoppingCart = ({ summaryFixed }) => {
                         )}
                         {showChangeField && productId === item?.product?._id ? (
                           <>
+                            <span className="text-xs">
+                              (
+                              {item?.type === "pk"
+                                ? productQuantity * item?.product?.PK
+                                : productQuantity * item?.product?.CTN}
+                              PC)
+                            </span>
                             <span
                               role="button"
                               className="text-PRIMARY underline ml-1"

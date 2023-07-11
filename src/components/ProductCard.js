@@ -71,13 +71,16 @@ const ProductCard = ({
 
   const { user, token } = useSelector((state) => state.Auth);
 
-  const { productLoading } = useSelector((state) => state.products);
+  const { productLoading, singleProductLoading } = useSelector(
+    (state) => state.products
+  );
   const {
     showProductDetailsPopup,
     showEnlargeImage,
     activeEnlargeImageId,
     activeEnlargeImageFrom,
     singleProductEnlargeImageId,
+    singleProductId,
   } = useSelector((state) => state.globalStates);
 
   const { loading, cartItems, cart, selectedItems, success } = useSelector(
@@ -198,8 +201,8 @@ const ProductCard = ({
             dispatch(handleRemoveOneProductFromSelected(product?._id));
             setCtnItemQuantity("");
             setpkItemsQuantity("");
-            setPkCount(0);
-            setCtnCount(0);
+            setPkCount(null);
+            setCtnCount(null);
             setSelectedProductId(null);
           }
         })
@@ -686,6 +689,11 @@ const ProductCard = ({
     }
   };
 
+  const handleOpenPopup = () => {
+    dispatch(showPopup());
+    dispatch(handleSetSingelProductId(product?._id));
+  };
+
   // outside click close pop image
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -705,12 +713,16 @@ const ProductCard = ({
 
   // find items already in cart
   useEffect(() => {
-    if (cart !== null && cartItems.length > 0 && !loading && !changingLoading) {
+    if (cart !== null && cartItems.length > 0 && !changingLoading) {
       const findItemInCart = cartItems.find(
         (i) => i.product?._id === product?._id
       );
       if (findItemInCart !== undefined) {
         setFindInCart(findItemInCart);
+        setPkCount(null);
+        setpkItemsQuantity("");
+        setCtnCount(null);
+        setCtnItemQuantity("");
         if (findItemInCart?.type === "pk") {
           setAlreadyInCartPkItems(
             findItemInCart?.quantity * findItemInCart?.product?.PK
@@ -726,7 +738,7 @@ const ProductCard = ({
     } else {
       setFindInCart(null);
     }
-  }, [showProductDetailsPopup, selectedItems, changingLoading, loading]);
+  }, [showProductDetailsPopup, selectedItems, changingLoading, productLoading]);
 
   // set product to favourite item
   useEffect(() => {
@@ -801,8 +813,17 @@ const ProductCard = ({
   return (
     <>
       {selectedView === "gridsingle" ? (
-        // single product
-        <div className="lg:space-y-3 relative z-0 space-y-2 w-full xl:p-3 md:p-5 p-3 bg-white font-semibold md:text-lg border rounded-lg border-[#EAEAEA] flex xl:flex-row flex-col items-start justify-between">
+        // single product grid view
+        <div
+          className={`lg:space-y-3 relative ${
+            showEnlargeImage && product?._id === activeEnlargeImageId
+              ? "z-50"
+              : "z-0"
+          } space-y-2 w-full xl:p-3 md:p-5 p-3 bg-white font-semibold md:text-lg border rounded-lg border-[#EAEAEA] flex xl:flex-row flex-col items-start justify-between`}
+        >
+          {showEnlargeImage && product?._id === activeEnlargeImageId && (
+            <div className="absolute z-30 inset-0 bg-black bg-opacity-20 backdrop-blur-sm max-w-[100%] h-full" />
+          )}
           {/* top seller label */}
           {title === "top-sellers" && (
             <p className="bg-PRIMARY text-white h-8 w-40 leading-8 align-middle text-center text-sm rounded-tl-lg absolute z-20 top-0 left-0">
@@ -811,7 +832,13 @@ const ProductCard = ({
           )}
 
           {/* left side */}
-          <div className="h-auto xl:w-2/3 w-full relative flex md:flex-row flex-col md:items-start items-center justify-start xl:gap-5 gap-3">
+          <div
+            className={`h-auto xl:w-2/3 w-full relative ${
+              showEnlargeImage && product?._id === activeEnlargeImageId
+                ? "z-50"
+                : "z-0"
+            } flex md:flex-row flex-col md:items-start items-center justify-start xl:gap-5 gap-3`}
+          >
             {/* img */}
             <img
               src={BaseUrl.concat(product?.images[0])}
@@ -990,7 +1017,7 @@ const ProductCard = ({
                       findInCart?.product?._id === product?._id &&
                       alreadyInCartPkCount !== null
                         ? alreadyInCartPkCount
-                        : pkCount
+                        : pkCount !== null && pkCount
                     }
                     onChange={(e) => {
                       handleOnchangePkCountField(e);
@@ -1082,7 +1109,7 @@ const ProductCard = ({
                       findInCart?.product?._id === product?._id &&
                       alreadyInCartCtnCount !== null
                         ? alreadyInCartCtnCount
-                        : ctnCount
+                        : ctnCount !== null && ctnCount
                     }
                     onChange={(e) => {
                       handleOnchangeCtnCountField(e);
@@ -1143,7 +1170,7 @@ const ProductCard = ({
                       type="button"
                       className={` ${
                         findInCart?.product?._id === product?._id
-                          ? "bg-rose-500 text-black"
+                          ? "bg-REDPALE text-black"
                           : "bg-DARKRED text-white"
                       }  text-center w-full p-2 rounded-lg`}
                       disabled={
@@ -1161,7 +1188,7 @@ const ProductCard = ({
                       type="button"
                       className={` ${
                         findInCart?.product?._id === product?._id
-                          ? "bg-rose-500 text-black"
+                          ? "bg-REDPALE text-black"
                           : "bg-DARKRED text-white"
                       }  text-center w-full p-2 rounded-lg`}
                       disabled={loading && selectedProductId === product?._id}
@@ -1180,7 +1207,7 @@ const ProductCard = ({
                       type="button"
                       className={` ${
                         findInCart?.product?._id === product?._id
-                          ? "bg-rose-500 text-black"
+                          ? "bg-REDPALE text-black"
                           : "bg-DARKRED text-white"
                       } text-center w-full p-2 rounded-lg`}
                       onClick={() => handleSubmitAddProduct()}
@@ -1228,23 +1255,37 @@ const ProductCard = ({
           )}
         </div>
       ) : (
-        <div className="md:space-y-2 space-y-3 relative z-0 md:w-full w-auto md:p-3 p-4 bg-white lg:min-h-[27rem] md:min-h-[21rem] min-h-[19rem] font-semibold md:text-lg border rounded-lg border-[#EAEAEA]">
+        <div
+          className={`md:space-y-2 space-y-3 relative ${
+            showEnlargeImage && product?._id === activeEnlargeImageId
+              ? "z-40"
+              : "z-0"
+          } md:w-full w-auto md:p-3 p-4 bg-white lg:min-h-[27rem] md:min-h-[21rem] min-h-[19rem] font-semibold md:text-lg border rounded-lg border-[#EAEAEA]`}
+        >
           {/* top seller label */}
+          {showEnlargeImage && product?._id === activeEnlargeImageId && (
+            <div className="absolute z-30 inset-0 bg-black bg-opacity-20 backdrop-blur-sm max-w-[100%] h-full" />
+          )}
           {title === "top-sellers" && (
             <p className="bg-PRIMARY text-white h-8 w-40 leading-8 align-middle text-center text-sm rounded-tl-lg absolute top-0 left-0">
               {t("top_seller")}
             </p>
           )}
           {/* product img */}
-          <div className="relative z-0 w-auto pt-3">
+          <div
+            className={`relative ${
+              showEnlargeImage && product?._id === activeEnlargeImageId
+                ? "z-40"
+                : "z-0"
+            } w-auto pt-3`}
+          >
             <img
               src={BaseUrl.concat(product?.images[0])}
               alt={product?.name}
-              className="lg:h-64 md:h-40 relative z-0 h-32 cursor-pointer w-fit mx-auto object-contain object-center"
+              className="lg:h-64 md:h-40 relative z-50 h-32 cursor-pointer w-fit mx-auto object-contain object-center"
               title={product?.name}
               onClick={() => {
-                dispatch(showPopup());
-                dispatch(handleSetSingelProductId(product?._id));
+                handleOpenPopup();
               }}
               loading="lazy"
             />
@@ -1254,14 +1295,14 @@ const ProductCard = ({
                 dispatch(showEnlargeImagePopup());
                 handleShowEnlargeImage();
               }}
-              className="h-6 w-6 bg-white/40 absolute bottom-0 md:right-0 right-2 text-PRIMARY"
+              className="h-6 w-6 bg-white/40 absolute z-50 bottom-0 md:right-0 right-2 text-PRIMARY"
             />
             {activeEnlargeImageId === product?._id &&
               activeEnlargeImageFrom === from &&
               showEnlargeImage && (
                 <div
                   ref={popImageRef}
-                  className="absolute bg-black/30 z-40 xl:w-[200%] w-full xl:min-h-[30rem] lg:min-h-[20rem] min-h-[22rem] max-h-screen top-0 md:-right-5 right-0 backdrop-blur-sm"
+                  className="absolute bg-black/30 z-50 md:w-[200%] w-full md:min-h-[30rem] min-h-[22rem] max-h-screen -top-10 lg:-right-14 md:-right-44 right-0 backdrop-blur-sm"
                 >
                   <AiOutlineClose
                     role="button"
@@ -1273,7 +1314,7 @@ const ProductCard = ({
                   <img
                     src={BaseUrl.concat(product?.images[activeEnlargeImage])}
                     alt={product?.name}
-                    className="lg:max-h-[25rem] max-h-screen px-2 w-full rounded-none object-contain object-center absolute top-10"
+                    className="md:max-h-full max-h-screen px-2 w-full rounded-none object-contain object-center absolute top-10"
                     title={product?.name}
                     loading="lazy"
                   />
@@ -1390,7 +1431,7 @@ const ProductCard = ({
                       findInCart?.product?._id === product?._id &&
                       alreadyInCartPkCount !== null
                         ? alreadyInCartPkCount
-                        : pkCount
+                        : pkCount !== null && pkCount
                     }
                     onChange={(e) => {
                       if (e.target.value.length > 6) {
@@ -1416,7 +1457,7 @@ const ProductCard = ({
                     (!loading && selectedProductId === product?._id) ||
                     findInCart?.type === "ctn"
                   }
-                  className={`text-BLACK h-full bg-blue-500 md:w-7 w-8 text-center rounded-md absolute top-1/2 -translate-y-1/2 md:left-12 left-14`}
+                  className={`text-BLACK h-full bg-blue-500 md:w-7 w-8 text-center rounded-md absolute top-1/2 -translate-y-1/2 md:left-11 left-14`}
                   onClick={() => {
                     handleOnClickFieldForBoth("minus", "pk");
                   }}
@@ -1438,7 +1479,11 @@ const ProductCard = ({
                 </button>
               </div>
               {/* ctn */}
-              <div className="flex w-full items-center lg:gap-x-0.5 md:gap-x-2 gap-x-1 relative z-0">
+              <div
+                className={`flex w-full items-center ${
+                  selectedView === "grid3" ? "md:gap-x-1" : "md:gap-x-0.5"
+                } gap-x-1 relative z-0`}
+              >
                 <input
                   name={
                     from === "TopSellers"
@@ -1468,14 +1513,14 @@ const ProductCard = ({
                   <span
                     className={`absolute top-1/2 sm:text-sm text-xs ${
                       selectedView === "grid3"
-                        ? "w-fit"
-                        : "md:max-w-[3rem] w-fit"
+                        ? "w-fit lg:left-9 md:left-8 left-10"
+                        : "md:max-w-[3rem] w-fit lg:left-9 md:left-7 left-10"
                     } text-sm ${
                       ctnItemQuantity === "" && alreadyInCartCtnItems === ""
                         ? "text-gray-400 font-normal"
                         : "text-BLACK font-semibold"
                     }
-                    -translate-y-1/2 lg:left-9 md:left-8 left-10`}
+                    -translate-y-1/2 `}
                   >
                     {`${
                       ctnItemQuantity === "" && alreadyInCartCtnItems === ""
@@ -1493,7 +1538,7 @@ const ProductCard = ({
                       findInCart?.product?._id === product?._id &&
                       alreadyInCartCtnCount !== null
                         ? alreadyInCartCtnCount
-                        : ctnCount
+                        : ctnCount !== null && ctnCount
                     }
                     onChange={(e) => {
                       handleOnchangeCtnCountField(e);
@@ -1503,7 +1548,7 @@ const ProductCard = ({
                       findInCart?.type === "pk"
                     }
                   />
-                  <span className="font-semibold text-BLACK text-xs absolute top-1/2 -translate-y-1/2 lg:right-9 right-10">
+                  <span className="font-semibold text-BLACK text-xs absolute top-1/2 -translate-y-1/2 lg:right-9 md:right-8 right-10">
                     CTN
                   </span>
                 </div>
@@ -1514,7 +1559,11 @@ const ProductCard = ({
                     (!loading && selectedProductId === product?._id) ||
                     findInCart?.type === "pk"
                   }
-                  className={`text-BLACK h-full bg-blue-500 md:w-7 w-8 text-center rounded-md absolute top-1/2 -translate-y-1/2 lg:left-[48px] md:left-10 left-14`}
+                  className={`text-BLACK h-full bg-blue-500 md:w-7 w-8 text-center rounded-md absolute top-1/2 -translate-y-1/2 ${
+                    selectedView === "grid3"
+                      ? "lg:left-[48px] md:left-12 left-14"
+                      : "lg:left-[48px] md:left-11 left-14"
+                  } `}
                   onClick={() => {
                     handleOnClickFieldForBoth("minus", "ctn");
                   }}
@@ -1527,7 +1576,7 @@ const ProductCard = ({
                     (!loading && selectedProductId === product?._id) ||
                     findInCart?.type === "pk"
                   }
-                  className={`text-BLACK h-full rounded-md bg-blue-500 md:w-7 w-8 absolute top-1/2 -translate-y-1/2 right-0 `}
+                  className={`text-BLACK h-full rounded-md bg-blue-500 md:w-7 w-8 absolute top-1/2 -translate-y-1/2 right-0`}
                   onClick={() => {
                     handleOnClickFieldForBoth("plus", "ctn");
                   }}
@@ -1554,7 +1603,7 @@ const ProductCard = ({
                       type="button"
                       className={` ${
                         findInCart?.product?._id === product?._id
-                          ? "bg-rose-500 text-black"
+                          ? "bg-REDPALE text-black"
                           : "bg-DARKRED text-white"
                       } text-center w-full p-2 rounded-lg`}
                       disabled={
@@ -1572,7 +1621,7 @@ const ProductCard = ({
                       type="button"
                       className={` ${
                         findInCart?.product?._id === product?._id
-                          ? "bg-rose-500 text-black"
+                          ? "bg-REDPALE text-black"
                           : "bg-DARKRED text-white"
                       }  text-center w-full p-2 rounded-lg`}
                       disabled={loading && selectedProductId === product?._id}
@@ -1591,7 +1640,7 @@ const ProductCard = ({
                       type="button"
                       className={` ${
                         findInCart?.product?._id === product?._id
-                          ? "bg-rose-500 text-black"
+                          ? "bg-REDPALE text-black"
                           : "bg-DARKRED text-white"
                       } text-center w-full p-2 rounded-lg`}
                       onClick={() => handleSubmitAddProduct()}

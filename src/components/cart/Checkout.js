@@ -28,7 +28,7 @@ const Checkout = ({ summaryFixed }) => {
   );
   const { addressList, loading } = useSelector((state) => state.getContent);
   const dispatch = useDispatch();
-  console.log(shippingAddressId);
+
   useEffect(() => {
     if (shipphingMethod === "freight") {
       dispatch(changeGrandTotal("freight"));
@@ -59,7 +59,7 @@ const Checkout = ({ summaryFixed }) => {
   //   }
   // }, []);
   return (
-    <div className="w-full flex xl:flex-row flex-col items-start justify-start gap-4 pb-10">
+    <div className="w-full flex xl:flex-row flex-col items-start justify-start md:gap-4 gap-2 md:pb-10 pb-5">
       {showPopup && (
         <EditAddressPopup
           addressId={addressId}
@@ -75,7 +75,7 @@ const Checkout = ({ summaryFixed }) => {
       )}
 
       {/* left side div */}
-      <div className="xl:w-9/12 w-full space-y-3">
+      <div className="xl:w-9/12 w-full md:space-y-3 space-y-2">
         <p className="bg-PRIMARY text-white p-4 w-full text-left font-semibold tracking-wide">
           {t("Shipping Method")}
         </p>
@@ -121,7 +121,7 @@ const Checkout = ({ summaryFixed }) => {
             </p>
           </div>
         </div>
-        <ul className="w-full list-disc text-left font-normal space-y-3 pl-5 leading-relaxed">
+        <ul className="w-full list-disc text-left font-normal space-y-3 pl-5 md:leading-relaxed leading-normal">
           <li>
             Lorem Ipsum is simply dummy text of the printing and typesetting
             industry. Lorem Ipsum has been the industry's standard dummy text
@@ -137,7 +137,7 @@ const Checkout = ({ summaryFixed }) => {
             only five centuries, but also the leap into electronic typesetting.
           </li>
         </ul>
-        <div className="pt-12">
+        <div className="md:pt-12 pt-6">
           <p className="bg-PRIMARY text-white p-4 w-full text-left font-semibold tracking-wide">
             {t("Shipping Address")}
           </p>
@@ -159,7 +159,7 @@ const Checkout = ({ summaryFixed }) => {
               key={address?._id}
               className={`${
                 shippingAddressId === address?._id && "bg-gray-200"
-              } cursor-pointer relative w-full border border-gray-300 rounded-md p-5 font-normal text-left space-y-3 text-[#282828]`}
+              } cursor-pointer relative w-full border border-gray-300 rounded-md md:p-5 p-2 font-normal text-left md:space-y-3 space-y-1 text-[#282828]`}
               onClick={() =>
                 dispatch(handleChangeShippingAddressId(address?._id))
               }

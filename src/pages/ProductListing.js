@@ -68,6 +68,7 @@ const ProductListing = () => {
     perPageItemView,
     activeSubcategory,
     activeCategory,
+    showEnlargeImage,
   } = useSelector((state) => state.globalStates);
   const { title } = useParams();
 
@@ -90,35 +91,35 @@ const ProductListing = () => {
   };
 
   // filter products
-  const handleFilterProducts = async () => {
+  const handleFilterProducts = () => {
     toast.dismiss();
     dispatch(handleRemoveAllProducts());
     dispatch(handleRemoveAllTotalQuantityAndTotalAmount());
+    if (productLoading) return true;
     if (productLoading) {
       return true;
-    } else if (title.includes("new-arrivals")) {
+    } else if (!productLoading && title.includes("new-arrivals")) {
       // new arrivals
       setProducts(newArrivals);
       handleFilterProductsByPrice(newArrivals);
-      if (newArrivals.length <= 0 && !productLoading) {
-        return setMessage(
-          "Product Not Found in New Arrivals, Try Someting else."
-        );
+      if (!productLoading && newArrivals.length === 0) {
+        setMessage("Product Not Found in New Arrivals, Try Someting else.");
+        return true;
       }
       return true;
-    } else if (title.includes("top-sellers")) {
+    } else if (!productLoading && title.includes("top-sellers")) {
       // top sellers
       setProducts(topSellers);
       handleFilterProductsByPrice(topSellers);
-      if (topSellers.length <= 0) {
+      if (!productLoading && topSellers.length === 0) {
         return setMessage(
           "Product Not Found in Top Sellers, Try something else."
         );
       }
       return true;
-    } else if (/\d/.test(title)) {
+    } else if (!productLoading && /\d/.test(title)) {
       // by price
-      if (title.includes("-")) {
+      if (!productLoading && title.includes("-")) {
         const price = title.split("-");
         const byPrice = allProducts.filter(
           (i) =>
@@ -129,7 +130,7 @@ const ProductListing = () => {
         handleFilterProductsByPrice(byPrice);
 
         if (allProducts.length === 0) {
-          return setMessage("Product Not Found, Try with different filters.");
+          return setMessage("Product not found, Try with different filters.");
         }
       } else if (title.toLocaleLowerCase().includes("below")) {
         // over by price
@@ -157,7 +158,7 @@ const ProductListing = () => {
         }
       }
       return true;
-    } else if (title.includes("all-products")) {
+    } else if (!productLoading && title.includes("all-products")) {
       // all products
       setProducts(allProducts);
       handleFilterProductsByPrice(allProducts);
@@ -166,7 +167,7 @@ const ProductListing = () => {
         return setMessage("Product Not Found, Try something else.");
       }
       return true;
-    } else if (title.includes("low-to-high")) {
+    } else if (!productLoading && title.includes("low-to-high")) {
       // low - high
       const lowToHigh = allProducts.slice().sort((a, b) => {
         return parseFloat(a.price) - parseFloat(b.price);
@@ -178,7 +179,7 @@ const ProductListing = () => {
         return setMessage("Product Not Found, Try something else.");
       }
       return true;
-    } else if (title.includes("high-to-low")) {
+    } else if (!productLoading && title.includes("high-to-low")) {
       // high - low
       const highToLow = allProducts.slice().sort((a, b) => {
         return parseFloat(b.price) - parseFloat(a.price);
@@ -190,7 +191,7 @@ const ProductListing = () => {
         return setMessage("Product Not Found, Try something else.");
       }
       return true;
-    } else if (categories.includes(title)) {
+    } else if (!productLoading && categories.includes(title)) {
       // by category
       const productsByCategories = allProducts.filter((i) =>
         i.category.includes(title)
@@ -202,12 +203,13 @@ const ProductListing = () => {
           (c) => c?.subcategory === activeSubcategory
         );
         setProducts(findProducts);
+        handleFilterProductsByPrice(findProducts);
       }
       if (allProducts.length === 0) {
         return setMessage("Product Not Found, Try something else.");
       }
       return true;
-    } else if (title.includes("search")) {
+    } else if (!productLoading && title.includes("search")) {
       setProducts(searchProducts);
       handleFilterProductsByPrice(searchProducts);
       return true;
@@ -233,6 +235,7 @@ const ProductListing = () => {
 
   // filters on price
   const handleFilterProductsByPrice = (filterproducts) => {
+    setMessage("");
     if (activePrice.includes("Any")) {
       toast.dismiss();
       return setProducts(filterproducts);
@@ -244,7 +247,7 @@ const ProductListing = () => {
       if (byPrice.length > 0) {
         return setProducts(byPrice);
       } else {
-        return toast.error(`Products not found in this range.`);
+        setMessage("No item match in this range.");
       }
     } else if (activePrice.includes("$0.50 - $0.79")) {
       toast.dismiss();
@@ -258,7 +261,7 @@ const ProductListing = () => {
       if (byPrice.length > 0) {
         return setProducts(byPrice);
       } else {
-        return toast.error("Products not found between $0.50 - $0.79 price.");
+        setMessage("No item match in this range.");
       }
     } else if (activePrice.includes("$0.80 - $0.99")) {
       toast.dismiss();
@@ -272,7 +275,7 @@ const ProductListing = () => {
       if (byPrice.length > 0) {
         return setProducts(byPrice);
       } else {
-        return toast.error("Products not found between $0.80 - $0.99 price.");
+        setMessage("No item match in this range.");
       }
     } else if (activePrice.includes("$1.00 - $1.49")) {
       toast.dismiss();
@@ -286,7 +289,7 @@ const ProductListing = () => {
       if (byPrice.length > 0) {
         return setProducts(byPrice);
       } else {
-        return toast.error("Products not found between $1.00 - $1.49 price.");
+        setMessage("No item match in this range.");
       }
     } else if (activePrice.includes("$1.50 - $1.99")) {
       toast.dismiss();
@@ -300,7 +303,7 @@ const ProductListing = () => {
       if (byPrice.length > 0) {
         return setProducts(byPrice);
       } else {
-        return toast.error("Products not found between $1.50 - $1.99 price.");
+        setMessage("No item match in this range.");
       }
     } else if (activePrice.toLocaleLowerCase().includes("above")) {
       toast.dismiss();
@@ -310,7 +313,7 @@ const ProductListing = () => {
       if (byPrice.length > 0) {
         return setProducts(byPrice);
       } else {
-        return toast.error(`Products not found in this range.`);
+        setMessage("No item match in this range.");
       }
     } else if (activePrice.includes("High_to_low")) {
       const highToLow = filterproducts.slice().sort((a, b) => {
@@ -480,7 +483,7 @@ const ProductListing = () => {
         .then((res) => {
           if (res.payload.status === "success") {
             const Categories = res.payload.products.map((i) => i.category);
-            setCategories([...new Set(Categories)])
+            setCategories([...new Set(Categories)]);
           } else {
             toast.error(res.payload.message);
           }
@@ -563,6 +566,9 @@ const ProductListing = () => {
   return (
     <>
       <Helmet title={`product-listing-${title}`} />
+      {showEnlargeImage && (
+        <div className="absolute z-30 inset-0 bg-black bg-opacity-20 backdrop-blur-sm max-w-[100%] h-full" />
+      )}
 
       <section className="bg-BACKGROUNDGRAY lg:pb-20 lg:py-0 py-10">
         <div className="container mx-auto space_for_div space-y-5 w-full bg-BACKGROUNDGRAY">
@@ -728,7 +734,9 @@ const ProductListing = () => {
                     <Skeleton className="w-full md:h-80 h-60" />
                     <Skeleton className="w-full md:h-80 h-60" />
                   </SkeletonTheme>
-                ) : displayProdcuts.length > 0 && products.length > 0 ? (
+                ) : displayProdcuts.length > 0 &&
+                  products.length > 0 &&
+                  message === "" ? (
                   displayProdcuts.map((product) => (
                     <ProductCard
                       title={title}

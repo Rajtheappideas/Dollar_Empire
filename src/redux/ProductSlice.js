@@ -119,6 +119,7 @@ export const handleGetProductById = createAsyncThunk(
     }
   }
 );
+
 const initialState = {
   productLoading: false,
   singleProductLoading: false,
@@ -129,6 +130,7 @@ const initialState = {
   topSellers: [],
   minOrderAmount: null,
   singleProduct: null,
+  filters: [],
 };
 
 const ProductSlice = createSlice({
@@ -198,9 +200,11 @@ const ProductSlice = createSlice({
         state.error = payload;
         state.allProducts = [];
       } else {
+        console.log(payload);
         state.error = null;
         state.allProducts = payload?.products;
         state.minOrderAmount = payload?.minOrderAmount;
+        state.filters = payload?.filter;
       }
     });
     builder.addCase(handleGetAllProducts.rejected, (state, { error }) => {

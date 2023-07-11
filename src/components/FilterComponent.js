@@ -21,6 +21,7 @@ const FilterComponent = ({ setActivePrice, activePrice, title }) => {
   const { activeCategory, activeSubcategory } = useSelector(
     (state) => state.globalStates
   );
+  const { filters } = useSelector((state) => state.products);
 
   const { t } = useTranslation();
 
@@ -37,7 +38,7 @@ const FilterComponent = ({ setActivePrice, activePrice, title }) => {
       setIsCategoryThere(true);
     }
   }, [loading, title]);
-  
+
   return (
     <div className="w-full border border-BORDERGRAY bg-white">
       <p className="text-xl font-semibold text-left border-b border-BORDERGRAY py-4 px-3">

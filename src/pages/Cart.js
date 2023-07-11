@@ -58,7 +58,7 @@ const Cart = () => {
   return (
     <>
       <Helmet title={t("Cart")} />
-      <section className="bg-white w-full lg:pb-20 lg:py-0 py-10">
+      <section className="bg-white w-full lg:pb-20 lg:py-0 py-5">
         <div className="container mx-auto space_for_div space-y-5 w-full bg-white ">
           <h1 className="block font-semibold md:text-4xl text-2xl text-left py-1">
             {activeComponentForCart === "Check Out" ? (
