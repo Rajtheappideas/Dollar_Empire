@@ -20,6 +20,7 @@ const initialState = {
   pagination: 0,
   activeSubcategory: "",
   activeCategory: "",
+  productListingError: "",
 };
 const logoutChannel = new BroadcastChannel("handleLogout");
 const loginChannel = new BroadcastChannel("handleSuccess");
@@ -37,6 +38,9 @@ const GlobalStates = createSlice({
     },
     handleChangeActiveComponent: (state, { payload }) => {
       state.activeComponentForCart = payload;
+    },
+    handleChangeProductListingError: (state, { payload }) => {
+      state.productListingError = payload;
     },
     handleSuccess: () => {
       loginChannel.postMessage("");
@@ -127,6 +131,7 @@ export const {
   handleChangeActiveSubcategory,
   handleChangeActiveCategory,
   handleChangeSearchTitle,
+  handleChangeProductListingError,
 } = GlobalStates.actions;
 
 export default GlobalStates.reducer;

@@ -23,6 +23,7 @@ import {
 import { toast } from "react-hot-toast";
 import {
   handleChangePagePerView,
+  handleChangeProductListingError,
   handleChangeProductListingPageLink,
 } from "../redux/GlobalStates";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
@@ -69,6 +70,7 @@ const ProductListing = () => {
     activeSubcategory,
     activeCategory,
     showEnlargeImage,
+    productListingError,
   } = useSelector((state) => state.globalStates);
   const { title } = useParams();
 
@@ -129,7 +131,7 @@ const ProductListing = () => {
         setProducts(byPrice);
         handleFilterProductsByPrice(byPrice);
 
-        if (allProducts.length === 0) {
+        if (byPrice.length === 0) {
           return setMessage("Product not found, Try with different filters.");
         }
       } else if (title.toLocaleLowerCase().includes("below")) {
@@ -141,7 +143,7 @@ const ProductListing = () => {
         setProducts(byPrice);
         handleFilterProductsByPrice(byPrice);
 
-        if (allProducts.length === 0) {
+        if (byPrice.length === 0) {
           return setMessage("Product Not Found, Try with different price.");
         }
       } else if (title.toLocaleLowerCase().includes("above")) {
@@ -153,7 +155,7 @@ const ProductListing = () => {
         setProducts(byPrice);
         handleFilterProductsByPrice(byPrice);
 
-        if (allProducts.length === 0) {
+        if (byPrice.length === 0) {
           return setMessage("Product Not Found, Try with different price.");
         }
       }
@@ -175,7 +177,7 @@ const ProductListing = () => {
       setProducts(lowToHigh);
       handleFilterProductsByPrice(lowToHigh);
 
-      if (allProducts.length === 0) {
+      if (lowToHigh.length === 0) {
         return setMessage("Product Not Found, Try something else.");
       }
       return true;
@@ -187,7 +189,7 @@ const ProductListing = () => {
       setProducts(highToLow);
       handleFilterProductsByPrice(highToLow);
 
-      if (allProducts.length === 0) {
+      if (highToLow.length === 0) {
         return setMessage("Product Not Found, Try something else.");
       }
       return true;
@@ -205,7 +207,7 @@ const ProductListing = () => {
         setProducts(findProducts);
         handleFilterProductsByPrice(findProducts);
       }
-      if (allProducts.length === 0) {
+      if (productsByCategories.length === 0) {
         return setMessage("Product Not Found, Try something else.");
       }
       return true;
@@ -300,6 +302,7 @@ const ProductListing = () => {
           i.price >= price[0].replace("$", "") &&
           i.price <= price[1].replace("$", "")
       );
+      console.log(byPrice);
       if (byPrice.length > 0) {
         return setProducts(byPrice);
       } else {
@@ -431,8 +434,14 @@ const ProductListing = () => {
 
   // add multiple product api handle
   const handleSubmitMulitpleProductToCart = () => {
+    dispatch(handleChangeProductListingError(""));
     if (selectedItems.length === 0) {
       toast.dismiss();
+      dispatch(
+        handleChangeProductListingError(
+          "Please add some quantity to products!!!"
+        )
+      );
       return toast.error("Please add some quantity to products!!!");
     } else {
       const response = dispatch(
@@ -572,24 +581,32 @@ const ProductListing = () => {
 
       <section className="bg-BACKGROUNDGRAY lg:pb-20 lg:py-0 py-10">
         <div className="container mx-auto space_for_div space-y-5 w-full bg-BACKGROUNDGRAY">
-          {/* title */}
-          <h1 className="block font-semibold md:text-4xl text-2xl text-left capitalize">
-            {title.includes("search")
-              ? `${t("Search for")}: ${searchTitle}`
-              : /\d/.test(title)
-              ? `${t("By Price")}: ${title}`
-              : title.includes("new-arrivals")
-              ? t("new_arrivals")
-              : title.includes("top-sellers")
-              ? t("top_sellers")
-              : title.includes("all-products")
-              ? t("All Procuts")
-              : title.includes("low-to-high")
-              ? t("Low to high")
-              : title.includes("high-to-low")
-              ? t("High to low")
-              : title}
-          </h1>
+          <div className="w-full flex items-center justify-between">
+            {/* title */}
+            <h1 className="block font-semibold md:text-4xl text-2xl text-left capitalize">
+              {title.includes("search")
+                ? `${t("Search for")}: ${searchTitle}`
+                : /\d/.test(title)
+                ? `${t("By Price")}: ${title}`
+                : title.includes("new-arrivals")
+                ? t("new_arrivals")
+                : title.includes("top-sellers")
+                ? t("top_sellers")
+                : title.includes("all-products")
+                ? t("All Procuts")
+                : title.includes("low-to-high")
+                ? t("Low to high")
+                : title.includes("high-to-low")
+                ? t("High to low")
+                : title}
+            </h1>
+            {productListingError !== "" && (
+              <span className="text-red-500 font-semibold text-xl">
+                {productListingError}
+              </span>
+            )}
+          </div>
+
           <div className="w-full flex items-start justify-start gap-5 lg:flex-row flex-col">
             {/* filter */}
             <section className="lg:w-[20%] w-full">

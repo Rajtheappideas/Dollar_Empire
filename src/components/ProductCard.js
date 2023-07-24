@@ -481,7 +481,11 @@ const ProductCard = ({
       toast.error("Can't add more than 6 numbers !!!");
       return true;
     }
-    if (!loading && selectedProductId?._id !== product?._id) {
+    if (
+      !loading &&
+      selectedProductId?._id !== product?._id &&
+      findInCart?.product?._id !== product?._id
+    ) {
       setCtnCount(e.target.value.replace(/^0+/, ""));
       setCtnItemQuantity(e.target.value.replace(/^0+/, "") * product?.CTN);
     }

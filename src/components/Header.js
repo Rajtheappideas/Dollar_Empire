@@ -15,6 +15,7 @@ import {
   handleChangeActiveCategory,
   handleChangeActiveComponent,
   handleChangeActiveSubcategory,
+  handleChangeProductListingError,
   handleChangeSearchProducts,
   handleChangeSearchTerm,
   handleChangeSearchTitle,
@@ -81,10 +82,12 @@ const Header = () => {
   }, [user]);
 
   const handleSearchProducts = (e) => {
+    dispatch(handleChangeProductListingError(""));
     e.preventDefault();
     toast.dismiss();
     if (searchTerm === "") {
       searchRef.current.focus();
+      dispatch(handleChangeProductListingError("Please enter a word!!"));
       return toast.error("Please enter a word!!!");
     }
     const filteredProducts = allProducts.filter((entry) =>
@@ -96,6 +99,7 @@ const Header = () => {
       })
     );
     if (filteredProducts.length === 0) {
+      dispatch(handleChangeProductListingError(`Product not found releated "${searchTerm}".`));
       return toast.error(`Product not found releated "${searchTerm}".`, {
         style: {
           fontSize: "14px",

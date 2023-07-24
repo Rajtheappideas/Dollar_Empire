@@ -133,7 +133,7 @@ const ShoppingCart = ({ summaryFixed }) => {
       {/* table */}
       <div className="xl:w-9/12 w-full xl:overflow-hidden overflow-x-scroll scrollbar">
         {/* for deskt & tablet */}
-        <table className="w-full lg:inline-block hidden">
+        <table className="w-full xl:inline-block hidden">
           <thead className="bg-PRIMARY text-white p-2 w-full">
             <tr>
               <th className="lg:min-w-[20rem] min-w-[23rem] lg:p-3 p-2 font-semibold text-left text-base">
@@ -349,7 +349,7 @@ const ShoppingCart = ({ summaryFixed }) => {
           </tbody>
         </table>
         {/* for mobile */}
-        <table className="w-full lg:hidden overflow-hidden">
+        <table className="w-full xl:hidden overflow-hidden">
           <tbody>
             {loading && !updateLoading ? (
               <tr>

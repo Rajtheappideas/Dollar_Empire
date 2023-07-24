@@ -200,7 +200,6 @@ const ProductSlice = createSlice({
         state.error = payload;
         state.allProducts = [];
       } else {
-        console.log(payload);
         state.error = null;
         state.allProducts = payload?.products;
         state.minOrderAmount = payload?.minOrderAmount;

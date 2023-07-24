@@ -788,6 +788,51 @@ const ProductDetailPopup = ({}) => {
   function handleClickOutside() {
     dispatch(closeEnlargeImagePopup());
   }
+
+  const findCheckDigit = (keyWoCD) => {
+    /* Check that input string conveys number of digits that correspond to a given GS1 key */
+    if (
+      /(^\d{7}$)|(^\d{11}$)|(^\d{12}$)|(^\d{13}$)|(^\d{16}$)|(^\d{17}$)/.test(
+        keyWoCD
+      ) === false
+    ) {
+      return null;
+    } else {
+      /* Reverse string */
+      keyWoCD = [...keyWoCD].reverse().join("");
+      /* Alternatively fetch digits, multiply them by 3 or 1, and sum them up */
+      let sum = 0;
+      for (let i = keyWoCD.length - 1; i >= 0; i--) {
+        if (parseInt(keyWoCD[i]) === 0) {
+          continue;
+        } else {
+          if (i % 2 !== 0) {
+            sum += parseInt(keyWoCD[i]) * 1;
+          } else {
+            sum += parseInt(keyWoCD[i]) * 3;
+          }
+        }
+      }
+      /* Subtract sum from nearest equal or higher multiple of ten */
+      let checkDigit = Math.ceil(sum / 10) * 10 - sum;
+      return checkDigit;
+    }
+  };
+
+  const checkDigitNumber = () => {
+    const regExp = /[a-zA-Z]/g;
+    let checkDigitnum = "";
+    if (regExp.test(singleProduct?.number)) {
+      checkDigitnum = "-";
+    } else {
+      checkDigitnum = `827680`
+        .toString()
+        .concat(singleProduct?.number)
+        .concat(findCheckDigit("827680".concat(singleProduct?.number)));
+    }
+    return checkDigitnum;
+  };
+
   return (
     <ReactModal
       className={` overflow-hidden scrollbar bg-black/30 z-50 w-full min-h-screen max-h-screen inset-0 backdrop-blur-sm`}
@@ -955,7 +1000,7 @@ const ProductDetailPopup = ({}) => {
                 {singleProduct?.longDesc}
               </p>
               <p className="font-medium"> {singleProduct?.package}</p>
-              <p className="font-medium">
+              {/* <p className="font-medium">
                 PK volume : {singleProduct?.PKVolume} CUFT
               </p>
               <p className="font-medium">
@@ -966,7 +1011,7 @@ const ProductDetailPopup = ({}) => {
               </p>
               <p className="font-medium">
                 CTN WT : {singleProduct?.CTNWeight} LBS
-              </p>
+              </p> */}
               <p className="text-black font-semibold text-base">
                 {singleProduct?.PK} PC / PK | {singleProduct?.CTN} PC / CTN
               </p>
@@ -1280,6 +1325,10 @@ const ProductDetailPopup = ({}) => {
               </p>
               <hr className="pt-3" />
               <p className="text-2xl font-bold">Specification</p>
+              <p className="flex items-center justify-between w-full">
+                <span className="font-normal">UPC Code</span>
+                <span className="font-semibold">{checkDigitNumber()}</span>
+              </p>
               <p className="flex items-center justify-between w-full">
                 <span className="font-normal">PK</span>
                 <span className="font-semibold">{singleProduct?.PK}</span>
