@@ -180,5 +180,7 @@
   "Product Not Found, Try with different price.": "Producto no encontrado, Pruebe con otro precio.",
   "Product Not Found, Try something else.": "Producto no encontrado, Pruebe con otro.",
   "Product Not Found, Try other filter.": "Producto no encontrado, Pruebe con otro filtro.",
-  "See All": "Ver Todo"
+  "See All": "Ver Todo",
+  "freight charges": "Gastos de flete",
+  "subTotal": "total parcial"
 }

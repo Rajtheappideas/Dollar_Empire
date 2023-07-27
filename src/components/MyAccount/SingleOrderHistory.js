@@ -37,25 +37,57 @@ const SingleOrderHistory = ({ setShowSingleOrder, orderId, setOrderId }) => {
               <span className="font-normal">{singleOrder?.shippingMethod}</span>
             </p>
             <p className="flex items-center w-full text-lg">
-              <span className="font-bold md:w-40 w-fit mr-2 md:mr-0">{t("Order date")}:</span>{" "}
+              <span className="font-bold md:w-40 w-fit mr-2 md:mr-0">
+                {t("Order date")}:
+              </span>{" "}
               <span className="font-normal">
                 {moment(singleOrder?.orderDate).format("lll")}
               </span>
             </p>
             <p className="flex items-center w-full text-lg">
-              <span className="font-bold md:w-40 w-fit mr-2 md:mr-0">{t("Items")}:</span>{" "}
+              <span className="font-bold md:w-40 w-fit mr-2 md:mr-0">
+                {t("Items")}:
+              </span>{" "}
               <span className="font-normal">{singleOrder?.items.length}</span>
             </p>
             <p className="flex items-center w-full text-lg">
-              <span className="font-bold md:w-40 w-fit mr-2 md:mr-0">{t("Quantity")}:</span>{" "}
+              <span className="font-bold md:w-40 w-fit mr-2 md:mr-0">
+                {t("Quantity")}:
+              </span>{" "}
               <span className="font-normal">
                 {singleOrder?.totalQuantity} PC
               </span>
             </p>
             <p className="flex items-center w-full text-lg">
-              <span className="font-bold md:w-40 w-fit mr-2 md:mr-0">{t("Total")}:</span>{" "}
+              <span className="font-bold md:w-40 w-fit mr-2 md:mr-0">
+                {t("subTotal")}:
+              </span>{" "}
               <span className="font-normal">
-                ${parseInt(singleOrder?.total).toFixed(2)}
+                ${parseInt(singleOrder?.subtotal).toFixed(2)}
+              </span>
+            </p>
+            {singleOrder?.shippingMethod === "freight" && (
+              <p className="flex items-center w-full text-lg">
+                <span className="font-bold md:w-40 w-fit mr-2 md:mr-0">
+                  {t("freight charges")}:
+                </span>{" "}
+                <span className="font-normal">
+                  $ {parseFloat(singleOrder?.freight).toFixed(2)}
+                </span>
+              </p>
+            )}
+            <p className="flex items-center w-full text-lg">
+              <span className="font-bold md:w-40 w-fit mr-2 md:mr-0">
+                {t("Total")}:
+              </span>{" "}
+              <span className="font-normal">
+                $
+                {singleOrder?.shippingMethod === "freight"
+                  ? Number(
+                      parseFloat(singleOrder?.total) +
+                        parseFloat(singleOrder?.freight)
+                    ).toFixed(2)
+                  : parseFloat(singleOrder?.total).toFixed(2)}
               </span>
             </p>
           </div>

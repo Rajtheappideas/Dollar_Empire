@@ -9,7 +9,6 @@ import {
 } from "../../redux/OrderSlice";
 import { Toaster, toast } from "react-hot-toast";
 import { handleClearCart, handleGetCart } from "../../redux/CartSlice";
-import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 const PaymentInfo = ({ summaryFixed }) => {
@@ -24,14 +23,17 @@ const PaymentInfo = ({ summaryFixed }) => {
 
   const { token } = useSelector((state) => state.Auth);
 
-  const { grandTotal } = useSelector((state) => state.cart);
+  const { grandTotal, subTotal, shipphingMethod, freightCharges } = useSelector(
+    (state) => state.cart
+  );
 
-  const { paymentOption, loading, shipphingMethod, shippingAddressId } =
-    useSelector((state) => state.orders);
+  const { paymentOption, loading, shippingAddress } = useSelector(
+    (state) => state.orders
+  );
 
   const handleConfirmOrder = () => {
     toast.dismiss();
-    if (shippingAddressId === "" && shipphingMethod === "freight") {
+    if (shippingAddress === "" && shipphingMethod === "freight") {
       return toast.error("Please select the shipping address!!!");
     } else if (shipphingMethod === "") {
       return toast.error("Please select the shipping method!!!");
@@ -43,7 +45,7 @@ const PaymentInfo = ({ summaryFixed }) => {
         token,
         signal: AbortControllerRef,
         shippingMethod: shipphingMethod,
-        shippingAddress: shippingAddressId,
+        shippingAddress: shippingAddress?._id,
         paymentMethod: paymentOption,
         additionalNotes,
       })
@@ -85,8 +87,8 @@ const PaymentInfo = ({ summaryFixed }) => {
             <p className="bg-PRIMARY text-white p-4 w-full text-left font-semibold tracking-wide">
               {t("Method")}
             </p>
-            <div className="w-full border border-gray-300 rounded-md p-5">
-              <div className="w-full flex justify-start items-center gap-x-5 bg-white">
+            <div className="w-full border border-gray-300 rounded-md md:p-5 p-2">
+              <div className="w-full flex justify-start items-center md:gap-x-5 gap-x-2 bg-white">
                 <input
                   onChange={(e) =>
                     dispatch(handleChangePaymentOption("contactForPayment"))
@@ -96,19 +98,22 @@ const PaymentInfo = ({ summaryFixed }) => {
                   className="w-6 h-6 cursor-pointer"
                   checked={paymentOption === "contactForPayment"}
                   disabled={loading}
+                  id="contactForPayment"
                 />
-                <p>
-                  <span className="font-semibold text-xl block">
-                    {t("Contact for Payment (Returning Customers)")}
-                  </span>
-                  <span className="font-normal text-base block">
-                    {t("Our sales will contact you for payment information")}.
-                  </span>
-                </p>
+                <label htmlFor="contactForPayment">
+                  <p>
+                    <span className="font-semibold md:text-xl block">
+                      {t("Contact for Payment (Returning Customers)")}
+                    </span>
+                    <span className="font-normal text-base block">
+                      {t("Our sales will contact you for payment information")}.
+                    </span>
+                  </p>
+                </label>
               </div>
             </div>
-            <div className="w-full border border-gray-300 rounded-md p-5">
-              <div className="w-full flex justify-start items-center gap-x-5 bg-white">
+            <div className="w-full border border-gray-300 rounded-md md:p-5 p-2">
+              <div className="w-full flex justify-start items-center md:gap-x-5 gap-x-2 bg-white">
                 <input
                   onChange={(e) =>
                     dispatch(handleChangePaymentOption("cardPayment"))
@@ -118,16 +123,19 @@ const PaymentInfo = ({ summaryFixed }) => {
                   type="radio"
                   className="w-6 h-6 cursor-pointer"
                   disabled={loading}
+                  id="cardPayment"
                 />
-                <p>
-                  <span className="font-semibold text-xl block">
-                    {t("Pay by Credit card")}
-                  </span>
-                  <span className="font-normal text-base block">
-                    Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry.
-                  </span>
-                </p>
+                <label htmlFor="cardPayment">
+                  <p>
+                    <span className="font-semibold md:text-xl block">
+                      {t("Pay by Credit card")}
+                    </span>
+                    <span className="font-normal text-base block">
+                      Lorem Ipsum is simply dummy text of the printing and
+                      typesetting industry.
+                    </span>
+                  </p>
+                </label>
               </div>
             </div>
             <div className="w-full space-y-2">
@@ -137,7 +145,7 @@ const PaymentInfo = ({ summaryFixed }) => {
               <textarea
                 onChange={(e) => setAdditionalNotes(e.target.value.trim())}
                 name="note"
-                className="w-full border max-h-60 min-h-[5rem] border-gray-300 outline-none focus:border-gray-500 rounded-md p-5"
+                className="w-full border max-h-60 min-h-[5rem] border-gray-300 outline-none focus:border-gray-500 rounded-md md:p-5 p-2"
                 disabled={loading}
                 placeholder="Any note for your order..."
               />
@@ -154,13 +162,18 @@ const PaymentInfo = ({ summaryFixed }) => {
             <p className="w-full flex items-center justify-between text-base">
               <span className="font-normal">{t("Subtotal")}</span>
               <span className="ml-auto font-semibold text-base">
-                ${parseFloat(grandTotal).toFixed(2)}{" "}
+                ${parseFloat(subTotal).toFixed(2)}{" "}
               </span>{" "}
             </p>
             <p className="w-full flex items-center justify-between text-base">
               <span className="font-normal">{t("Freight")}</span>
               <span className="ml-auto font-semibold text-base">
-                ${shipphingMethod === "pickup" ? "0.00" : "10.00"}
+                $
+                {shipphingMethod === "pickup"
+                  ? "0.00"
+                  : freightCharges !== null
+                  ? `${parseFloat(freightCharges).toFixed(2)}`
+                  : "0.00"}
               </span>
             </p>
             <hr className="w-full" />

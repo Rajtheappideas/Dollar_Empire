@@ -1306,7 +1306,7 @@ const ProductCard = ({
               showEnlargeImage && (
                 <div
                   ref={popImageRef}
-                  className="absolute bg-black/30 z-50 md:w-[200%] w-full md:min-h-[30rem] min-h-[22rem] max-h-screen -top-10 lg:-right-14 md:-right-44 right-0 backdrop-blur-sm"
+                  className="absolute bg-black/30 z-50 md:w-[200%] w-full md:min-h-[30rem] min-h-[22rem] max-h-screen top-0 lg:-right-14 md:-right-44 right-0 backdrop-blur-sm"
                 >
                   <AiOutlineClose
                     role="button"

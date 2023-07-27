@@ -36,14 +36,12 @@ const CardDetails = ({ summaryFixed, additionalNotes }) => {
   const [country, setCountry] = useState("");
 
   const { token, user } = useSelector((state) => state.Auth);
-  const { grandTotal } = useSelector((state) => state.cart);
-  const {
-    cardDetails,
-    loading,
-    shippingAddressId,
-    shipphingMethod,
-    paymentOption,
-  } = useSelector((state) => state.orders);
+  const { grandTotal, subTotal, shipphingMethod, freightCharges } = useSelector(
+    (state) => state.cart
+  );
+  const { cardDetails, loading, paymentOption, shippingAddress } = useSelector(
+    (state) => state.orders
+  );
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
@@ -164,7 +162,7 @@ const CardDetails = ({ summaryFixed, additionalNotes }) => {
     enableReinitialize: true,
     onSubmit: (values) => {
       setConfirmOrderLoading(true);
-      if (shippingAddressId === "" && shipphingMethod === "freight") {
+      if (shippingAddress === "" && shipphingMethod === "freight") {
         toast.dismiss();
         return toast.error("Please select the shipping address!!!");
       } else if (shipphingMethod === "") {
@@ -209,7 +207,7 @@ const CardDetails = ({ summaryFixed, additionalNotes }) => {
                 token,
                 signal: AbortControllerRef,
                 shippingMethod: shipphingMethod,
-                shippingAddress: shippingAddressId,
+                shippingAddress: shippingAddress?._id,
                 paymentMethod: paymentOption,
                 additionalNotes,
               })
@@ -453,14 +451,18 @@ const CardDetails = ({ summaryFixed, additionalNotes }) => {
             <p className="w-full flex items-center justify-between text-base">
               <span className="font-normal">{t("Subtotal")}</span>
               <span className="ml-auto font-semibold text-base">
-                ${parseFloat(grandTotal).toFixed(2)}{" "}
+                ${parseFloat(subTotal).toFixed(2)}{" "}
               </span>{" "}
             </p>
             <p className="w-full flex items-center justify-between text-base">
               <span className="font-normal">{t("Freight")}</span>
               <span className="ml-auto font-semibold text-base">
-                {" "}
-                ${shipphingMethod === "pickup" ? "0.00" : "10.00"}
+                ${" "}
+                {shipphingMethod === "pickup"
+                  ? "0.00"
+                  : freightCharges !== null
+                  ? `${parseFloat(freightCharges).toFixed(2)}`
+                  : "0.00"}
               </span>
             </p>
             <hr className="w-full" />

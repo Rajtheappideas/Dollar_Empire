@@ -40,13 +40,13 @@ const FilterComponent = ({ setActivePrice, activePrice, title }) => {
   }, [loading, title]);
 
   return (
-    <div className="w-full border border-BORDERGRAY bg-white">
+    <div className="w-full select-none border border-BORDERGRAY bg-white">
       <p className="text-xl font-semibold text-left border-b border-BORDERGRAY py-4 px-3">
         {t("Filters")}
       </p>
       {/* categories */}
       {!loading && isCategoryThere && (
-        <div className="w-full space-y-2 px-3 py-3 border-b border-BORDERGRAY">
+        <div className="w-full  space-y-2 px-3 py-3 border-b border-BORDERGRAY">
           <p
             role="button"
             className="font-medium text-lg flex justify-between items-center w-full"
@@ -97,7 +97,7 @@ const FilterComponent = ({ setActivePrice, activePrice, title }) => {
         </div>
       )}
       {/* price */}
-      <div className="w-full space-y-2 px-3 py-3 border-b border-BORDERGRAY">
+      <div className="w-full select-none space-y-2 px-3 py-3 border-b border-BORDERGRAY">
         <p
           role="button"
           className="font-medium text-lg flex justify-between items-center w-full"

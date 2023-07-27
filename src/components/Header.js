@@ -99,7 +99,11 @@ const Header = () => {
       })
     );
     if (filteredProducts.length === 0) {
-      dispatch(handleChangeProductListingError(`Product not found releated "${searchTerm}".`));
+      dispatch(
+        handleChangeProductListingError(
+          `Product not found releated "${searchTerm}".`
+        )
+      );
       return toast.error(`Product not found releated "${searchTerm}".`, {
         style: {
           fontSize: "14px",
@@ -110,6 +114,7 @@ const Header = () => {
       });
     } else {
       dispatch(handleChangeSearchProducts(filteredProducts));
+      dispatch(handleChangeActiveCategory(filteredProducts[0]?.category));
       dispatch(handleChangeSearchTerm(""));
       navigate(`/product-listing/search`);
     }
@@ -325,7 +330,7 @@ const Header = () => {
                 className="cursor-pointer hover:border-[3px] rounded-lg border-dotted p-2 border-black flex items-center justify-between flex-row text-black font-normal "
               >
                 <span className="text-base whitespace-nowrap">
-                  {t("all_categories")}
+                  {activeCategory}
                 </span>
                 <BsChevronDown className="md:min-h-[1rem] md:min-w-[1rem] ml-1" />
               </p>
@@ -465,6 +470,11 @@ const Header = () => {
                             onClick={() => {
                               dispatch(
                                 handleChangeActiveSubcategory(item?.name)
+                              );
+                              dispatch(
+                                handleChangeActiveCategory(
+                                  activeCategoryForHover
+                                )
                               );
                               setshowCategoryDropdown(false);
                             }}
@@ -619,7 +629,7 @@ const Header = () => {
             className="cursor-pointer flex items-center justify-between flex-row w-auto md:p-3 p-2 bg-black text-white "
           >
             <span className="md:text-xl text-lg whitespace-nowrap">
-              {t("all_categories")}
+              {activeCategory}
             </span>
             <BsChevronDown className="h-4 w-4 ml-2" />
           </p>
@@ -649,6 +659,7 @@ const Header = () => {
                     <Link
                       onClick={() => {
                         setshowSecondCategoryDropDown(false);
+                        dispatch(handleChangeActiveCategory("All Categories"));
                       }}
                       to={`/product-listing/all-products`}
                     >
@@ -762,6 +773,10 @@ const Header = () => {
                         onClick={() => {
                           dispatch(handleChangeActiveSubcategory(item?.name));
                           setshowSecondCategoryDropDown(false);
+
+                          dispatch(
+                            handleChangeActiveCategory(activeCategoryForHover)
+                          );
                         }}
                       >
                         <span

@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import EditAddressPopup from "./EditAddressPopup";
 import { handleChangeActiveComponent } from "../../redux/GlobalStates";
 import { useDispatch, useSelector } from "react-redux";
-import { changeGrandTotal } from "../../redux/CartSlice";
+import {
+  changeGrandTotal,
+  handleGetFreightCharges,
+  handleChangeShippingMethod,
+} from "../../redux/CartSlice";
 import AddNewAddress from "./AddNewAddress";
 import { toast } from "react-hot-toast";
-import {
-  handleChangeShippingAddressId,
-  handleChangeShippingMethod,
-} from "../../redux/OrderSlice";
+import { handleChangeShippingAddress } from "../../redux/OrderSlice";
 import { useTranslation } from "react-i18next";
 import {
   CheckCircleIcon,
@@ -19,28 +20,63 @@ const Checkout = ({ summaryFixed }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [addressId, setAddressId] = useState(null);
   const [showAddnewaddressPopup, setShowAddnewaddressPopup] = useState(false);
+  const [selectedState, setSelectedState] = useState("");
 
   const { t } = useTranslation();
 
-  const { grandTotal } = useSelector((state) => state.cart);
-  const { shippingAddressId, shipphingMethod } = useSelector(
-    (state) => state.orders
-  );
+  const AbortControllerRef = useRef(null);
+
+  const {
+    grandTotal,
+    subTotal,
+    shipphingMethod,
+    freightCharges,
+    freightChargeLoading,
+  } = useSelector((state) => state.cart);
+  const { shippingAddress } = useSelector((state) => state.orders);
   const { addressList, loading } = useSelector((state) => state.getContent);
   const dispatch = useDispatch();
 
+  const handleCalculateFreightCharges = (state) => {
+    if (shipphingMethod === "freight" && shippingAddress !== "") {
+      const response = dispatch(
+        handleGetFreightCharges({
+          state: shippingAddress?.state,
+          total: subTotal,
+          signal: AbortControllerRef,
+        })
+      );
+      if (response) {
+        response.then((res) => {
+          if (res?.payload?.status === "success") {
+            dispatch(
+              changeGrandTotal({
+                shippingMethod: shipphingMethod,
+                freightCharges,
+              })
+            );
+          }
+        });
+      }
+    }
+  };
+
+  useEffect(() => {
+    handleCalculateFreightCharges();
+  }, [shipphingMethod, shippingAddress, addressList]);
+
   useEffect(() => {
     if (shipphingMethod === "freight") {
-      dispatch(changeGrandTotal("freight"));
-    } else {
-      dispatch(changeGrandTotal("pickup"));
+      dispatch(
+        changeGrandTotal({ shippingMethod: shipphingMethod, freightCharges })
+      );
     }
   }, [shipphingMethod]);
 
   const handlechangeActiveComponent = () => {
     toast.dismiss();
     if (
-      (shippingAddressId === "" || shippingAddressId === undefined) &&
+      (shippingAddress?._id === "" || shippingAddress?._id === undefined) &&
       shipphingMethod === "freight"
     ) {
       document.getElementById("address").scrollIntoView({ behavior: "smooth" });
@@ -49,15 +85,7 @@ const Checkout = ({ summaryFixed }) => {
       return dispatch(handleChangeActiveComponent("Payment Info"));
     }
   };
-  // useEffect(() => {
-  //   if (addressList.length > 0) {
-  //     const findArr = addressList.find((address) => address?.selected === true);
-  //     setAddressId(findArr?._id);
-  //     dispatch(handleChangeShippingAddressId(findArr?._id));
-  //   } else {
-  //     dispatch(handleChangeShippingAddressId(""));
-  //   }
-  // }, []);
+
   return (
     <div className="w-full flex xl:flex-row flex-col items-start justify-start md:gap-4 gap-2 md:pb-10 pb-5">
       {showPopup && (
@@ -87,16 +115,21 @@ const Checkout = ({ summaryFixed }) => {
                 dispatch(handleChangeShippingMethod("pickup"));
               }}
               type="radio"
+              id="pickup"
               className="w-6 h-6 cursor-pointer"
               checked={shipphingMethod === "pickup"}
             />
-            <p>
-              <span className="font-semibold text-xl block">{t("Pickup")}</span>
-              <span className="font-normal text-base block">
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry.
-              </span>
-            </p>
+            <label htmlFor="pickup">
+              <p>
+                <span className="font-semibold md:text-xl block">
+                  {t("Pickup")}
+                </span>
+                <span className="font-normal text-base block">
+                  Lorem Ipsum is simply dummy text of the printing and
+                  typesetting industry.
+                </span>
+              </p>
+            </label>
           </div>
         </div>
         <div className="w-full border border-gray-300 rounded-md md:p-5 p-2">
@@ -109,16 +142,19 @@ const Checkout = ({ summaryFixed }) => {
               type="radio"
               className="w-6 h-6 cursor-pointer"
               checked={shipphingMethod === "freight"}
+              id="freight"
             />
-            <p>
-              <span className="font-semibold text-xl block">
-                {t("Freight")}
-              </span>
-              <span className="font-normal text-base block">
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry.
-              </span>
-            </p>
+            <label htmlFor="freight">
+              <p>
+                <span className="font-semibold md:text-xl block">
+                  {t("Freight")}
+                </span>
+                <span className="font-normal text-base block">
+                  Lorem Ipsum is simply dummy text of the printing and
+                  typesetting industry.
+                </span>
+              </p>
+            </label>
           </div>
         </div>
         <ul className="w-full list-disc text-left font-normal space-y-3 pl-5 md:leading-relaxed leading-normal">
@@ -158,11 +194,12 @@ const Checkout = ({ summaryFixed }) => {
               id="address"
               key={address?._id}
               className={`${
-                shippingAddressId === address?._id && "bg-gray-200"
+                shippingAddress?._id === address?._id && "bg-gray-200"
               } cursor-pointer relative w-full border border-gray-300 rounded-md md:p-5 p-2 font-normal text-left md:space-y-3 space-y-1 text-[#282828]`}
-              onClick={() =>
-                dispatch(handleChangeShippingAddressId(address?._id))
-              }
+              onClick={() => {
+                dispatch(handleChangeShippingAddress(address));
+                setSelectedState(address?.state);
+              }}
             >
               <p className="font-semibold text-xl">{address?.fname}</p>
               <p>{address?.companyName}</p>
@@ -182,7 +219,7 @@ const Checkout = ({ summaryFixed }) => {
               >
                 {t("Edit")}
               </p>
-              {shippingAddressId === address?._id && (
+              {shippingAddress?._id === address?._id && (
                 <CheckCircleIcon
                   title="selected address"
                   className="absolute top-2 right-3 w-12 h-12 text-green-500 bg-white rounded-full p-2"
@@ -214,13 +251,19 @@ const Checkout = ({ summaryFixed }) => {
         <p className="w-full flex items-center justify-between text-base">
           <span className="font-normal">{t("Subtotal")}</span>
           <span className="ml-auto font-semibold text-base">
-            ${parseFloat(grandTotal).toFixed(2)}{" "}
+            ${parseFloat(subTotal).toFixed(2)}{" "}
           </span>{" "}
         </p>
         <p className="w-full flex items-center justify-between text-base">
           <span className="font-normal">{t("Freight")}</span>
           <span className="ml-auto font-semibold text-base">
-            {shipphingMethod === "pickup" ? "$ 0.00" : "$ 10.00"}
+            {freightChargeLoading
+              ? "wait..."
+              : shipphingMethod === "pickup"
+              ? "$ 0.00"
+              : freightCharges !== null
+              ? ` $ ${parseFloat(freightCharges).toFixed(2)}`
+              : "$ 0.00"}
           </span>
         </p>
         <hr className="w-full" />
@@ -229,7 +272,7 @@ const Checkout = ({ summaryFixed }) => {
           <span className="ml-auto">${parseFloat(grandTotal).toFixed(2)}</span>
         </p>
         <hr className="w-full" />
-        {shippingAddressId === "" && shipphingMethod === "freight" && (
+        {shippingAddress === "" && shipphingMethod === "freight" && (
           <p className="text-DARKRED text-center font-semibold">
             Please select a shipping address
           </p>
@@ -241,6 +284,7 @@ const Checkout = ({ summaryFixed }) => {
             handlechangeActiveComponent();
             window.scrollTo({ top: 0, behavior: "smooth" });
           }}
+          disabled={freightChargeLoading}
         >
           {t("Continue")}
         </button>

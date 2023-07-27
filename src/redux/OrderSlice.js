@@ -133,8 +133,7 @@ const initialState = {
   error: null,
   orders: [],
   cardDetails: null,
-  shipphingMethod: "pickup",
-  shippingAddressId: "",
+  shippingAddress: "",
   paymentOption: "cardPayment",
   singleOrder: null,
   orderId: null,
@@ -144,11 +143,8 @@ const OrderSlice = createSlice({
   name: "orders",
   initialState,
   reducers: {
-    handleChangeShippingMethod: (state, { payload }) => {
-      state.shipphingMethod = payload;
-    },
-    handleChangeShippingAddressId: (state, { payload }) => {
-      state.shippingAddressId = payload;
+    handleChangeShippingAddress: (state, { payload }) => {
+      state.shippingAddress = payload;
     },
     handleChangePaymentOption: (state, { payload }) => {
       state.paymentOption = payload;
@@ -286,7 +282,7 @@ const OrderSlice = createSlice({
 export const {
   handleChangeShippingMethod,
   handleChangePaymentOption,
-  handleChangeShippingAddressId,
+  handleChangeShippingAddress,
   handleChangeOrderId,
 } = OrderSlice.actions;
 

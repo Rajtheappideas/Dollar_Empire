@@ -66,9 +66,7 @@ const OrderHIstory = () => {
                         >
                           {order?.orderId}
                         </td>
-                        {/* <td className="px-3 py-5 whitespace-nowrap">
-                  {order?.items?.map((item) => item?.type)}
-                </td> */}
+
                         <td className="px-3 py-5 whitespace-nowrap">
                           {moment(order?.orderDate).format("LL")}
                         </td>
@@ -76,17 +74,26 @@ const OrderHIstory = () => {
                           {order?.items?.length}
                         </td>
                         <td className="px-3 py-5 whitespace-nowrap">
-                          {/* {order?.items?.reduce((acc, curr) => {
-                    return acc + curr?.quantity;
-                  }, 0)} */}
                           {order?.totalQuantity}
                         </td>
                         <td className="px-3 py-5 whitespace-nowrap">
-                          ${parseFloat(order?.total).toFixed(2)}
+                          $
+                          {order?.shippingMethod === "freight"
+                            ? Number(
+                                parseFloat(order?.total) +
+                                  parseFloat(order?.freight)
+                              ).toFixed(2)
+                            : parseFloat(order?.total).toFixed(2)}
                         </td>
                         <td className="px-3 py-5 whitespace-nowrap">$0</td>
                         <td className="px-3 py-5 whitespace-nowrap">
-                          ${parseFloat(order?.total).toFixed(2)}
+                          $
+                          {order?.shippingMethod === "freight"
+                            ? Number(
+                                parseFloat(order?.total) +
+                                  parseFloat(order?.freight)
+                              ).toFixed(2)
+                            : parseFloat(order?.total).toFixed(2)}
                         </td>
                       </tr>
                     ))
@@ -140,9 +147,7 @@ const OrderHIstory = () => {
                           {order?.orderId}
                         </td>
                       </tr>
-                      {/* <td className="p-2 whitespace-nowrap">
-                  {order?.items?.map((item) => item?.type)}
-                </td> */}
+
                       <tr className="w-full">
                         <th className="bg-PRIMARY text-white p-2 text-center min-w-[5rem] max-w-[5rem]">
                           {t("Order date")}
@@ -164,9 +169,6 @@ const OrderHIstory = () => {
                           {t("Quantity")}
                         </th>
                         <td className="p-2 text-center w-full">
-                          {/* {order?.items?.reduce((acc, curr) => {
-                      return acc + curr?.quantity;
-                    }, 0)} */}
                           {order?.totalQuantity}
                         </td>
                       </tr>
@@ -175,7 +177,13 @@ const OrderHIstory = () => {
                           {t("Amount")}
                         </th>
                         <td className="p-2 text-center w-full">
-                          ${parseFloat(order?.total).toFixed(2)}
+                          $
+                          {order?.shippingMethod === "freight"
+                            ? Number(
+                                parseFloat(order?.total) +
+                                  parseFloat(order?.freight)
+                              ).toFixed(2)
+                            : parseFloat(order?.total).toFixed(2)}
                         </td>
                       </tr>
                       <tr className="w-full">
@@ -189,7 +197,13 @@ const OrderHIstory = () => {
                           {t("Total")}
                         </th>
                         <td className="p-2 text-center w-full">
-                          ${parseFloat(order?.total).toFixed(2)}
+                          $
+                          {order?.shippingMethod === "freight"
+                            ? Number(
+                                parseFloat(order?.total) +
+                                  parseFloat(order?.freight)
+                              ).toFixed(2)
+                            : parseFloat(order?.total).toFixed(2)}
                         </td>
                       </tr>
                       <hr className="my-1 " />

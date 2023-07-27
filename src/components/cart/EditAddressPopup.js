@@ -17,6 +17,7 @@ import { handlePostEditAddress } from "../../redux/FeatureSlice";
 import { handleGetAddresses } from "../../redux/GetContentSlice";
 import { Country, State, City } from "country-state-city";
 import { useTranslation } from "react-i18next";
+import { handleChangeShippingAddress } from "../../redux/OrderSlice";
 
 const EditAddressPopup = ({ setShowPopup, addressId }) => {
   const [selectedData, setSelectedData] = useState({
@@ -165,6 +166,8 @@ const EditAddressPopup = ({ setShowPopup, addressId }) => {
               resetForm();
               setShowPopup(false);
               dispatch(handleGetAddresses({ token }));
+              dispatch(handleChangeShippingAddress(res?.payload?.address));
+
               toast.success("Address edited successfully.");
             } else {
               toast.error(res.payload.message);
@@ -195,17 +198,8 @@ const EditAddressPopup = ({ setShowPopup, addressId }) => {
         country.name.toLocaleLowerCase() === values.country.toLocaleLowerCase()
     );
     setCountry(country?.name);
-    const states = State.getStatesOfCountry(country?.isoCode);
-
+    const states = State.getStatesOfCountry(country.isoCode);
     setSelectedData({ ...selectedData, state: states });
-    const state = states.find(
-      (state) =>
-        state.name.toLocaleLowerCase() === values.state.toLocaleLowerCase()
-    );
-    const cities = City.getCitiesOfState(state?.countryCode, state?.isoCode);
-    if (cities.length > 0) {
-      setSelectedData({ ...selectedData, city: cities });
-    }
   }, [values.country, values.state, values.city]);
 
   return (

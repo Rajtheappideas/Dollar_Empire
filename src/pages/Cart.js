@@ -10,10 +10,10 @@ import {
   calculateTotalAmount,
   calculateTotalQuantity,
   handleGetCart,
+  handleChangeShippingMethod,
 } from "../redux/CartSlice";
 import { handleGetAddresses } from "../redux/GetContentSlice";
 import { useRef } from "react";
-import { handleChangeShippingMethod } from "../redux/OrderSlice";
 import { handleChangeActiveComponent } from "../redux/GlobalStates";
 import { ArrowLongLeftIcon } from "@heroicons/react/24/outline";
 

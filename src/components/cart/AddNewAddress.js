@@ -29,7 +29,6 @@ const AddNewAddress = ({ setShowAddnewaddressPopup }) => {
   const [allCountries, setAllCountries] = useState("");
   const [country, setCountry] = useState("");
 
-  const { addressList, user } = useSelector((state) => state.getContent);
   const { loading } = useSelector((state) => state.features);
   const { token } = useSelector((state) => state.Auth);
 
@@ -113,7 +112,7 @@ const AddNewAddress = ({ setShowAddnewaddressPopup }) => {
       companyName: "",
       phone: "",
       city: "",
-      state: selectedData.state,
+      state: "",
       country: "United States",
       postalCode: "",
     },
@@ -180,11 +179,6 @@ const AddNewAddress = ({ setShowAddnewaddressPopup }) => {
       const states = State.getStatesOfCountry(country?.isoCode);
 
       setSelectedData({ ...selectedData, state: states });
-      const state = states.find((state) => state.name === values.state);
-      const cities = City.getCitiesOfState(state?.countryCode, state?.isoCode);
-      if (cities.length > 0) {
-        setSelectedData({ ...selectedData, city: cities });
-      }
     }
   }, [values.country, values.state, values.city]);
 

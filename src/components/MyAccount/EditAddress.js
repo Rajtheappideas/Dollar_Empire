@@ -198,14 +198,6 @@ const EditAddress = ({ setShowEditAddres, addressId }) => {
     const states = State.getStatesOfCountry(country?.isoCode);
 
     setSelectedData({ ...selectedData, state: states });
-    const state = states.find(
-      (state) =>
-        state.name.toLocaleLowerCase() === values.state.toLocaleLowerCase()
-    );
-    const cities = City.getCitiesOfState(state?.countryCode, state?.isoCode);
-    if (cities.length > 0) {
-      setSelectedData({ ...selectedData, city: cities });
-    }
   }, [values.country, values.state, values.city]);
 
   return (

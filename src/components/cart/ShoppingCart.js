@@ -26,12 +26,10 @@ const ShoppingCart = ({ summaryFixed }) => {
   const [updateLoading, setUpdateLoading] = useState(false);
   const [productId, setProductId] = useState(null);
 
-  const { grandTotal, subTotal, cartItems, loading } = useSelector(
-    (state) => state.cart
-  );
+  const { grandTotal, subTotal, shipphingMethod, cartItems, loading } =
+    useSelector((state) => state.cart);
   const { token } = useSelector((state) => state.Auth);
   const { productListingPageLink } = useSelector((state) => state.globalStates);
-  const { shipphingMethod } = useSelector((state) => state.orders);
   const { minOrderAmount } = useSelector((state) => state.products);
 
   const dispatch = useDispatch();
@@ -39,14 +37,6 @@ const ShoppingCart = ({ summaryFixed }) => {
   const { t } = useTranslation();
 
   const AbortControllerRef = useRef(null);
-
-  useEffect(() => {
-    dispatch(handleChangeShippingMethod("pickup"));
-
-    return () => {
-      AbortControllerRef.current !== null && AbortControllerRef.current.abort();
-    };
-  }, []);
 
   const handleRemoveFromCart = (id, quantity, amount) => {
     setDeleteLoading(true);
@@ -589,14 +579,12 @@ const ShoppingCart = ({ summaryFixed }) => {
         <p className="w-full flex items-center justify-between text-base">
           <span className="font-normal">{t("Subtotal")}</span>
           <span className="ml-auto font-semibold text-base">
-            ${parseFloat(grandTotal).toFixed(2)}{" "}
+            ${parseFloat(subTotal).toFixed(2)}{" "}
           </span>
         </p>
         <p className="w-full flex items-center justify-between text-base">
           <span className="font-normal">{t("Freight")}</span>
-          <span className="ml-auto font-semibold text-base">
-            ${shipphingMethod === "pickup" ? "0.00" : "10.00"}
-          </span>
+          <span className="ml-auto font-semibold text-base">$ 0.00</span>
         </p>
         <hr className="w-full" />
         <p className="w-full flex items-center justify-between text-2xl font-bold">

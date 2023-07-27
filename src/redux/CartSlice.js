@@ -90,6 +90,28 @@ export const handleRemoveProductToCart = createAsyncThunk(
   }
 );
 
+export const handleGetFreightCharges = createAsyncThunk(
+  "orders/handleGetFreightCharges",
+  async ({ state, total, signal }) => {
+    signal.current = new AbortController();
+
+    const response = await PostUrl(`freight`, {
+      data: {
+        state,
+        total,
+      },
+      signal: signal.current.signal,
+    })
+      .then((res) => {
+        return res.data;
+      })
+      .catch((err) => {
+        return err.response.data;
+      });
+    return response;
+  }
+);
+
 const initialState = {
   loading: false,
   multipleLoading: false,
@@ -103,10 +125,10 @@ const initialState = {
   selectedItems: [],
   totalQuantityMultipleProducts: 0,
   totalAmountMultipleProducts: 0,
-  // totalQuantity: window.localStorage.getItem("persist:cart")
-  //   ? JSON.parse(window.localStorage.getItem("persist:cart")).totalQuantity
-  //   : 0,
   totalQuantity: 0,
+  freightCharges: null,
+  freightChargeLoading: false,
+  shipphingMethod: "pickup",
 };
 
 const CartSlice = createSlice({
@@ -123,8 +145,12 @@ const CartSlice = createSlice({
       }, 0);
     },
 
+    handleChangeShippingMethod: (state, { payload }) => {
+      state.shipphingMethod = payload;
+    },
+
     calculateTotalAmount: (state) => {
-      state.grandTotal = state.cartItems.reduce((acc, curr) => {
+      const total = state.cartItems.reduce((acc, curr) => {
         if (curr?.type === "pk") {
           let total =
             acc + curr?.product?.price * curr?.quantity * curr?.product?.PK;
@@ -135,6 +161,12 @@ const CartSlice = createSlice({
           return total;
         }
       }, 0);
+      state.subTotal = total;
+      if (state.shipphingMethod === "freight") {
+        state.grandTotal = total + state.freightCharges;
+      } else {
+        state.grandTotal = total;
+      }
     },
 
     changeGrandTotal: (state, { payload }) => {
@@ -149,8 +181,8 @@ const CartSlice = createSlice({
           return ctnTotal;
         }
       }, 0);
-      if (payload === "freight") {
-        state.grandTotal = total + 10;
+      if (state.shipphingMethod === "freight") {
+        state.grandTotal = total + state.freightCharges;
       } else {
         state.grandTotal = total;
       }
@@ -220,6 +252,8 @@ const CartSlice = createSlice({
       state.totalQuantity = 0;
       state.grandTotal = 0;
       state.cartItems = [];
+      state.subTotal = 0;
+      state.freightCharges = null;
     },
 
     handleAddMultipleProducts: (state, { payload }) => {
@@ -373,6 +407,28 @@ const CartSlice = createSlice({
       state.success = false;
       state.error = error;
     });
+    // get frieght charges
+    builder.addCase(handleGetFreightCharges.pending, (state) => {
+      state.freightChargeLoading = true;
+      state.success = false;
+      state.error = null;
+    });
+    builder.addCase(handleGetFreightCharges.fulfilled, (state, { payload }) => {
+      state.freightChargeLoading = false;
+      if (payload.status === "fail") {
+        state.error = payload;
+        state.success = false;
+      } else {
+        state.error = null;
+        state.success = true;
+        state.freightCharges = payload?.freight;
+      }
+    });
+    builder.addCase(handleGetFreightCharges.rejected, (state, { error }) => {
+      state.freightChargeLoading = false;
+      state.success = false;
+      state.error = error;
+    });
   },
 });
 
@@ -391,6 +447,7 @@ export const {
   handleRemoveFromTotalQuantityAndAmountOfmultipleProducts,
   handleRemoveAllTotalQuantityAndTotalAmount,
   handleRemoveItemFromCart,
+  handleChangeShippingMethod,
 } = CartSlice.actions;
 
 export default CartSlice.reducer;

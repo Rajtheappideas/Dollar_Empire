@@ -40,7 +40,7 @@ const MyAccount = () => {
           </h1>
           <div className="flex lg:flex-row flex-col items-start justify-start lg:gap-x-4 gap-y-5 min-h-screen lg:pb-40 pb-20">
             {/* left side div */}
-            <div className="lg:w-1/4 w-full border border-BORDERGRAY p-3 bg-white space-y-3">
+            <div className="lg:w-1/4 lg:sticky top-0 w-full border border-BORDERGRAY p-3 bg-white space-y-3">
               <p className="font-semibold md:text-2xl text-lg text-left pb-2">
                 {t("Navigation")}
               </p>
