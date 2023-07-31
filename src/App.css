@@ -119,7 +119,8 @@ body::-webkit-scrollbar-thumb {
 
 .active {
   background-color: #1b599e;
-  color: darkblue;
+  color: white;
+  font-weight: 600;
 }
 .react_magnify {
   width: 100% !important;

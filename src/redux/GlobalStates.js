@@ -19,7 +19,8 @@ const initialState = {
   productListingPageLink: "",
   pagination: 0,
   activeSubcategory: "",
-  activeCategory: "",
+  searchActiveCategory: "All Categories",
+  activeCategory: "All Categories",
   productListingError: "",
 };
 const logoutChannel = new BroadcastChannel("handleLogout");
@@ -107,6 +108,9 @@ const GlobalStates = createSlice({
     handleChangeActiveCategory: (state, { payload }) => {
       state.activeCategory = payload;
     },
+    handleChangeSearchActiveCategory: (state, { payload }) => {
+      state.searchActiveCategory = payload;
+    },
   },
 });
 
@@ -131,7 +135,7 @@ export const {
   handleChangeActiveSubcategory,
   handleChangeActiveCategory,
   handleChangeSearchTitle,
-  handleChangeProductListingError,
+  handleChangeProductListingError,handleChangeSearchActiveCategory
 } = GlobalStates.actions;
 
 export default GlobalStates.reducer;

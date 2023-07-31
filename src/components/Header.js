@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import { TiArrowBack } from "react-icons/ti";
 import { AiOutlineShoppingCart, AiOutlineUser } from "react-icons/ai";
+import { FaFileDownload } from "react-icons/fa";
 import {
   BsCurrencyDollar,
   BsSearch,
@@ -16,6 +17,7 @@ import {
   handleChangeActiveComponent,
   handleChangeActiveSubcategory,
   handleChangeProductListingError,
+  handleChangeSearchActiveCategory,
   handleChangeSearchProducts,
   handleChangeSearchTerm,
   handleChangeSearchTitle,
@@ -29,9 +31,12 @@ import {
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import { toast } from "react-hot-toast";
 import { number } from "card-validator";
+import { ExportToExcel } from "../ExportToExcel";
+import { handleEditProfile } from "../redux/BasicFeatureSlice";
 
 const Header = () => {
   const [activeCategoryForHover, setActiveCategory] = useState("");
+  const [searchActiveCategoryForHover, setSearchActiveCategory] = useState("");
   const [subCategoryProducts, setSubCategoryProducts] = useState([]);
   const [showCategoryDropdown, setshowCategoryDropdown] = useState(false);
   const [showSecondCategoryDropDown, setshowSecondCategoryDropDown] =
@@ -39,9 +44,12 @@ const Header = () => {
   const [dynamicTop, setDynamicTop] = useState(1);
 
   const { user, userLanguage } = useSelector((state) => state.Auth);
-  const { searchTerm, activeSubcategory, activeCategory } = useSelector(
-    (state) => state.globalStates
-  );
+  const {
+    searchTerm,
+    activeSubcategory,
+    activeCategory,
+    searchActiveCategory,
+  } = useSelector((state) => state.globalStates);
   const { totalQuantity, grandTotal } = useSelector((state) => state.cart);
   const { allProducts, minOrderAmount } = useSelector(
     (state) => state.products
@@ -72,7 +80,10 @@ const Header = () => {
     if (activeCategoryForHover !== "") {
       setSubCategoryProducts(subCategories[activeCategoryForHover]);
     }
-  }, [activeCategoryForHover]);
+    if (searchActiveCategoryForHover !== "") {
+      setSubCategoryProducts(subCategories[searchActiveCategoryForHover]);
+    }
+  }, [activeCategoryForHover, searchActiveCategoryForHover]);
 
   useEffect(() => {
     if (user !== null) {
@@ -92,29 +103,45 @@ const Header = () => {
     }
     const filteredProducts = allProducts.filter((entry) =>
       Object.values(entry).some((val) => {
-        return (
-          (typeof val === "string" || typeof val === number) &&
-          val.toLocaleLowerCase().includes(searchTerm)
-        );
+        if (searchActiveCategory === "All Categories") {
+          return (
+            (typeof val === "string" || typeof val === number) &&
+            val.toLocaleLowerCase().includes(searchTerm)
+          );
+        } else {
+          return (
+            (typeof val === "string" || typeof val === number) &&
+            entry?.category === searchActiveCategory &&
+            val.toLocaleLowerCase().includes(searchTerm)
+          );
+        }
       })
     );
     if (filteredProducts.length === 0) {
       dispatch(
         handleChangeProductListingError(
-          `Product not found releated "${searchTerm}".`
+          `Product not found releated "${searchTerm}" in ${
+            searchActiveCategory ?? ""
+          } .`
         )
       );
-      return toast.error(`Product not found releated "${searchTerm}".`, {
-        style: {
-          fontSize: "14px",
-          fontWeight: "normal",
-          backgroundColor: "black",
-          color: "white",
-        },
-      });
+      return toast.error(
+        `Product not found releated "${searchTerm}" ${
+          searchActiveCategory ?? ""
+        } .`,
+        {
+          style: {
+            fontSize: "14px",
+            fontWeight: "normal",
+            backgroundColor: "black",
+            color: "white",
+          },
+        }
+      );
     } else {
       dispatch(handleChangeSearchProducts(filteredProducts));
-      dispatch(handleChangeActiveCategory(filteredProducts[0]?.category));
+      // dispatch(handleChangeActiveCategory("All Categories"));
+      dispatch(handleChangeSearchActiveCategory("All Categories"));
       dispatch(handleChangeSearchTerm(""));
       navigate(`/product-listing/search`);
     }
@@ -203,6 +230,26 @@ const Header = () => {
       }
     }
   }
+
+  // const handleChangeDownloadCount = async () => {
+  //   const resposen = await dispatch(
+  //     handleEditProfile({
+  //       fname: values.fname,
+  //       lname: values.lname,
+  //       companyName: values.companyName,
+  //       phone: values.phone,
+  //       city: values.city,
+  //       state: values.state,
+  //       country: values.country,
+  //       postalCode: values.postalCode,
+  //       location: values.location,
+  //       downloadCount,
+  //       lastDownload,
+  //       signal: AbortControllerRef,
+  //       token,
+  //     })
+  //   );
+  // };
 
   return (
     <div className="h-auto w-auto">
@@ -330,7 +377,7 @@ const Header = () => {
                 className="cursor-pointer hover:border-[3px] rounded-lg border-dotted p-2 border-black flex items-center justify-between flex-row text-black font-normal "
               >
                 <span className="text-base whitespace-nowrap">
-                  {activeCategory}
+                  {searchActiveCategory}
                 </span>
                 <BsChevronDown className="md:min-h-[1rem] md:min-w-[1rem] ml-1" />
               </p>
@@ -356,6 +403,9 @@ const Header = () => {
                       <>
                         <Link
                           onClick={() => {
+                            dispatch(
+                              handleChangeSearchActiveCategory("All Categories")
+                            );
                             setshowCategoryDropdown(false);
                           }}
                           to={`/product-listing/all-products`}
@@ -371,11 +421,11 @@ const Header = () => {
                             } hover:bg-gray-200 py-1 text-BLACK font-semibold flex items-center gap-x-2`}
                             key={category?._id}
                             onMouseOver={() => {
-                              setActiveCategory(category.name);
+                              setSearchActiveCategory(category.name);
                               handleDynamicTop(i, "second");
                             }}
                             onClick={() => {
-                              setActiveCategory(category.name);
+                              setSearchActiveCategory(category.name);
                               handleDynamicTop(i, "second");
                             }}
                           >
@@ -385,7 +435,9 @@ const Header = () => {
                               onClick={() => {
                                 dispatch(handleChangeActiveSubcategory(""));
                                 dispatch(
-                                  handleChangeActiveCategory(category?.name)
+                                  handleChangeSearchActiveCategory(
+                                    category?.name
+                                  )
                                 );
                                 setshowCategoryDropdown(false);
                               }}
@@ -394,7 +446,7 @@ const Header = () => {
                             </Link>
                             <BsChevronRight
                               onClick={() => {
-                                setActiveCategory(category.name);
+                                setSearchActiveCategory(category.name);
                               }}
                               className="inline-block ml-auto h-5 w-5 text-gray-400 bg-gray-100"
                             />
@@ -454,16 +506,16 @@ const Header = () => {
                       style={{ top: `${dynamicTop}rem` }}
                     >
                       <span className="font-semibold text-black text-xl mb-1">
-                        {activeCategoryForHover}
+                        {searchActiveCategoryForHover}
                       </span>
 
                       {subCategoryProducts?.subcategories !== undefined &&
                         subCategoryProducts?.subcategories.map((item) => (
                           <Link
                             key={item?._id}
-                            to={`/product-listing/${activeCategoryForHover}`}
+                            to={`/product-listing/${searchActiveCategoryForHover}`}
                             state={{
-                              title: activeCategoryForHover,
+                              title: searchActiveCategoryForHover,
                               price: null,
                               searchQuery: "",
                             }}
@@ -472,8 +524,8 @@ const Header = () => {
                                 handleChangeActiveSubcategory(item?.name)
                               );
                               dispatch(
-                                handleChangeActiveCategory(
-                                  activeCategoryForHover
+                                handleChangeSearchActiveCategory(
+                                  searchActiveCategoryForHover
                                 )
                               );
                               setshowCategoryDropdown(false);
@@ -702,51 +754,6 @@ const Header = () => {
                           className="inline-block ml-auto min-h-[20px] min-w-[20px] text-gray-400 bg-gray-100"
                         />
                         {/* side dropdown */}
-                        {/* <div className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-30 bg-white md:min-w-[10rem] min-w-[3rem] ">
-                          <span className="font-semibold text-black text-xl">
-                            {activeCategoryForHover}
-                          </span>
-
-                          {subCategoryProducts?.subcategories !== undefined &&
-                            subCategoryProducts?.subcategories.map((item) => (
-                              <Link
-                                key={item?._id}
-                                to={`/product-listing/${category.name}`}
-                                state={{
-                                  title: category.name,
-                                  price: null,
-                                  searchQuery: "",
-                                }}
-                                onClick={() => {
-                                  dispatch(
-                                    handleChangeActiveSubcategory(item?.name)
-                                  );
-                                }}
-                              >
-                                <span
-                                  className={`font-normal md:whitespace-nowrap block hover:font-semibold ${
-                                    activeSubcategory === item?.name &&
-                                    "bg-gray-200"
-                                  } `}
-                                >
-                                  {item.name} ({item?.productCount})
-                                </span>
-                              </Link>
-                            ))}
-
-                          <Link to={`/product-listing/low-to-high`}>
-                            {" "}
-                            <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                              {t("View all")} ({t("Low to high")})
-                            </span>
-                          </Link>
-                          <Link to={`/product-listing/high-to-low`}>
-                            {" "}
-                            <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                              {t("View all")} ({t("High to low")})
-                            </span>
-                          </Link>
-                        </div> */}
                       </div>
                     ))}
                   </>
@@ -928,6 +935,14 @@ const Header = () => {
         </p>
         <p className="bg-DARKYELLOW text-black p-2 whitespace-nowrap">
           {t("minimum_order")} ${minOrderAmount}
+        </p>
+        <p className="text-black p-2 whitespace-nowrap">
+          {allProducts !== undefined && allProducts.length > 0 && (
+            <ExportToExcel
+              apiData={allProducts}
+              fileName="AllProducts-DollarEmpire"
+            />
+          )}
         </p>
       </div>
     </div>

@@ -22,9 +22,11 @@ import {
 } from "../redux/ProductSlice";
 import { toast } from "react-hot-toast";
 import {
+  handleChangeActiveCategory,
   handleChangePagePerView,
   handleChangeProductListingError,
   handleChangeProductListingPageLink,
+  handleChangeSearchActiveCategory,
 } from "../redux/GlobalStates";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import {
@@ -501,6 +503,8 @@ const ProductListing = () => {
     }
     return () => {
       AbortControllerRef.current !== null && AbortControllerRef.current.abort();
+      dispatch(handleChangeActiveCategory("All Categories"));
+      dispatch(handleChangeSearchActiveCategory("All Categories"));
     };
   }, []);
 
