@@ -1,7 +1,6 @@
 import React, { useRef } from "react";
 import { TiArrowBack } from "react-icons/ti";
 import { AiOutlineShoppingCart, AiOutlineUser } from "react-icons/ai";
-import { FaFileDownload } from "react-icons/fa";
 import {
   BsCurrencyDollar,
   BsSearch,
@@ -33,6 +32,8 @@ import { toast } from "react-hot-toast";
 import { number } from "card-validator";
 import { ExportToExcel } from "../ExportToExcel";
 import { handleEditProfile } from "../redux/BasicFeatureSlice";
+import axios from "axios";
+import BaseUrl, { GetUrl } from "../BaseUrl";
 
 const Header = () => {
   const [activeCategoryForHover, setActiveCategory] = useState("");
@@ -230,26 +231,6 @@ const Header = () => {
       }
     }
   }
-
-  // const handleChangeDownloadCount = async () => {
-  //   const resposen = await dispatch(
-  //     handleEditProfile({
-  //       fname: values.fname,
-  //       lname: values.lname,
-  //       companyName: values.companyName,
-  //       phone: values.phone,
-  //       city: values.city,
-  //       state: values.state,
-  //       country: values.country,
-  //       postalCode: values.postalCode,
-  //       location: values.location,
-  //       downloadCount,
-  //       lastDownload,
-  //       signal: AbortControllerRef,
-  //       token,
-  //     })
-  //   );
-  // };
 
   return (
     <div className="h-auto w-auto">

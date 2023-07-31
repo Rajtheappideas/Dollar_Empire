@@ -2,6 +2,7 @@ import React from "react";
 import * as FileSaver from "file-saver";
 import * as XLSX from "xlsx";
 import { FaFileDownload } from "react-icons/fa";
+import { GetUrl } from "./BaseUrl";
 
 export const ExportToExcel = ({ apiData, fileName }) => {
   const fileType =
@@ -61,8 +62,17 @@ export const ExportToExcel = ({ apiData, fileName }) => {
     FileSaver.saveAs(data, fileName + fileExtension);
   };
 
+  const handleChangeDownloadCount = async () => {
+    await GetUrl("/download-count", {});
+  };
+
   return (
-    <button onClick={(e) => exportToCSV(products, fileName)}>
+    <button
+      onClick={(e) => {
+        exportToCSV(products, fileName);
+        handleChangeDownloadCount();
+      }}
+    >
       <FaFileDownload size={25} color="black" title="Export All Products" />
       {/* Export All Products */}
     </button>

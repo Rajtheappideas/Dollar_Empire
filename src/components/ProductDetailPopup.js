@@ -1379,7 +1379,7 @@ const ProductDetailPopup = ({}) => {
               <p className="flex items-center justify-between w-full">
                 <span className="font-normal">Made in</span>
                 <span className="font-semibold">
-                  {singleProduct?.madein ?? "-"}
+                  {singleProduct?.madeIn ?? "-"}
                 </span>
               </p>
             </div>
