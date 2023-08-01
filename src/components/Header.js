@@ -78,10 +78,9 @@ const Header = () => {
 
   // set active subcategory
   useEffect(() => {
-    if (activeCategoryForHover !== "") {
+    if (activeCategoryForHover !== "" && searchActiveCategoryForHover === "") {
       setSubCategoryProducts(subCategories[activeCategoryForHover]);
-    }
-    if (searchActiveCategoryForHover !== "") {
+    } else {
       setSubCategoryProducts(subCategories[searchActiveCategoryForHover]);
     }
   }, [activeCategoryForHover, searchActiveCategoryForHover]);
@@ -107,13 +106,13 @@ const Header = () => {
         if (searchActiveCategory === "All Categories") {
           return (
             (typeof val === "string" || typeof val === number) &&
-            val.toLocaleLowerCase().includes(searchTerm)
+            entry?.name.toLocaleLowerCase().includes(searchTerm)
           );
         } else {
           return (
             (typeof val === "string" || typeof val === number) &&
-            entry?.category === searchActiveCategory &&
-            val.toLocaleLowerCase().includes(searchTerm)
+            entry?.category.includes(searchActiveCategory) &&
+            entry?.name.toLocaleLowerCase().includes(searchTerm)
           );
         }
       })
@@ -141,7 +140,7 @@ const Header = () => {
       );
     } else {
       dispatch(handleChangeSearchProducts(filteredProducts));
-      // dispatch(handleChangeActiveCategory("All Categories"));
+      dispatch(handleChangeActiveCategory("All Categories"));
       dispatch(handleChangeSearchActiveCategory("All Categories"));
       dispatch(handleChangeSearchTerm(""));
       navigate(`/product-listing/search`);
@@ -403,6 +402,7 @@ const Header = () => {
                             key={category?._id}
                             onMouseOver={() => {
                               setSearchActiveCategory(category.name);
+                              setActiveCategory("");
                               handleDynamicTop(i, "second");
                             }}
                             onClick={() => {
@@ -504,6 +504,7 @@ const Header = () => {
                               dispatch(
                                 handleChangeActiveSubcategory(item?.name)
                               );
+
                               dispatch(
                                 handleChangeSearchActiveCategory(
                                   searchActiveCategoryForHover
@@ -709,10 +710,12 @@ const Header = () => {
                         onMouseOver={() => {
                           setActiveCategory(category.name);
                           handleDynamicTop(i);
+                          setSearchActiveCategory("");
                         }}
                         onClick={() => {
                           setActiveCategory(category.name);
                           handleDynamicTop(i);
+                          setSearchActiveCategory("");
                         }}
                       >
                         <Link
@@ -747,7 +750,34 @@ const Header = () => {
                   <span className="font-semibold text-black text-xl mb-1">
                     {activeCategoryForHover}
                   </span>
-
+                  {subCategoryProducts?.subcategories !== undefined &&
+                    subCategoryProducts?.subcategories.map((item) => (
+                      <Link
+                        key={item?._id}
+                        to={`/product-listing/${activeCategoryForHover}`}
+                        state={{
+                          title: activeCategoryForHover,
+                          price: null,
+                          searchQuery: "",
+                        }}
+                        onClick={() => {
+                          dispatch(handleChangeActiveSubcategory(item?.name));
+                          dispatch(
+                            handleChangeActiveCategory(activeCategoryForHover)
+                          );
+                          setshowCategoryDropdown(false);
+                        }}
+                      >
+                        <span
+                          className={`font-normal text-black mb-1 md:whitespace-nowrap block hover:font-semibold ${
+                            activeSubcategory === item?.name && "bg-gray-200"
+                          } `}
+                        >
+                          {item.name} ({item?.productCount})
+                        </span>
+                      </Link>
+                    ))}
+                  {/* 
                   {subCategoryProducts?.subcategories !== undefined &&
                     subCategoryProducts?.subcategories.map((item) => (
                       <Link
@@ -775,7 +805,7 @@ const Header = () => {
                           {item.name} ({item?.productCount})
                         </span>
                       </Link>
-                    ))}
+                    ))} */}
 
                   <Link
                     onClick={() => {

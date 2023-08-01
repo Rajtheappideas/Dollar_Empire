@@ -200,11 +200,12 @@ const ProductListing = () => {
       const productsByCategories = allProducts.filter((i) =>
         i.category.includes(title)
       );
+
       setProducts(productsByCategories);
       handleFilterProductsByPrice(productsByCategories);
       if (activeSubcategory !== "") {
-        const findProducts = productsByCategories.filter(
-          (c) => c?.subcategory === activeSubcategory
+        const findProducts = productsByCategories.filter((c) =>
+          c?.subcategory.includes(activeSubcategory)
         );
         setProducts(findProducts);
         handleFilterProductsByPrice(findProducts);
@@ -494,7 +495,7 @@ const ProductListing = () => {
         .then((res) => {
           if (res.payload.status === "success") {
             const Categories = res.payload.products.map((i) => i.category);
-            setCategories([...new Set(Categories)]);
+            setCategories([...new Set(Categories.flat(Infinity))]);
           } else {
             toast.error(res.payload.message);
           }
@@ -575,6 +576,8 @@ const ProductListing = () => {
   useEffect(() => {
     handleClearFilters();
   }, [title]);
+
+  // console.log(categories)
 
   return (
     <>
