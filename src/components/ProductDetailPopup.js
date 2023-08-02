@@ -819,19 +819,19 @@ const ProductDetailPopup = ({}) => {
     }
   };
 
-  const checkDigitNumber = () => {
-    const regExp = /[a-zA-Z]/g;
-    let checkDigitnum = "";
-    if (regExp.test(singleProduct?.number)) {
-      checkDigitnum = "-";
-    } else {
-      checkDigitnum = `827680`
-        .toString()
-        .concat(singleProduct?.number)
-        .concat(findCheckDigit("827680".concat(singleProduct?.number)));
-    }
-    return checkDigitnum;
-  };
+  // const checkDigitNumber = () => {
+  //   const regExp = /[a-zA-Z]/g;
+  //   let checkDigitnum = "";
+  //   if (regExp.test(singleProduct?.number)) {
+  //     checkDigitnum = "-";
+  //   } else {
+  //     checkDigitnum = `827680`
+  //       .toString()
+  //       .concat(singleProduct?.number)
+  //       .concat(findCheckDigit("827680".concat(singleProduct?.number)));
+  //   }
+  //   return checkDigitnum;
+  // };
 
   return (
     <ReactModal
@@ -1000,18 +1000,6 @@ const ProductDetailPopup = ({}) => {
                 {singleProduct?.longDesc}
               </p>
               <p className="font-medium"> {singleProduct?.package}</p>
-              {/* <p className="font-medium">
-                PK volume : {singleProduct?.PKVolume} CUFT
-              </p>
-              <p className="font-medium">
-                CTN volume : {singleProduct?.CTNVolume} CUFT
-              </p>
-              <p className="font-medium">
-                PK WT : {singleProduct?.PKWeight} LBS
-              </p>
-              <p className="font-medium">
-                CTN WT : {singleProduct?.CTNWeight} LBS
-              </p> */}
               <p className="text-black font-semibold text-base">
                 {singleProduct?.PK} PC / PK | {singleProduct?.CTN} PC / CTN
               </p>
@@ -1325,10 +1313,14 @@ const ProductDetailPopup = ({}) => {
               </p>
               <hr className="pt-3" />
               <p className="text-2xl font-bold">Specification</p>
-              <p className="flex items-center justify-between w-full">
-                <span className="font-normal">UPC Code</span>
-                <span className="font-semibold">{checkDigitNumber()}</span>
-              </p>
+              {singleProduct?.UPC !== "" && (
+                <p className="flex items-center justify-between w-full">
+                  <span className="font-normal">UPC Code</span>
+                  <span className="font-semibold">
+                    {singleProduct?.UPC ?? "-"}
+                  </span>
+                </p>
+              )}
               <p className="flex items-center justify-between w-full">
                 <span className="font-normal">PK</span>
                 <span className="font-semibold">{singleProduct?.PK}</span>
@@ -1372,16 +1364,20 @@ const ProductDetailPopup = ({}) => {
                   {singleProduct?.CTNWeight} LBS
                 </span>
               </p>
-              <p className="flex items-center justify-between w-full">
-                <span className="font-normal">Category</span>
-                <span className="font-semibold">{singleProduct?.category}</span>
-              </p>
-              <p className="flex items-center justify-between w-full">
-                <span className="font-normal">Made in</span>
-                <span className="font-semibold">
-                  {singleProduct?.madeIn ?? "-"}
-                </span>
-              </p>
+              {singleProduct?.category.length > 0 && (
+                <p className="flex items-center justify-between w-full">
+                  <span className="font-normal">Category</span>
+                  <span className="font-semibold">
+                    {singleProduct?.category}
+                  </span>
+                </p>
+              )}
+              {singleProduct?.madeIn !== "" && (
+                <p className="flex items-center justify-between w-full">
+                  <span className="font-normal">Made in</span>
+                  <span className="font-semibold">{singleProduct?.madeIn}</span>
+                </p>
+              )}
             </div>
           )}
         </div>
