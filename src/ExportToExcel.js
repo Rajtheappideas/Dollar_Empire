@@ -2,28 +2,58 @@ import React from "react";
 import * as FileSaver from "file-saver";
 import * as XLSX from "xlsx";
 import { FaFileDownload } from "react-icons/fa";
-import { GetUrl } from "./BaseUrl";
+import BaseUrl, { GetUrl } from "./BaseUrl";
 
 export const ExportToExcel = ({ apiData, fileName }) => {
   const fileType =
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
   const fileExtension = ".xlsx";
 
-  const products = apiData.map(
+  let products = apiData.map(
     ({
-      _id,
-      shortDesc,
+      category,
+      subcategory,
+      price,
       images,
-      quantity,
-      minOrderQty,
-      createdAt,
-      isFavourite,
-      longDesc,
-      width,
+      number,
+      name,
+      PK,
+      CTN,
+      UoM,
+      PKVolume,
+      CTNVolume,
+      PKWeight,
+      CTNWeight,
+      UPC,
+      madeIn,
       length,
       height,
-      ...rest
-    }) => ({ ...rest })
+      width,
+    }) => ({
+      ProductNumber: number,
+      images: images.length > 0 ? BaseUrl.concat(images[0]) : "-",
+      ProductName: name,
+      Price: (price * 1.5).toFixed(2),
+      Category: category.length > 0 ? category.join(" | ") : "-",
+      SubCategory: subcategory.length > 0 ? subcategory.join(" | ") : "-",
+      PK,
+      CTN,
+      UoM,
+      PKVolume,
+      CTNVolume,
+      PKWeight,
+      CTNWeight,
+      UPC,
+      Dimensions:
+        length === undefined
+          ? "-"
+          : UoM === "Feet"
+          ? `${length ?? "-"} ft x ${width ?? "-"} ft x ${height ?? "-"} ft`
+          : `${length ?? "-"} inch x ${width ?? "-"} inch x ${
+              height ?? "-"
+            } inch`,
+      Madein: madeIn,
+    })
   );
 
   const exportToCSV = (products, fileName) => {
@@ -33,10 +63,11 @@ export const ExportToExcel = ({ apiData, fileName }) => {
       [
         [
           "ProductNumber",
+          "images",
           "ProductName",
+          "Price",
           "Category",
           "SubCategory",
-          "Price",
           "PK",
           "CTN",
           "UoM",
@@ -45,7 +76,8 @@ export const ExportToExcel = ({ apiData, fileName }) => {
           "PKWeight",
           "CTNWeight",
           "UPC",
-          // "Madein",
+          "Dimensions",
+          "Madein",
         ],
       ],
       {
@@ -72,9 +104,9 @@ export const ExportToExcel = ({ apiData, fileName }) => {
         exportToCSV(products, fileName);
         handleChangeDownloadCount();
       }}
+      className="border border-blue-400 rounded-md px-3 py-2 active:scale-95 hover:bg-blue-200 transition"
     >
-      <FaFileDownload size={25} color="black" title="Export All Products" />
-      {/* Export All Products */}
+      Download Product List
     </button>
   );
 };

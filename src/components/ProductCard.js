@@ -820,12 +820,12 @@ const ProductCard = ({
         // single product grid view
         <div
           className={`lg:space-y-3 relative ${
-            showEnlargeImage && product?._id === activeEnlargeImageId
+            showEnlargeImage && product?._id === singleProductEnlargeImageId
               ? "z-50"
               : "z-0"
           } space-y-2 w-full xl:p-3 md:p-5 p-3 bg-white font-semibold md:text-lg border rounded-lg border-[#EAEAEA] flex xl:flex-row flex-col items-start justify-between`}
         >
-          {showEnlargeImage && product?._id === activeEnlargeImageId && (
+          {showEnlargeImage && product?._id === singleProductEnlargeImageId && (
             <div className="absolute z-30 inset-0 bg-black bg-opacity-20 backdrop-blur-sm max-w-[100%] h-full" />
           )}
           {/* top seller label */}
@@ -838,7 +838,7 @@ const ProductCard = ({
           {/* left side */}
           <div
             className={`h-auto xl:w-2/3 w-full relative ${
-              showEnlargeImage && product?._id === activeEnlargeImageId
+              showEnlargeImage && product?._id === singleProductEnlargeImageId
                 ? "z-50"
                 : "z-0"
             } flex md:flex-row flex-col md:items-start items-center justify-start xl:gap-5 gap-3`}
@@ -872,7 +872,9 @@ const ProductCard = ({
               role="button"
               onClick={() => {
                 dispatch(showEnlargeImagePopup());
-                handleShowSingleProductEnlargeImage(0, product?._id);
+                // handleShowSingleProductEnlargeImage(0, product?._id);
+                handleShowEnlargeImage();
+
               }}
               className="h-6 w-6 bg-white/40 absolute left-0 md:bottom-0 bottom-56  text-PRIMARY"
             />
@@ -880,13 +882,12 @@ const ProductCard = ({
               showEnlargeImage && (
                 <div
                   ref={popImageRef}
-                  className="absolute bg-black/30 z-40 xl:w-[30rem] md:w-[30rem] w-full md:min-h-[22rem] md:max-h-[22rem] min-h-[24rem] max-h-[24rem] xl:-top-32 md:-top-20 top-0 md:left-0 -left-2 backdrop-blur-sm"
+                  className="absolute bg-black/30 z-50 xl:w-[30rem] md:w-[30rem] w-full md:min-h-[22rem] md:max-h-[22rem] min-h-[24rem] max-h-[24rem] xl:-top-32 md:-top-20 top-0 md:left-0 -left-2 backdrop-blur-sm"
                 >
                   <AiOutlineClose
                     role="button"
                     onClick={() => {
                       dispatch(closeEnlargeImagePopup());
-                      // handleShowSingleProductEnlargeImage();
                     }}
                     className="absolute top-1 right-2 w-7 h-7 text-white z-50"
                   />

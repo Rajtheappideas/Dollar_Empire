@@ -106,13 +106,21 @@ const Header = () => {
         if (searchActiveCategory === "All Categories") {
           return (
             (typeof val === "string" || typeof val === number) &&
-            entry?.name.toLocaleLowerCase().includes(searchTerm)
+            (entry?.name.toLocaleLowerCase().includes(searchTerm) ||
+              entry?.number.toLocaleLowerCase().includes(searchTerm) ||
+              entry?.shortDesc.toLocaleLowerCase().includes(searchTerm) ||
+              (entry?.longDesc !== undefined &&
+                entry?.longDesc.toLocaleLowerCase().includes(searchTerm)))
           );
         } else {
           return (
             (typeof val === "string" || typeof val === number) &&
             entry?.category.includes(searchActiveCategory) &&
-            entry?.name.toLocaleLowerCase().includes(searchTerm)
+            (entry?.name.toLocaleLowerCase().includes(searchTerm) ||
+              entry?.number.toLocaleLowerCase().includes(searchTerm) ||
+              entry?.shortDesc.toLocaleLowerCase().includes(searchTerm) ||
+              (entry?.longDesc !== undefined &&
+                entry?.longDesc.toLocaleLowerCase().includes(searchTerm)))
           );
         }
       })
@@ -125,6 +133,9 @@ const Header = () => {
           } .`
         )
       );
+      dispatch(handleChangeActiveCategory("All Categories"));
+      dispatch(handleChangeSearchActiveCategory("All Categories"));
+      dispatch(handleChangeSearchTerm(""));
       return toast.error(
         `Product not found releated "${searchTerm}" ${
           searchActiveCategory ?? ""
