@@ -15,9 +15,10 @@ const SuccessOrder = () => {
         animationData={success}
         style={{ pointerEvents: "none", width: "300px", height: "300px" }}
       />
-      <p className="font-bold text-2xl">{t("Thank you for purchase")} !</p>
+
+      <p className="font-bold text-2xl">{t("Thank you!")}</p>
       <p className="font-semibold text-lg">
-        {t("Your order id")} : {orderId}
+        Order Number {orderId} has been confirmed
       </p>
       <Link to="/my-account">
         <button

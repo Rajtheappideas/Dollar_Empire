@@ -137,7 +137,7 @@ const ProductDetailPopup = ({}) => {
   const handleAddProduct = (id, title, quantity, amount) => {
     toast.dismiss();
     if (pkitemsQuantity === "" && ctnItemQuantity === "") {
-      return toast.error("Please add some quantity!!!");
+      return toast.error("Please add some quantity");
     } else if (selectedItemType === "pk" && ctnItemQuantity > 0) {
       toast.error("Please enter quantity in PK, you choose PK");
       setCtnItemQuantity("");
@@ -163,7 +163,7 @@ const ProductDetailPopup = ({}) => {
       setAlreadyInCartPkCount(null);
       setAlreadyInCartCtnCount(null);
       setAlreadyInCartCtnItems("");
-      return toast.error("Please enter valid value!!!");
+      return toast.error("Please enter valid value");
     }
     setSelectedProductId(singleProduct?._id);
     setAddProductToCartLoading(true);
@@ -389,7 +389,7 @@ const ProductDetailPopup = ({}) => {
     if (!/^(?=.*[1-9])\d{1,8}(?:\.\d\d?)?$/.test(e.target.value)) {
       toast.remove();
       toast.error(
-        "Please enter valid value and value can't be less than zero!!!"
+        "Please enter valid value and value can't be less than zero"
       );
       setPkCount(0);
       setpkItemsQuantity("");
@@ -399,7 +399,7 @@ const ProductDetailPopup = ({}) => {
     }
     if (e.target.value.length > 6) {
       toast.remove();
-      toast.error("Can't add more than 6 numbers !!!");
+      toast.error("Can't add more than 6 numbers");
       return true;
     }
     if (
@@ -432,7 +432,7 @@ const ProductDetailPopup = ({}) => {
     if (!/^(?=.*[1-9])\d{1,8}(?:\.\d\d?)?$/.test(e.target.value)) {
       toast.remove();
       toast.error(
-        "Please enter valid value and value can't be less than zero!!!"
+        "Please enter valid value and value can't be less than zero"
       );
       setCtnCount(0);
       setCtnItemQuantity("");
@@ -442,7 +442,7 @@ const ProductDetailPopup = ({}) => {
     }
     if (e.target.value.length > 6) {
       toast.remove();
-      toast.error("Can't add more than 6 numbers !!!");
+      toast.error("Can't add more than 6 numbers");
       return true;
     }
     if (
@@ -483,7 +483,7 @@ const ProductDetailPopup = ({}) => {
         } else {
           if (pkCount !== null && pkCount.toString().length >= 6) {
             toast.remove();
-            toast.error("Can't add more than 6 numbers !!!");
+            toast.error("Can't add more than 6 numbers");
             return true;
           }
           handlePlusPkQuantity(
@@ -499,7 +499,7 @@ const ProductDetailPopup = ({}) => {
       ) {
         if (findInCart?.type !== type) {
           toast.remove();
-          toast.error("Please change in ctn quantity!!!");
+          toast.error("Please change in ctn quantity");
           return true;
         } else {
           setChangeTo(true);
@@ -536,7 +536,7 @@ const ProductDetailPopup = ({}) => {
               alreadyInCartPkCount.toString().length >= 6
             ) {
               toast.remove();
-              toast.error("Can't add more than 6 numbers !!!");
+              toast.error("Can't add more than 6 numbers");
               return true;
             }
             if (alreadyInCartPkCount !== null) {
@@ -580,7 +580,7 @@ const ProductDetailPopup = ({}) => {
         } else {
           if (ctnCount !== null && ctnCount.toString().length >= 6) {
             toast.remove();
-            toast.error("Can't add more than 6 numbers !!!");
+            toast.error("Can't add more than 6 numbers");
             return true;
           }
           handlePlusCTNQuantity(
@@ -597,7 +597,7 @@ const ProductDetailPopup = ({}) => {
       ) {
         if (findInCart?.type !== type) {
           toast.remove();
-          toast.error("Please change in pk quantity!!!");
+          toast.error("Please change in pk quantity");
           return true;
         } else {
           setChangeTo(true);
@@ -634,7 +634,7 @@ const ProductDetailPopup = ({}) => {
               alreadyInCartCtnCount.toString().length >= 6
             ) {
               toast.remove();
-              toast.error("Can't add more than 6 numbers !!!");
+              toast.error("Can't add more than 6 numbers");
               return true;
             }
             if (alreadyInCartCtnCount !== null) {
@@ -996,8 +996,8 @@ const ProductDetailPopup = ({}) => {
                 {singleProduct?.number}
               </p>{" "}
               <p className="font-bold text-2xl">{singleProduct?.name}</p>
-              <p className="font-medium text-lg whitespace-pre-line">
-                {singleProduct?.longDesc}
+              <p className="font-medium text-lg whitespace-pre-line" dangerouslySetInnerHTML={{__html:singleProduct?.longDesc}}>
+                {/* {singleProduct?.longDesc} */}
               </p>
               <p className="font-medium"> {singleProduct?.package}</p>
               <p className="text-black font-semibold text-base">

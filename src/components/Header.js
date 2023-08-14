@@ -98,8 +98,8 @@ const Header = () => {
     toast.dismiss();
     if (searchTerm === "") {
       searchRef.current.focus();
-      dispatch(handleChangeProductListingError("Please enter a word!!"));
-      return toast.error("Please enter a word!!!");
+      dispatch(handleChangeProductListingError("Please enter a search term"));
+      return toast.error("Please enter a search term");
     }
     const filteredProducts = allProducts.filter((entry) =>
       Object.values(entry).some((val) => {
@@ -128,18 +128,14 @@ const Header = () => {
     if (filteredProducts.length === 0) {
       dispatch(
         handleChangeProductListingError(
-          `Product not found releated "${searchTerm}" in ${
-            searchActiveCategory ?? ""
-          } .`
+          `No results found: "${searchTerm}" in ${searchActiveCategory ?? ""} .`
         )
       );
       dispatch(handleChangeActiveCategory("All Categories"));
       dispatch(handleChangeSearchActiveCategory("All Categories"));
       dispatch(handleChangeSearchTerm(""));
       return toast.error(
-        `Product not found releated "${searchTerm}" ${
-          searchActiveCategory ?? ""
-        } .`,
+        `No results found: "${searchTerm}" in ${searchActiveCategory ?? ""} .`,
         {
           style: {
             fontSize: "14px",
@@ -957,14 +953,6 @@ const Header = () => {
         </p>
         <p className="bg-DARKYELLOW text-black p-2 whitespace-nowrap">
           {t("minimum_order")} ${minOrderAmount}
-        </p>
-        <p className="text-black p-2 whitespace-nowrap">
-          {allProducts !== undefined && allProducts.length > 0 && (
-            <ExportToExcel
-              apiData={allProducts}
-              fileName="AllProducts-DollarEmpire"
-            />
-          )}
         </p>
       </div>
     </div>

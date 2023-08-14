@@ -181,7 +181,7 @@ const Signup = () => {
             .catch((err) => {});
         }
       } else {
-        toast.error("Phone number is invalid!!!");
+        toast.error("Phone number is invalid");
       }
     },
   });

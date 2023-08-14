@@ -7,6 +7,7 @@ import { toast } from "react-hot-toast";
 import { GetUrl, PostUrl } from "../BaseUrl";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
+import { ExportToExcel } from "../ExportToExcel";
 
 const Footer = () => {
   const [email, setEmail] = useState("");
@@ -16,7 +17,9 @@ const Footer = () => {
 
   const toTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
+  const { user } = useSelector((state) => state.Auth);
   const { contact } = useSelector((state) => state.getContent);
+  const { allProducts } = useSelector((state) => state.products);
 
   const { t } = useTranslation();
 
@@ -24,10 +27,10 @@ const Footer = () => {
     e.preventDefault();
     toast.dismiss();
     if (email === "") {
-      return toast.error("Please Enter email!!!");
+      return toast.error("Please Enter email");
     }
     if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
-      return toast.error("Please Enter valid email!!!");
+      return toast.error("Please Enter valid email");
     }
     setLoading(true);
     PostUrl("newsletter", { data: { email } })
@@ -72,8 +75,11 @@ const Footer = () => {
         </div>
         {/* details */}
         <div className="space-y-3 w-full">
-          <p className="flex items-start">
-            <MdLocationOn className="w-8 h-8 text-black inline-block mt-2 mr-2" />
+          <p className="flex items-start lg:text-2xl text-lg lg:pl-5">
+            {t("contact_us")}
+          </p>
+          <p className="flex items-center">
+            <MdLocationOn className="2xl:w-8 2xl:h-8 xl:h-10 xl:w-10 h-8 w-8 text-black inline-block mr-2" />
             {contact?.address}
           </p>
           <p>
@@ -108,35 +114,16 @@ const Footer = () => {
                   {link?.title}
                 </Link>
               ))}
-          {/* <Link
-            className="block hover:pl-2 hover:border-l-4 hover:border-PRIMARY transition-all hover:text-PRIMARY duration-300"
-            to="/about-us"
-            onClick={toTop}
-          >
-            {t("about_us")}
-          </Link>
-
-          <Link
-            className="block hover:pl-2 hover:border-l-4 hover:border-PRIMARY transition-all hover:text-PRIMARY duration-300"
-            to="/shipping-&-freight"
-            onClick={toTop}
-          >
-            {t("shipping_&_freight")}
-          </Link>
-          <Link
-            className="block hover:pl-2 hover:border-l-4 hover:border-PRIMARY transition-all hover:text-PRIMARY duration-300"
-            to="/special-order"
-            onClick={toTop}
-          >
-            {t("special_orders")}
-          </Link>
-          <Link
-            className="block hover:pl-2 hover:border-l-4 hover:border-PRIMARY transition-all hover:text-PRIMARY duration-300"
-            to="/privacy-policy"
-            onClick={toTop}
-          >
-            {t("privacy_notice")}
-          </Link> */}
+          <p className="text-black whitespace-nowrap">
+            {user !== null &&
+              allProducts !== undefined &&
+              allProducts.length > 0 && (
+                <ExportToExcel
+                  apiData={allProducts}
+                  fileName="AllProducts-DollarEmpire"
+                />
+              )}
+          </p>
         </div>
         {/* subscibe */}
         <div className="space-y-3  w-full">

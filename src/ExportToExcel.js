@@ -104,9 +104,9 @@ export const ExportToExcel = ({ apiData, fileName }) => {
         exportToCSV(products, fileName);
         handleChangeDownloadCount();
       }}
-      className="border border-blue-400 rounded-md px-3 py-2 active:scale-95 hover:bg-blue-200 transition"
+      className=" rounded-md active:scale-95 hover:bg-blue-200 transition"
     >
-      Download Product List
+      Product Catalog
     </button>
   );
 };

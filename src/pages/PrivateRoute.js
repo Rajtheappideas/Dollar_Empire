@@ -12,7 +12,6 @@ const PrivateRoute = ({ children }) => {
     if (!window.localStorage.getItem("user") && user === null) {
       toast.dismiss();
       navigate("/sign-in");
-      // toast.error("Please Login first!!!");
     }
   }, [user]);
   if (user !== null) {

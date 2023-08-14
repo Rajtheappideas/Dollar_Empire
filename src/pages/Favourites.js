@@ -125,7 +125,7 @@ const Favourites = () => {
   const handleSubmitMulitpleProductToCart = () => {
     if (selectedItems.length === 0) {
       toast.dismiss();
-      return toast.error("Please add some quantity to products!!!");
+      return toast.error("Please add some quantity to products");
     } else {
       const response = dispatch(
         handleAddMultipleProductToCart({

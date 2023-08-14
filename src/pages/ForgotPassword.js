@@ -27,10 +27,10 @@ const ForgotPassword = () => {
   const handleforgotPassword = () => {
     toast.dismiss();
     if (email === "") {
-      return toast.error("Please Enter email!!!");
+      return toast.error("Please Enter email");
     }
     if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
-      return toast.error("Please Enter valid email!!!");
+      return toast.error("Please Enter valid email");
     }
     const response = dispatch(
       handleForgotPassword({ email, signal: AbortControllerRef })

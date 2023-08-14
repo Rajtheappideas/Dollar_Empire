@@ -142,13 +142,14 @@ const AuthSlice = createSlice({
   initialState,
   reducers: {
     handleLogoutReducer: (state) => {
-      toast.dismiss();
+      state.loading = true;
       state.user = null;
       window.localStorage.removeItem("user");
       window.localStorage.removeItem("token");
       window.localStorage.removeItem("orderId");
-      window.location.href = window.location.origin;
+      window.location.href = window.location.origin.concat("/sign-in");
       toast.success("Logout Successfully.", { duration: 3000 });
+      state.loading = false;
     },
     handleChangeUserLanguage: (state, { payload }) => {
       state.userLanguage = i18next.changeLanguage(payload);

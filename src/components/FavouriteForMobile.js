@@ -121,7 +121,7 @@ const FavouriteForMobile = ({ favourite, handleAddSelectedItem }) => {
       setAlreadyInCartPkCount(null);
       setAlreadyInCartCtnItems("");
       setAlreadyInCartPkItems("");
-      return toast.error("Please enter valid value!!!");
+      return toast.error("Please enter valid value");
     }
     setSelectedProductId(favourite?._id);
     const response = dispatch(
@@ -341,7 +341,7 @@ const FavouriteForMobile = ({ favourite, handleAddSelectedItem }) => {
     if (!/^(?=.*[1-9])\d{1,8}(?:\.\d\d?)?$/.test(e.target.value)) {
       toast.remove();
       toast.error(
-        "Please enter valid value and value can't be less than zero!!!"
+        "Please enter valid value and value can't be less than zero"
       );
       setPkCount(0);
       setpkItemsQuantity("");
@@ -351,7 +351,7 @@ const FavouriteForMobile = ({ favourite, handleAddSelectedItem }) => {
     }
     if (e.target.value.length > 6) {
       toast.remove();
-      toast.error("Can't add more than 6 numbers !!!");
+      toast.error("Can't add more than 6 numbers ");
       return true;
     }
     if (
@@ -384,7 +384,7 @@ const FavouriteForMobile = ({ favourite, handleAddSelectedItem }) => {
     if (!/^(?=.*[1-9])\d{1,8}(?:\.\d\d?)?$/.test(e.target.value)) {
       toast.remove();
       toast.error(
-        "Please enter valid value and value can't be less than zero!!!"
+        "Please enter valid value and value can't be less than zero"
       );
       setCtnCount(0);
       setCtnItemQuantity("");
@@ -394,7 +394,7 @@ const FavouriteForMobile = ({ favourite, handleAddSelectedItem }) => {
     }
     if (e.target.value.length > 6) {
       toast.remove();
-      toast.error("Can't add more than 6 numbers !!!");
+      toast.error("Can't add more than 6 numbers ");
       return true;
     }
     if (!loading && selectedProductId?._id !== favourite?._id) {
@@ -430,7 +430,7 @@ const FavouriteForMobile = ({ favourite, handleAddSelectedItem }) => {
         } else {
           if (pkCount.toString().length >= 6) {
             toast.remove();
-            toast.error("Can't add more than 6 numbers !!!");
+            toast.error("Can't add more than 6 numbers ");
             return true;
           }
           handlePlusPkQuantity(
@@ -446,7 +446,7 @@ const FavouriteForMobile = ({ favourite, handleAddSelectedItem }) => {
       ) {
         if (findInCart?.type !== type) {
           toast.remove();
-          toast.error("Please change in ctn quantity!!!");
+          toast.error("Please change in ctn quantity");
           return true;
         } else {
           setChangeTo(true);
@@ -481,7 +481,7 @@ const FavouriteForMobile = ({ favourite, handleAddSelectedItem }) => {
               alreadyInCartPkCount.toString().length >= 6
             ) {
               toast.remove();
-              toast.error("Can't add more than 6 numbers !!!");
+              toast.error("Can't add more than 6 numbers ");
               return true;
             }
             if (alreadyInCartPkCount !== null) {
@@ -523,7 +523,7 @@ const FavouriteForMobile = ({ favourite, handleAddSelectedItem }) => {
         } else {
           if (ctnCount.toString().length >= 6) {
             toast.remove();
-            toast.error("Can't add more than 6 numbers !!!");
+            toast.error("Can't add more than 6 numbers ");
             return true;
           }
           handlePlusCTNQuantity(
@@ -540,7 +540,7 @@ const FavouriteForMobile = ({ favourite, handleAddSelectedItem }) => {
       ) {
         if (findInCart?.type !== type) {
           toast.remove();
-          toast.error("Please change in pk quantity!!!");
+          toast.error("Please change in pk quantity");
           return true;
         } else {
           setChangeTo(true);
@@ -577,7 +577,7 @@ const FavouriteForMobile = ({ favourite, handleAddSelectedItem }) => {
               alreadyInCartCtnCount.toString().length >= 6
             ) {
               toast.remove();
-              toast.error("Can't add more than 6 numbers !!!");
+              toast.error("Can't add more than 6 numbers ");
               return true;
             }
             if (alreadyInCartCtnCount !== null) {

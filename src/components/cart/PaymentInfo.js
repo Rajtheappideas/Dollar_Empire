@@ -34,11 +34,11 @@ const PaymentInfo = ({ summaryFixed }) => {
   const handleConfirmOrder = () => {
     toast.dismiss();
     if (shippingAddress === "" && shipphingMethod === "freight") {
-      return toast.error("Please select the shipping address!!!");
+      return toast.error("Please select the shipping address");
     } else if (shipphingMethod === "") {
-      return toast.error("Please select the shipping method!!!");
+      return toast.error("Please select the shipping method");
     } else if (paymentOption === "") {
-      return toast.error("Please choose the Payment option!!!");
+      return toast.error("Please choose the Payment option");
     }
     const response = dispatch(
       handleCreateOrder({

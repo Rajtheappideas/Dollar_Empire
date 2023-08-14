@@ -67,14 +67,14 @@ const AddNewAddress = ({ setShowNewAddress }) => {
       .max(
         country === "United States" ? 5 : 6,
         country === "United States"
-          ? "Pincode should be 5 characters"
-          : "Pincode should be 6 characters"
+          ? "Postal code should be 5 characters"
+          : "Postal code should be 6 characters"
       )
       .min(
         country === "United States" ? 5 : 6,
         country === "United States"
-          ? "Pincode should be 5 characters"
-          : "Pincode should be 6 characters"
+          ? "Postal code should be 5 characters"
+          : "Postal code should be 6 characters"
       )
       .matches(/^[0-9A-Za-z\s\-]+$/g, "That doesn't look like a postal code"),
     city: yup
@@ -152,7 +152,7 @@ const AddNewAddress = ({ setShowNewAddress }) => {
           });
         }
       } else {
-        toast.error("Phone number is invalid!!!");
+        toast.error("Phone number is invalid");
       }
     },
   });

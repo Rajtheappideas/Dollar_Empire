@@ -174,7 +174,7 @@ const ProductCard = ({
       setCtnItemQuantity("");
       setPkCount(null);
       setCtnCount(null);
-      return toast.error("Please enter valid value!!!");
+      return toast.error("Please enter valid value");
     }
     setSelectedProductId(id);
     const response = dispatch(
@@ -425,7 +425,7 @@ const ProductCard = ({
     if (!/^(?=.*[1-9])\d{1,8}(?:\.\d\d?)?$/.test(e.target.value)) {
       toast.remove();
       toast.error(
-        "Please enter valid value and value can't be less than zero!!!"
+        "Please enter valid value and value can't be less than zero"
       );
       setPkCount(null);
       setpkItemsQuantity("");
@@ -435,7 +435,7 @@ const ProductCard = ({
     }
     if (e.target.value.length > 6) {
       toast.remove();
-      toast.error("Can't add more than 6 numbers !!!");
+      toast.error("Can't add more than 6 numbers");
       return true;
     }
     if (
@@ -468,7 +468,7 @@ const ProductCard = ({
     if (!/^(?=.*[1-9])\d{1,8}(?:\.\d\d?)?$/.test(e.target.value)) {
       toast.remove();
       toast.error(
-        "Please enter valid value and value can't be less than zero!!!"
+        "Please enter valid value and value can't be less than zero"
       );
       setCtnCount(null);
       setCtnItemQuantity("");
@@ -478,7 +478,7 @@ const ProductCard = ({
     }
     if (e.target.value.length > 6) {
       toast.remove();
-      toast.error("Can't add more than 6 numbers !!!");
+      toast.error("Can't add more than 6 numbers");
       return true;
     }
     if (
@@ -534,7 +534,7 @@ const ProductCard = ({
       ) {
         if (findInCart?.type !== type) {
           toast.remove();
-          toast.error("Please change in ctn quantity!!!");
+          toast.error("Please change in ctn quantity");
           return true;
         } else {
           setChangeTo(true);
@@ -569,7 +569,7 @@ const ProductCard = ({
               alreadyInCartPkCount.toString().length >= 6
             ) {
               toast.remove();
-              toast.error("Can't add more than 6 numbers !!!");
+              toast.error("Can't add more than 6 numbers ");
               return true;
             }
             if (alreadyInCartPkCount !== null) {
@@ -628,7 +628,7 @@ const ProductCard = ({
       ) {
         if (findInCart?.type !== type) {
           toast.remove();
-          toast.error("Please change in pk quantity!!!");
+          toast.error("Please change in pk quantity");
           return true;
         } else {
           setChangeTo(true);
@@ -663,7 +663,7 @@ const ProductCard = ({
               alreadyInCartCtnCount.toString().length >= 6
             ) {
               toast.remove();
-              toast.error("Can't add more than 6 numbers !!!");
+              toast.error("Can't add more than 6 numbers ");
               return true;
             }
             if (alreadyInCartCtnCount !== null) {
@@ -872,7 +872,6 @@ const ProductCard = ({
               role="button"
               onClick={() => {
                 dispatch(showEnlargeImagePopup());
-                // handleShowSingleProductEnlargeImage(0, product?._id);
                 handleShowEnlargeImage();
 
               }}
@@ -950,10 +949,10 @@ const ProductCard = ({
                   CTN {t("volume")} : {product?.CTNVolume} cu ft{" "}
                 </li>
                 <li className="text-BLACK md:text-sm text-base">
-                  Pk wt : {product?.PKWeight} Lbs{" "}
+                  PK weight : {product?.PKWeight} Lbs{" "}
                 </li>
                 <li className="text-BLACK md:text-sm text-base">
-                  CTN wt : {product?.CTNWeight} Lbs{" "}
+                  CTN weight : {product?.CTNWeight} Lbs{" "}
                 </li>
               </ul>
             )}
@@ -1371,10 +1370,10 @@ const ProductCard = ({
                     CTN volume : {product?.CTNVolume} cu ft{" "}
                   </li>
                   <li className="text-BLACK md:text-sm text-base">
-                    Pk wt : {product?.PKWeight} Lbs{" "}
+                    PK weight : {product?.PKWeight} Lbs{" "}
                   </li>
                   <li className="text-BLACK md:text-sm text-base">
-                    CTN wt : {product?.CTNWeight} Lbs{" "}
+                    CTN weight : {product?.CTNWeight} Lbs{" "}
                   </li>
                 </ul>
               )}

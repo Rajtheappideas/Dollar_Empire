@@ -75,7 +75,7 @@ function App() {
       dispatch(handleGetVisitCount({ token }));
     }
     if (!window.navigator.onLine) {
-      toast.error("Check your internet connection!!!", { duration: "5000" });
+      toast.error("Check your internet connection", { duration: "5000" });
     }
   }, []);
 

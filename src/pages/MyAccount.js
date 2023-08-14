@@ -15,11 +15,12 @@ import {
 } from "../redux/GetContentSlice";
 import { useTranslation } from "react-i18next";
 import { handleGetOrders } from "../redux/OrderSlice";
+import { toast } from "react-hot-toast";
 
 const MyAccount = () => {
   const [activeComponent, setActiveComponent] = useState("order_history");
 
-  const { token } = useSelector((state) => state.Auth);
+  const { token, loading } = useSelector((state) => state.Auth);
 
   const dispatch = useDispatch();
 
@@ -44,21 +45,7 @@ const MyAccount = () => {
               <p className="font-semibold md:text-2xl text-lg text-left pb-2">
                 {t("Navigation")}
               </p>
-              
-              {/* <p
-                role="button"
-                className={`md:text-lg text-base relative group ${
-                  activeComponent === "incomplete_orders"
-                    ? "font-semibold text-black"
-                    : "font-normal text-TEXTGRAY"
-                }`}
-                onClick={() => setActiveComponent("incomplete_orders")}
-              >
-                {t("Incomplete Orders")}
-                {activeComponent === "incomplete_orders" && (
-                  <span className="h-full w-1 bg-PRIMARY absolute top-0 -left-3"></span>
-                )}
-              </p> */}
+
               <p
                 role="button"
                 className={`md:text-lg text-base relative group ${
@@ -120,9 +107,14 @@ const MyAccount = () => {
                 type="button"
                 className="text-red-500 text-left font-semibold"
                 onClick={() => {
-                  dispatch(handleLogoutReducer());
-                  dispatch(handleLogout());
+                  toast.loading(t("logout..."));
+                  setTimeout(() => {
+                    toast.remove();
+                    dispatch(handleLogoutReducer());
+                    dispatch(handleLogout());
+                  }, 1000);
                 }}
+                disabled={loading}
               >
                 {t("Logout")}
               </button>

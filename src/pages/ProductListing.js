@@ -168,7 +168,7 @@ const ProductListing = () => {
       handleFilterProductsByPrice(allProducts);
 
       if (allProducts.length === 0) {
-        return setMessage("Product Not Found, Try something else.");
+        return setMessage("No items found, please try a different filter");
       }
       return true;
     } else if (!productLoading && title.includes("low-to-high")) {
@@ -180,7 +180,7 @@ const ProductListing = () => {
       handleFilterProductsByPrice(lowToHigh);
 
       if (lowToHigh.length === 0) {
-        return setMessage("Product Not Found, Try something else.");
+        return setMessage("No items found, please try a different filter");
       }
       return true;
     } else if (!productLoading && title.includes("high-to-low")) {
@@ -192,7 +192,7 @@ const ProductListing = () => {
       handleFilterProductsByPrice(highToLow);
 
       if (highToLow.length === 0) {
-        return setMessage("Product Not Found, Try something else.");
+        return setMessage("No items found, please try a different filter");
       }
       return true;
     } else if (!productLoading && categories.includes(title)) {
@@ -211,7 +211,7 @@ const ProductListing = () => {
         handleFilterProductsByPrice(findProducts);
       }
       if (productsByCategories.length === 0) {
-        return setMessage("Product Not Found, Try something else.");
+        return setMessage("No items found, please try a different filter");
       }
       return true;
     } else if (!productLoading && title.includes("search")) {
@@ -221,7 +221,7 @@ const ProductListing = () => {
     } else if (!categories.includes(title)) {
       // if category not found
       setProducts([]);
-      setMessage("Product Not Found, Try other filter.");
+      setMessage("No items found, please try a different filter");
       return true;
     } else if (
       (allProducts.length === 0 ||
@@ -232,8 +232,8 @@ const ProductListing = () => {
       !loading
     ) {
       setProducts([]);
-      toast.error("Products Not Found!!!");
-      setMessage("Product Not Found, Try other filter.");
+      toast.error("Products Not Found");
+      setMessage("No items found, please try a different filter");
       return true;
     }
   };
@@ -252,7 +252,7 @@ const ProductListing = () => {
       if (byPrice.length > 0) {
         return setProducts(byPrice);
       } else {
-        setMessage("No item match in this range.");
+        setMessage("No items found, please try a different filter");
       }
     } else if (activePrice.includes("$0.50 - $0.79")) {
       toast.dismiss();
@@ -266,7 +266,7 @@ const ProductListing = () => {
       if (byPrice.length > 0) {
         return setProducts(byPrice);
       } else {
-        setMessage("No item match in this range.");
+        setMessage("No items found, please try a different filter");
       }
     } else if (activePrice.includes("$0.80 - $0.99")) {
       toast.dismiss();
@@ -280,7 +280,7 @@ const ProductListing = () => {
       if (byPrice.length > 0) {
         return setProducts(byPrice);
       } else {
-        setMessage("No item match in this range.");
+        setMessage("No items found, please try a different filter");
       }
     } else if (activePrice.includes("$1.00 - $1.49")) {
       toast.dismiss();
@@ -294,7 +294,7 @@ const ProductListing = () => {
       if (byPrice.length > 0) {
         return setProducts(byPrice);
       } else {
-        setMessage("No item match in this range.");
+        setMessage("No items found, please try a different filter");
       }
     } else if (activePrice.includes("$1.50 - $1.99")) {
       toast.dismiss();
@@ -309,7 +309,7 @@ const ProductListing = () => {
       if (byPrice.length > 0) {
         return setProducts(byPrice);
       } else {
-        setMessage("No item match in this range.");
+        setMessage("No items found, please try a different filter");
       }
     } else if (activePrice.toLocaleLowerCase().includes("above")) {
       toast.dismiss();
@@ -319,7 +319,7 @@ const ProductListing = () => {
       if (byPrice.length > 0) {
         return setProducts(byPrice);
       } else {
-        setMessage("No item match in this range.");
+        setMessage("No items found, please try a different filter");
       }
     } else if (activePrice.includes("High_to_low")) {
       const highToLow = filterproducts.slice().sort((a, b) => {
@@ -343,48 +343,16 @@ const ProductListing = () => {
     pkCount,
     ctnCount,
     amount
-    // alreadyInCartPkItems,
-    // alreadyInCartPkCount,
-    // alreadyInCartCtnItems,
-    // alreadyInCartCtnCount,
-    // isInCart
   ) => {
-    if (
-      pkQuantity !== "" ||
-      ctnQuantity !== ""
-      // ||
-      // alreadyInCartPkCount !== null ||
-      // alreadyInCartCtnCount !== null
-    ) {
+    if (pkQuantity !== "" || ctnQuantity !== "") {
       const item = {};
       const itemForQuantity = {};
-      if (
-        pkQuantity !== "" ||
-        ctnQuantity !== ""
-        //  ||
-        // alreadyInCartPkCount !== null ||
-        // alreadyInCartCtnCount !== null
-      ) {
+      if (pkQuantity !== "" || ctnQuantity !== "") {
         item.id = id;
         item.quantity = itemType === "pk" ? pkCount : ctnCount;
-        // item.quantity =
-        //   itemType === "pk"
-        //     ? !isInCart
-        //       ? pkCount
-        //       : alreadyInCartPkCount
-        //     : !isInCart
-        //     ? ctnCount
-        //     : alreadyInCartCtnCount;
+
         item.type = itemType;
         itemForQuantity.id = id;
-        // itemForQuantity.quantity =
-        //   itemType === "pk"
-        //     ? !isInCart
-        //       ? pkQuantity
-        //       : alreadyInCartPkItems
-        //     : !isInCart
-        //     ? ctnQuantity
-        //     : alreadyInCartCtnItems;
         itemForQuantity.quantity = itemType === "pk" ? pkCount : ctnCount;
         itemForQuantity.type = itemType;
         itemForQuantity.amount = itemForQuantity.quantity * amount;
@@ -402,7 +370,6 @@ const ProductListing = () => {
       dispatch(
         handleAddMultipleProducts(result.filter((i) => i.quantity !== 0))
       );
-      // console.log(pkQuantity, ctnQuantity);
       // for count total quanitty
       const countTotalQuantityOfProducts = [
         ...countTotalQuantity,
@@ -441,11 +408,9 @@ const ProductListing = () => {
     if (selectedItems.length === 0) {
       toast.dismiss();
       dispatch(
-        handleChangeProductListingError(
-          "Please add some quantity to products!!!"
-        )
+        handleChangeProductListingError("No quantity found. Please add at least one item")
       );
-      return toast.error("Please add some quantity to products!!!");
+      return toast.error("No quantity found. Please add at least one item");
     } else {
       const response = dispatch(
         handleAddMultipleProductToCart({
@@ -506,6 +471,7 @@ const ProductListing = () => {
       AbortControllerRef.current !== null && AbortControllerRef.current.abort();
       dispatch(handleChangeActiveCategory("All Categories"));
       dispatch(handleChangeSearchActiveCategory("All Categories"));
+      dispatch(handleChangeProductListingError(""));
     };
   }, []);
 
@@ -530,6 +496,7 @@ const ProductListing = () => {
   // set products releated category & filter wise
   useEffect(() => {
     handleFilterProducts();
+    dispatch(handleChangeProductListingError(""));
   }, [
     allProducts,
     productLoading,
@@ -583,7 +550,7 @@ const ProductListing = () => {
     <>
       <Helmet title={`product-listing-${title}`} />
       {showEnlargeImage && (
-        <div className="absolute z-30 inset-0 bg-black bg-opacity-20 backdrop-blur-sm max-w-[100%] h-full" />
+        <div className="absolute z-50 inset-0 bg-black bg-opacity-20 backdrop-blur-sm max-w-[100%] h-full" />
       )}
 
       <section className="bg-BACKGROUNDGRAY lg:pb-20 lg:py-0 py-10">

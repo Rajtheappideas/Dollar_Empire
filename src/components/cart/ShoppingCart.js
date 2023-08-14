@@ -52,7 +52,7 @@ const ShoppingCart = ({ summaryFixed }) => {
         })
         .catch((err) => {
           setDeleteLoading(false);
-          toast.error("Someting went worng, Try again!!!");
+          toast.error("Someting went worng, Try again");
         });
     }
   };
@@ -61,17 +61,17 @@ const ShoppingCart = ({ summaryFixed }) => {
     toast.dismiss();
     if (productQuantity === quantity) {
       return toast.error(
-        "Quantity should be increased or decreased, not be same!!!"
+        "Quantity should be increased or decreased, not be same"
       );
     } else if (productQuantity === "") {
-      toast.error("Value not be empty!!!");
+      toast.error("Value not be empty");
       return true;
     } else if (productQuantity === 0) {
-      toast.error("Minimum quantity should more than 0!!!");
+      toast.error("Minimum quantity should more than 0");
       return true;
     } else if (!/^\d+$/.test(productQuantity)) {
       setProductQuantity(quantity);
-      return toast.error("Please enter valid value!!!");
+      return toast.error("Please enter valid value");
     }
 
     setUpdateLoading(true);
@@ -603,7 +603,7 @@ const ShoppingCart = ({ summaryFixed }) => {
             toast.dismiss();
             cartItems?.length > 0
               ? dispatch(handleChangeActiveComponent("Check Out"))
-              : toast.error("Your Cart is empty!!!");
+              : toast.error("Your Cart is empty");
             window.scrollTo({ top: 0, behavior: "smooth" });
           }}
           className="font-semibold bg-PRIMARY text-white hover:bg-white hover:text-PRIMARY border border-PRIMARY duration-300 ease-in-out w-full p-3 text-center"

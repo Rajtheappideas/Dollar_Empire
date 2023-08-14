@@ -29,10 +29,10 @@ const ResetPassword = () => {
   const handleresetPassword = () => {
     toast.dismiss();
     if (passwords.newPassword === "" || passwords.confirmPassword === "") {
-      return toast.error("Please Enter passwords!!!");
+      return toast.error("Please Enter passwords");
     }
     if (passwords.confirmPassword !== passwords.newPassword) {
-      return toast.error("NewPassword doesn't match with Confirmpassword!!!");
+      return toast.error("NewPassword doesn't match with Confirmpassword");
     }
     if (!/^.{6,}$/.test(passwords.newPassword)) {
       return toast.error("New passwor Must Contain 6 Characters", {

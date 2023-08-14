@@ -98,7 +98,7 @@ const CardDetails = ({ summaryFixed, additionalNotes }) => {
         /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
         "only contain Latin letters."
       )
-      .typeError("State contain only string And it's required!!!"),
+      .typeError("State contain only string And it's required"),
     country: yup
       .string()
       .required("country is required")
@@ -164,13 +164,13 @@ const CardDetails = ({ summaryFixed, additionalNotes }) => {
       setConfirmOrderLoading(true);
       if (shippingAddress === "" && shipphingMethod === "freight") {
         toast.dismiss();
-        return toast.error("Please select the shipping address!!!");
+        return toast.error("Please select the shipping address");
       } else if (shipphingMethod === "") {
         toast.dismiss();
-        return toast.error("Please select the shipping method!!!");
+        return toast.error("Please select the shipping method");
       } else if (paymentOption === "") {
         toast.dismiss();
-        return toast.error("Please choose the Payment option!!!");
+        return toast.error("Please choose the Payment option");
       }
 
       const response = dispatch(

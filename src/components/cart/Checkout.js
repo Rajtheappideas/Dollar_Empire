@@ -91,7 +91,6 @@ const Checkout = ({ summaryFixed }) => {
     }
   }, []);
 
-
   return (
     <div className="w-full flex xl:flex-row flex-col items-start justify-start md:gap-4 gap-2 md:pb-10 pb-5">
       {showPopup && (
@@ -225,9 +224,21 @@ const Checkout = ({ summaryFixed }) => {
                 {t("Edit")}
               </p>
               {shippingAddress?._id === address?._id && (
+                <>
+                  <span
+                    title="selected address"
+                    className="absolute top-3 right-4 w-7 h-7 bg-blue-400 z-10 rounded-full"
+                  ></span>
+                  <span
+                    title="selected address"
+                    className="absolute top-2 right-3 w-9 h-9 bg-white z-0 rounded-full"
+                  ></span>
+                </>
+              )}
+              {shippingAddress?._id !== address?._id && (
                 <span
                   title="selected address"
-                  className="absolute top-2 right-3 w-9 h-9 bg-white rounded-full p-2"
+                  className="absolute top-2 right-3 w-9 h-9 border border-gray-400 z-0 rounded-full"
                 ></span>
               )}
             </div>
