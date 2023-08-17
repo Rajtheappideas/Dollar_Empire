@@ -548,9 +548,9 @@ const ProductListing = () => {
 
   return (
     <>
-      <Helmet title={`product-listing-${title}`} />
+      <Helmet title={`${title} | Dollar Empire`} />
       {showEnlargeImage && (
-        <div className="absolute z-50 inset-0 bg-black bg-opacity-20 backdrop-blur-sm max-w-[100%] h-full" />
+        <div className="absolute z-30 inset-0 bg-black bg-opacity-20 backdrop-blur-sm max-w-[100%] h-full" />
       )}
 
       <section className="bg-BACKGROUNDGRAY lg:pb-20 lg:py-0 py-10">

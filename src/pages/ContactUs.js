@@ -117,7 +117,7 @@ const ContactUs = () => {
 
   return (
     <>
-      <Helmet title={t("contact_us")} />
+      <Helmet title={t("Contact us | Dollar Empire")} />
       <TItleSection title={t("contact_us")} image={bgImg} />
       <section className="xl:w-2/3 lg:w-4/5 w-full lg:px-0 px-3 mx-auto flex md:flex-row flex-col items-start justify-center gap-5 py-5">
         {/* left side div */}

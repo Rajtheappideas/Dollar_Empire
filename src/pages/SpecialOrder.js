@@ -21,7 +21,7 @@ const SpecialOrder = () => {
 
   return (
     <>
-      <Helmet title={t("special_orders")} />
+      <Helmet title={t("Special orders | Dollar Empire")} />
       {loading ? (
         <div className="text-center h-screen w-screen mx-auto font-semibold flex items-center justify-center md:text-3xl text-xl">
           {t("loading")}...

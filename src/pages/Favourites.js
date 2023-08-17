@@ -160,7 +160,7 @@ const Favourites = () => {
 
   return (
     <>
-      <Helmet title={t("Favorites")} />
+      <Helmet title={t("Favorites | Dollar Empire")} />
       <section className="bg-BACKGROUNDGRAY w-full lg:pb-20 pb-10">
         <div className="container mx-auto space_for_div space-y-5 w-full bg-BACKGROUNDGRAY lg:pb-20 pb-10">
           <div className="w-full flex items-center justify-between">

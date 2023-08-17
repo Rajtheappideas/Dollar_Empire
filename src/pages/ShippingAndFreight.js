@@ -20,7 +20,7 @@ const ShippingAndFreight = () => {
 
   return (
     <>
-      <Helmet title={t("shipping_&_freight")} />
+      <Helmet title={t("Shipping & freight | Dollar Empire")} />
       {loading ? (
         <div className="text-center h-screen w-screen mx-auto font-semibold flex items-center justify-center md:text-3xl text-xl">
           {t("loading")}...

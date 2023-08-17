@@ -388,9 +388,7 @@ const ProductDetailPopup = ({}) => {
 
     if (!/^(?=.*[1-9])\d{1,8}(?:\.\d\d?)?$/.test(e.target.value)) {
       toast.remove();
-      toast.error(
-        "Please enter valid value and value can't be less than zero"
-      );
+      toast.error("Please enter valid value and value can't be less than zero");
       setPkCount(0);
       setpkItemsQuantity("");
       setAlreadyInCartPkCount(0);
@@ -431,9 +429,7 @@ const ProductDetailPopup = ({}) => {
 
     if (!/^(?=.*[1-9])\d{1,8}(?:\.\d\d?)?$/.test(e.target.value)) {
       toast.remove();
-      toast.error(
-        "Please enter valid value and value can't be less than zero"
-      );
+      toast.error("Please enter valid value and value can't be less than zero");
       setCtnCount(0);
       setCtnItemQuantity("");
       setAlreadyInCartCtnCount(0);
@@ -972,9 +968,10 @@ const ProductDetailPopup = ({}) => {
               </p>
 
               <p className="font-bold text-2xl">{singleProduct?.name}</p>
-              <p className="font-medium text-lg whitespace-pre-line">
-                {singleProduct?.longDesc}
-              </p>
+              <p
+                className="font-medium text-lg whitespace-pre-line"
+                dangerouslySetInnerHTML={{ __html: singleProduct?.longDesc }}
+              ></p>
               <p className="flex items-center gap-x-3">
                 <Link to="/sign-in">
                   <button
@@ -996,9 +993,10 @@ const ProductDetailPopup = ({}) => {
                 {singleProduct?.number}
               </p>{" "}
               <p className="font-bold text-2xl">{singleProduct?.name}</p>
-              <p className="font-medium text-lg whitespace-pre-line" dangerouslySetInnerHTML={{__html:singleProduct?.longDesc}}>
-                {/* {singleProduct?.longDesc} */}
-              </p>
+              <p
+                className="font-medium text-lg whitespace-pre-line"
+                dangerouslySetInnerHTML={{ __html: singleProduct?.longDesc }}
+              ></p>
               <p className="font-medium"> {singleProduct?.package}</p>
               <p className="text-black font-semibold text-base">
                 {singleProduct?.PK} PC / PK | {singleProduct?.CTN} PC / CTN

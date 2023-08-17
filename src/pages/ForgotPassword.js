@@ -57,7 +57,7 @@ const ForgotPassword = () => {
   }, []);
   return (
     <>
-      <Helmet title={t("Forgot-password")} />
+      <Helmet title={t("Forgot-password | Dollar Empire")} />
       {success ? (
         <div className="p-4 mx-auto xl:w-2/5 lg:w-1/2 md:w-2/3 w-11/12 h-auto space-y-4 md:my-14 my-7 rounded-lg border border-BORDERGRAY">
           <FaTelegramPlane className="text-green-400 lg:h-60 h-28 lg:w-60 w-28 mx-auto" />

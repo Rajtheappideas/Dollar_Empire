@@ -40,28 +40,10 @@ const Home = () => {
       dispatch(calculateTotalAmount());
     }
   }, [user, productLoading]);
-  // const autoTranslate = async () => {
-  //   await axios("https://libretranslate.com/translate", {
-  //     method: "post",
-  //     data: {
-  //       body: JSON.stringify({
-  //         q: "Hello",
-  //         source: "auto",
-  //         target: "sp",
-  //       }),
-  //     },
-  //     headers: { "Content-Type": "application/json" },
-  //   })
-  //     .then((res) => {
-  //       console.log(res);
-  //     })
-  //     .catch((err) => {
-  //       console.log(err.response.data);
-  //     });
-  // };
+
   return (
     <>
-      <Helmet title={t("Home")} />
+      <Helmet title={t("Home | Dollar Empire")} />
       <div className="md:space-y-5 space-y-2 w-full">
         <Herosection />
         <NewArrivals />

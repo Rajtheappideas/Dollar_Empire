@@ -18,7 +18,7 @@ const AboutUs = () => {
   }, []);
   return (
     <>
-      <Helmet title={t("about_us")} />
+      <Helmet title={t("About us | Dollar Empire")} />
       {loading ? (
         <div className="text-center h-screen w-screen mx-auto font-semibold flex items-center justify-center md:text-3xl text-xl">
           {t("loading")}...

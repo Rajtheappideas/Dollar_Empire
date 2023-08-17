@@ -33,7 +33,7 @@ const MyAccount = () => {
   }, []);
   return (
     <>
-      <Helmet title={t("my_account")} />
+      <Helmet title={t("My account | Dollar Empire")} />
       <section className="bg-BACKGROUNDGRAY space-y-5">
         <div className="w-full container mx-auto space_for_div space-y-5">
           <h1 className="font-semibold text-left md:text-4xl text-2xl block py-1">

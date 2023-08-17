@@ -216,7 +216,7 @@ const Signup = () => {
   }, [values.country, values.state, values.city]);
   return (
     <>
-      <Helmet title={t("Sign-up")} />
+      <Helmet title={t("Sign-up | Dollar Empire")} />
       <div className="p-4 mx-auto xl:w-2/5 lg:w-1/2 md:w-2/3 w-11/12 h-auto space-y-4 md:my-14 my-7 rounded-lg border border-BORDERGRAY">
         <h1 className="font-semibold md:text-3xl text-xl text-left">
           {t("Customer Register")}
