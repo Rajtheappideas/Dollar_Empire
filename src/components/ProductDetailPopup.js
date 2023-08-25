@@ -756,6 +756,8 @@ const ProductDetailPopup = ({}) => {
     const handleClickOutside = (event) => {
       if (popupRef.current && !popupRef.current.contains(event?.target)) {
         dispatch(closePopup());
+        dispatch(handleChangeEnlargeImageId(""));
+        dispatch(closeEnlargeImagePopup());
       }
     };
     document.addEventListener("click", handleClickOutside, true);
@@ -766,6 +768,8 @@ const ProductDetailPopup = ({}) => {
 
   function handleClickOutside() {
     dispatch(closePopup());
+    dispatch(handleChangeEnlargeImageId(""));
+    dispatch(closeEnlargeImagePopup());
   }
 
   // outside click for pop image
@@ -831,10 +835,14 @@ const ProductDetailPopup = ({}) => {
 
   return (
     <ReactModal
-      className={` overflow-hidden scrollbar bg-black/30 z-50 w-full min-h-screen max-h-screen inset-0 backdrop-blur-sm`}
+      className={`fixed overflow-hidden scrollbar bg-black/30 z-50 w-full min-h-screen max-h-screen inset-0 backdrop-blur-sm`}
       appElement={document.getElementById("root")}
       isOpen={showProductDetailsPopup}
-      onRequestClose={() => dispatch(closePopup())}
+      onRequestClose={() => {
+        dispatch(closePopup());
+        dispatch(handleChangeEnlargeImageId(""));
+        dispatch(closeEnlargeImagePopup());
+      }}
       preventScroll={true}
       shouldCloseOnOverlayClick={true}
       shouldCloseOnEsc={true}
@@ -861,7 +869,11 @@ const ProductDetailPopup = ({}) => {
         >
           <AiOutlineClose
             role="button"
-            onClick={() => dispatch(closePopup())}
+            onClick={() => {
+              dispatch(closePopup());
+              dispatch(handleChangeEnlargeImageId(""));
+              dispatch(closeEnlargeImagePopup());
+            }}
             className="absolute md:top-6 top-2 md:left-[94%] left-[90%] w-7 h-7 text-black z-40"
           />
           {/* images */}
@@ -945,14 +957,14 @@ const ProductDetailPopup = ({}) => {
                     onClick={() => {
                       dispatch(closeEnlargeImagePopup());
                     }}
-                    className="absolute top-1 right-2 w-7 h-7 text-white z-50"
+                    className="absolute top-1 right-2 w-7 h-7 text-white z-50 bg-black/20"
                   />
                   <img
                     src={BaseUrl.concat(
                       singleProduct?.images[activeEnlargeImage]
                     )}
                     alt={singleProduct?.name}
-                    className="md:max-h-[25rem] max-h-screen px-2 w-full rounded-none object-contain object-center absolute top-10"
+                    className="h-full w-full rounded-none object-contain object-center absolute top-0 p-2"
                     title={singleProduct?.name}
                     loading="lazy"
                   />

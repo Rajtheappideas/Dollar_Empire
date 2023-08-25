@@ -821,7 +821,7 @@ const ProductCard = ({
         <div
           className={`lg:space-y-3 relative ${
             showEnlargeImage && product?._id === singleProductEnlargeImageId
-              ? "z-50"
+              ? "z-40"
               : "z-0"
           } space-y-2 w-full xl:p-3 md:p-5 p-3 bg-white font-semibold md:text-lg border rounded-lg border-[#EAEAEA] flex xl:flex-row flex-col items-start justify-between`}
         >
@@ -839,7 +839,7 @@ const ProductCard = ({
           <div
             className={`h-auto xl:w-2/3 w-full relative ${
               showEnlargeImage && product?._id === singleProductEnlargeImageId
-                ? "z-50"
+                ? "z-40"
                 : "z-0"
             } flex md:flex-row flex-col md:items-start items-center justify-start xl:gap-5 gap-3`}
           >
@@ -875,7 +875,7 @@ const ProductCard = ({
                 handleShowEnlargeImage();
 
               }}
-              className="h-6 w-6 bg-white/40 absolute left-0 md:bottom-0 bottom-56  text-PRIMARY"
+              className="h-6 w-6 bg-white/40 absolute left-0 md:bottom-0 bottom-56 text-PRIMARY"
             />
             {singleProductEnlargeImageId === product?._id &&
               showEnlargeImage && (
@@ -888,12 +888,12 @@ const ProductCard = ({
                     onClick={() => {
                       dispatch(closeEnlargeImagePopup());
                     }}
-                    className="absolute top-1 right-2 w-7 h-7 text-white z-50"
+                    className="absolute top-1 right-2 w-7 h-7 text-white z-50 bg-black/20"
                   />
                   <img
                     src={BaseUrl.concat(product?.images[activeEnlargeImage])}
                     alt={product?.name}
-                    className="w-full md:max-h-[19rem] md:min-h-[19rem] min-h-[20rem] max-h-[20rem] px-2 rounded-none object-fill object-center absolute top-10 z-50"
+                    className="w-full h-full rounded-none object-contain object-center absolute top-0 p-2"
                     title={product?.name}
                     loading="lazy"
                   />
@@ -1313,12 +1313,12 @@ const ProductCard = ({
                     onClick={() => {
                       dispatch(closeEnlargeImagePopup());
                     }}
-                    className="absolute top-1 right-2 w-7 h-7 text-white z-50"
+                    className="absolute top-1 right-2 w-7 h-7 text-white z-50 bg-black/20"
                   />
                   <img
                     src={BaseUrl.concat(product?.images[activeEnlargeImage])}
                     alt={product?.name}
-                    className="md:max-h-full max-h-screen px-2 w-full rounded-none object-contain object-center absolute top-10"
+                    className="h-full w-full rounded-none object-contain object-center absolute top-0 p-2"
                     title={product?.name}
                     loading="lazy"
                   />

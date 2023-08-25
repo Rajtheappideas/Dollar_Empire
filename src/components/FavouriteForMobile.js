@@ -178,7 +178,7 @@ const FavouriteForMobile = ({ favourite, handleAddSelectedItem }) => {
     if (findInCart?.product?._id !== favourite?._id) {
       setSelectedItemType("pk");
       pkRef.current.checked = true;
-      if (pkCount === 0) {
+      if (pkCount === 0 || pkCount == null) {
         setPkCount(0);
       } else {
         setPkCount(count);
@@ -208,7 +208,7 @@ const FavouriteForMobile = ({ favourite, handleAddSelectedItem }) => {
     if (findInCart?.product?._id !== favourite?._id) {
       setSelectedItemType("ctn");
       ctnRef.current.checked = true;
-      if (ctnCount === 0) {
+      if (ctnCount === 0 || ctnCount === null) {
         setCtnCount(0);
       } else {
         setCtnCount(count);
@@ -340,12 +340,10 @@ const FavouriteForMobile = ({ favourite, handleAddSelectedItem }) => {
 
     if (!/^(?=.*[1-9])\d{1,8}(?:\.\d\d?)?$/.test(e.target.value)) {
       toast.remove();
-      toast.error(
-        "Please enter valid value and value can't be less than zero"
-      );
-      setPkCount(0);
+      toast.error("Please enter valid value and value can't be less than zero");
+      setPkCount(null);
       setpkItemsQuantity("");
-      setAlreadyInCartPkCount(0);
+      setAlreadyInCartPkCount(null);
       setAlreadyInCartPkItems("");
       return true;
     }
@@ -383,12 +381,10 @@ const FavouriteForMobile = ({ favourite, handleAddSelectedItem }) => {
 
     if (!/^(?=.*[1-9])\d{1,8}(?:\.\d\d?)?$/.test(e.target.value)) {
       toast.remove();
-      toast.error(
-        "Please enter valid value and value can't be less than zero"
-      );
-      setCtnCount(0);
+      toast.error("Please enter valid value and value can't be less than zero");
+      setCtnCount(null);
       setCtnItemQuantity("");
-      setAlreadyInCartCtnCount(0);
+      setAlreadyInCartCtnCount(null);
       setAlreadyInCartCtnItems("");
       return true;
     }
@@ -428,14 +424,14 @@ const FavouriteForMobile = ({ favourite, handleAddSelectedItem }) => {
             favourite?._id
           );
         } else {
-          if (pkCount.toString().length >= 6) {
+          if (pkCount !== null && pkCount.toString().length >= 6) {
             toast.remove();
             toast.error("Can't add more than 6 numbers ");
             return true;
           }
           handlePlusPkQuantity(
             parseFloat(favourite?.PK),
-            parseFloat(pkCount + 1),
+            parseFloat(pkCount === null ? 1 : pkCount + 1),
             favourite?._id
           );
         }
@@ -517,18 +513,18 @@ const FavouriteForMobile = ({ favourite, handleAddSelectedItem }) => {
         if (action === "minus") {
           handleMinusCTNQuantity(
             parseFloat(favourite?.CTN),
-            parseFloat(ctnCount - 1),
+            parseFloat(ctnCount !== null && ctnCount - 1),
             favourite?._id
           );
         } else {
-          if (ctnCount.toString().length >= 6) {
+          if (ctnCount !== null && ctnCount.toString().length >= 6) {
             toast.remove();
             toast.error("Can't add more than 6 numbers ");
             return true;
           }
           handlePlusCTNQuantity(
             parseFloat(favourite?.CTN),
-            parseFloat(ctnCount + 1),
+            parseFloat(ctnCount === null ? 1 : ctnCount + 1),
             favourite?._id
           );
         }
