@@ -80,7 +80,10 @@ const AddNewAddress = ({ setShowNewAddress }) => {
     city: yup
       .string()
       .required("city is required")
-      .trim("The contact name cannot include leading and trailing spaces"),
+      .trim("The contact name cannot include leading and trailing spaces").matches(
+        /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
+        "only contain Latin letters."
+      ),
     state: yup
       .string()
       .required("state is required")
