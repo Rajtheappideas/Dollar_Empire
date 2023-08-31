@@ -18,6 +18,7 @@ const SingleOrderHistory = ({ setShowSingleOrder, orderId, setOrderId }) => {
   useEffect(() => {
     dispatch(handleGetOrderbyId({ token, id: orderId }));
   }, []);
+
   return (
     <>
       {loading ? (
