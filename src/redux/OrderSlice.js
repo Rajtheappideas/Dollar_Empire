@@ -153,6 +153,13 @@ const OrderSlice = createSlice({
       state.orderId = payload;
       window.localStorage.setItem("orderId", JSON.stringify(payload));
     },
+    handleFindSingleOrder: (state, { payload }) => {
+      const findOrder = state.orders.find((order) => order?._id === payload);
+
+      if (findOrder) {
+        state.singleOrder = findOrder;
+      }
+    },
   },
   extraReducers: (builder) => {
     // get users orders
@@ -284,6 +291,7 @@ export const {
   handleChangePaymentOption,
   handleChangeShippingAddress,
   handleChangeOrderId,
+  handleFindSingleOrder,
 } = OrderSlice.actions;
 
 export default OrderSlice.reducer;

@@ -1,23 +1,14 @@
 import React from "react";
-import { useEffect } from "react";
 import { AiOutlineClose } from "react-icons/ai";
-import { useDispatch, useSelector } from "react-redux";
-import { handleGetOrderbyId } from "../../redux/OrderSlice";
+import { useSelector } from "react-redux";
 import moment from "moment";
 import BaseUrl from "../../BaseUrl";
 import { useTranslation } from "react-i18next";
 
-const SingleOrderHistory = ({ setShowSingleOrder, orderId, setOrderId }) => {
-  const { token } = useSelector((state) => state.Auth);
+const SingleOrderHistory = ({ setShowSingleOrder }) => {
   const { singleOrder, loading } = useSelector((state) => state.orders);
 
-  const dispatch = useDispatch();
-
   const { t } = useTranslation();
-
-  useEffect(() => {
-    dispatch(handleGetOrderbyId({ token, id: orderId }));
-  }, []);
 
   return (
     <>
@@ -27,7 +18,7 @@ const SingleOrderHistory = ({ setShowSingleOrder, orderId, setOrderId }) => {
         </p>
       ) : (
         <div className="w-full relative z-0 bg-white border border-BORDERGRAY text-BLACK md:space-y-10 space-y-3">
-          <div className="p-5 capitalize md:space-y-5 space-y-3 overflow-x-scroll border-b-2 border-gray-100">
+          <div className="p-5 capitalize md:space-y-5 space-y-3 border-b-2 border-gray-100">
             <p className="font-semibold md:text-3xl text-lg text-PRIMARY">
               {t("Order ID")} : {singleOrder?.orderId}
             </p>
@@ -94,7 +85,7 @@ const SingleOrderHistory = ({ setShowSingleOrder, orderId, setOrderId }) => {
           </div>
           {/* products */}
           {/* for desk & tablet */}
-          <div className="w-full overflow-x-scroll md:inline-block hidden">
+          <div className="w-full overflow-x-scroll scrollbar md:inline-block hidden">
             <table className="w-full table-auto overflow-x-scroll">
               <thead>
                 <tr className=" bg-PRIMARY text-white w-full">
@@ -123,9 +114,7 @@ const SingleOrderHistory = ({ setShowSingleOrder, orderId, setOrderId }) => {
                       </span>
                     </td>
                     <td className="p-3">#{product?.product?.number}</td>
-                    <td className="p-3">
-                      ${parseInt(product?.product?.price).toFixed(1)}
-                    </td>
+                    <td className="p-3">${product?.product?.price}</td>
                     <td className="p-3 uppercase">
                       {product?.quantity} {product?.type}
                     </td>
@@ -229,7 +218,6 @@ const SingleOrderHistory = ({ setShowSingleOrder, orderId, setOrderId }) => {
             role="button"
             onClick={() => {
               setShowSingleOrder(false);
-              setOrderId(null);
             }}
             className="h-6 w-6 absolute md:-top-5 top-0 right-2 z-10 text-black"
           />

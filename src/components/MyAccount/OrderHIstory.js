@@ -1,34 +1,25 @@
 import React, { useState } from "react";
 import SingleOrderHistory from "./SingleOrderHistory";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import { useTranslation } from "react-i18next";
+import { handleFindSingleOrder } from "../../redux/OrderSlice";
 
 const OrderHIstory = () => {
   const [showSingleOrder, setShowSingleOrder] = useState(false);
-  const [completedOrders, setCompletedOrders] = useState([]);
-  const [orderId, setOrderId] = useState(null);
 
   const { t } = useTranslation();
+
+  const dispatch = useDispatch();
+
   const { orders, loading } = useSelector((state) => state.orders);
-  useEffect(() => {
-    if (orders.length > 0 && !loading) {
-      // const findOrders = orders.filter(
-      //   (order) => order?.status === "Completed"
-      // );
-      setCompletedOrders(orders);
-    }
-  }, [loading, orders]);
+
   return (
     <div className="w-full xl:overflow-auto overflow-x-scroll">
       {showSingleOrder ? (
-        <SingleOrderHistory
-          orderId={orderId}
-          setShowSingleOrder={setShowSingleOrder}
-          setOrderId={setOrderId}
-        />
+        <SingleOrderHistory setShowSingleOrder={setShowSingleOrder} />
       ) : loading ? (
         <p className="text-center w-full mx-auto font-semibold text-2xl">
           {t("Fetching Orders")}...
@@ -51,8 +42,8 @@ const OrderHIstory = () => {
                 </tr>
               </thead>
               <tbody className="bg-white text-BLACK text-base">
-                {completedOrders.length > 0 && !loading ? (
-                  completedOrders
+                {orders.length > 0 && !loading ? (
+                  orders
                     .slice()
                     .reverse()
                     .map((order) => (
@@ -60,7 +51,7 @@ const OrderHIstory = () => {
                         <td
                           onClick={() => {
                             setShowSingleOrder(true);
-                            setOrderId(order?._id);
+                            dispatch(handleFindSingleOrder(order?._id));
                           }}
                           className="px-3 py-5 underline text-PRIMARY font-semibold cursor-pointer"
                         >
@@ -127,8 +118,8 @@ const OrderHIstory = () => {
           {/* for mobile */}
           <table className="w-full table-auto overflow-hidden md:hidden">
             <tbody className="bg-white text-BLACK text-base">
-              {completedOrders.length > 0 && !loading ? (
-                completedOrders
+              {orders.length > 0 && !loading ? (
+                orders
                   .slice()
                   .reverse()
                   .map((order) => (
@@ -140,7 +131,7 @@ const OrderHIstory = () => {
                         <td
                           onClick={() => {
                             setShowSingleOrder(true);
-                            setOrderId(order?._id);
+                            dispatch(handleFindSingleOrder(order?._id));
                           }}
                           className="p-2 underline w-full text-PRIMARY font-semibold cursor-pointer"
                         >
