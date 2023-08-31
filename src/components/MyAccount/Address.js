@@ -3,13 +3,13 @@ import EditAddress from "./EditAddress";
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import AddNewAddress from "./AddNewAddress";
-import {
-  handleDefaultSelecteAddress,
-  handlePostDeleteAddress,
-} from "../../redux/FeatureSlice";
+import { handlePostDeleteAddress } from "../../redux/FeatureSlice";
 import { useRef } from "react";
 import { useEffect } from "react";
-import { handleGetAddresses } from "../../redux/GetContentSlice";
+import {
+  handleDefaultSelecteAddress,
+  handleGetAddresses,
+} from "../../redux/GetContentSlice";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { CheckCircleIcon } from "@heroicons/react/24/outline";
@@ -20,7 +20,9 @@ const Address = () => {
   const [addressId, setAddressId] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
-  const { addressList, loading } = useSelector((state) => state.getContent);
+  const { addressList, loading, DefaultAddresLoading } = useSelector(
+    (state) => state.getContent
+  );
 
   const { token } = useSelector((state) => state.Auth);
 
@@ -31,6 +33,7 @@ const Address = () => {
   const AbortControllerRef = useRef(null);
 
   const handleDeleteAddress = (id) => {
+    if (loading || deleteLoading) return true;
     setDeleteLoading(true);
     const response = dispatch(
       handlePostDeleteAddress({ id, token, signal: AbortControllerRef })
@@ -50,25 +53,28 @@ const Address = () => {
   };
 
   const handleSelectDefaultAddress = (id) => {
+    if (loading || DefaultAddresLoading) return true;
     const response = dispatch(
       handleDefaultSelecteAddress({ id, token, signal: AbortControllerRef })
     );
     if (response) {
       response.then((res) => {
-        if (res.payload.status === "success") {
+        if (res?.payload?.status === "success") {
           toast.success("Selected as default shipping address.");
           setDeleteLoading(false);
         } else {
-          toast.error(res.payload.message);
+          toast.error(res?.payload?.message);
         }
       });
     }
   };
+
   useEffect(() => {
     return () => {
       AbortControllerRef.current !== null && AbortControllerRef.current.abort();
     };
   }, []);
+
   return (
     <>
       {loading ? (
@@ -88,13 +94,18 @@ const Address = () => {
             addressList.map((address) => (
               <div
                 key={address?._id}
-                className={` ${
+                className={`  ${
                   address?.selected && "bg-gray-100"
                 } capitalize relative border border-BORDERGRAY rounded-md p-3 text-BLACK space-y-2 text-left md:w-2/5 w-full min-h-[13rem]`}
               >
                 {/* default address */}
                 <div
-                  className="space-y-2 cursor-pointer"
+                  className={`space-y-2 ${
+                    DefaultAddresLoading
+                      ? "cursor-not-allowed"
+                      : "cursor-pointer"
+                  }`}
+                  title={address?.selected ? "Default selected address" : ""}
                   onClick={() => {
                     toast.remove();
                     address?.selected

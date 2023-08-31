@@ -34,8 +34,8 @@ const Cart = () => {
     dispatch(handleGetAddresses({ token }));
     dispatch(handleChangeShippingMethod("pickup"));
     dispatch(handleChangeActiveComponent("Shopping Cart"));
-    // dispatch(calculateTotalQuantity());
-    // dispatch(calculateTotalAmount());
+    dispatch(calculateTotalQuantity());
+    dispatch(calculateTotalAmount());
 
     return () => {
       AbortControllerRef.current !== null && AbortControllerRef.current.abort();

@@ -160,6 +160,27 @@ export const handleGetContactUsDetails = createAsyncThunk(
   }
 );
 
+export const handleDefaultSelecteAddress = createAsyncThunk(
+  "features/handleDefaultSelecteAddress",
+  async ({ signal, token, id }) => {
+    signal.current = new AbortController();
+
+    const response = await GetUrl(`/address/select/${id}`, {
+      signal: signal.current.signal,
+      headers: {
+        Authorization: token,
+      },
+    })
+      .then((res) => {
+        return res.data;
+      })
+      .catch((err) => {
+        return err.response.data;
+      });
+    return response;
+  }
+);
+
 const initialState = {
   loading: false,
   success: false,
@@ -175,6 +196,7 @@ const initialState = {
   aboutUs: null,
   specialOrders: null,
   contact: null,
+  DefaultAddresLoading: false,
 };
 
 const GetContentSlice = createSlice({
@@ -429,6 +451,34 @@ const GetContentSlice = createSlice({
       state.error = error;
       state.contact = null;
     });
+
+    // set default address
+    builder.addCase(handleDefaultSelecteAddress.pending, (state) => {
+      state.DefaultAddresLoading = true;
+      state.success = false;
+      state.error = null;
+    });
+    builder.addCase(
+      handleDefaultSelecteAddress.fulfilled,
+      (state, { payload }) => {
+        state.DefaultAddresLoading = false;
+        state.success = true;
+        state.error = null;
+        state.addressList = state.addressList.map((address) =>
+          address?._id === payload?.address?._id
+            ? { ...address, selected: true }
+            : { ...address, selected: false }
+        );
+      }
+    );
+    builder.addCase(
+      handleDefaultSelecteAddress.rejected,
+      (state, { error }) => {
+        state.DefaultAddresLoading = false;
+        state.success = false;
+        state.error = error;
+      }
+    );
   },
 });
 

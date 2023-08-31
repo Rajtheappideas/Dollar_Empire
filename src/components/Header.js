@@ -89,11 +89,17 @@ const Header = () => {
     const filteredProducts = allProducts.filter((entry) =>
       Object.values(entry).some((val) => {
         if (typeof val === "string") {
-          return val.toLocaleLowerCase().includes(searchTerm);
+          if (searchActiveCategory === "All Categories") {
+            return val.toLocaleLowerCase().includes(searchTerm);
+          } else {
+            return (
+              entry?.category.includes(searchActiveCategory) &&
+              val.toLocaleLowerCase().includes(searchTerm)
+            );
+          }
         }
       })
     );
-
     if (filteredProducts.length === 0) {
       dispatch(
         handleChangeProductListingError(

@@ -459,7 +459,7 @@ const ProductListing = () => {
   useEffect(() => {
     handleFilterProducts();
     dispatch(handleChangeProductListingError(""));
-    setPageNumber(0)
+    setPageNumber(0);
   }, [
     allProducts,
     allProductLoading,
@@ -506,8 +506,6 @@ const ProductListing = () => {
   useEffect(() => {
     handleClearFilters();
   }, [title]);
-
-  console.log(pageCount,pageNumber);
 
   return (
     <>

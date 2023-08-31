@@ -117,27 +117,6 @@ export const handlePostDeleteAddress = createAsyncThunk(
   }
 );
 
-export const handleDefaultSelecteAddress = createAsyncThunk(
-  "features/handleDefaultSelecteAddress",
-  async ({ signal, token, id }) => {
-    signal.current = new AbortController();
-
-    const response = await GetUrl(`/address/select/${id}`, {
-      signal: signal.current.signal,
-      headers: {
-        Authorization: token,
-      },
-    })
-      .then((res) => {
-        return res.data;
-      })
-      .catch((err) => {
-        return err.response.data;
-      });
-    return response;
-  }
-);
-
 const initialState = {
   loading: false,
   success: false,
@@ -197,25 +176,6 @@ const FeatureSlice = createSlice({
       state.success = false;
       state.error = error;
     });
-    // set default address
-    builder.addCase(handleDefaultSelecteAddress.pending, (state) => {
-      state.loading = true;
-      state.success = false;
-      state.error = null;
-    });
-    builder.addCase(handleDefaultSelecteAddress.fulfilled, (state, {}) => {
-      state.loading = false;
-      state.success = true;
-      state.error = null;
-    });
-    builder.addCase(
-      handleDefaultSelecteAddress.rejected,
-      (state, { error }) => {
-        state.loading = false;
-        state.success = false;
-        state.error = error;
-      }
-    );
   },
 });
 
