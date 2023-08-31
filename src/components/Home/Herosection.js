@@ -7,7 +7,6 @@ import "swiper/css/pagination";
 import { useSelector } from "react-redux";
 import BaseUrl from "../../BaseUrl";
 import { Link } from "react-router-dom";
-import { useEffect } from "react";
 import { useRef } from "react";
 
 const Herosection = () => {
@@ -16,19 +15,6 @@ const Herosection = () => {
   const { banners, featured, loading } = useSelector(
     (state) => state.getContent
   );
-
-  useEffect(() => {
-    window.addEventListener("resize", () => {
-      // if (window.screen.width < 540) {
-      //   swiperRef.current.swiper.autoplay.running = false;
-      // } else {
-      //   swiperRef.current.swiper.autoplay.running = true;
-      // }
-    });
-    return () => {
-      window.removeEventListener("resize", () => {});
-    };
-  }, [window.screen.width]);
 
   return (
     <Fragment>
@@ -68,13 +54,13 @@ const Herosection = () => {
               </SwiperSlide>
             ))}
           </Swiper>
-          <div className="grid place-items-start justify-items-start grid-cols-4 w-full gap-x-1 items-start justify-start">
+          <div className="grid place-items-start justify-items-start lg:grid-cols-4 grid-cols-2 w-full md:gap-3 gap-2">
             {featured.map((img, i) => (
-              <Link key={i} to={img?.link}  className="w-full">
+              <Link key={i} to={img?.link} className="w-full">
                 <img
                   src={BaseUrl.concat(img.image)}
                   alt={img?.imageAlt}
-                  className="md:h-40 h-12 w-full object-fill object-center"
+                  className="w-full h-fit object-fill object-center border"
                   loading="lazy"
                 />
               </Link>

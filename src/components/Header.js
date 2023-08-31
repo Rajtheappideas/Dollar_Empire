@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import { TiArrowBack } from "react-icons/ti";
 import { AiOutlineShoppingCart, AiOutlineUser } from "react-icons/ai";
 import {
@@ -23,17 +23,9 @@ import {
 } from "../redux/GlobalStates";
 import { useTranslation } from "react-i18next";
 import { handleChangeUserLanguage } from "../redux/AuthSlice";
-import {
-  calculateTotalAmount,
-  calculateTotalQuantity,
-} from "../redux/CartSlice";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import { toast } from "react-hot-toast";
-import { number } from "card-validator";
-import { ExportToExcel } from "../ExportToExcel";
-import { handleEditProfile } from "../redux/BasicFeatureSlice";
-import axios from "axios";
-import BaseUrl, { GetUrl } from "../BaseUrl";
+import debounce from "lodash.debounce";
 
 const Header = () => {
   const [activeCategoryForHover, setActiveCategory] = useState("");
@@ -85,13 +77,6 @@ const Header = () => {
     }
   }, [activeCategoryForHover, searchActiveCategoryForHover]);
 
-  useEffect(() => {
-    if (user !== null) {
-      dispatch(calculateTotalQuantity());
-      dispatch(calculateTotalAmount());
-    }
-  }, [user]);
-
   const handleSearchProducts = (e) => {
     dispatch(handleChangeProductListingError(""));
     e.preventDefault();
@@ -103,28 +88,12 @@ const Header = () => {
     }
     const filteredProducts = allProducts.filter((entry) =>
       Object.values(entry).some((val) => {
-        if (searchActiveCategory === "All Categories") {
-          return (
-            (typeof val === "string" || typeof val === number) &&
-            (entry?.name.toLocaleLowerCase().includes(searchTerm) ||
-              entry?.number.toLocaleLowerCase().includes(searchTerm) ||
-              entry?.shortDesc.toLocaleLowerCase().includes(searchTerm) ||
-              (entry?.longDesc !== undefined &&
-                entry?.longDesc.toLocaleLowerCase().includes(searchTerm)))
-          );
-        } else {
-          return (
-            (typeof val === "string" || typeof val === number) &&
-            entry?.category.includes(searchActiveCategory) &&
-            (entry?.name.toLocaleLowerCase().includes(searchTerm) ||
-              entry?.number.toLocaleLowerCase().includes(searchTerm) ||
-              entry?.shortDesc.toLocaleLowerCase().includes(searchTerm) ||
-              (entry?.longDesc !== undefined &&
-                entry?.longDesc.toLocaleLowerCase().includes(searchTerm)))
-          );
+        if (typeof val === "string") {
+          return val.toLocaleLowerCase().includes(searchTerm);
         }
       })
     );
+
     if (filteredProducts.length === 0) {
       dispatch(
         handleChangeProductListingError(
@@ -358,15 +327,15 @@ const Header = () => {
             } flex items-center w-full bg-white rounded-md p-1`}
           >
             {/* menu */}
-            <div ref={dropDownRef} className="relative z-0 md:min-w-[10rem]">
+            <div ref={dropDownRef} className="relative z-0 w-fit">
               <p
                 onClick={() => setshowCategoryDropdown(true)}
-                className="cursor-pointer hover:border-[3px] rounded-lg border-dotted p-2 border-black flex items-center justify-between flex-row text-black font-normal "
+                className="cursor-pointer hover:border-[3px] w-full rounded-lg border-dotted p-2 border-black flex items-center justify-between flex-row text-black font-normal "
               >
-                <span className="text-base whitespace-nowrap">
+                <span className="text-base whitespace-nowrap w-fit">
                   {searchActiveCategory}
                 </span>
-                <BsChevronDown className="md:min-h-[1rem] md:min-w-[1rem] ml-1" />
+                <BsChevronDown className="md:min-h-[1rem] md:min-w-[1rem] mx-1" />
               </p>
               {/* menu */}
               {showCategoryDropdown && (
@@ -584,13 +553,13 @@ const Header = () => {
               )}
             </div>
 
-            <span className="md:px-4 px-2 text-gray-400">|</span>
+            <span className="px-2 text-gray-400">|</span>
             {/* input field */}
-            <form onSubmit={(e) => handleSearchProducts(e)}>
+            <form onSubmit={(e) => handleSearchProducts(e)} className="w-full">
               <input
                 ref={searchRef}
                 type="text"
-                className="rounded-tr-lg z-0 rounded-br-lg outline-none md:w-3/4 w-full text-black pr-7"
+                className="rounded-tr-lg z-0 rounded-br-lg outline-none w-full text-black pr-10"
                 placeholder={t("search_products").concat("...")}
                 value={searchTerm}
                 onChange={(e) => {
@@ -772,7 +741,7 @@ const Header = () => {
                           dispatch(
                             handleChangeActiveCategory(activeCategoryForHover)
                           );
-                          setshowCategoryDropdown(false);
+                          setshowSecondCategoryDropDown(false);
                         }}
                       >
                         <span

@@ -15,11 +15,6 @@ import ReactPaginate from "react-paginate";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import {
-  handleGetAllProducts,
-  handleGetNewArrivals,
-  handleGetTopSellers,
-} from "../redux/ProductSlice";
 import { toast } from "react-hot-toast";
 import {
   handleChangeActiveCategory,
@@ -30,8 +25,6 @@ import {
 } from "../redux/GlobalStates";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import {
-  calculateTotalAmount,
-  calculateTotalQuantity,
   handleAddMultipleProductToCart,
   handleAddMultipleProducts,
   handleChangeAddProduct,
@@ -51,16 +44,13 @@ const ProductListing = () => {
   const [activePrice, setActivePrice] = useState("Any");
   const [countTotalQuantity, setCountTotalQuantity] = useState([]);
 
-  const { newArrivals, productLoading, allProducts, topSellers } = useSelector(
-    (state) => state.products
-  );
+  const { newArrivals, allProductLoading, allProducts, topSellers } =
+    useSelector((state) => state.products);
 
   const { token, user } = useSelector((state) => state.Auth);
   const {
     multipleLoading,
     loading,
-    cartItems,
-    cart,
     selectedItems,
     totalQuantityMultipleProducts,
     totalAmountMultipleProducts,
@@ -92,6 +82,9 @@ const ProductListing = () => {
   const pageCount = Math.ceil(products.length / productsPerPage);
   const changePage = ({ selected }) => {
     setPageNumber(selected);
+    window.document
+      .getElementById("product_listing")
+      .scrollIntoView({ behavior: "smooth" });
   };
 
   // filter products
@@ -99,31 +92,31 @@ const ProductListing = () => {
     toast.dismiss();
     dispatch(handleRemoveAllProducts());
     dispatch(handleRemoveAllTotalQuantityAndTotalAmount());
-    if (productLoading) return true;
-    if (productLoading) {
+    if (allProductLoading) return true;
+    if (allProductLoading) {
       return true;
-    } else if (!productLoading && title.includes("new-arrivals")) {
+    } else if (!allProductLoading && title.includes("new-arrivals")) {
       // new arrivals
       setProducts(newArrivals);
       handleFilterProductsByPrice(newArrivals);
-      if (!productLoading && newArrivals.length === 0) {
+      if (!allProductLoading && newArrivals.length === 0) {
         setMessage("Product Not Found in New Arrivals, Try Someting else.");
         return true;
       }
       return true;
-    } else if (!productLoading && title.includes("top-sellers")) {
+    } else if (!allProductLoading && title.includes("top-sellers")) {
       // top sellers
       setProducts(topSellers);
       handleFilterProductsByPrice(topSellers);
-      if (!productLoading && topSellers.length === 0) {
+      if (!allProductLoading && topSellers.length === 0) {
         return setMessage(
           "Product Not Found in Top Sellers, Try something else."
         );
       }
       return true;
-    } else if (!productLoading && /\d/.test(title)) {
+    } else if (!allProductLoading && /\d/.test(title)) {
       // by price
-      if (!productLoading && title.includes("-")) {
+      if (!allProductLoading && title.includes("-")) {
         const price = title.split("-");
         const byPrice = allProducts.filter(
           (i) =>
@@ -162,7 +155,7 @@ const ProductListing = () => {
         }
       }
       return true;
-    } else if (!productLoading && title.includes("all-products")) {
+    } else if (!allProductLoading && title.includes("all-products")) {
       // all products
       setProducts(allProducts);
       handleFilterProductsByPrice(allProducts);
@@ -171,7 +164,7 @@ const ProductListing = () => {
         return setMessage("No items found, please try a different filter");
       }
       return true;
-    } else if (!productLoading && title.includes("low-to-high")) {
+    } else if (!allProductLoading && title.includes("low-to-high")) {
       // low - high
       const lowToHigh = allProducts.slice().sort((a, b) => {
         return parseFloat(a.price) - parseFloat(b.price);
@@ -183,7 +176,7 @@ const ProductListing = () => {
         return setMessage("No items found, please try a different filter");
       }
       return true;
-    } else if (!productLoading && title.includes("high-to-low")) {
+    } else if (!allProductLoading && title.includes("high-to-low")) {
       // high - low
       const highToLow = allProducts.slice().sort((a, b) => {
         return parseFloat(b.price) - parseFloat(a.price);
@@ -195,7 +188,7 @@ const ProductListing = () => {
         return setMessage("No items found, please try a different filter");
       }
       return true;
-    } else if (!productLoading && categories.includes(title)) {
+    } else if (!allProductLoading && categories.includes(title)) {
       // by category
       const productsByCategories = allProducts.filter((i) =>
         i.category.includes(title)
@@ -214,7 +207,7 @@ const ProductListing = () => {
         return setMessage("No items found, please try a different filter");
       }
       return true;
-    } else if (!productLoading && title.includes("search")) {
+    } else if (!allProductLoading && title.includes("search")) {
       setProducts(searchProducts);
       handleFilterProductsByPrice(searchProducts);
       return true;
@@ -228,7 +221,7 @@ const ProductListing = () => {
         products.length === 0 ||
         newArrivals.length === 0 ||
         topSellers.length === 0) &&
-      !productLoading &&
+      !allProductLoading &&
       !loading
     ) {
       setProducts([]);
@@ -408,7 +401,9 @@ const ProductListing = () => {
     if (selectedItems.length === 0) {
       toast.dismiss();
       dispatch(
-        handleChangeProductListingError("No quantity found. Please add at least one item")
+        handleChangeProductListingError(
+          "No quantity found. Please add at least one item"
+        )
       );
       return toast.error("No quantity found. Please add at least one item");
     } else {
@@ -444,29 +439,14 @@ const ProductListing = () => {
 
   // clear filters
   const handleClearFilters = () => {
-    // setActiveCategory("");
     setActivePrice("Any");
   };
 
   // fetch products
   useEffect(() => {
-    dispatch(handleGetNewArrivals({ token }));
-    dispatch(handleGetTopSellers({ token }));
-    dispatch(calculateTotalAmount());
-    dispatch(calculateTotalQuantity());
-    const response = dispatch(handleGetAllProducts({ token }));
-    if (response) {
-      response
-        .then((res) => {
-          if (res.payload.status === "success") {
-            const Categories = res.payload.products.map((i) => i.category);
-            setCategories([...new Set(Categories.flat(Infinity))]);
-          } else {
-            toast.error(res.payload.message);
-          }
-        })
-        .catch((err) => {});
-    }
+    const Categories = allProducts.map((i) => i.category);
+    setCategories([...new Set(Categories.flat(Infinity))]);
+
     return () => {
       AbortControllerRef.current !== null && AbortControllerRef.current.abort();
       dispatch(handleChangeActiveCategory("All Categories"));
@@ -475,31 +455,14 @@ const ProductListing = () => {
     };
   }, []);
 
-  // calculate total & quantity
-  useEffect(() => {
-    if (user !== null) {
-      dispatch(calculateTotalQuantity());
-      dispatch(calculateTotalAmount());
-    }
-  }, [user]);
-
-  // find items in cart added
-  useEffect(() => {
-    if (cart !== null && cartItems.length > 0) {
-      const findItemInCart = cartItems.filter(
-        (i) => !selectedItems.includes(i?.product?._id)
-      );
-      // console.log("findincart", findItemInCart);
-    }
-  }, [loading, selectedItems]);
-
   // set products releated category & filter wise
   useEffect(() => {
     handleFilterProducts();
     dispatch(handleChangeProductListingError(""));
+    setPageNumber(0)
   }, [
     allProducts,
-    productLoading,
+    allProductLoading,
     categories,
     title,
     newArrivals,
@@ -544,7 +507,7 @@ const ProductListing = () => {
     handleClearFilters();
   }, [title]);
 
-  // console.log(categories)
+  console.log(pageCount,pageNumber);
 
   return (
     <>
@@ -591,7 +554,10 @@ const ProductListing = () => {
               />
             </section>
             {/* products listing*/}
-            <section className="lg:w-[80%] w-full space-y-5">
+            <section
+              id="product_listing"
+              className="lg:w-[80%] w-full space-y-5"
+            >
               {/* filter + grid + add items btn */}
               <div className="flex items-center w-full gap-3 xl:flex-row flex-col">
                 {/* grid & items showing filters */}
@@ -700,6 +666,37 @@ const ProductListing = () => {
                   )}
                 </button>
               </div>
+              {/* pagination */}
+              <div className="flex xl:flex-row flex-col items-center w-full gap-3 ">
+                <div className="xl:w-[80%] w-full border border-BORDERGRAY bg-white p-3 flex md:flex-row flex-col gap-3 items-center justify-between">
+                  {/* pagination */}
+                  <ReactPaginate
+                    onPageChange={changePage}
+                    previousLabel={
+                      <p className="bg-gray-200 w-10 h-10 p-2 rounded-md">
+                        <BsChevronLeft className="h-5 w-5 rounded-md text-black" />
+                      </p>
+                    }
+                    nextLabel={
+                      <p className="bg-gray-200 w-10 h-10 p-2 rounded-md">
+                        <BsChevronRight className="h-5 w-5 rounded-md text-black" />
+                      </p>
+                    }
+                    pageClassName="bg-gray-200 text-black px-2 py-2 rounded-md text-center"
+                    pageLinkClassName="p-2"
+                    breakLabel="..."
+                    breakClassName=""
+                    breakLinkClassName=""
+                    pageRangeDisplayed={3}
+                    marginPagesDisplayed={1}
+                    pageCount={pageCount}
+                    containerClassName=""
+                    activeClassName="active"
+                    className="flex items-center gap-x-3"
+                    forcePage={pagination}
+                  />
+                </div>
+              </div>
               {/* prodcts */}
               <div
                 className={`w-full grid ${
@@ -710,7 +707,7 @@ const ProductListing = () => {
                     : "grid-cols-1 gap-y-5"
                 } items-start`}
               >
-                {productLoading ? (
+                {allProductLoading ? (
                   <SkeletonTheme
                     baseColor="lightgray"
                     highlightColor="white"

@@ -10,7 +10,7 @@ import {
   AiFillHeart,
 } from "react-icons/ai";
 import { FreeMode, Navigation, Thumbs } from "swiper";
-import { Swiper, SwiperSlide, useSwiper } from "swiper/react";
+import { Swiper, SwiperSlide } from "swiper/react";
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/navigation";
@@ -26,10 +26,7 @@ import {
   showPopup,
 } from "../redux/GlobalStates";
 import { Link } from "react-router-dom";
-import {
-  handleGetNewArrivals,
-  handleGetProductById,
-} from "../redux/ProductSlice";
+
 import BaseUrl from "../BaseUrl";
 import {
   handleAddProductToFavourites,
@@ -73,10 +70,7 @@ const ProductDetailPopup = ({}) => {
   const {
     showProductDetailsPopup,
     showEnlargeImage,
-    singleProductId,
     activeEnlargeImageId,
-    activeEnlargeImageFrom,
-    singleProductEnlargeImageId,
   } = useSelector((state) => state.globalStates);
 
   const { singleProduct, singleProductLoading } = useSelector(
@@ -675,14 +669,6 @@ const ProductDetailPopup = ({}) => {
   }
 
   useEffect(() => {
-    dispatch(handleGetProductById({ id: singleProductId, token }));
-    return () => {
-      AbortControllerRef.current !== null && AbortControllerRef.current.abort();
-      setFindInCart(null);
-    };
-  }, []);
-
-  useEffect(() => {
     setIsFavourite(singleProduct?.isFavourite);
   }, [singleProductLoading]);
 
@@ -789,35 +775,35 @@ const ProductDetailPopup = ({}) => {
     dispatch(closeEnlargeImagePopup());
   }
 
-  const findCheckDigit = (keyWoCD) => {
-    /* Check that input string conveys number of digits that correspond to a given GS1 key */
-    if (
-      /(^\d{7}$)|(^\d{11}$)|(^\d{12}$)|(^\d{13}$)|(^\d{16}$)|(^\d{17}$)/.test(
-        keyWoCD
-      ) === false
-    ) {
-      return null;
-    } else {
-      /* Reverse string */
-      keyWoCD = [...keyWoCD].reverse().join("");
-      /* Alternatively fetch digits, multiply them by 3 or 1, and sum them up */
-      let sum = 0;
-      for (let i = keyWoCD.length - 1; i >= 0; i--) {
-        if (parseInt(keyWoCD[i]) === 0) {
-          continue;
-        } else {
-          if (i % 2 !== 0) {
-            sum += parseInt(keyWoCD[i]) * 1;
-          } else {
-            sum += parseInt(keyWoCD[i]) * 3;
-          }
-        }
-      }
-      /* Subtract sum from nearest equal or higher multiple of ten */
-      let checkDigit = Math.ceil(sum / 10) * 10 - sum;
-      return checkDigit;
-    }
-  };
+  // const findCheckDigit = (keyWoCD) => {
+  //   /* Check that input string conveys number of digits that correspond to a given GS1 key */
+  //   if (
+  //     /(^\d{7}$)|(^\d{11}$)|(^\d{12}$)|(^\d{13}$)|(^\d{16}$)|(^\d{17}$)/.test(
+  //       keyWoCD
+  //     ) === false
+  //   ) {
+  //     return null;
+  //   } else {
+  //     /* Reverse string */
+  //     keyWoCD = [...keyWoCD].reverse().join("");
+  //     /* Alternatively fetch digits, multiply them by 3 or 1, and sum them up */
+  //     let sum = 0;
+  //     for (let i = keyWoCD.length - 1; i >= 0; i--) {
+  //       if (parseInt(keyWoCD[i]) === 0) {
+  //         continue;
+  //       } else {
+  //         if (i % 2 !== 0) {
+  //           sum += parseInt(keyWoCD[i]) * 1;
+  //         } else {
+  //           sum += parseInt(keyWoCD[i]) * 3;
+  //         }
+  //       }
+  //     }
+  //     /* Subtract sum from nearest equal or higher multiple of ten */
+  //     let checkDigit = Math.ceil(sum / 10) * 10 - sum;
+  //     return checkDigit;
+  //   }
+  // };
 
   // const checkDigitNumber = () => {
   //   const regExp = /[a-zA-Z]/g;

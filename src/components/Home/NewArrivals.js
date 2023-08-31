@@ -13,7 +13,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { Link } from "react-router-dom";
 
 const NewArrivals = ({}) => {
-  const { newArrivals, productLoading } = useSelector(
+  const { newArrivals, newArrivalProductLoading } = useSelector(
     (state) => state.products
   );
   const { t } = useTranslation();
@@ -23,7 +23,7 @@ const NewArrivals = ({}) => {
   return (
     <section
       id="New-Arrivals"
-      className="md:space-y-5 space-y-3 relative z-20 container mx-auto xl:px-0 md:px-10 px-3 w-full"
+      className="md:space-y-5 space-y-3 relative z-20 w-full"
     >
       <div className="flex w-full items-center justify-between">
         <div />
@@ -41,7 +41,7 @@ const NewArrivals = ({}) => {
       </div>
       {newArrivals !== undefined &&
       newArrivals.length === 0 &&
-      !productLoading ? (
+      !newArrivalProductLoading ? (
         <p className="md:text-2xl text-lg mx-auto w-full text-center font-semibold">
           Prodcuts Not Found, Try again after sometimes.
         </p>
@@ -90,7 +90,7 @@ const NewArrivals = ({}) => {
             }}
             className="py-8"
           >
-            {productLoading ? (
+            {newArrivalProductLoading ? (
               <>
                 <SwiperSlide>
                   <Skeleton
@@ -139,7 +139,7 @@ const NewArrivals = ({}) => {
                 </SwiperSlide>
               </>
             ) : (
-              newArrivals.slice(0, 20).map((product) => (
+              newArrivals.slice(0, 50).map((product) => (
                 <SwiperSlide key={product?._id}>
                   <ProductCard
                     handleAddSelectedItem=""

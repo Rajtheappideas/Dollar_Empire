@@ -145,10 +145,6 @@ const CartSlice = createSlice({
       }, 0);
     },
 
-    handleChangeShippingMethod: (state, { payload }) => {
-      state.shipphingMethod = payload;
-    },
-
     calculateTotalAmount: (state) => {
       const total = state.cartItems.reduce((acc, curr) => {
         if (curr?.type === "pk") {
@@ -167,6 +163,10 @@ const CartSlice = createSlice({
       } else {
         state.grandTotal = total;
       }
+    },
+
+    handleChangeShippingMethod: (state, { payload }) => {
+      state.shipphingMethod = payload;
     },
 
     changeGrandTotal: (state, { payload }) => {

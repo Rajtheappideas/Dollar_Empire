@@ -12,8 +12,9 @@ const Categories = () => {
 
   const dispatch = useDispatch();
   const { t } = useTranslation();
+
   return (
-    <section className="container mx-auto w-full md:pt-5 pb-20 py-2 md:space-y-5 space-y-3 xl:px-0 md:px-10 px-3">
+    <section className=" w-full md:pt-5 pb-20 py-2 md:space-y-5 space-y-3">
       <p className="font-bold text-center md:text-3xl text-xl uppercase">
         {t("Categories")}
       </p>
@@ -56,7 +57,7 @@ const Categories = () => {
                 <img
                   src={baseUrl.concat(category.image)}
                   alt={category.name}
-                  className="w-fit h-fit object-contain object-center rounded-lg"
+                  className="w-fit h-fit object-contain object-center rounded-lg "
                 />
                 <p className="capitalize md:text-lg font-bold">
                   {category.name}

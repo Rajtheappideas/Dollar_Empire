@@ -41,16 +41,16 @@ const ChangePassword = () => {
         duration: "5000",
       });
     }
-    if (
-      !/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/.test(
-        passwords.newPassword
-      )
-    ) {
-      return toast.error(
-        "New passwor Must Contain 8 Characters, 1 Uppercase, 1 Lowercase, 1 Number and 1 Special Case Character",
-        { duration: "5000" }
-      );
-    }
+    // if (
+    //   !/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/.test(
+    //     passwords.newPassword
+    //   )
+    // ) {
+    //   return toast.error(
+    //     "New passwor Must Contain 8 Characters, 1 Uppercase, 1 Lowercase, 1 Number and 1 Special Case Character",
+    //     { duration: "5000" }
+    //   );
+    // }
     const response = dispatch(
       handleChangePassword({
         oldPassword: passwords.oldPassword,

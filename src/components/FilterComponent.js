@@ -71,7 +71,7 @@ const FilterComponent = ({ setActivePrice, activePrice, title }) => {
               >
                 {activeCategory}
               </p>
-              <ul className="pl-3 text-lg font-normal text-gray-400 capitalize">
+              <ul className="font-normal text-gray-400 capitalize w-full">
                 {shownCategories !== undefined &&
                   shownCategories.length !== 0 &&
                   shownCategories.map((category) => (
@@ -80,15 +80,15 @@ const FilterComponent = ({ setActivePrice, activePrice, title }) => {
                       className={`${
                         activeSubcategory === category?.name &&
                         "text-BLACK font-semibold bg-gray-200"
-                      } cursor-pointer hover:bg-gray-100 hover:text-black `}
+                      } cursor-pointer px-2 flex items-center gap-x-2 justify-between text-left hover:bg-gray-100 hover:text-black text-base w-full`}
                       onClick={() => {
                         dispatch(handleChangeActiveSubcategory(category?.name));
                       }}
                     >
-                      {category?.name}
-                      <span className="text-black text-sm float-right">
-                        ({category?.productCount})
-                      </span>
+                      <p className="truncate w-[90%]" title={category?.name}>
+                        {category?.name}
+                      </p>
+                      <p className="w-fit text-sm text-left">({category?.productCount})</p>
                     </li>
                   ))}
               </ul>

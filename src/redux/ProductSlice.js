@@ -121,7 +121,7 @@ export const handleGetProductById = createAsyncThunk(
 );
 
 const initialState = {
-  productLoading: false,
+  allProductLoading: false,
   singleProductLoading: false,
   success: false,
   error: null,
@@ -131,22 +131,31 @@ const initialState = {
   minOrderAmount: null,
   singleProduct: null,
   filters: [],
+  newArrivalProductLoading: false,
+  topSellerProductLoading: false,
 };
 
 const ProductSlice = createSlice({
   name: "products",
   initialState,
-  reducers: {},
+  reducers: {
+    handleFindSingleProduct: (state, { payload }) => {
+      const findSingleProduct = state.allProducts.find(
+        (product) => product?._id === payload
+      );
+      state.singleProduct = findSingleProduct;
+    },
+  },
   extraReducers: (builder) => {
     // get new arrivals
     builder.addCase(handleGetNewArrivals.pending, (state) => {
-      state.productLoading = true;
+      state.newArrivalProductLoading = true;
       state.success = false;
       state.error = null;
       state.newArrivals = [];
     });
     builder.addCase(handleGetNewArrivals.fulfilled, (state, { payload }) => {
-      state.productLoading = false;
+      state.newArrivalProductLoading = false;
       state.success = true;
       if (payload.status === "fail") {
         state.error = payload;
@@ -157,20 +166,20 @@ const ProductSlice = createSlice({
       }
     });
     builder.addCase(handleGetNewArrivals.rejected, (state, { error }) => {
-      state.productLoading = false;
+      state.newArrivalProductLoading = false;
       state.success = false;
       state.error = error;
       state.newArrivals = [];
     });
     // get top sellers
     builder.addCase(handleGetTopSellers.pending, (state) => {
-      state.productLoading = true;
+      state.topSellerProductLoading = true;
       state.success = false;
       state.error = null;
       state.topSellers = [];
     });
     builder.addCase(handleGetTopSellers.fulfilled, (state, { payload }) => {
-      state.productLoading = false;
+      state.topSellerProductLoading = false;
       state.success = true;
       if (payload.status === "fail") {
         state.error = payload;
@@ -181,20 +190,20 @@ const ProductSlice = createSlice({
       }
     });
     builder.addCase(handleGetTopSellers.rejected, (state, { error }) => {
-      state.productLoading = false;
+      state.topSellerProductLoading = false;
       state.success = false;
       state.error = error;
       state.topSellers = [];
     });
     // get all products
     builder.addCase(handleGetAllProducts.pending, (state) => {
-      state.productLoading = true;
+      state.allProductLoading = true;
       state.success = false;
       state.error = null;
       state.allProducts = [];
     });
     builder.addCase(handleGetAllProducts.fulfilled, (state, { payload }) => {
-      state.productLoading = false;
+      state.allProductLoading = false;
       state.success = true;
       if (payload.status === "fail") {
         state.error = payload;
@@ -207,7 +216,7 @@ const ProductSlice = createSlice({
       }
     });
     builder.addCase(handleGetAllProducts.rejected, (state, { error }) => {
-      state.productLoading = false;
+      state.allProductLoading = false;
       state.success = false;
       state.error = error;
       state.allProducts = [];
@@ -239,6 +248,6 @@ const ProductSlice = createSlice({
   },
 });
 
-export const {} = ProductSlice.actions;
+export const { handleFindSingleProduct } = ProductSlice.actions;
 
 export default ProductSlice.reducer;

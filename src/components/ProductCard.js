@@ -1,5 +1,12 @@
-import React, { Fragment } from "react";
-import { Link, useBeforeUnload } from "react-router-dom";
+import React, {
+  Fragment,
+  useRef,
+  useState,
+  memo,
+  useEffect,
+  useCallback,
+} from "react";
+import { Link } from "react-router-dom";
 import {
   AiOutlineShoppingCart,
   AiOutlineHeart,
@@ -25,16 +32,12 @@ import {
   handleAddProductToFavourites,
   handleRemoveProductToFavourites,
 } from "../redux/FavouriteSlice";
-import { useEffect } from "react";
-import { useRef } from "react";
 import { toast } from "react-hot-toast";
-import { useState } from "react";
 import {
   calculateTotalAmount,
   calculateTotalQuantity,
   handleAddProductToCart,
   handleChangeAddProduct,
-  handleDecreaseQuantityAndAmount,
   handleRemoveFromTotalQuantityAndAmountOfmultipleProducts,
   handleRemoveItemFromCart,
   handleRemoveOneProductFromSelected,
@@ -43,7 +46,8 @@ import {
 } from "../redux/CartSlice";
 import "react-loading-skeleton/dist/skeleton.css";
 import { MagnifyingGlassPlusIcon } from "@heroicons/react/24/outline";
-import { useCallback } from "react";
+import { handleFindSingleProduct } from "../redux/ProductSlice";
+import { motion } from "framer-motion";
 
 const ProductCard = ({
   product,
@@ -71,16 +75,13 @@ const ProductCard = ({
 
   const { user, token } = useSelector((state) => state.Auth);
 
-  const { productLoading, singleProductLoading } = useSelector(
-    (state) => state.products
-  );
+  const { allProductLoading } = useSelector((state) => state.products);
   const {
     showProductDetailsPopup,
     showEnlargeImage,
     activeEnlargeImageId,
     activeEnlargeImageFrom,
     singleProductEnlargeImageId,
-    singleProductId,
   } = useSelector((state) => state.globalStates);
 
   const { loading, cartItems, cart, selectedItems, success } = useSelector(
@@ -121,7 +122,11 @@ const ProductCard = ({
   const handleRemoveFromFavourties = (id) => {
     setFavouriteLoading(true);
     const response = dispatch(
-      handleRemoveProductToFavourites({ token, id, signal: AbortControllerRef })
+      handleRemoveProductToFavourites({
+        token,
+        id,
+        signal: AbortControllerRef,
+      })
     );
     if (response) {
       response
@@ -424,9 +429,7 @@ const ProductCard = ({
 
     if (!/^(?=.*[1-9])\d{1,8}(?:\.\d\d?)?$/.test(e.target.value)) {
       toast.remove();
-      toast.error(
-        "Please enter valid value and value can't be less than zero"
-      );
+      toast.error("Please enter valid value and value can't be less than zero");
       setPkCount(null);
       setpkItemsQuantity("");
       setAlreadyInCartPkCount(null);
@@ -467,9 +470,7 @@ const ProductCard = ({
 
     if (!/^(?=.*[1-9])\d{1,8}(?:\.\d\d?)?$/.test(e.target.value)) {
       toast.remove();
-      toast.error(
-        "Please enter valid value and value can't be less than zero"
-      );
+      toast.error("Please enter valid value and value can't be less than zero");
       setCtnCount(null);
       setCtnItemQuantity("");
       setAlreadyInCartCtnCount(null);
@@ -695,7 +696,8 @@ const ProductCard = ({
 
   const handleOpenPopup = () => {
     dispatch(showPopup());
-    dispatch(handleSetSingelProductId(product?._id));
+    // dispatch(handleSetSingelProductId(product?._id));
+    dispatch(handleFindSingleProduct(product?._id));
   };
 
   // outside click close pop image
@@ -742,12 +744,17 @@ const ProductCard = ({
     } else {
       setFindInCart(null);
     }
-  }, [showProductDetailsPopup, selectedItems, changingLoading, productLoading]);
+  }, [
+    showProductDetailsPopup,
+    selectedItems,
+    changingLoading,
+    allProductLoading,
+  ]);
 
   // set product to favourite item
   useEffect(() => {
     setisFavourite(product?.isFavourite);
-  }, [productLoading]);
+  }, [allProductLoading]);
 
   // add multiple items to cart handler
   useEffect(() => {
@@ -810,9 +817,7 @@ const ProductCard = ({
 
   useEffect(() => {
     findItems();
-    calculateTotalAmount();
-    calculateTotalQuantity();
-  });
+  }, []);
 
   return (
     <>
@@ -873,7 +878,6 @@ const ProductCard = ({
               onClick={() => {
                 dispatch(showEnlargeImagePopup());
                 handleShowEnlargeImage();
-
               }}
               className="h-6 w-6 bg-white/40 absolute left-0 md:bottom-0 bottom-56 text-PRIMARY"
             />
@@ -1259,7 +1263,15 @@ const ProductCard = ({
           )}
         </div>
       ) : (
-        <div
+        <motion.div
+          layout
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{
+            type: "keyframes",
+            duration: 0.5,
+          }}
           className={`md:space-y-2 space-y-3 relative ${
             showEnlargeImage && product?._id === activeEnlargeImageId
               ? "z-40"
@@ -1701,10 +1713,10 @@ const ProductCard = ({
               </button>
             </Link>
           )}
-        </div>
+        </motion.div>
       )}
     </>
   );
 };
 
-export default ProductCard;
+export default memo(ProductCard);

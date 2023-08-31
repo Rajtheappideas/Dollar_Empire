@@ -13,7 +13,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { Link } from "react-router-dom";
 
 const TopSellers = ({}) => {
-  const { topSellers, productLoading } = useSelector((state) => state.products);
+  const { topSellers, topSellerProductLoading } = useSelector((state) => state.products);
   const { t } = useTranslation();
 
   const prevRef = useRef(null);
@@ -21,7 +21,7 @@ const TopSellers = ({}) => {
 
   return (
     <section className="bg-LIGHTGRAY md:py-5 py-2 w-full" id="Top-Sellers">
-      <div className="md:space-y-5  space-y-3 relative z-0 container mx-auto xl:px-0 md:px-10 px-3 w-full">
+      <div className="md:space-y-5  space-y-3 relative z-0 w-full">
         <div className="flex w-full items-center justify-between">
           <div />
           <h2 className="font-bold md:text-3xl text-xl uppercase text-center md:ml-48 ml-24 ">
@@ -39,7 +39,7 @@ const TopSellers = ({}) => {
 
         {topSellers !== undefined &&
         topSellers.length === 0 &&
-        !productLoading ? (
+        !topSellerProductLoading ? (
           <p className="md:text-2xl text-lg mx-auto w-full text-center font-semibold">
             Prodcuts Not Found, Try again after sometimes.
           </p>
@@ -88,7 +88,7 @@ const TopSellers = ({}) => {
               }}
               className="py-8"
             >
-              {productLoading ? (
+              {topSellerProductLoading ? (
                 <>
                   <SwiperSlide>
                     <Skeleton
@@ -137,7 +137,7 @@ const TopSellers = ({}) => {
                   </SwiperSlide>
                 </>
               ) : (
-                topSellers.slice(0, 20).map((product) => (
+                topSellers.slice(0, 50).map((product) => (
                   <SwiperSlide key={product?._id}>
                     <ProductCard
                       handleAddSelectedItem=""
