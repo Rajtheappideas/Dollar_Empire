@@ -24,6 +24,7 @@ const EditProfile = ({ setShowEditProfile }) => {
     city: "",
   });
   const [allCountries, setAllCountries] = useState("");
+  const [country, setCountry] = useState("");
   const { user } = useSelector((state) => state.getContent);
   const { loading } = useSelector((state) => state.basicFeatures);
 
@@ -65,13 +66,27 @@ const EditProfile = ({ setShowEditProfile }) => {
       .string()
       .typeError("That doesn't look like a postal code")
       .required("postalcode is required")
-      .max(6, "Pincode should be 6 characters")
-      .min(5, "Pincode should be 6 characters")
+      .max(
+        country === "United States" ? 5 : 6,
+        country === "United States"
+          ? "Pincode should be 5 characters"
+          : "Pincode should be 6 characters"
+      )
+      .min(
+        country === "United States" ? 5 : 6,
+        country === "United States"
+          ? "Pincode should be 5 characters"
+          : "Pincode should be 6 characters"
+      )
       .matches(/^[0-9A-Za-z\s\-]+$/g, "That doesn't look like a postal code"),
     city: yup
       .string()
       .required("city is required")
-      .trim("The contact name cannot include leading and trailing spaces"),
+      .trim("The contact name cannot include leading and trailing spaces")
+      .matches(
+        /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
+        "only contain Latin letters."
+      ),
     state: yup
       .string()
       .required("state is required")
@@ -164,6 +179,8 @@ const EditProfile = ({ setShowEditProfile }) => {
       (country) =>
         country.name.toLocaleLowerCase() === values.country.toLocaleLowerCase()
     );
+    setCountry(country?.name);
+
     const states = State.getStatesOfCountry(country?.isoCode);
 
     setSelectedData({ ...selectedData, state: states });
@@ -263,13 +280,7 @@ const EditProfile = ({ setShowEditProfile }) => {
                   </option>
                 ))}
             </select>
-            {/* <input
-              type="text"
-              className="bg-LIGHTGRAY outline-none w-full text-black placeholder:text-gray-400 rounded-md p-3"
-              name="country"
-              placeholder="Country"
-              {...getFieldProps("country")}
-            /> */}
+
             <ErrorMessage
               name="country"
               className="block"
@@ -309,19 +320,7 @@ const EditProfile = ({ setShowEditProfile }) => {
               name="city"
               {...getFieldProps("city")}
             />
-            {/* <select
-              className=" outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-              name="city"
-              {...getFieldProps("city")}
-            >
-              <option label={values?.city}>{values?.city}</option>
-              {selectedData?.city.length > 0 &&
-                selectedData.city.map((city) => (
-                  <option key={city.name} value={city.name}>
-                    {city?.name}
-                  </option>
-                ))}
-            </select> */}
+
             <ErrorMessage name="city" className="block" component={TextError} />
           </div>
           <div className="lg:w-2/5 w-1/2 space-y-2">
@@ -334,8 +333,6 @@ const EditProfile = ({ setShowEditProfile }) => {
               name="postalCode"
               placeholder={t("PostalCode")}
               {...getFieldProps("postalCode")}
-              maxLength={6}
-              minLength={5}
             />
             <ErrorMessage name="postalCode" component={TextError} />
           </div>

@@ -26,7 +26,7 @@ const SingleOrderHistory = ({ setShowSingleOrder, orderId, setOrderId }) => {
         </p>
       ) : (
         <div className="w-full relative z-0 bg-white border border-BORDERGRAY text-BLACK md:space-y-10 space-y-3">
-          <div className="p-5 capitalize md:space-y-5 space-y-3 overflow-x-hidden border-b-2 border-gray-100">
+          <div className="p-5 capitalize md:space-y-5 space-y-3 overflow-x-scroll border-b-2 border-gray-100">
             <p className="font-semibold md:text-3xl text-lg text-PRIMARY">
               {t("Order ID")} : {singleOrder?.orderId}
             </p>
@@ -94,7 +94,7 @@ const SingleOrderHistory = ({ setShowSingleOrder, orderId, setOrderId }) => {
           {/* products */}
           {/* for desk & tablet */}
           <div className="w-full overflow-x-scroll md:inline-block hidden">
-            <table className="w-full table-auto">
+            <table className="w-full table-auto overflow-x-scroll">
               <thead>
                 <tr className=" bg-PRIMARY text-white w-full">
                   <th className="p-3 text-left min-w-[20rem]">
@@ -128,7 +128,7 @@ const SingleOrderHistory = ({ setShowSingleOrder, orderId, setOrderId }) => {
                     <td className="p-3 uppercase">
                       {product?.quantity} {product?.type}
                     </td>
-                    <td className="p-3">
+                    <td className="p-3 whitespace-nowrap">
                       {product?.type === "pk"
                         ? `$ ${parseFloat(
                             product?.product?.price *

@@ -283,10 +283,10 @@ const Checkout = ({ summaryFixed }) => {
           </span>
         </p>
         <hr className="w-full" />
-        <p className="w-full flex items-center justify-between text-2xl font-bold">
-          <span>{t("Grand Total")}</span>
-          <span className="ml-auto">${parseFloat(grandTotal).toFixed(2)}</span>
-        </p>
+        <div className="w-full flex items-center justify-between gap-2 text-2xl font-bold">
+          <p>{t("Grand Total")}</p>
+          <p className="ml-auto">${parseFloat(grandTotal).toFixed(2)}</p>
+        </div>
         <hr className="w-full" />
         {shippingAddress === "" && shipphingMethod === "freight" && (
           <p className="text-DARKRED text-center font-semibold">

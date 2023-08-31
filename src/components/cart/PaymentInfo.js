@@ -145,7 +145,7 @@ const PaymentInfo = ({ summaryFixed }) => {
               <textarea
                 onChange={(e) => setAdditionalNotes(e.target.value.trim())}
                 name="note"
-                className="w-full border max-h-60 min-h-[5rem] border-gray-300 outline-none focus:border-gray-500 rounded-md md:p-5 p-2"
+                className="w-full border max-h-60 min-h-[10rem] border-gray-300 outline-none focus:border-gray-500 rounded-md md:p-5 p-2"
                 disabled={loading}
                 placeholder="Any note for your order..."
               />

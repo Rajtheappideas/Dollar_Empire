@@ -121,7 +121,7 @@ const ShoppingCart = ({ summaryFixed }) => {
   return (
     <div className="relative w-full flex xl:flex-row flex-col items-start justify-start gap-4 pb-10 max-h-fit">
       {/* table */}
-      <div className="xl:w-9/12 w-full xl:overflow-hidden overflow-x-scroll scrollbar">
+      <div className="xl:w-9/12 w-full  overflow-x-scroll scrollbar">
         {/* for deskt & tablet */}
         <table className="w-full xl:inline-block hidden">
           <thead className="bg-PRIMARY text-white p-2 w-full">
@@ -587,10 +587,10 @@ const ShoppingCart = ({ summaryFixed }) => {
           <span className="ml-auto font-semibold text-base">$ 0.00</span>
         </p>
         <hr className="w-full" />
-        <p className="w-full flex items-center justify-between text-2xl font-bold">
-          <span>{t("Grand Total")}</span>
-          <span className="ml-auto">${parseFloat(grandTotal).toFixed(2)}</span>
-        </p>
+        <div className="w-full flex items-center justify-between gap-2 text-2xl font-bold">
+          <p>{t("Grand Total")}</p>
+          <p className="ml-auto">${parseFloat(grandTotal).toFixed(2)}</p>
+        </div>
         <hr className="w-full" />
         {grandTotal < minOrderAmount && (
           <p className="text-DARKRED text-center font-semibold">
