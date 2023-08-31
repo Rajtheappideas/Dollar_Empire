@@ -522,18 +522,18 @@ const ProductListing = () => {
               {title.includes("search")
                 ? `${t("Search for")}: ${searchTitle}`
                 : /\d/.test(title)
-                ? `${t("By Price")}: ${title}`
-                : title.includes("new-arrivals")
-                ? t("new_arrivals")
-                : title.includes("top-sellers")
-                ? t("top_sellers")
-                : title.includes("all-products")
-                ? t("All Procuts")
-                : title.includes("low-to-high")
-                ? t("Low to high")
-                : title.includes("high-to-low")
-                ? t("High to low")
-                : title}
+                  ? `${t("By Price")}: ${title}`
+                  : title.includes("new-arrivals")
+                    ? t("new_arrivals")
+                    : title.includes("top-sellers")
+                      ? t("top_sellers")
+                      : title.includes("all-products")
+                        ? t("All Procuts")
+                        : title.includes("low-to-high")
+                          ? t("Low to high")
+                          : title.includes("high-to-low")
+                            ? t("High to low")
+                            : title}
             </h1>
             {productListingError !== "" && (
               <span className="text-red-500 font-semibold text-xl">
@@ -563,11 +563,10 @@ const ProductListing = () => {
                   {/* grid view */}
                   <div className="flex items-center gap-4 w-full">
                     <BsGridFill
-                      className={`h-6 w-6 ${
-                        selectedView === "grid"
+                      className={`h-6 w-6 ${selectedView === "grid"
                           ? "text-PRIMARY"
                           : "text-gray-400"
-                      }`}
+                        }`}
                       role="button"
                       onClick={() => setSelectedView("grid")}
                     />
@@ -577,18 +576,16 @@ const ProductListing = () => {
                       className="flex items-center gap-x-0.5"
                     >
                       <p
-                        className={`${
-                          selectedView === "grid3"
+                        className={`${selectedView === "grid3"
                             ? "bg-PRIMARY"
                             : "bg-gray-400"
-                        } h-6 rounded-sm w-2 `}
+                          } h-6 rounded-sm w-2 `}
                       ></p>
                       <p
-                        className={`${
-                          selectedView === "grid3"
+                        className={`${selectedView === "grid3"
                             ? "bg-PRIMARY"
                             : "bg-gray-400"
-                        } h-6 rounded-sm w-2 ml-0.5`}
+                          } h-6 rounded-sm w-2 ml-0.5`}
                       ></p>
                     </div>
                     <div
@@ -596,18 +593,16 @@ const ProductListing = () => {
                       role="button"
                     >
                       <p
-                        className={`${
-                          selectedView === "gridsingle"
+                        className={`${selectedView === "gridsingle"
                             ? "bg-PRIMARY"
                             : "bg-gray-400"
-                        } h-2 rounded-sm w-6 `}
+                          } h-2 rounded-sm w-6 `}
                       ></p>
                       <p
-                        className={`${
-                          selectedView === "gridsingle"
+                        className={`${selectedView === "gridsingle"
                             ? "bg-PRIMARY"
                             : "bg-gray-400"
-                        } h-2 rounded-sm w-6 mt-0.5`}
+                          } h-2 rounded-sm w-6 mt-0.5`}
                       ></p>
                     </div>
                     <p className="font-medium text-base">
@@ -632,8 +627,10 @@ const ProductListing = () => {
                     </select>
                     <span className="font-medium">{t("Show")}:</span>
                     <select
-                      onChange={(e) =>
+                      onChange={(e) => {
                         dispatch(handleChangePagePerView(e.target.value))
+                        setPageNumber(0)
+                      }
                       }
                       value={perPageItemView}
                       className="bg-gray-200 outline-none text-black w-28 p-2 rounded-md  font-medium"
@@ -697,13 +694,12 @@ const ProductListing = () => {
               </div>
               {/* prodcts */}
               <div
-                className={`w-full grid ${
-                  selectedView === "grid"
+                className={`w-full grid ${selectedView === "grid"
                     ? "xl:grid-cols-4 md:grid-cols-3 md:gap-3 gap-1"
                     : selectedView === "grid3"
-                    ? "xl:grid-cols-3 md:grid-cols-2 md:gap-5 gap-1"
-                    : "grid-cols-1 gap-y-5"
-                } items-start`}
+                      ? "xl:grid-cols-3 md:grid-cols-2 md:gap-5 gap-1"
+                      : "grid-cols-1 gap-y-5"
+                  } items-start`}
               >
                 {allProductLoading ? (
                   <SkeletonTheme
