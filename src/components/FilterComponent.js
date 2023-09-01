@@ -36,7 +36,11 @@ const FilterComponent = ({ setActivePrice, activePrice, title }) => {
     } else {
       setIsCategoryThere(true);
     }
-  }, [loading, title]);
+  }, [loading, title, subCategories, categories]);
+
+  useEffect(() => {
+    dispatch(handleChangeActiveCategory(title));
+  }, []);
 
   return (
     <div className="w-full select-none border border-BORDERGRAY bg-white">
