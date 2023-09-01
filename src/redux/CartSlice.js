@@ -218,6 +218,20 @@ const CartSlice = createSlice({
         },
         0
       );
+      state.subTotal = state.grandTotal = state.cartItems.reduce(
+        (acc, curr) => {
+          if (curr?.type === "pk") {
+            let total =
+              acc + curr?.product?.price * curr?.quantity * curr?.product?.PK;
+            return total;
+          } else {
+            let total =
+              acc + curr?.product?.price * curr?.quantity * curr?.product?.CTN;
+            return total;
+          }
+        },
+        0
+      );
       state.grandTotal = state.cartItems.reduce((acc, curr) => {
         if (curr?.type === "pk") {
           let total =

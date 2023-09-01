@@ -36,7 +36,7 @@ const Checkout = ({ summaryFixed }) => {
   const { addressList, loading } = useSelector((state) => state.getContent);
   const dispatch = useDispatch();
 
-  const handleCalculateFreightCharges = (state) => {
+  const handleCalculateFreightCharges = () => {
     if (shipphingMethod === "freight" && shippingAddress !== "") {
       const response = dispatch(
         handleGetFreightCharges({

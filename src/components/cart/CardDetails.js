@@ -251,9 +251,7 @@ const CardDetails = ({ summaryFixed, additionalNotes }) => {
     const country = Country.getAllCountries().find(
       (country) => country.name === values.country
     );
-    if (cardDetails?.country === "") {
-      setCountry(country?.name);
-    }
+    setCountry(country?.name);
     const states = State.getStatesOfCountry(country?.isoCode);
 
     setSelectedData({ ...selectedData, state: states.map((s) => s.name) });
@@ -363,8 +361,6 @@ const CardDetails = ({ summaryFixed, additionalNotes }) => {
                   className="bg-LIGHTGRAY xl:w-1/2 w-full text-black placeholder:text-gray-400 rounded-md p-3"
                   placeholder={t("Postal code")}
                   name="postalCode"
-                  maxLength={6}
-                  minLength={5}
                   {...getFieldProps("postalCode")}
                 />
                 <ErrorMessage name="postalCode" component={TextError} />

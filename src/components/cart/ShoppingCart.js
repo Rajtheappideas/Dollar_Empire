@@ -17,7 +17,6 @@ import {
 import { toast } from "react-hot-toast";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useTranslation } from "react-i18next";
-import { handleChangeShippingMethod } from "../../redux/OrderSlice";
 
 const ShoppingCart = ({ summaryFixed }) => {
   const [showChangeField, setShowChangeField] = useState(false);
@@ -26,8 +25,15 @@ const ShoppingCart = ({ summaryFixed }) => {
   const [updateLoading, setUpdateLoading] = useState(false);
   const [productId, setProductId] = useState(null);
 
-  const { grandTotal, subTotal, shipphingMethod, cartItems, loading } =
-    useSelector((state) => state.cart);
+  const {
+    grandTotal,
+    subTotal,
+    shipphingMethod,
+    cartItems,
+    loading,
+    freightCharges,
+    freightChargeLoading,
+  } = useSelector((state) => state.cart);
   const { token } = useSelector((state) => state.Auth);
   const { productListingPageLink } = useSelector((state) => state.globalStates);
   const { minOrderAmount } = useSelector((state) => state.products);
@@ -584,7 +590,15 @@ const ShoppingCart = ({ summaryFixed }) => {
         </p>
         <p className="w-full flex items-center justify-between text-base">
           <span className="font-normal">{t("Freight")}</span>
-          <span className="ml-auto font-semibold text-base">$ 0.00</span>
+          <span className="ml-auto font-semibold text-base">
+            {freightChargeLoading
+              ? "wait..."
+              : shipphingMethod === "pickup"
+              ? "$ 0.00"
+              : freightCharges !== null
+              ? ` $ ${parseFloat(freightCharges).toFixed(2)}`
+              : "$ 0.00"}
+          </span>{" "}
         </p>
         <hr className="w-full" />
         <div className="w-full flex items-center justify-between gap-2 text-2xl font-bold">

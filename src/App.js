@@ -90,7 +90,7 @@ function App() {
       dispatch(calculateTotalQuantity());
       dispatch(calculateTotalAmount());
     }
-  }, []);
+  }, [user]);
 
   return (
     <BrowserRouter>

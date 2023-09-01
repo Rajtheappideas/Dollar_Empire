@@ -21,7 +21,7 @@ const Cart = () => {
   const [summaryFixed, setSummaryFixed] = useState(false);
 
   const { activeComponentForCart } = useSelector((state) => state.globalStates);
-  const { token } = useSelector((state) => state.Auth);
+  const { token, user } = useSelector((state) => state.Auth);
 
   const { t } = useTranslation();
 
@@ -34,13 +34,18 @@ const Cart = () => {
     dispatch(handleGetAddresses({ token }));
     dispatch(handleChangeShippingMethod("pickup"));
     dispatch(handleChangeActiveComponent("Shopping Cart"));
-    dispatch(calculateTotalQuantity());
-    dispatch(calculateTotalAmount());
 
     return () => {
       AbortControllerRef.current !== null && AbortControllerRef.current.abort();
     };
   }, []);
+
+  useEffect(() => {
+    if (user !== null) {
+      dispatch(calculateTotalQuantity());
+      dispatch(calculateTotalAmount());
+    }
+  }, [user]);
 
   // for sticky summary component
   useEffect(() => {

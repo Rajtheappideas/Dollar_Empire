@@ -68,23 +68,12 @@ const OrderHIstory = () => {
                           {order?.totalQuantity}
                         </td>
                         <td className="px-3 py-5 whitespace-nowrap">
-                          $
-                          {order?.shippingMethod === "freight"
-                            ? Number(
-                                parseFloat(order?.total) +
-                                  parseFloat(order?.freight)
-                              ).toFixed(2)
-                            : parseFloat(order?.total).toFixed(2)}
+                          ${parseFloat(order?.total).toFixed(2)}
                         </td>
                         <td className="px-3 py-5 whitespace-nowrap">$0</td>
                         <td className="px-3 py-5 whitespace-nowrap">
                           <span className="pr-1">$</span>
-                          {order?.shippingMethod === "freight"
-                            ? Number(
-                                parseFloat(order?.total) +
-                                  parseFloat(order?.freight)
-                              ).toFixed(2)
-                            : parseFloat(order?.total).toFixed(2)}
+                          {parseFloat(order?.total).toFixed(2)}
                         </td>
                       </tr>
                     ))

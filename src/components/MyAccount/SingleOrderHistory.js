@@ -10,6 +10,8 @@ const SingleOrderHistory = ({ setShowSingleOrder }) => {
 
   const { t } = useTranslation();
 
+  console.log(singleOrder);
+
   return (
     <>
       {loading ? (
@@ -73,13 +75,7 @@ const SingleOrderHistory = ({ setShowSingleOrder }) => {
                 {t("Total")}:
               </span>{" "}
               <span className="font-normal">
-                $
-                {singleOrder?.shippingMethod === "freight"
-                  ? Number(
-                      parseFloat(singleOrder?.total) +
-                        parseFloat(singleOrder?.freight)
-                    ).toFixed(2)
-                  : parseFloat(singleOrder?.total).toFixed(2)}
+                ${parseFloat(singleOrder?.total).toFixed(2)}
               </span>
             </p>
           </div>
