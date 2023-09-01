@@ -243,13 +243,13 @@ const ProductCard = ({
   }
 
   const handlePlusPkQuantity = (quantity, count, id) => {
-    if (id === product?._id && findInCart?.type === "pk") {
+    if (id === product?._id && findInCart?.product?._id !== id) {
       pkRef.current.checked = true;
-      setSelectedItemType("pk");
+      setSelectedItemType("ctn");
     }
     if (findInCart?.product?._id !== product?._id) {
-      setSelectedItemType("pk");
       pkRef.current.checked = true;
+      setSelectedItemType("pk");
       setPkCount(count);
       setpkItemsQuantity(quantity * count);
     }
@@ -264,6 +264,20 @@ const ProductCard = ({
       setSelectedItemType("pk");
       pkRef.current.checked = true;
       if (pkCount === 0 || pkCount == null) {
+        setPkCount(0);
+      } else {
+        setPkCount(count);
+        setpkItemsQuantity(quantity * count);
+      }
+    }
+    if (id === product?._id && findInCart?.product?._id !== id) {
+      pkRef.current.checked = true;
+      setSelectedItemType("pk");
+    }
+    if (findInCart?.product?._id !== product?._id) {
+      setSelectedItemType("pk");
+      pkRef.current.checked = true;
+      if (pkCount === 0 || pkCount === null) {
         setPkCount(0);
       } else {
         setPkCount(count);
@@ -513,7 +527,7 @@ const ProductCard = ({
         if (action === "minus") {
           handleMinusPkQuantity(
             parseFloat(product?.PK),
-            parseFloat(pkCount - 1),
+            parseFloat(pkCount !== null && pkCount - 1),
             product?._id
           );
         } else {
@@ -531,7 +545,8 @@ const ProductCard = ({
       } else if (
         !loading &&
         selectedProductId !== product?._id &&
-        findInCart?.product?._id === product?._id
+        findInCart?.product?._id === product?._id &&
+        type === "pk"
       ) {
         if (findInCart?.type !== type) {
           toast.remove();
@@ -555,7 +570,7 @@ const ProductCard = ({
               );
             } else {
               setAlreadyInCartPkCount(parseFloat(findInCart?.quantity) - 1);
-              setAlreadyInCartPkItems(
+              setAlreadyInCartCtnItems(
                 parseFloat(product?.PK) * parseFloat(findInCart?.quantity - 1)
               );
               handleChangeAddedItemInCart(
@@ -564,7 +579,7 @@ const ProductCard = ({
                 parseFloat(findInCart?.quantity) - 1
               );
             }
-          } else if (action === "plus") {
+          } else {
             if (
               alreadyInCartPkCount !== null &&
               alreadyInCartPkCount.toString().length >= 6
@@ -573,7 +588,7 @@ const ProductCard = ({
               toast.error("Can't add more than 6 numbers ");
               return true;
             }
-            if (alreadyInCartPkCount !== null) {
+            if (alreadyInCartCtnCount !== null) {
               setAlreadyInCartPkCount(parseFloat(alreadyInCartPkCount) + 1);
               setAlreadyInCartPkItems(
                 parseFloat(product?.PK) * parseFloat(alreadyInCartPkCount + 1)
@@ -820,7 +835,6 @@ const ProductCard = ({
   useEffect(() => {
     findItems();
   }, [findInCart]);
-
 
   return (
     <>
@@ -1470,6 +1484,7 @@ const ProductCard = ({
                   </span>
                 </div>
 
+                {/* minus pk btn */}
                 <button
                   type="button"
                   disabled={
@@ -1483,6 +1498,7 @@ const ProductCard = ({
                 >
                   <AiOutlineMinus className="h-5 w-5 mx-auto" />
                 </button>
+                {/* plus pk btn */}
                 <button
                   type="button"
                   disabled={
@@ -1571,6 +1587,7 @@ const ProductCard = ({
                     CTN
                   </span>
                 </div>
+                {/* minus ctn btn */}
 
                 <button
                   type="button"
@@ -1589,6 +1606,8 @@ const ProductCard = ({
                 >
                   <AiOutlineMinus className="w-5 h-5 mx-auto" />
                 </button>
+                {/* plus ctn btn */}
+
                 <button
                   type="button"
                   disabled={
