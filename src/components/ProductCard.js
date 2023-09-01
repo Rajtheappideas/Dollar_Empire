@@ -796,27 +796,31 @@ const ProductCard = ({
   }, [success]);
 
   // set checked if already in cart
-  const findItems = useCallback(() => {
+  const findItems = useCallback(async () => {
     if (
       findInCart?.product?._id === product?._id &&
       findInCart?.type === "pk"
     ) {
-      pkRef.current.checked = true;
+      pkRef.current.checked = await true;
       setSelectedItemType("pk");
     } else if (
       findInCart?.product?._id === product?._id &&
       findInCart?.type === "ctn"
     ) {
-      ctnRef.current.checked = true;
+      ctnRef.current.checked = await true;
       setSelectedItemType("ctn");
-    } else if (pkRef.current !== null) {
-      pkRef.current.defaultChecked = true;
+    } else if (
+      findInCart?.product?._id === product?._id &&
+      pkRef.current !== null
+    ) {
+      pkRef.current.defaultChecked = await true;
     }
   }, [findInCart]);
 
   useEffect(() => {
     findItems();
-  }, []);
+  }, [findInCart]);
+
 
   return (
     <>
@@ -1718,4 +1722,4 @@ const ProductCard = ({
   );
 };
 
-export default memo(ProductCard);
+export default ProductCard;
