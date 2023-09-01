@@ -21,7 +21,6 @@ const FilterComponent = ({ setActivePrice, activePrice, title }) => {
   const { activeCategory, activeSubcategory } = useSelector(
     (state) => state.globalStates
   );
-  const { filters } = useSelector((state) => state.products);
 
   const { t } = useTranslation();
 
@@ -88,7 +87,9 @@ const FilterComponent = ({ setActivePrice, activePrice, title }) => {
                       <p className="truncate w-[90%]" title={category?.name}>
                         {category?.name}
                       </p>
-                      <p className="w-fit text-sm text-left">({category?.productCount})</p>
+                      <p className="w-fit text-sm text-left">
+                        ({category?.productCount})
+                      </p>
                     </li>
                   ))}
               </ul>

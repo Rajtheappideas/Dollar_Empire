@@ -64,6 +64,7 @@ const ProductListing = () => {
     showEnlargeImage,
     productListingError,
   } = useSelector((state) => state.globalStates);
+
   const { title } = useParams();
 
   const { t } = useTranslation();
@@ -154,7 +155,6 @@ const ProductListing = () => {
           return setMessage("Product Not Found, Try with different price.");
         }
       }
-      return true;
     } else if (!allProductLoading && title.includes("all-products")) {
       // all products
       setProducts(allProducts);
@@ -202,8 +202,9 @@ const ProductListing = () => {
         );
         setProducts(findProducts);
         handleFilterProductsByPrice(findProducts);
-      }
-      if (productsByCategories.length === 0) {
+        console.log("asdasd2");
+      } else if (productsByCategories.length === 0) {
+        console.log("asdasd");
         return setMessage("No items found, please try a different filter");
       }
       return true;
@@ -214,18 +215,20 @@ const ProductListing = () => {
     } else if (!categories.includes(title)) {
       // if category not found
       setProducts([]);
+      console.log("not ");
       setMessage("No items found, please try a different filter");
       return true;
     } else if (
-      (allProducts.length === 0 ||
-        products.length === 0 ||
-        newArrivals.length === 0 ||
-        topSellers.length === 0) &&
+      allProducts.length === 0 &&
+      products.length === 0 &&
+      newArrivals.length === 0 &&
+      topSellers.length === 0 &&
       !allProductLoading &&
       !loading
     ) {
       setProducts([]);
       toast.error("Products Not Found");
+      console.log("error");
       setMessage("No items found, please try a different filter");
       return true;
     }
@@ -632,9 +635,10 @@ const ProductListing = () => {
                     </select>
                     <span className="font-medium">{t("Show")}:</span>
                     <select
-                      onChange={(e) =>
-                        dispatch(handleChangePagePerView(e.target.value))
-                      }
+                      onChange={(e) => {
+                        dispatch(handleChangePagePerView(e.target.value));
+                        setPageNumber(0);
+                      }}
                       value={perPageItemView}
                       className="bg-gray-200 outline-none text-black w-28 p-2 rounded-md  font-medium"
                     >

@@ -261,6 +261,7 @@ const CardDetails = ({ summaryFixed, additionalNotes }) => {
 
   const aTenYearFromNow = new Date();
   aTenYearFromNow.setFullYear(aTenYearFromNow.getFullYear() + 10);
+
   return (
     <>
       <FormikProvider value={formik}>

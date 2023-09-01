@@ -344,9 +344,7 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
 
     if (!/^(?=.*[1-9])\d{1,8}(?:\.\d\d?)?$/.test(e.target.value)) {
       toast.remove();
-      toast.error(
-        "Please enter valid value and value can't be less than zero"
-      );
+      toast.error("Please enter valid value and value can't be less than zero");
       setPkCount(null);
       setpkItemsQuantity("");
       setAlreadyInCartPkCount(null);
@@ -387,9 +385,7 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
 
     if (!/^(?=.*[1-9])\d{1,8}(?:\.\d\d?)?$/.test(e.target.value)) {
       toast.remove();
-      toast.error(
-        "Please enter valid value and value can't be less than zero"
-      );
+      toast.error("Please enter valid value and value can't be less than zero");
       setCtnCount(null);
       setCtnItemQuantity("");
       setAlreadyInCartCtnCount(null);
@@ -662,21 +658,24 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
   }, [favourites, selectedItems, changingLoading]);
 
   // set checked if already in cart
-  const findItems = useCallback(async () => {
+  const findItems = useCallback(() => {
     if (
       findInCart?.product?._id === favourite?._id &&
       findInCart?.type === "pk"
     ) {
-      pkRef.current.checked = await true;
+      pkRef.current.checked = true;
       setSelectedItemType("pk");
     } else if (
       findInCart?.product?._id === favourite?._id &&
       findInCart?.type === "ctn"
     ) {
-      ctnRef.current.checked = await true;
+      ctnRef.current.checked = true;
       setSelectedItemType("ctn");
-    } else if (findInCart?.product?._id !== favourite?._id) {
-      pkRef.current.defaultChecked = await true;
+    } else if (
+      findInCart?.product?._id !== favourite?._id &&
+      pkRef.current !== null
+    ) {
+      pkRef.current.defaultChecked = true;
     }
   }, [findInCart]);
 

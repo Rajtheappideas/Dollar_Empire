@@ -54,13 +54,13 @@ const Herosection = () => {
               </SwiperSlide>
             ))}
           </Swiper>
-          <div className="grid place-items-start justify-items-start lg:grid-cols-4 grid-cols-2 w-full md:gap-3 gap-2">
+          <div className="grid place-items-start justify-items-start lg:grid-cols-4 sm:grid-cols-2 w-full md:gap-3 gap-2">
             {featured.map((img, i) => (
               <Link key={i} to={img?.link} className="w-full">
                 <img
                   src={BaseUrl.concat(img.image)}
                   alt={img?.imageAlt}
-                  className="w-full h-fit object-fill object-center border"
+                  className="min-w-full md:min-h-[10rem] md:max-h-[10rem] min-h-[10rem] max-h-[10rem] object-fill object-center"
                   loading="lazy"
                 />
               </Link>

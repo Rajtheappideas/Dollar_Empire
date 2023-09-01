@@ -43,7 +43,7 @@ const Categories = () => {
                 to={`/product-listing/${category.name}`}
                 onClick={() => {
                   window.scrollTo({ top: 0, behavior: "smooth" });
-                  dispatchEvent(handleChangeActiveCategory(category?.name));
+                  dispatch(handleChangeActiveCategory(category?.name));
                 }}
                 key={category?._id}
                 className={`space-y-3 w-full text-center ${

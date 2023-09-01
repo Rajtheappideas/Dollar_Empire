@@ -33,7 +33,7 @@ const Home = () => {
       dispatch(calculateTotalQuantity());
       dispatch(calculateTotalAmount());
     }
-  }, [user, allProductLoading]);
+  }, [user]);
 
   return (
     <>

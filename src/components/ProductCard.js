@@ -696,7 +696,6 @@ const ProductCard = ({
 
   const handleOpenPopup = () => {
     dispatch(showPopup());
-    // dispatch(handleSetSingelProductId(product?._id));
     dispatch(handleFindSingleProduct(product?._id));
   };
 
@@ -797,21 +796,21 @@ const ProductCard = ({
   }, [success]);
 
   // set checked if already in cart
-  const findItems = useCallback(async () => {
+  const findItems = useCallback(() => {
     if (
       findInCart?.product?._id === product?._id &&
       findInCart?.type === "pk"
     ) {
-      pkRef.current.checked = await true;
+      pkRef.current.checked = true;
       setSelectedItemType("pk");
     } else if (
       findInCart?.product?._id === product?._id &&
       findInCart?.type === "ctn"
     ) {
-      ctnRef.current.checked = await true;
+      ctnRef.current.checked = true;
       setSelectedItemType("ctn");
-    } else if (findInCart?.product?._id !== product?._id) {
-      pkRef.current.defaultChecked = await true;
+    } else if (pkRef.current !== null) {
+      pkRef.current.defaultChecked = true;
     }
   }, [findInCart]);
 

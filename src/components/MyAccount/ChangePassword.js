@@ -31,26 +31,12 @@ const ChangePassword = () => {
         .map((v) => v === "")
         .includes(true)
     ) {
-      return toast.error("All fields required!!!", { duration: "5000" });
+      return toast.error("All fields required", { duration: "5000" });
     }
     if (passwords.ConfirmPassword !== passwords.newPassword) {
-      return toast.error("NewPassword doesn't match with Confirmpassword!!!");
+      return toast.error("NewPassword doesn't match with Confirmpassword");
     }
-    if (passwords.oldPassword === passwords.newPassword) {
-      return toast.error("NewPassword should not be same as Oldpassword!!!", {
-        duration: "5000",
-      });
-    }
-    // if (
-    //   !/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/.test(
-    //     passwords.newPassword
-    //   )
-    // ) {
-    //   return toast.error(
-    //     "New passwor Must Contain 8 Characters, 1 Uppercase, 1 Lowercase, 1 Number and 1 Special Case Character",
-    //     { duration: "5000" }
-    //   );
-    // }
+
     const response = dispatch(
       handleChangePassword({
         oldPassword: passwords.oldPassword,
