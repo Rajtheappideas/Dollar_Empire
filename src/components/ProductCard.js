@@ -812,23 +812,14 @@ const ProductCard = ({
         selectedItemType,
         pkCount,
         ctnCount,
-        product?.price,
-        alreadyInCartPkItems,
-        alreadyInCartPkCount,
-        alreadyInCartCtnItems,
-        alreadyInCartCtnCount,
-        findInCart?.product?._id === product?._id
+        product?.price
       );
     }
   }, [
     pkitemsQuantity,
     ctnItemQuantity,
     selectedItemType,
-    alreadyInCartPkItems,
-    alreadyInCartCtnItems,
     changingLoading,
-    alreadyInCartCtnCount,
-    alreadyInCartPkCount,
     findInCart,
   ]);
 

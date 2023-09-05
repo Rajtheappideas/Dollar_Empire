@@ -334,7 +334,9 @@ const ProductListing = () => {
         itemForQuantity.id = id;
         itemForQuantity.quantity = itemType === "pk" ? pkCount : ctnCount;
         itemForQuantity.type = itemType;
-        itemForQuantity.amount = itemForQuantity.quantity * amount;
+        itemForQuantity.amount =
+          itemType === "pk" ? pkQuantity * amount : ctnQuantity * amount;
+        itemForQuantity.PC = itemType === "pk" ? pkQuantity : ctnQuantity;
       }
       // for filter same id product with max quantity
       const selectedItemProducts = [...selectedItems, item];
@@ -354,6 +356,7 @@ const ProductListing = () => {
         ...countTotalQuantity,
         itemForQuantity,
       ];
+
       let arr2 = [];
       arr2.push(countTotalQuantityOfProducts);
       const result2 = Object.values(
@@ -366,7 +369,7 @@ const ProductListing = () => {
       const filteredQuantityAndAmount = result2.filter((i) => i.quantity !== 0);
 
       const totalQuantity = filteredQuantityAndAmount.reduce((acc, curr) => {
-        return acc + curr?.quantity;
+        return acc + curr?.PC;
       }, 0);
       const totalAmount = filteredQuantityAndAmount.reduce((acc, curr) => {
         return acc + curr?.amount;

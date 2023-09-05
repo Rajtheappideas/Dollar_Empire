@@ -252,18 +252,21 @@ const CartSlice = createSlice({
     },
 
     handleDecreaseQuantityAndAmount: (state, { payload }) => {
-      console.log(payload);
       if (state.totalQuantity <= 0) {
         state.totalQuantity = 0;
         return true;
       } else if (state.grandTotal <= 0) {
         state.grandTotal = 0;
+        state.subTotal = 0;
         return true;
       } else {
         state.totalQuantity =
           parseFloat(state.totalQuantity) - parseFloat(payload?.quantity);
         state.grandTotal = parseFloat(
           parseFloat(state.grandTotal) - parseFloat(payload?.amount)
+        ).toFixed(2);
+        state.subTotal = parseFloat(
+          parseFloat(state.subTotal) - parseFloat(payload?.amount)
         ).toFixed(2);
       }
     },

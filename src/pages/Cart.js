@@ -27,6 +27,7 @@ const Cart = () => {
 
   const { activeComponentForCart } = useSelector((state) => state.globalStates);
   const { token, user } = useSelector((state) => state.Auth);
+  const { cartItems } = useSelector((state) => state.cart);
 
   const { t } = useTranslation();
 
@@ -64,7 +65,7 @@ const Cart = () => {
       dispatch(calculateTotalQuantity());
       dispatch(calculateTotalAmount());
     }
-  }, [user]);
+  }, []);
 
   // for sticky summary component
   useEffect(() => {

@@ -53,7 +53,7 @@ const ShoppingCart = ({ summaryFixed }) => {
       response
         .then((res) => {
           dispatch(handleRemoveItemFromCart(id));
-          // dispatch(handleDecreaseQuantityAndAmount({ quantity, amount }));
+          dispatch(handleDecreaseQuantityAndAmount({ quantity, amount }));
           setDeleteLoading(false);
         })
         .catch((err) => {
