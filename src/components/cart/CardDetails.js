@@ -24,7 +24,7 @@ import { handleChangeActiveComponent } from "../../redux/GlobalStates";
 import { handleClearCart } from "../../redux/CartSlice";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import moment from "moment/moment";
+import moment from "moment";
 
 const CardDetails = ({ summaryFixed, additionalNotes }) => {
   const [selectedData, setSelectedData] = useState({

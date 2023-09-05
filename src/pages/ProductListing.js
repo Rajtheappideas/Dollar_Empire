@@ -205,7 +205,13 @@ const ProductListing = () => {
     } else if (title.includes("search")) {
       setProducts(searchProducts);
       handleFilterProductsByPrice(searchProducts);
-    } else if (!loading && products.length === 0 && allProducts.length === 0) {
+    } else if (
+      !loading &&
+      (products.length === 0 || allProducts.length === 0)
+    ) {
+      setProducts([]);
+      setMessage("No items found, please try a different filter");
+    } else {
       setProducts([]);
       setMessage("No items found, please try a different filter");
     }
