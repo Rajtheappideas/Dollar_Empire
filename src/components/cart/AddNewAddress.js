@@ -219,7 +219,7 @@ const AddNewAddress = ({
     >
       <div
         ref={popupRef}
-        className="absolute overflow-y-scroll space-y-3 lg:top-2 lg:bottom-2 top-1 bottom-10 scrollbar left-1/2 -translate-x-1/2 z-50 md:p-5 lg:pb-0 pb-10 lg:pt-0 pt-2 md:px-5 px-3 bg-white text-black lg:w-5/12 md:w-7/12 w-[95%] h-auto rounded-md"
+        className="absolute overflow-y-scroll space-y-3 lg:top-2 md:bottom-2 top-1 bottom-7 scrollbar left-1/2 -translate-x-1/2 z-50 md:p-5 lg:pb-5 pb-10 lg:pt-3 pt-2 md:px-5 px-3 bg-white text-black lg:w-5/12 md:w-7/12 w-[95%] h-auto rounded-md"
       >
         <div className="flex items-center justify-between w-full">
           <p className="font-semibold text-2xl">{t("Shipping Address")}</p>
