@@ -17,7 +17,7 @@ const Signin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const { user, loading } = useSelector((state) => state.Auth);
+  const { user, loading, token } = useSelector((state) => state.Auth);
 
   const navigate = useNavigate();
 
@@ -66,7 +66,7 @@ const Signin = () => {
   const { getFieldProps, handleSubmit, resetForm } = formik;
 
   useEffect(() => {
-    if (user !== null) {
+    if (user !== null && token !== null) {
       navigate("/");
       toast.success("Already Logged in.");
     }

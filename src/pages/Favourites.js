@@ -20,6 +20,8 @@ import {
   handlechangeTotalQuantityAndAmountOfmultipleProducts,
 } from "../redux/CartSlice";
 import { toast } from "react-hot-toast";
+import { handleLogoutReducer } from "../redux/AuthSlice";
+import { handleLogout } from "../redux/GlobalStates";
 
 const Favourites = () => {
   const [countTotalQuantity, setCountTotalQuantity] = useState([]);
@@ -47,7 +49,21 @@ const Favourites = () => {
   const AbortControllerRef = useRef(null);
 
   useEffect(() => {
-    dispatch(handleGetUserFavourites({ token }));
+    const response = dispatch(handleGetUserFavourites({ token }));
+    if (response) {
+      response.then((res) => {
+        if (
+          res.payload?.status === "fail" &&
+          (res.payload?.message === "Please login first." ||
+            res.payload?.message === "Please provide authentication token.")
+        ) {
+          dispatch(handleLogoutReducer());
+          dispatch(handleLogout());
+        } else if (res.payload?.status === "fail") {
+          toast.error(res.payload?.message);
+        }
+      });
+    }
     return () => {
       AbortControllerRef.current !== null && AbortControllerRef.current.abort();
     };

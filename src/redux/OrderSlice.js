@@ -1,9 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { GetUrl, PostUrl } from "../BaseUrl";
+import { toast } from "react-hot-toast";
 
 export const handleGetOrders = createAsyncThunk(
   "orders/handleGetOrders",
-  async ({ token }) => {
+  async ({ token }, { rejectWithValue }) => {
     const response = await GetUrl(`order`, {
       headers: { Authorization: token },
     })
@@ -11,7 +12,8 @@ export const handleGetOrders = createAsyncThunk(
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }
@@ -19,7 +21,7 @@ export const handleGetOrders = createAsyncThunk(
 
 export const handleGetOrderbyId = createAsyncThunk(
   "orders/handleGetOrderbyId",
-  async ({ token, id }) => {
+  async ({ token, id }, { rejectWithValue }) => {
     const response = await GetUrl(`order/${id}`, {
       headers: { Authorization: token },
     })
@@ -27,7 +29,8 @@ export const handleGetOrderbyId = createAsyncThunk(
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }
@@ -35,7 +38,7 @@ export const handleGetOrderbyId = createAsyncThunk(
 
 export const handleGetCard = createAsyncThunk(
   "orders/handleGetCard",
-  async ({ token }) => {
+  async ({ token }, { rejectWithValue }) => {
     const response = await GetUrl(`card`, {
       headers: { Authorization: token },
     })
@@ -43,7 +46,8 @@ export const handleGetCard = createAsyncThunk(
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }
@@ -51,14 +55,17 @@ export const handleGetCard = createAsyncThunk(
 
 export const handleCreateOrder = createAsyncThunk(
   "orders/handleCreateOrder",
-  async ({
-    token,
-    signal,
-    shippingMethod,
-    shippingAddress,
-    paymentMethod,
-    additionalNotes,
-  }) => {
+  async (
+    {
+      token,
+      signal,
+      shippingMethod,
+      shippingAddress,
+      paymentMethod,
+      additionalNotes,
+    },
+    { rejectWithValue }
+  ) => {
     signal.current = new AbortController();
 
     const response = await PostUrl(`order`, {
@@ -77,7 +84,8 @@ export const handleCreateOrder = createAsyncThunk(
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }
@@ -85,19 +93,22 @@ export const handleCreateOrder = createAsyncThunk(
 
 export const handleCreateOrUpdateCard = createAsyncThunk(
   "orders/handleCreateOrUpdateCard",
-  async ({
-    token,
-    signal,
-    nameOnCard,
-    cardNumber,
-    expiry,
-    cvv,
-    country,
-    postalCode,
-    street,
-    state,
-    city,
-  }) => {
+  async (
+    {
+      token,
+      signal,
+      nameOnCard,
+      cardNumber,
+      expiry,
+      cvv,
+      country,
+      postalCode,
+      street,
+      state,
+      city,
+    },
+    { rejectWithValue }
+  ) => {
     signal.current = new AbortController();
 
     const response = await PostUrl(`card`, {
@@ -121,7 +132,8 @@ export const handleCreateOrUpdateCard = createAsyncThunk(
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }

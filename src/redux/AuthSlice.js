@@ -1,15 +1,11 @@
-import {
-  createAsyncThunk,
-  createSlice,
-  isRejectedWithValue,
-} from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { toast } from "react-hot-toast";
 import { GetUrl, PostUrl } from "../BaseUrl";
 import i18next from "i18next";
 
 export const handleLoginUser = createAsyncThunk(
   "auth/handleLoginUser",
-  async ({ password, email, signal }) => {
+  async ({ password, email, signal }, { rejectWithValue }) => {
     toast.dismiss();
     signal.current = new AbortController();
     const response = await PostUrl("login", {
@@ -25,7 +21,8 @@ export const handleLoginUser = createAsyncThunk(
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }
@@ -33,20 +30,23 @@ export const handleLoginUser = createAsyncThunk(
 
 export const handleRegisterUser = createAsyncThunk(
   "auth/handleRegisterUser",
-  async ({
-    fname,
-    lname,
-    email,
-    password,
-    phone,
-    companyName,
-    location,
-    city,
-    state,
-    country,
-    postalCode,
-    signal,
-  }) => {
+  async (
+    {
+      fname,
+      lname,
+      email,
+      password,
+      phone,
+      companyName,
+      location,
+      city,
+      state,
+      country,
+      postalCode,
+      signal,
+    },
+    { rejectWithValue }
+  ) => {
     toast.dismiss();
     signal.current = new AbortController();
 
@@ -72,7 +72,8 @@ export const handleRegisterUser = createAsyncThunk(
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }
@@ -80,7 +81,7 @@ export const handleRegisterUser = createAsyncThunk(
 
 export const handleGetVisitCount = createAsyncThunk(
   "auth/handleGetVisitCount",
-  async ({ token }) => {
+  async ({ token }, { rejectWithValue }) => {
     toast.dismiss();
     const response = await GetUrl("visit-count", {
       headers: {
@@ -91,7 +92,8 @@ export const handleGetVisitCount = createAsyncThunk(
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }
@@ -99,7 +101,7 @@ export const handleGetVisitCount = createAsyncThunk(
 
 export const handleResetPassword = createAsyncThunk(
   "auth/handleResetPassword",
-  async ({ password, signal, token }) => {
+  async ({ password, signal, token }, { rejectWithValue }) => {
     toast.dismiss();
     signal.current = new AbortController();
 
@@ -116,7 +118,8 @@ export const handleResetPassword = createAsyncThunk(
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }

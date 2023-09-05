@@ -21,7 +21,7 @@ const TopSellers = ({}) => {
 
   return (
     <section className="bg-LIGHTGRAY md:py-5 py-2 w-full" id="Top-Sellers">
-      <div className="md:space-y-5  space-y-3 relative z-0 w-full">
+      <div className="md:space-y-5  space-y-3 relative z-0 w-full mx-auto container xl:px-0 md:px-10 px-3">
         <div className="flex w-full items-center justify-between">
           <div />
           <h2 className="font-bold md:text-3xl text-xl uppercase text-center md:ml-48 ml-24 ">

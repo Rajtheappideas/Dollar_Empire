@@ -29,7 +29,7 @@ const Signup = () => {
   const [country, setCountry] = useState("");
   const [message, setMessage] = useState("");
 
-  const { user, loading } = useSelector((state) => state.Auth);
+  const { user, loading, token } = useSelector((state) => state.Auth);
 
   const navigate = useNavigate();
 
@@ -193,7 +193,7 @@ const Signup = () => {
   const { getFieldProps, handleSubmit, setFieldValue, values } = formik;
 
   useEffect(() => {
-    if (user !== null) {
+    if (user !== null && token !== null) {
       navigate("/");
       toast.success("Already Logged in.");
     }
@@ -218,6 +218,7 @@ const Signup = () => {
       const state = states.find((state) => state.name === values.state);
     }
   }, [values.country, values.state, values.city]);
+
   return (
     <>
       <Helmet title={t("Sign-up | Dollar Empire")} />
@@ -487,17 +488,19 @@ const Signup = () => {
                 <input
                   type="checkbox"
                   className="outline-none w-8 h-8 rounded-md border inline-block mt-1"
-                  name="checkBox"
+                  id="check_box"
                   {...getFieldProps("checkBox")}
                   onChange={(e) => {
                     setFieldValue("checkBox", e.target.checked);
                   }}
                 />
-                <span>
-                  {t(
-                    "Accept Lorem Ipsum is simply dummy text of the printing and type lorem is setting industry."
-                  )}
-                </span>
+                <label htmlFor="check_box">
+                  <span>
+                    {t(
+                      "Accept Lorem Ipsum is simply dummy text of the printing and type lorem is setting industry."
+                    )}
+                  </span>
+                </label>
               </p>
               {formik.errors.checkBox && (
                 <ErrorMessage name="checkBox" component={TextError} />

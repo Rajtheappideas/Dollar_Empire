@@ -130,10 +130,7 @@ const PaymentInfo = ({ summaryFixed }) => {
                     <span className="font-semibold md:text-xl block">
                       {t("Pay by Credit card")}
                     </span>
-                    <span className="font-normal text-base block">
-                      Lorem Ipsum is simply dummy text of the printing and
-                      typesetting industry.
-                    </span>
+                  
                   </p>
                 </label>
               </div>

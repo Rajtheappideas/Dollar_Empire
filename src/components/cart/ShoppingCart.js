@@ -124,6 +124,16 @@ const ShoppingCart = ({ summaryFixed }) => {
     }
   };
 
+  const handleChangeComonent = () => {
+    toast.remove();
+    if (cartItems?.length > 0) {
+      dispatch(handleChangeActiveComponent("Check Out"));
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      toast.error("Your Cart is empty");
+    }
+  };
+
   return (
     <div className="relative w-full flex xl:flex-row flex-col items-start justify-start gap-4 pb-10 max-h-fit">
       {/* table */}
@@ -614,11 +624,7 @@ const ShoppingCart = ({ summaryFixed }) => {
         <button
           type="button"
           onClick={() => {
-            toast.dismiss();
-            cartItems?.length > 0
-              ? dispatch(handleChangeActiveComponent("Check Out"))
-              : toast.error("Your Cart is empty");
-            window.scrollTo({ top: 0, behavior: "smooth" });
+            handleChangeComonent();
           }}
           className="font-semibold bg-PRIMARY text-white hover:bg-white hover:text-PRIMARY border border-PRIMARY duration-300 ease-in-out w-full p-3 text-center"
           disabled={

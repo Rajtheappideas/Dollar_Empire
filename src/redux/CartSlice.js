@@ -4,14 +4,15 @@ import { GetUrl, PostUrl } from "../BaseUrl";
 
 export const handleGetCart = createAsyncThunk(
   "cart/handleGetCart",
-  async ({ token }) => {
+  async ({ token }, { rejectWithValue }) => {
     toast.dismiss();
     const response = await GetUrl(`cart`, { headers: { Authorization: token } })
       .then((res) => {
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }
@@ -19,7 +20,7 @@ export const handleGetCart = createAsyncThunk(
 
 export const handleAddProductToCart = createAsyncThunk(
   "cart/handleAddProductToCart",
-  async ({ id, token, type, quantity, signal }) => {
+  async ({ id, token, type, quantity, signal }, { rejectWithValue }) => {
     toast.dismiss();
     signal.current = new AbortController();
 
@@ -37,7 +38,8 @@ export const handleAddProductToCart = createAsyncThunk(
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }
@@ -45,7 +47,7 @@ export const handleAddProductToCart = createAsyncThunk(
 
 export const handleAddMultipleProductToCart = createAsyncThunk(
   "cart/handleAddMultipleProductToCart",
-  async ({ token, products, signal }) => {
+  async ({ token, products, signal }, { rejectWithValue }) => {
     toast.dismiss();
     signal.current = new AbortController();
 
@@ -62,7 +64,8 @@ export const handleAddMultipleProductToCart = createAsyncThunk(
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }
@@ -70,7 +73,7 @@ export const handleAddMultipleProductToCart = createAsyncThunk(
 
 export const handleRemoveProductToCart = createAsyncThunk(
   "cart/handleRemoveProductToCart",
-  async ({ id, token, signal }) => {
+  async ({ id, token, signal }, { rejectWithValue }) => {
     toast.dismiss();
     signal.current = new AbortController();
 
@@ -84,7 +87,9 @@ export const handleRemoveProductToCart = createAsyncThunk(
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }
@@ -92,7 +97,7 @@ export const handleRemoveProductToCart = createAsyncThunk(
 
 export const handleGetFreightCharges = createAsyncThunk(
   "orders/handleGetFreightCharges",
-  async ({ state, total, signal }) => {
+  async ({ state, total, signal }, { rejectWithValue }) => {
     signal.current = new AbortController();
 
     const response = await PostUrl(`freight`, {
@@ -106,7 +111,8 @@ export const handleGetFreightCharges = createAsyncThunk(
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }

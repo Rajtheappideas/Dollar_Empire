@@ -4,7 +4,7 @@ import { GetUrl } from "../BaseUrl";
 
 export const handleGetAddresses = createAsyncThunk(
   "getContent/handleGetAddresses",
-  async ({ token }) => {
+  async ({ token }, { rejectWithValue }) => {
     toast.dismiss();
     const response = await GetUrl("address", {
       headers: {
@@ -15,7 +15,8 @@ export const handleGetAddresses = createAsyncThunk(
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }
@@ -23,7 +24,7 @@ export const handleGetAddresses = createAsyncThunk(
 
 export const handleGetUserProfile = createAsyncThunk(
   "getContent/handleGetUserProfile",
-  async ({ token }) => {
+  async ({ token }, { rejectWithValue }) => {
     toast.dismiss();
     const response = await GetUrl("profile", {
       headers: {
@@ -34,7 +35,8 @@ export const handleGetUserProfile = createAsyncThunk(
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }
@@ -42,14 +44,15 @@ export const handleGetUserProfile = createAsyncThunk(
 
 export const handleGetCategory = createAsyncThunk(
   "getContent/handleGetCategory",
-  async () => {
+  async (_, { rejectWithValue }) => {
     toast.dismiss();
     const response = await GetUrl("category", {})
       .then((res) => {
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }
@@ -57,14 +60,15 @@ export const handleGetCategory = createAsyncThunk(
 
 export const handleGetSubCategory = createAsyncThunk(
   "getContent/handleGetSubCategory",
-  async () => {
+  async (_, { rejectWithValue }) => {
     toast.dismiss();
     const response = await GetUrl("subcategory", {})
       .then((res) => {
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }
@@ -72,14 +76,15 @@ export const handleGetSubCategory = createAsyncThunk(
 
 export const handleGetBanners = createAsyncThunk(
   "getContent/handleGetBanners",
-  async () => {
+  async (_, { rejectWithValue }) => {
     toast.dismiss();
     const response = await GetUrl(`banner`, {})
       .then((res) => {
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }
@@ -87,14 +92,15 @@ export const handleGetBanners = createAsyncThunk(
 
 export const handleGetAboutusContent = createAsyncThunk(
   "getContent/handleGetAboutusContent",
-  async () => {
+  async (_, { rejectWithValue }) => {
     toast.dismiss();
     const response = await GetUrl(`about`, {})
       .then((res) => {
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }
@@ -102,14 +108,15 @@ export const handleGetAboutusContent = createAsyncThunk(
 
 export const handleGetPrivacyContent = createAsyncThunk(
   "getContent/handleGetPrivacyContent",
-  async () => {
+  async (_, { rejectWithValue }) => {
     toast.dismiss();
     const response = await GetUrl(`privacy`, {})
       .then((res) => {
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }
@@ -117,14 +124,15 @@ export const handleGetPrivacyContent = createAsyncThunk(
 
 export const handleGetShippingAndFreightContent = createAsyncThunk(
   "getContent/handleGetShippingAndFreightContent",
-  async () => {
+  async (_, { rejectWithValue }) => {
     toast.dismiss();
     const response = await GetUrl(`shipping-freight`, {})
       .then((res) => {
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }
@@ -132,14 +140,15 @@ export const handleGetShippingAndFreightContent = createAsyncThunk(
 
 export const handleGetSpecialOrders = createAsyncThunk(
   "getContent/handleGetSpecialOrders",
-  async () => {
+  async (_, { rejectWithValue }) => {
     toast.dismiss();
     const response = await GetUrl(`special-orders`, {})
       .then((res) => {
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }
@@ -147,14 +156,15 @@ export const handleGetSpecialOrders = createAsyncThunk(
 
 export const handleGetContactUsDetails = createAsyncThunk(
   "getContent/handleGetContactUsDetails",
-  async () => {
+  async (_, { rejectWithValue }) => {
     toast.dismiss();
     const response = await GetUrl(`contact`, {})
       .then((res) => {
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }
@@ -162,7 +172,7 @@ export const handleGetContactUsDetails = createAsyncThunk(
 
 export const handleDefaultSelecteAddress = createAsyncThunk(
   "features/handleDefaultSelecteAddress",
-  async ({ signal, token, id }) => {
+  async ({ signal, token, id }, { rejectWithValue }) => {
     signal.current = new AbortController();
 
     const response = await GetUrl(`/address/select/${id}`, {
@@ -175,7 +185,8 @@ export const handleDefaultSelecteAddress = createAsyncThunk(
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }

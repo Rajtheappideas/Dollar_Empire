@@ -67,11 +67,8 @@ const ProductDetailPopup = ({}) => {
 
   const { user, token } = useSelector((state) => state.Auth);
 
-  const {
-    showProductDetailsPopup,
-    showEnlargeImage,
-    activeEnlargeImageId,
-  } = useSelector((state) => state.globalStates);
+  const { showProductDetailsPopup, showEnlargeImage, activeEnlargeImageId } =
+    useSelector((state) => state.globalStates);
 
   const { singleProduct, singleProductLoading } = useSelector(
     (state) => state.products
@@ -905,7 +902,7 @@ const ProductDetailPopup = ({}) => {
                         src={BaseUrl.concat(image)}
                         alt={singleProduct?.title}
                         className="h-fit w-full object-contain object-center"
-                        addProductToCartLoading="lazy"
+                        loading="lazy"
                         onClick={() => {
                           dispatch(showEnlargeImagePopup());
                           handleShowEnlargeImage(i);
@@ -931,6 +928,22 @@ const ProductDetailPopup = ({}) => {
               >
                 <AiOutlineRight className="w-4 h-4 text-white" />
               </button>
+              {singleProduct?.images !== undefined &&
+                singleProduct?.images.length > 0 && (
+                  <div className="w-full flex flex-wrap gap-2 items-center">
+                    {singleProduct?.images.map((image, i) => (
+                      <img
+                        src={BaseUrl.concat(image)}
+                        alt=""
+                        className="w-14 h-14 cursor-pointer border p-1 border-gray-200 rounded-lg object-contain object-center"
+                        onClick={() => {
+                          dispatch(showEnlargeImagePopup());
+                          handleShowEnlargeImage(i);
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
             </div>
             {activeEnlargeImageId === singleProduct?._id &&
               showEnlargeImage && (

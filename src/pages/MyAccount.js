@@ -27,10 +27,34 @@ const MyAccount = () => {
   const { t } = useTranslation();
 
   useEffect(() => {
-    dispatch(handleGetAddresses({ token }));
+    const response = dispatch(handleGetAddresses({ token }));
+    if (response) {
+      response.then((res) => {
+        if (
+          res.payload?.status === "fail" &&
+          (res.payload?.message === "Please login first." ||
+          res.payload?.message === "Please provide authentication token.")
+        ) {
+          dispatch(handleLogoutReducer());
+          dispatch(handleLogout());
+        } else if (res.payload?.status === "fail") {
+          toast.error(res.payload?.message);
+        }
+      });
+    }
     dispatch(handleGetUserProfile({ token }));
     dispatch(handleGetOrders({ token }));
   }, []);
+
+  function handlelogout() {
+    toast.loading(t("logout..."));
+    setTimeout(() => {
+      toast.remove();
+      dispatch(handleLogoutReducer());
+      dispatch(handleLogout());
+    }, 1000);
+  }
+
   return (
     <>
       <Helmet title={t("My account | Dollar Empire")} />
@@ -107,12 +131,7 @@ const MyAccount = () => {
                 type="button"
                 className="text-red-500 text-left font-semibold"
                 onClick={() => {
-                  toast.loading(t("logout..."));
-                  setTimeout(() => {
-                    toast.remove();
-                    dispatch(handleLogoutReducer());
-                    dispatch(handleLogout());
-                  }, 1000);
+                  handlelogout();
                 }}
                 disabled={loading}
               >

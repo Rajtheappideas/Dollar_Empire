@@ -4,7 +4,7 @@ import { toast } from "react-hot-toast";
 
 export const handleGetAllProducts = createAsyncThunk(
   "products/handleGetAllProducts",
-  async ({ token }) => {
+  async ({ token }, { rejectWithValue }) => {
     toast.dismiss();
     if (token === null) {
       const response = await GetUrl("product", {})
@@ -25,7 +25,8 @@ export const handleGetAllProducts = createAsyncThunk(
           return res.data;
         })
         .catch((err) => {
-          return err.response.data;
+          toast.error(err?.response?.data?.message);
+          return rejectWithValue(err?.response?.data);
         });
       return response;
     }
@@ -34,7 +35,7 @@ export const handleGetAllProducts = createAsyncThunk(
 
 export const handleGetNewArrivals = createAsyncThunk(
   "products/handleGetNewArrivals",
-  async ({ token }) => {
+  async ({ token }, { rejectWithValue }) => {
     toast.dismiss();
     if (token === null) {
       const response = await GetUrl("new-arrivals", {})
@@ -55,7 +56,8 @@ export const handleGetNewArrivals = createAsyncThunk(
           return res.data;
         })
         .catch((err) => {
-          return err.response.data;
+          toast.error(err?.response?.data?.message);
+          return rejectWithValue(err?.response?.data);
         });
       return response;
     }
@@ -64,7 +66,7 @@ export const handleGetNewArrivals = createAsyncThunk(
 
 export const handleGetTopSellers = createAsyncThunk(
   "products/handleGetTopSellers",
-  async ({ token }) => {
+  async ({ token }, { rejectWithValue }) => {
     toast.dismiss();
     if (token === null) {
       const response = await GetUrl("top-sellers", {})
@@ -85,7 +87,8 @@ export const handleGetTopSellers = createAsyncThunk(
           return res.data;
         })
         .catch((err) => {
-          return err.response.data;
+          toast.error(err?.response?.data?.message);
+          return rejectWithValue(err?.response?.data);
         });
       return response;
     }
@@ -94,7 +97,7 @@ export const handleGetTopSellers = createAsyncThunk(
 
 export const handleGetProductById = createAsyncThunk(
   "products/handleGetProductById",
-  async ({ id, token }) => {
+  async ({ id, token }, { rejectWithValue }) => {
     toast.dismiss();
     if (token === null) {
       const response = await GetUrl(`product/${id}`, {})
@@ -113,7 +116,8 @@ export const handleGetProductById = createAsyncThunk(
           return res.data;
         })
         .catch((err) => {
-          return err.response.data;
+          toast.error(err?.response?.data?.message);
+          return rejectWithValue(err?.response?.data);
         });
       return response;
     }

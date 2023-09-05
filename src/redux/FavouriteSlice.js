@@ -4,7 +4,7 @@ import { toast } from "react-hot-toast";
 
 export const handleGetUserFavourites = createAsyncThunk(
   "favourite/handleGetUserFavourites",
-  async ({ token }) => {
+  async ({ token }, { rejectWithValue }) => {
     const response = await GetUrl(`favourite`, {
       headers: {
         Authorization: token,
@@ -14,7 +14,8 @@ export const handleGetUserFavourites = createAsyncThunk(
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }
@@ -22,7 +23,7 @@ export const handleGetUserFavourites = createAsyncThunk(
 
 export const handleAddProductToFavourites = createAsyncThunk(
   "features/handleAddProductToFavourites",
-  async ({ signal, token, id }) => {
+  async ({ signal, token, id }, { rejectWithValue }) => {
     signal.current = new AbortController();
 
     const response = await GetUrl(`/favourite/add/${id}`, {
@@ -35,7 +36,8 @@ export const handleAddProductToFavourites = createAsyncThunk(
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }
@@ -43,7 +45,7 @@ export const handleAddProductToFavourites = createAsyncThunk(
 
 export const handleRemoveProductToFavourites = createAsyncThunk(
   "features/handleRemoveProductToFavourites",
-  async ({ signal, token, id }) => {
+  async ({ signal, token, id }, { rejectWithValue }) => {
     signal.current = new AbortController();
 
     const response = await GetUrl(`/favourite/remove/${id}`, {
@@ -56,7 +58,8 @@ export const handleRemoveProductToFavourites = createAsyncThunk(
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }

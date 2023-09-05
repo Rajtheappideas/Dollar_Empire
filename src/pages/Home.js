@@ -16,7 +16,6 @@ const Home = () => {
   const { t } = useTranslation();
 
   const { token, user } = useSelector((state) => state.Auth);
-  const { allProductLoading } = useSelector((state) => state.products);
 
   const dispatch = useDispatch();
 
@@ -38,7 +37,7 @@ const Home = () => {
   return (
     <>
       <Helmet title={t("Home | Dollar Empire")} />
-      <div className="md:space-y-5 space-y-2 w-full container mx-auto xl:px-0 md:px-10 px-3">
+      <div className="md:space-y-5 space-y-2 w-full ">
         <Herosection />
         <NewArrivals />
         <TopSellers />

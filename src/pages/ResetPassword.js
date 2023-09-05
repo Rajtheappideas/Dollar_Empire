@@ -16,7 +16,7 @@ const ResetPassword = () => {
     showNewPassword: false,
   });
 
-  const { loading, user } = useSelector((state) => state.Auth);
+  const { loading, user, token } = useSelector((state) => state.Auth);
 
   const dispatch = useDispatch();
 
@@ -60,7 +60,7 @@ const ResetPassword = () => {
     }
   };
   useEffect(() => {
-    if (user !== null) {
+    if (user !== null && token !== null) {
       navigate("/");
       toast.success("Already Logged in.");
     }

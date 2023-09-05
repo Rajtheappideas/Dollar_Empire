@@ -4,7 +4,10 @@ import { PostUrl } from "../BaseUrl";
 
 export const handlePostContactUs = createAsyncThunk(
   "basicFeature/handlePostContactUs",
-  async ({ fname, lname, email, comments, phone, signal }) => {
+  async (
+    { fname, lname, email, comments, phone, signal },
+    { rejectWithValue }
+  ) => {
     signal.current = new AbortController();
 
     const response = await PostUrl("contact", {
@@ -21,7 +24,8 @@ export const handlePostContactUs = createAsyncThunk(
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }
@@ -29,7 +33,7 @@ export const handlePostContactUs = createAsyncThunk(
 
 export const handleChangePassword = createAsyncThunk(
   "basicFeature/handleChangePassword",
-  async ({ oldPassword, newPassword, token, signal }) => {
+  async ({ oldPassword, newPassword, token, signal }, { rejectWithValue }) => {
     signal.current = new AbortController();
 
     const response = await PostUrl("change-password", {
@@ -46,7 +50,8 @@ export const handleChangePassword = createAsyncThunk(
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }
@@ -54,7 +59,7 @@ export const handleChangePassword = createAsyncThunk(
 
 export const handleForgotPassword = createAsyncThunk(
   "basicFeature/handleForgotPassword",
-  async ({ email, signal }) => {
+  async ({ email, signal }, { rejectWithValue }) => {
     signal.current = new AbortController();
 
     const response = await PostUrl("forgot-password", {
@@ -67,7 +72,8 @@ export const handleForgotPassword = createAsyncThunk(
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }
@@ -75,20 +81,22 @@ export const handleForgotPassword = createAsyncThunk(
 
 export const handleEditProfile = createAsyncThunk(
   "basicFeature/handleEditProfile",
-  async ({
-    fname,
-    lname,
-    companyName,
-    location,
-    country,
-    phone,
-    postalCode,
-    city,
-    state,
-
-    signal,
-    token,
-  }) => {
+  async (
+    {
+      fname,
+      lname,
+      companyName,
+      location,
+      country,
+      phone,
+      postalCode,
+      city,
+      state,
+      signal,
+      token,
+    },
+    { rejectWithValue }
+  ) => {
     signal.current = new AbortController();
 
     const response = await PostUrl("profile", {
@@ -112,7 +120,8 @@ export const handleEditProfile = createAsyncThunk(
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }

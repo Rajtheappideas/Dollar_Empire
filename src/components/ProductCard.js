@@ -22,6 +22,7 @@ import {
   handleChangeEnlargeImageFrom,
   handleChangeEnlargeImageId,
   handleChangeSingleProductEnlargeImageId,
+  handleLogout,
   handleSetSingelProductId,
   showEnlargeImagePopup,
   showPopup,
@@ -48,6 +49,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { MagnifyingGlassPlusIcon } from "@heroicons/react/24/outline";
 import { handleFindSingleProduct } from "../redux/ProductSlice";
 import { motion } from "framer-motion";
+import { handleLogoutReducer } from "../redux/AuthSlice";
 
 const ProductCard = ({
   product,
@@ -110,6 +112,16 @@ const ProductCard = ({
           } else if (res.payload.status === "fail") {
             toast.error(res.payload.message);
           }
+          if (
+            res.payload?.status === "fail" &&
+            (res.payload?.message === "Please login first." ||
+              res.payload?.message === "Please provide authentication token.")
+          ) {
+            dispatch(handleLogoutReducer());
+            dispatch(handleLogout());
+          } else if (res.payload?.status === "fail") {
+            toast.error(res.payload?.message);
+          }
           setFavouriteLoading(false);
         })
         .catch((err) => {
@@ -136,6 +148,16 @@ const ProductCard = ({
             toast.success(`${product?.name} Removed from favorites.`);
           } else {
             toast.error(res.payload.message);
+          }
+          if (
+            res.payload?.status === "fail" &&
+            (res.payload?.message === "Please login first." ||
+              res.payload?.message === "Please provide authentication token.")
+          ) {
+            dispatch(handleLogoutReducer());
+            dispatch(handleLogout());
+          } else if (res.payload?.status === "fail") {
+            toast.error(res.payload?.message);
           }
           setFavouriteLoading(false);
         })
@@ -209,6 +231,16 @@ const ProductCard = ({
             setPkCount(null);
             setCtnCount(null);
             setSelectedProductId(null);
+          }
+          if (
+            res.payload?.status === "fail" &&
+            (res.payload?.message === "Please login first." ||
+              res.payload?.message === "Please provide authentication token.")
+          ) {
+            dispatch(handleLogoutReducer());
+            dispatch(handleLogout());
+          } else if (res.payload?.status === "fail") {
+            toast.error(res.payload?.message);
           }
         })
         .catch((err) => {
@@ -1293,7 +1325,7 @@ const ProductCard = ({
             showEnlargeImage && product?._id === activeEnlargeImageId
               ? "z-40"
               : "z-0"
-          } md:w-full w-auto md:p-3 p-4 bg-white lg:min-h-[27rem] md:min-h-[21rem] min-h-[19rem] font-semibold md:text-lg border rounded-lg border-[#EAEAEA]`}
+          } md:w-full w-auto md:p-3 p-4 bg-white lg:min-h-[27rem] md:min-h-[21rem] min-h-[19rem] font-semibold md:text-lg border rounded-lg border-gray-300`}
         >
           {/* top seller label */}
           {showEnlargeImage && product?._id === activeEnlargeImageId && (

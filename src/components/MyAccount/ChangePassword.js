@@ -4,6 +4,8 @@ import { toast } from "react-hot-toast";
 import { handleChangePassword } from "../../redux/BasicFeatureSlice";
 import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
 import { useTranslation } from "react-i18next";
+import { handleLogout } from "../../redux/GlobalStates";
+import { handleLogoutReducer } from "../../redux/AuthSlice";
 
 const ChangePassword = () => {
   const [passwords, setPasswords] = useState({
@@ -47,17 +49,26 @@ const ChangePassword = () => {
     );
     if (response) {
       response.then((res) => {
-        if (res.payload.status === "success") {
+        if (res.payload?.status === "success") {
           toast.success("Password Change Successfully.");
           setPasswords({
             ConfirmPassword: "",
             newPassword: "",
             oldPassword: "",
           });
-        } else if (res.payload.message === "Password incorrect.") {
+        } else if (res.payload?.message === "Password incorrect.") {
           toast.error("Old Password is incorrect!!!");
         } else {
-          toast.error(res.payload.message);
+          if (
+            res.payload?.status === "fail" &&
+            (res.payload?.message === "Please login first." ||
+              res.payload?.message === "Please provide authentication token.")
+          ) {
+            dispatch(handleLogoutReducer());
+            dispatch(handleLogout());
+          } else if (res.payload?.status === "fail") {
+            toast.error(res.payload?.message);
+          }
         }
       });
     }

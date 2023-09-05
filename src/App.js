@@ -13,6 +13,7 @@ import ProductDetailPopup from "./components/ProductDetailPopup";
 import { Toaster, toast } from "react-hot-toast";
 import PrivateRoute from "./pages/PrivateRoute";
 import {
+  handleLogout,
   loginAllTabsEventListener,
   logoutAllTabsEventListener,
 } from "./redux/GlobalStates";
@@ -32,7 +33,11 @@ import {
   handleGetNewArrivals,
   handleGetTopSellers,
 } from "./redux/ProductSlice";
-import { handleGetVisitCount, handleRegisterUser } from "./redux/AuthSlice";
+import {
+  handleGetVisitCount,
+  handleLogoutReducer,
+  handleRegisterUser,
+} from "./redux/AuthSlice";
 import ScrollToTop from "./components/ScrollToTop";
 
 const Home = lazy(() => import("./pages/Home"));
@@ -67,12 +72,40 @@ function App() {
     dispatch(handleGetSubCategory());
     dispatch(handleGetNewArrivals({ token }));
     dispatch(handleGetBanners());
-    dispatch(handleGetTopSellers({ token }));
+    const response = dispatch(handleGetTopSellers({ token }));
+    if (response) {
+      response.then((res) => {
+        if (
+          res.payload?.status === "fail" &&
+          (res.payload?.message === "Please login first." ||
+            res.payload?.message === "Please provide authentication token.")
+        ) {
+          dispatch(handleLogoutReducer());
+          dispatch(handleLogout());
+        } else if (res.payload?.status === "fail") {
+          toast.error(res.payload?.message);
+        }
+      });
+    }
     dispatch(handleGetContactUsDetails());
     dispatch(handleGetAllProducts({ token }));
 
     if (user !== null) {
-      dispatch(handleGetVisitCount({ token }));
+      const response = dispatch(handleGetVisitCount({ token }));
+      if (response) {
+        response.then((res) => {
+          if (
+            res.payload?.status === "fail" &&
+            (res.payload?.message === "Please login first." ||
+              res.payload?.message === "Please provide authentication token.")
+          ) {
+            dispatch(handleLogoutReducer());
+            dispatch(handleLogout());
+          } else if (res.payload?.status === "fail") {
+            toast.error(res.payload?.message);
+          }
+        });
+      }
     }
     if (!window.navigator.onLine) {
       toast.error("Check your internet connection", { duration: "5000" });
@@ -81,7 +114,20 @@ function App() {
 
   useEffect(() => {
     if (user !== null) {
-      dispatch(handleGetCart({ token }));
+      const response = dispatch(handleGetCart({ token }));
+      if (response) {
+        response.then((res) => {
+          if (
+            res.payload?.status === "fail" &&
+            res.payload?.message === "Please login first."
+          ) {
+            dispatch(handleLogoutReducer());
+            dispatch(handleLogout());
+          } else if (res.payload?.status === "fail") {
+            toast.error(res.payload?.message);
+          }
+        });
+      }
     }
   }, [user]);
 

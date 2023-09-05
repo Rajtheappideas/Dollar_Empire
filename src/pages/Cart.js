@@ -14,8 +14,13 @@ import {
 } from "../redux/CartSlice";
 import { handleGetAddresses } from "../redux/GetContentSlice";
 import { useRef } from "react";
-import { handleChangeActiveComponent } from "../redux/GlobalStates";
+import {
+  handleChangeActiveComponent,
+  handleLogout,
+} from "../redux/GlobalStates";
 import { ArrowLongLeftIcon } from "@heroicons/react/24/outline";
+import { handleLogoutReducer } from "../redux/AuthSlice";
+import { toast } from "react-hot-toast";
 
 const Cart = () => {
   const [summaryFixed, setSummaryFixed] = useState(false);
@@ -30,7 +35,21 @@ const Cart = () => {
   const AbortControllerRef = useRef(null);
 
   useEffect(() => {
-    dispatch(handleGetCart({ token }));
+    const response = dispatch(handleGetCart({ token }));
+    if (response) {
+      response.then((res) => {
+        if (
+          res.payload?.status === "fail" &&
+          (res.payload?.message === "Please login first." ||
+            res.payload?.message === "Please provide authentication token.")
+        ) {
+          dispatch(handleLogoutReducer());
+          dispatch(handleLogout());
+        } else if (res.payload?.status === "fail") {
+          toast.error(res.payload?.message);
+        }
+      });
+    }
     dispatch(handleGetAddresses({ token }));
     dispatch(handleChangeShippingMethod("pickup"));
     dispatch(handleChangeActiveComponent("Shopping Cart"));
@@ -60,6 +79,10 @@ const Cart = () => {
       window.removeEventListener("scroll", () => {});
     };
   }, [window.scrollY]);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [activeComponentForCart]);
 
   return (
     <>

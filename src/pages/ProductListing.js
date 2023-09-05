@@ -747,9 +747,10 @@ const ProductListing = () => {
                   <div className="flex items-center gap-x-4">
                     <span className="font-medium mr-1">{t("Show")}:</span>
                     <select
-                      onChange={(e) =>
-                        dispatch(handleChangePagePerView(e.target.value))
-                      }
+                      onChange={(e) => {
+                        dispatch(handleChangePagePerView(e.target.value));
+                        setPageNumber(0);
+                      }}
                       value={perPageItemView}
                       className="bg-gray-200 outline-none text-black w-28 p-2 rounded-md  font-medium"
                     >

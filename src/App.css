@@ -16,6 +16,13 @@
     background: #1b599e;
     border-radius: 10px;
   }
+  .hide_scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar::-webkit-scrollbar-thumb {
+    background: #1b599e;
+    border-radius: 10px;
+  }
   .submenu {
     position: relative;
   }

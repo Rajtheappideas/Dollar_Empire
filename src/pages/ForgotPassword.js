@@ -14,7 +14,7 @@ const ForgotPassword = () => {
   const [success, setSuccess] = useState(false);
 
   const { loading } = useSelector((state) => state.basicFeatures);
-  const { user } = useSelector((state) => state.Auth);
+  const { user, token } = useSelector((state) => state.Auth);
 
   const dispatch = useDispatch();
 
@@ -47,7 +47,7 @@ const ForgotPassword = () => {
   };
 
   useEffect(() => {
-    if (user !== null) {
+    if (user !== null && token !== null) {
       navigate("/");
       toast.success("Already Logged in.");
     }

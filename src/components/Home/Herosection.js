@@ -17,9 +17,9 @@ const Herosection = () => {
   );
 
   return (
-    <Fragment>
+    <div className="mx-auto container xl:px-0 md:px-10 px-3 w-full space-y-3">
       {loading ? (
-        <div className="overflow-hidden min-h-screen w-auto md:text-3xl text-xl flex justify-center items-center text-center font-semibold mx-auto">
+        <div className="overflow-hidden min-h-screen w-auto md:text-3xl text-xl flex justify-center items-center text-center font-semibold mx-auto container xl:px-0 md:px-10 px-3">
           Loading...
         </div>
       ) : (
@@ -68,7 +68,7 @@ const Herosection = () => {
           </div>
         </>
       )}
-    </Fragment>
+    </div>
   );
 };
 

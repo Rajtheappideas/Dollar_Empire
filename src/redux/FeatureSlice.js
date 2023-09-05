@@ -8,19 +8,22 @@ import { GetUrl, PostUrl } from "../BaseUrl";
 
 export const handlePostNewAddress = createAsyncThunk(
   "features/handlePostNewAddress",
-  async ({
-    fname,
-    lname,
-    companyName,
-    state,
-    city,
-    country,
-    postalCode,
-    location,
-    signal,
-    phone,
-    token,
-  }) => {
+  async (
+    {
+      fname,
+      lname,
+      companyName,
+      state,
+      city,
+      country,
+      postalCode,
+      location,
+      signal,
+      phone,
+      token,
+    },
+    { rejectWithValue }
+  ) => {
     signal.current = new AbortController();
 
     const response = await PostUrl("address", {
@@ -44,7 +47,8 @@ export const handlePostNewAddress = createAsyncThunk(
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }
@@ -52,21 +56,23 @@ export const handlePostNewAddress = createAsyncThunk(
 
 export const handlePostEditAddress = createAsyncThunk(
   "features/handlePostEditAddress",
-  async ({
-    fname,
-    lname,
-    companyName,
-    state,
-    city,
-    country,
-    postalCode,
-    location,
-    signal,
-    phone,
-    token,
-    id,
-    rejectWithValue,
-  }) => {
+  async (
+    {
+      fname,
+      lname,
+      companyName,
+      state,
+      city,
+      country,
+      postalCode,
+      location,
+      signal,
+      phone,
+      token,
+      id,
+    },
+    { rejectWithValue }
+  ) => {
     signal.current = new AbortController();
 
     const response = await PostUrl(`address/${id}`, {
@@ -90,7 +96,8 @@ export const handlePostEditAddress = createAsyncThunk(
         return res.data;
       })
       .catch((err) => {
-        return rejectWithValue(err.response.data);
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }
@@ -98,7 +105,7 @@ export const handlePostEditAddress = createAsyncThunk(
 
 export const handlePostDeleteAddress = createAsyncThunk(
   "features/handlePostDeleteAddress",
-  async ({ signal, token, id }) => {
+  async ({ signal, token, id }, { rejectWithValue }) => {
     signal.current = new AbortController();
 
     const response = await GetUrl(`/address/delete/${id}`, {
@@ -111,7 +118,8 @@ export const handlePostDeleteAddress = createAsyncThunk(
         return res.data;
       })
       .catch((err) => {
-        return err.response.data;
+        toast.error(err?.response?.data?.message);
+        return rejectWithValue(err?.response?.data);
       });
     return response;
   }

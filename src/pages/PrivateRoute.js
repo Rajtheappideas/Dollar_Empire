@@ -4,16 +4,19 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 const PrivateRoute = ({ children }) => {
-  const { user } = useSelector((state) => state.Auth);
+  const { user, token } = useSelector((state) => state.Auth);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!window.localStorage.getItem("user") && user === null) {
+    if (
+      !window.localStorage.getItem("user") &&
+      (user === null || token === null)
+    ) {
       toast.dismiss();
       navigate("/sign-in");
     }
-  }, [user]);
+  });
   if (user !== null) {
     return children;
   }

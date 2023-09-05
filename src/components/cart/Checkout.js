@@ -129,10 +129,6 @@ const Checkout = ({ summaryFixed }) => {
                 <span className="font-semibold md:text-xl block">
                   {t("Pickup")}
                 </span>
-                <span className="font-normal text-base block">
-                  Lorem Ipsum is simply dummy text of the printing and
-                  typesetting industry.
-                </span>
               </p>
             </label>
           </div>
@@ -154,30 +150,11 @@ const Checkout = ({ summaryFixed }) => {
                 <span className="font-semibold md:text-xl block">
                   {t("Freight")}
                 </span>
-                <span className="font-normal text-base block">
-                  Lorem Ipsum is simply dummy text of the printing and
-                  typesetting industry.
-                </span>
               </p>
             </label>
           </div>
         </div>
-        <ul className="w-full list-disc text-left font-normal space-y-3 pl-5 md:leading-relaxed leading-normal">
-          <li>
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-            ever since the 1500s, when an unknown printer took a galley of type
-            and scrambled it to make a type specimen book. It has survived not
-            only five centuries, but also the leap into electronic typesetting.
-          </li>
-          <li>
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-            ever since the 1500s, when an unknown printer took a galley of type
-            and scrambled it to make a type specimen book. It has survived not
-            only five centuries, but also the leap into electronic typesetting.
-          </li>
-        </ul>
+        <ul className="w-full list-disc text-left font-normal space-y-3 pl-5 md:leading-relaxed leading-normal"></ul>
         <div className="md:pt-12 pt-6">
           <p className="bg-PRIMARY text-white p-4 w-full text-left font-semibold tracking-wide">
             {t("Shipping Address")}

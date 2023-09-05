@@ -20,8 +20,12 @@ import {
 import { handleGetAddresses } from "../../redux/GetContentSlice";
 import { Country, State, City } from "country-state-city";
 import { useTranslation } from "react-i18next";
+import ReactModal from "react-modal";
 
-const AddNewAddress = ({ setShowAddnewaddressPopup }) => {
+const AddNewAddress = ({
+  setShowAddnewaddressPopup,
+  showAddnewaddressPopup,
+}) => {
   const [selectedData, setSelectedData] = useState({
     state: "",
     city: "",
@@ -37,6 +41,7 @@ const AddNewAddress = ({ setShowAddnewaddressPopup }) => {
   const { t } = useTranslation();
 
   const AbortControllerRef = useRef(null);
+  const popupRef = useRef(null);
 
   const addNewAddressSchema = yup.object().shape({
     fname: yup
@@ -182,11 +187,40 @@ const AddNewAddress = ({ setShowAddnewaddressPopup }) => {
     }
   }, [values.country, values.state, values.city]);
 
+  // outside click for pop up
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popupRef.current && !popupRef.current.contains(event?.target)) {
+        setShowAddnewaddressPopup(false);
+      }
+    };
+    document.addEventListener("click", handleClickOutside, true);
+    return () => {
+      document.removeEventListener("click", handleClickOutside, true);
+    };
+  }, [handleClickOutside]);
+
+  function handleClickOutside() {
+    setShowAddnewaddressPopup(false);
+  }
+
   return (
-    <div
-      className={`absolute bg-black/30 z-50 w-full lg:min-h-[100rem] min-h-[120rem]  inset-0 backdrop-blur-sm`}
+    <ReactModal
+      className={`absolute overflow-scroll hide_scrollbar bg-black/30 z-50 w-full min-h-screen max-h-screen inset-0 backdrop-blur-sm`}
+      appElement={document.getElementById("root")}
+      isOpen={showAddnewaddressPopup}
+      onRequestClose={() => {
+        setShowAddnewaddressPopup(false);
+      }}
+      preventScroll={true}
+      shouldCloseOnOverlayClick={true}
+      shouldCloseOnEsc={true}
+      style={{ content: { zIndex: 999 } }}
     >
-      <div className="fixed overflow-hidden space-y-3 top-10 left-1/2 -translate-x-1/2 z-50 md:p-5 py-10 px-5 bg-white text-black lg:w-5/12 md:w-7/12 w-[95%] h-auto rounded-md">
+      <div
+        ref={popupRef}
+        className="absolute overflow-y-scroll space-y-3 top-2 bottom-2 scrollbar left-1/2 -translate-x-1/2 z-50 md:p-5 md:py-10 py-4 md:px-5 px-3 bg-white text-black lg:w-5/12 md:w-7/12 w-[95%] h-auto rounded-md"
+      >
         <div className="flex items-center justify-between w-full">
           <p className="font-semibold text-2xl">{t("Shipping Address")}</p>
           <AiOutlineClose
@@ -198,10 +232,13 @@ const AddNewAddress = ({ setShowAddnewaddressPopup }) => {
         <hr className="w-full" />
         {/* form */}
         <FormikProvider value={formik}>
-          <Form onSubmit={handleSubmit} className="space-y-3">
+          <Form
+            onSubmit={handleSubmit}
+            className="space-y-3 overflow-scroll hide_scrollbar"
+          >
             {/* name */}
-            <div className="flex items-start w-full gap-x-4">
-              <div className=" w-1/2">
+            <div className="flex md:flex-row flex-col items-start w-full md:gap-4 gap-3">
+              <div className=" md:w-1/2 w-full">
                 <label className="text-black font-medium block text-left text-lg">
                   {t("First name")}*
                 </label>
@@ -214,7 +251,7 @@ const AddNewAddress = ({ setShowAddnewaddressPopup }) => {
                 />
                 <ErrorMessage name="fname" component={TextError} />
               </div>
-              <div className=" w-1/2">
+              <div className=" md:w-1/2 w-full">
                 <label className="text-black font-medium block text-left text-lg">
                   {t("Last name")}*
                 </label>
@@ -287,8 +324,8 @@ const AddNewAddress = ({ setShowAddnewaddressPopup }) => {
               <ErrorMessage name="state" component={TextError} />
             </>
             {/* city */}
-            <div className="flex items-start w-full gap-x-3">
-              <div className="w-1/2">
+            <div className="flex md:flex-row flex-col items-start w-full md:gap-4 gap-3">
+              <div className="md:w-1/2 w-full">
                 <label className="text-black font-medium block text-left text-lg">
                   {t("City")}*
                 </label>
@@ -314,7 +351,7 @@ const AddNewAddress = ({ setShowAddnewaddressPopup }) => {
                 </select> */}
                 <ErrorMessage name="city" component={TextError} />
               </div>
-              <div className="w-1/2">
+              <div className="md:w-1/2 w-full">
                 <label className="text-black font-medium block text-left text-lg">
                   {t("Postal code")}*
                 </label>
@@ -391,7 +428,7 @@ const AddNewAddress = ({ setShowAddnewaddressPopup }) => {
           </Form>
         </FormikProvider>
       </div>
-    </div>
+    </ReactModal>
   );
 };
 

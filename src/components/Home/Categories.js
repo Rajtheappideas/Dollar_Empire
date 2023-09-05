@@ -14,7 +14,7 @@ const Categories = () => {
   const { t } = useTranslation();
 
   return (
-    <section className=" w-full md:pt-5 pb-20 py-2 md:space-y-5 space-y-3">
+    <section className=" w-full md:pt-5 pb-20 py-2 md:space-y-5 space-y-3 mx-auto container xl:px-0 md:px-10 px-3">
       <p className="font-bold text-center md:text-3xl text-xl uppercase">
         {t("Categories")}
       </p>

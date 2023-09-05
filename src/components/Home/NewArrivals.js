@@ -23,7 +23,7 @@ const NewArrivals = ({}) => {
   return (
     <section
       id="New-Arrivals"
-      className="md:space-y-5 space-y-3 relative z-20 w-full"
+      className="md:space-y-5 space-y-3 relative z-20 w-full mx-auto container xl:px-0 md:px-10 px-3"
     >
       <div className="flex w-full items-center justify-between">
         <div />
