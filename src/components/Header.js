@@ -26,6 +26,10 @@ import { handleChangeUserLanguage } from "../redux/AuthSlice";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import { toast } from "react-hot-toast";
 import debounce from "lodash.debounce";
+import {
+  calculateTotalAmount,
+  calculateTotalQuantity,
+} from "../redux/CartSlice";
 
 const Header = () => {
   const [activeCategoryForHover, setActiveCategory] = useState("");
@@ -43,7 +47,9 @@ const Header = () => {
     activeCategory,
     searchActiveCategory,
   } = useSelector((state) => state.globalStates);
-  const { totalQuantity, grandTotal } = useSelector((state) => state.cart);
+  const { totalQuantity, grandTotal, cartItems } = useSelector(
+    (state) => state.cart
+  );
   const { allProducts, minOrderAmount } = useSelector(
     (state) => state.products
   );

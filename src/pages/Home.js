@@ -16,6 +16,7 @@ const Home = () => {
   const { t } = useTranslation();
 
   const { token, user } = useSelector((state) => state.Auth);
+  const { cartItems } = useSelector((state) => state.cart);
 
   const dispatch = useDispatch();
 
@@ -28,11 +29,11 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    if (user !== null) {
+    if (user !== null && cartItems.length > 0) {
       dispatch(calculateTotalQuantity());
       dispatch(calculateTotalAmount());
     }
-  }, [user]);
+  }, [user, cartItems]);
 
   return (
     <>

@@ -61,7 +61,7 @@ function App() {
   );
 
   const { token, user } = useSelector((state) => state.Auth);
-  const cart = useSelector((state) => state.cart);
+  const { cartItems } = useSelector((state) => state.cart);
 
   const dispatch = useDispatch();
 
@@ -132,11 +132,11 @@ function App() {
   }, [user]);
 
   useEffect(() => {
-    if (user !== null) {
+    if (user !== null && cartItems.length > 0) {
       dispatch(calculateTotalQuantity());
       dispatch(calculateTotalAmount());
     }
-  }, [user]);
+  }, [user, cartItems]);
 
   return (
     <BrowserRouter>
