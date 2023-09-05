@@ -61,11 +61,11 @@ const Cart = () => {
   }, []);
 
   useEffect(() => {
-    if (user !== null && cartItems.length > 0) {
+    if (user !== null ) {
       dispatch(calculateTotalQuantity());
       dispatch(calculateTotalAmount());
     }
-  }, [user, cartItems]);
+  }, [user]);
 
   // for sticky summary component
   useEffect(() => {

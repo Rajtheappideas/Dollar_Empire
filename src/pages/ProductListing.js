@@ -414,6 +414,7 @@ const ProductListing = () => {
                   amount: totalAmountMultipleProducts,
                 })
               );
+              console.log(totalQuantityMultipleProducts, totalAmountMultipleProducts)
               setCountTotalQuantity([]);
               dispatch(handleRemoveAllProducts());
               dispatch(handleRemoveAllTotalQuantityAndTotalAmount());

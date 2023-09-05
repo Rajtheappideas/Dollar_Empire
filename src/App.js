@@ -132,11 +132,11 @@ function App() {
   }, [user]);
 
   useEffect(() => {
-    if (user !== null && cartItems.length > 0) {
+    if (user !== null) {
       dispatch(calculateTotalQuantity());
       dispatch(calculateTotalAmount());
     }
-  }, [user, cartItems]);
+  }, [user]);
 
   return (
     <BrowserRouter>
