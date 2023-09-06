@@ -596,10 +596,10 @@ const ProductListing = () => {
                       ></p>
                     </div>
                     <p className="font-medium text-base">
-                      {products.length > 0 ? pageNumber *perPageItemView === 0 ? 1: (pageNumber *(perPageItemView)+1) : 0} of{" "}
+                      {products.length > 0 ? pageNumber *perPageItemView === 0 ? 1: (pageNumber *(perPageItemView)+1) : 0} to{" "}
                       {products.length < perPageItemView
                         ? products.length
-                        : perPageItemView * (pageNumber+1)> products.length? products?.length: perPageItemView * (pageNumber+1)}{" "}
+                        : perPageItemView * (pageNumber+1)> products.length? products?.length: perPageItemView * (pageNumber+1)}{" "} 
                       ({products.length} {t("items")})
               
                     </p>
