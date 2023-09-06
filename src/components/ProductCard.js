@@ -863,7 +863,15 @@ const ProductCard = ({
     <>
       {selectedView === "gridsingle" ? (
         // single product grid view
-        <div
+        <motion.div
+          layout
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{
+            type: "keyframes",
+            duration: 0.5,
+          }}
           className={`lg:space-y-3 relative ${
             showEnlargeImage && product?._id === singleProductEnlargeImageId
               ? "z-40"
@@ -1301,7 +1309,7 @@ const ProductCard = ({
               </p>
             </div>
           )}
-        </div>
+        </motion.div>
       ) : (
         <motion.div
           layout
