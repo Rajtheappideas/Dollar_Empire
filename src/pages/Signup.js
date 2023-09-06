@@ -471,12 +471,12 @@ const Signup = () => {
             {/*reconfirm password  */}
             <>
               <label className="text-black font-medium block text-left text-lg">
-                {t("confirmPassword")}
+                {t("Confirm Password")}
               </label>
               <input
                 type="password"
                 className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                placeholder={t("confirmPassword")}
+                placeholder={t("Confirm Password")}
                 name="confirmPassword"
                 {...getFieldProps("confirmPassword")}
               />
@@ -496,9 +496,7 @@ const Signup = () => {
                 />
                 <label htmlFor="check_box">
                   <span>
-                    {t(
-                      "Accept Lorem Ipsum is simply dummy text of the printing and type lorem is setting industry."
-                    )}
+                  By clicking here, I state that I have read and understood the terms and conditions.
                   </span>
                 </label>
               </p>

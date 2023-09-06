@@ -596,11 +596,12 @@ const ProductListing = () => {
                       ></p>
                     </div>
                     <p className="font-medium text-base">
-                      {products.length > 0 ? pageNumber + 1 : 0} of{" "}
+                      {products.length > 0 ? pageNumber *perPageItemView === 0 ? 1: (pageNumber *(perPageItemView)+1) : 0} of{" "}
                       {products.length < perPageItemView
                         ? products.length
-                        : perPageItemView}{" "}
+                        : perPageItemView * (pageNumber+1)> products.length? products?.length: perPageItemView * (pageNumber+1)}{" "}
                       ({products.length} {t("items")})
+              
                     </p>
                   </div>
                   {/* filter dropdown */}

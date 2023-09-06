@@ -7,11 +7,13 @@ import { useRef } from "react";
 import { FaTelegramPlane } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [success, setSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  
 
   const { loading } = useSelector((state) => state.basicFeatures);
   const { user, token } = useSelector((state) => state.Auth);
@@ -39,9 +41,11 @@ const ForgotPassword = () => {
       response.then((res) => {
         if (res.payload.status === "success") {
           setSuccess(true);
-        } else {
-          toast.error(res.payload.message);
+          setErrorMessage(false)
+      } else if(res.payload.status==="fail"&&res.payload.message==="The email provided is not registered."){
+          setErrorMessage(true)
         }
+      
       });
     }
   };
@@ -95,6 +99,9 @@ const ForgotPassword = () => {
           >
             {loading ? t("Verifying...") : t("send")}
           </button>
+          {errorMessage && <div className="text-red-500 font-semibold text-center">
+            The email provided is not registered. Please <Link to="/sign-up" className="text-blue-500 hover:underline">sign up here.</Link>
+          </div> }
         </div>
       )}
     </>

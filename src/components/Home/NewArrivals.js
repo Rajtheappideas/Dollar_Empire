@@ -23,7 +23,7 @@ const NewArrivals = ({}) => {
   return (
     <section
       id="New-Arrivals"
-      className="md:space-y-5 space-y-3 relative z-20 w-full mx-auto container xl:px-0 md:px-10 px-3"
+      className="md:space-y-5 space-y-3 relative z-0 w-full mx-auto container xl:px-0 md:px-10 px-3"
     >
       <div className="flex w-full items-center justify-between">
         <div />
@@ -43,7 +43,7 @@ const NewArrivals = ({}) => {
       newArrivals.length === 0 &&
       !newArrivalProductLoading ? (
         <p className="md:text-2xl text-lg mx-auto w-full text-center font-semibold">
-          Prodcuts Not Found, Try again after sometimes.
+          Unable to load products, please refresh the page
         </p>
       ) : (
         <>
