@@ -23,11 +23,7 @@ import {
   handleGetContactUsDetails,
   handleGetSubCategory,
 } from "./redux/GetContentSlice";
-import {
-  calculateTotalAmount,
-  calculateTotalQuantity,
-  handleGetCart,
-} from "./redux/CartSlice";
+import { handleGetCart } from "./redux/CartSlice";
 import {
   handleGetAllProducts,
   handleGetNewArrivals,
@@ -72,6 +68,8 @@ function App() {
     dispatch(handleGetSubCategory());
     dispatch(handleGetNewArrivals({ token }));
     dispatch(handleGetBanners());
+    dispatch(handleGetContactUsDetails());
+    dispatch(handleGetAllProducts({ token }));
     const response = dispatch(handleGetTopSellers({ token }));
     if (response) {
       response.then((res) => {
@@ -87,8 +85,6 @@ function App() {
         }
       });
     }
-    dispatch(handleGetContactUsDetails());
-    dispatch(handleGetAllProducts({ token }));
 
     if (user !== null) {
       const response = dispatch(handleGetVisitCount({ token }));
@@ -130,13 +126,6 @@ function App() {
       }
     }
   }, [user]);
-
-  useEffect(() => {
-    if (user !== null && cartItems.length > 0) {
-      dispatch(calculateTotalQuantity());
-      dispatch(calculateTotalAmount());
-    }
-  }, [user, cartItems]);
 
   return (
     <BrowserRouter>

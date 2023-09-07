@@ -141,57 +141,17 @@ const CartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    calculateTotalQuantity: (state) => {
-      state.totalQuantity = state.cartItems.reduce((acc, current) => {
-        if (current?.type === "pk") {
-          return acc + current?.quantity * current?.product?.PK;
-        } else {
-          return acc + current?.quantity * current?.product?.CTN;
-        }
-      }, 0);
-    },
-
-    calculateTotalAmount: (state) => {
-      const total = state.cartItems.reduce((acc, curr) => {
-        if (curr?.type === "pk") {
-          let total =
-            acc + curr?.product?.price * curr?.quantity * curr?.product?.PK;
-          return total;
-        } else {
-          let total =
-            acc + curr?.product?.price * curr?.quantity * curr?.product?.CTN;
-          return total;
-        }
-      }, 0);
-      state.subTotal = total;
+    handleChangeTotal: (state, { payload }) => {
+      state.subTotal = payload;
       if (state.shipphingMethod === "freight") {
-        state.grandTotal = total + state.freightCharges;
+        state.grandTotal = payload + parseInt(state.freightCharges);
       } else {
-        state.grandTotal = total;
+        state.grandTotal = payload;
       }
     },
 
     handleChangeShippingMethod: (state, { payload }) => {
       state.shipphingMethod = payload;
-    },
-
-    changeGrandTotal: (state, { payload }) => {
-      const total = state.cartItems.reduce((acc, curr) => {
-        if (curr?.type === "pk") {
-          let pkTotal =
-            acc + curr?.product?.price * curr?.quantity * curr?.product?.PK;
-          return pkTotal;
-        } else {
-          let ctnTotal =
-            acc + curr?.product?.price * curr?.quantity * curr?.product?.CTN;
-          return ctnTotal;
-        }
-      }, 0);
-      if (state.shipphingMethod === "freight") {
-        state.grandTotal = total + state.freightCharges;
-      } else {
-        state.grandTotal = total;
-      }
     },
 
     handleChangeAddProduct: (state, { payload }) => {
@@ -214,51 +174,14 @@ const CartSlice = createSlice({
           ? { ...product, quantity: parseFloat(quantity) }
           : product
       );
-      state.totalQuantity = state.totalQuantity = state.cartItems.reduce(
-        (acc, current) => {
-          if (current?.type === "pk") {
-            return acc + current?.quantity * current?.product?.PK;
-          } else {
-            return acc + current?.quantity * current?.product?.CTN;
-          }
-        },
-        0
-      );
-      state.subTotal = state.grandTotal = state.cartItems.reduce(
-        (acc, curr) => {
-          if (curr?.type === "pk") {
-            let total =
-              acc + curr?.product?.price * curr?.quantity * curr?.product?.PK;
-            return total;
-          } else {
-            let total =
-              acc + curr?.product?.price * curr?.quantity * curr?.product?.CTN;
-            return total;
-          }
-        },
-        0
-      );
-      state.grandTotal = state.cartItems.reduce((acc, curr) => {
-        if (curr?.type === "pk") {
-          let total =
-            acc + curr?.product?.price * curr?.quantity * curr?.product?.PK;
-          return total;
-        } else {
-          let total =
-            acc + curr?.product?.price * curr?.quantity * curr?.product?.CTN;
-          return total;
-        }
-      }, 0);
     },
 
     handleDecreaseQuantityAndAmount: (state, { payload }) => {
       if (state.totalQuantity <= 0) {
         state.totalQuantity = 0;
-        return true;
       } else if (state.grandTotal <= 0) {
         state.grandTotal = 0;
         state.subTotal = 0;
-        return true;
       } else {
         state.totalQuantity =
           parseFloat(state.totalQuantity) - parseFloat(payload?.quantity);
@@ -445,6 +368,10 @@ const CartSlice = createSlice({
         state.error = null;
         state.success = true;
         state.freightCharges = payload?.freight;
+        state.grandTotal =
+          typeof payload.freight === "string"
+            ? state.grandTotal + parseInt(payload.freight)
+            : state.grandTotal + payload.freight;
       }
     });
     builder.addCase(handleGetFreightCharges.rejected, (state, { error }) => {
@@ -458,8 +385,6 @@ const CartSlice = createSlice({
 export const {
   handleUpdateTotalQuantityAndAmount,
   handleDecreaseQuantityAndAmount,
-  calculateTotalQuantity,
-  calculateTotalAmount,
   changeGrandTotal,
   handleClearCart,
   handleChangeAddProduct,
@@ -471,6 +396,7 @@ export const {
   handleRemoveAllTotalQuantityAndTotalAmount,
   handleRemoveItemFromCart,
   handleChangeShippingMethod,
+  handleChangeTotal,
 } = CartSlice.actions;
 
 export default CartSlice.reducer;

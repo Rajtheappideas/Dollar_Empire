@@ -33,7 +33,7 @@ const MyAccount = () => {
         if (
           res.payload?.status === "fail" &&
           (res.payload?.message === "Please login first." ||
-          res.payload?.message === "Please provide authentication token.")
+            res.payload?.message === "Please provide authentication token.")
         ) {
           dispatch(handleLogoutReducer());
           dispatch(handleLogout());

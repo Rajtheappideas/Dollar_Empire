@@ -34,8 +34,6 @@ import {
 } from "../redux/FavouriteSlice";
 import { Toaster, toast } from "react-hot-toast";
 import {
-  calculateTotalAmount,
-  calculateTotalQuantity,
   handleAddProductToCart,
   handleRemoveItemFromCart,
   handleRemoveProductToCart,
@@ -304,8 +302,6 @@ const ProductDetailPopup = ({}) => {
                   `${findInCart?.product?.name} removed from cart.`
                 );
                 dispatch(handleRemoveItemFromCart(findInCart?.product?._id));
-                dispatch(calculateTotalAmount());
-                dispatch(calculateTotalQuantity());
                 setAlreadyInCartPkCount(null);
                 setAlreadyInCartCtnCount(null);
                 setAlreadyInCartPkItems("");
@@ -353,8 +349,6 @@ const ProductDetailPopup = ({}) => {
                 );
                 setChangingLoading(false);
                 setChangeTo(false);
-                dispatch(calculateTotalAmount());
-                dispatch(calculateTotalQuantity());
                 setAlreadyInCartPkCount(null);
                 setAlreadyInCartCtnCount(null);
                 setAlreadyInCartPkItems("");

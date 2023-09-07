@@ -25,11 +25,8 @@ import { useTranslation } from "react-i18next";
 import { handleChangeUserLanguage } from "../redux/AuthSlice";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import { toast } from "react-hot-toast";
-import debounce from "lodash.debounce";
-import {
-  calculateTotalAmount,
-  calculateTotalQuantity,
-} from "../redux/CartSlice";
+import { useMemo } from "react";
+import { handleChangeTotal } from "../redux/CartSlice";
 
 const Header = () => {
   const [activeCategoryForHover, setActiveCategory] = useState("");
@@ -218,6 +215,49 @@ const Header = () => {
       }
     }
   }
+
+  const calculateTotalQuantity = () => {
+    const value = cartItems.reduce((acc, current) => {
+      if (current?.type === "pk") {
+        return (
+          acc + parseInt(current?.quantity) * parseInt(current?.product?.PK)
+        );
+      } else if (current?.type === "ctn") {
+        return (
+          acc + parseInt(current?.quantity) * parseInt(current?.product?.CTN)
+        );
+      }
+    }, 0);
+    return value;
+  };
+
+  const calculateTotalAmount = () => {
+    let value;
+    if (cartItems.length > 0) {
+      value = cartItems.reduce((acc, current) => {
+        if (current?.type === "pk") {
+          return (
+            acc +
+            current?.product?.price *
+              parseInt(current?.quantity) *
+              parseInt(current?.product?.PK)
+          );
+        } else if (current?.type === "ctn") {
+          return (
+            acc +
+            current?.product?.price *
+              parseInt(current?.quantity) *
+              parseInt(current?.product?.CTN)
+          );
+        }
+      }, 0);
+      dispatch(handleChangeTotal(value));
+    }
+    return value;
+  };
+
+  const totalQty = useMemo(calculateTotalQuantity, [cartItems]);
+  const totalAmount = useMemo(calculateTotalAmount, [cartItems]);
 
   return (
     <div className="h-auto w-auto">
@@ -612,7 +652,7 @@ const Header = () => {
                 type="number"
                 className="max-w-[5rem] inline-block text-black h-9 p-1 text-center rounded-md outline-none placeholder:text-black"
                 placeholder="0"
-                value={totalQuantity}
+                value={totalQty}
                 readOnly={true}
               />
               <span className="md:ml-2 ml-1">PC</span>
@@ -624,7 +664,7 @@ const Header = () => {
                 type="number"
                 className="lg:max-w-[5rem] max-w-[6rem] h-9 text-black p-1 text-center rounded-md outline-none placeholder:text-black"
                 placeholder="0"
-                value={parseFloat(grandTotal).toFixed(2)}
+                value={parseFloat(totalAmount).toFixed(2)}
                 readOnly={true}
               />
             </p>

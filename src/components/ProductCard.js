@@ -35,8 +35,6 @@ import {
 } from "../redux/FavouriteSlice";
 import { toast } from "react-hot-toast";
 import {
-  calculateTotalAmount,
-  calculateTotalQuantity,
   handleAddProductToCart,
   handleChangeAddProduct,
   handleRemoveFromTotalQuantityAndAmountOfmultipleProducts,
@@ -218,7 +216,7 @@ const ProductCard = ({
         .then((res) => {
           if (res.payload.status === "success") {
             toast.success(`${title} added to cart successfully.`);
-            dispatch(handleChangeAddProduct({ quantity, amount }));
+            // dispatch(handleChangeAddProduct({ quantity, amount }));
             dispatch(
               handleRemoveFromTotalQuantityAndAmountOfmultipleProducts({
                 quantity,
@@ -396,8 +394,6 @@ const ProductCard = ({
                   `${findInCart?.product?.name} removed from cart.`
                 );
                 dispatch(handleRemoveItemFromCart(findInCart?.product?._id));
-                dispatch(calculateTotalAmount());
-                dispatch(calculateTotalQuantity());
                 setAlreadyInCartPkCount(null);
                 setAlreadyInCartCtnCount(null);
                 setAlreadyInCartPkItems("");
@@ -447,8 +443,6 @@ const ProductCard = ({
                 );
                 setChangingLoading(false);
                 setChangeTo(false);
-                dispatch(calculateTotalAmount());
-                dispatch(calculateTotalQuantity());
                 setAlreadyInCartPkCount(null);
                 setAlreadyInCartCtnCount(null);
                 setAlreadyInCartPkItems("");

@@ -13,6 +13,7 @@ import {
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { CheckCircleIcon } from "@heroicons/react/24/outline";
+import { handleChangeShippingAddress } from "../../redux/OrderSlice";
 
 const Address = () => {
   const [showEditAddres, setShowEditAddres] = useState(false);
@@ -23,6 +24,7 @@ const Address = () => {
   const { addressList, loading, DefaultAddresLoading } = useSelector(
     (state) => state.getContent
   );
+  const { shippingAddress } = useSelector((state) => state.orders);
 
   const { token } = useSelector((state) => state.Auth);
 
@@ -61,6 +63,7 @@ const Address = () => {
       response.then((res) => {
         if (res?.payload?.status === "success") {
           toast.success("Selected as default shipping address.");
+          dispatch(handleChangeShippingAddress(res?.payload?.address));
           setDeleteLoading(false);
         } else {
           toast.error(res?.payload?.message);
@@ -74,6 +77,17 @@ const Address = () => {
       AbortControllerRef.current !== null && AbortControllerRef.current.abort();
     };
   }, []);
+
+  useEffect(() => {
+    if (
+      addressList.length > 0 &&
+      addressList.length <= 1 &&
+      shippingAddress?._id !== addressList[0]?._id
+    ) {
+      dispatch(handleChangeShippingAddress(addressList[0]));
+      handleSelectDefaultAddress(addressList[0]?._id);
+    }
+  }, [addressList]);
 
   return (
     <>

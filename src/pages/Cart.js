@@ -6,12 +6,7 @@ import PaymentInfo from "../components/cart/PaymentInfo";
 import SuccessOrder from "../components/cart/SuccessOrder";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
-import {
-  calculateTotalAmount,
-  calculateTotalQuantity,
-  handleGetCart,
-  handleChangeShippingMethod,
-} from "../redux/CartSlice";
+import { handleGetCart, handleChangeShippingMethod } from "../redux/CartSlice";
 import { handleGetAddresses } from "../redux/GetContentSlice";
 import { useRef } from "react";
 import {
@@ -26,8 +21,7 @@ const Cart = () => {
   const [summaryFixed, setSummaryFixed] = useState(false);
 
   const { activeComponentForCart } = useSelector((state) => state.globalStates);
-  const { token, user } = useSelector((state) => state.Auth);
-  const { cartItems } = useSelector((state) => state.cart);
+  const { token } = useSelector((state) => state.Auth);
 
   const { t } = useTranslation();
 
@@ -59,13 +53,6 @@ const Cart = () => {
       AbortControllerRef.current !== null && AbortControllerRef.current.abort();
     };
   }, []);
-
-  useEffect(() => {
-    if (user !== null && cartItems.length > 0) {
-      dispatch(calculateTotalQuantity());
-      dispatch(calculateTotalAmount());
-    }
-  }, [user, cartItems]);
 
   // for sticky summary component
   useEffect(() => {

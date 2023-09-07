@@ -135,7 +135,8 @@ export const {
   handleChangeActiveSubcategory,
   handleChangeActiveCategory,
   handleChangeSearchTitle,
-  handleChangeProductListingError,handleChangeSearchActiveCategory
+  handleChangeProductListingError,
+  handleChangeSearchActiveCategory,
 } = GlobalStates.actions;
 
 export default GlobalStates.reducer;

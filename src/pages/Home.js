@@ -7,11 +7,6 @@ import { Helmet } from "react-helmet";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 
-import {
-  calculateTotalAmount,
-  calculateTotalQuantity,
-} from "../redux/CartSlice";
-
 const Home = () => {
   const { t } = useTranslation();
 
@@ -27,13 +22,6 @@ const Home = () => {
       AbortControllerRef.current !== null && AbortControllerRef.current.abort();
     };
   }, []);
-
-  useEffect(() => {
-    if (user !== null && cartItems.length > 0) {
-      dispatch(calculateTotalQuantity());
-      dispatch(calculateTotalAmount());
-    }
-  }, [user, cartItems]);
 
   return (
     <>

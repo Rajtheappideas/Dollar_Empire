@@ -6,8 +6,6 @@ import {
   handleRemoveProductToFavourites,
 } from "../redux/FavouriteSlice";
 import {
-  calculateTotalAmount,
-  calculateTotalQuantity,
   handleAddProductToCart,
   handleChangeAddProduct,
   handleRemoveItemFromCart,
@@ -265,8 +263,6 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                   `${findInCart?.product?.name} removed from cart.`
                 );
                 dispatch(handleRemoveItemFromCart(findInCart?.product?._id));
-                dispatch(calculateTotalAmount());
-                dispatch(calculateTotalQuantity());
                 setAlreadyInCartPkCount(null);
                 setAlreadyInCartCtnCount(null);
                 setAlreadyInCartPkItems("");
@@ -316,8 +312,6 @@ const Favourite = ({ favourite, handleAddSelectedItem }) => {
                 );
                 setChangingLoading(false);
                 setChangeTo(false);
-                dispatch(calculateTotalAmount());
-                dispatch(calculateTotalQuantity());
                 setAlreadyInCartPkCount(null);
                 setAlreadyInCartCtnCount(null);
                 setAlreadyInCartPkItems("");

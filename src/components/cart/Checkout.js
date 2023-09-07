@@ -3,18 +3,15 @@ import EditAddressPopup from "./EditAddressPopup";
 import { handleChangeActiveComponent } from "../../redux/GlobalStates";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  changeGrandTotal,
   handleGetFreightCharges,
   handleChangeShippingMethod,
+  handleChangeTotal,
 } from "../../redux/CartSlice";
 import AddNewAddress from "./AddNewAddress";
 import { toast } from "react-hot-toast";
 import { handleChangeShippingAddress } from "../../redux/OrderSlice";
 import { useTranslation } from "react-i18next";
-import {
-  CheckCircleIcon,
-  ArrowLongLeftIcon,
-} from "@heroicons/react/24/outline";
+import { handleDefaultSelecteAddress } from "../../redux/GetContentSlice";
 
 const Checkout = ({ summaryFixed }) => {
   const [showPopup, setShowPopup] = useState(false);
@@ -33,11 +30,16 @@ const Checkout = ({ summaryFixed }) => {
     freightChargeLoading,
   } = useSelector((state) => state.cart);
   const { shippingAddress } = useSelector((state) => state.orders);
+  const { token } = useSelector((state) => state.Auth);
   const { addressList, loading } = useSelector((state) => state.getContent);
   const dispatch = useDispatch();
 
   const handleCalculateFreightCharges = () => {
-    if (shipphingMethod === "freight" && shippingAddress !== "") {
+    if (
+      shipphingMethod === "freight" &&
+      shippingAddress !== "" &&
+      addressList.length > 0
+    ) {
       const response = dispatch(
         handleGetFreightCharges({
           state: shippingAddress?.state,
@@ -47,13 +49,8 @@ const Checkout = ({ summaryFixed }) => {
       );
       if (response) {
         response.then((res) => {
-          if (res?.payload?.status === "success") {
-            dispatch(
-              changeGrandTotal({
-                shippingMethod: shipphingMethod,
-                freightCharges,
-              })
-            );
+          if (res.payload.status === "success") {
+            dispatch(handleChangeTotal(subTotal));
           }
         });
       }
@@ -62,13 +59,23 @@ const Checkout = ({ summaryFixed }) => {
 
   useEffect(() => {
     handleCalculateFreightCharges();
-  }, [shipphingMethod, shippingAddress, addressList]);
+    if (addressList.length > 0 && shippingAddress !== "") {
+      const findSelectedAddress = addressList.find((add) => add.selected);
+      if (shippingAddress?._id !== findSelectedAddress?._id) {
+        dispatch(
+          handleDefaultSelecteAddress({
+            id: shippingAddress?._id,
+            token,
+            signal: AbortControllerRef,
+          })
+        );
+      }
+    }
+  }, [shipphingMethod, shippingAddress]);
 
   useEffect(() => {
-    if (shipphingMethod === "freight") {
-      dispatch(
-        changeGrandTotal({ shippingMethod: shipphingMethod, freightCharges })
-      );
+    if (shipphingMethod === "pickup") {
+      dispatch(handleChangeTotal(subTotal));
     }
   }, [shipphingMethod]);
 
@@ -86,8 +93,13 @@ const Checkout = ({ summaryFixed }) => {
   };
 
   useEffect(() => {
-    if (addressList ?? addressList.length > 0) {
-      dispatch(handleChangeShippingAddress(addressList[0]));
+    if (addressList.length > 0 && shippingAddress === "") {
+      if (shippingAddress === "") {
+        const findSelectedAddress = addressList.find((add) => add.selected);
+        dispatch(handleChangeShippingAddress(findSelectedAddress));
+      } else if (addressList.length <= 1) {
+        dispatch(handleChangeShippingAddress(addressList[0]));
+      }
     }
   }, []);
 

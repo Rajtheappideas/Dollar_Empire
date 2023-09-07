@@ -52,9 +52,11 @@ const ShoppingCart = ({ summaryFixed }) => {
     if (response) {
       response
         .then((res) => {
-          dispatch(handleRemoveItemFromCart(id));
-          dispatch(handleDecreaseQuantityAndAmount({ quantity, amount }));
-          setDeleteLoading(false);
+          if (res?.payload.status === "success") {
+            dispatch(handleRemoveItemFromCart(id));
+            dispatch(handleDecreaseQuantityAndAmount({ quantity, amount }));
+            setDeleteLoading(false);
+          }
         })
         .catch((err) => {
           setDeleteLoading(false);
