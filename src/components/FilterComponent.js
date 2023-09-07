@@ -125,7 +125,7 @@ const FilterComponent = ({ setActivePrice, activePrice, title }) => {
                 name="price"
                 type="radio"
                 value={activePrice}
-                className="h-5 w-5 cursor-pointer"
+                className="min-h-[20px] min-w-[20px] cursor-pointer"
                 defaultChecked
                 id="any"
               />

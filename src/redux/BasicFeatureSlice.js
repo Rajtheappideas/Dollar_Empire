@@ -181,10 +181,10 @@ const BasicFeatureSlice = createSlice({
       state.success = true;
       state.error = null;
     });
-    builder.addCase(handleForgotPassword.rejected, (state, { error }) => {
+    builder.addCase(handleForgotPassword.rejected, (state, { payload }) => {
       state.loading = false;
       state.success = false;
-      state.error = error;
+      state.error = payload;
     });
     // edit profile
     builder.addCase(handleEditProfile.pending, (state) => {

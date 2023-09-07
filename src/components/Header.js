@@ -112,6 +112,9 @@ const Header = () => {
       dispatch(handleChangeActiveCategory("All Categories"));
       dispatch(handleChangeSearchActiveCategory("All Categories"));
       dispatch(handleChangeSearchTerm(""));
+      dispatch(handleChangeSearchTitle(""));
+      dispatch(handleChangeSearchProducts([]));
+      navigate(`/product-listing/all-products`);
       return toast.error(
         `No results found: "${searchTerm}" in ${searchActiveCategory ?? ""} .`,
         {

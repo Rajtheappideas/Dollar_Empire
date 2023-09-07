@@ -41,7 +41,7 @@ const TopSellers = ({}) => {
         topSellers.length === 0 &&
         !topSellerProductLoading ? (
           <p className="md:text-2xl text-lg mx-auto w-full text-center font-semibold">
-            Prodcuts Not Found, Try again after sometimes.
+Unable to load products, please refresh the page
           </p>
         ) : (
           <>

@@ -133,7 +133,7 @@ const Signin = () => {
             <p>
               <Link
                 to="/forgot-password"
-                className="font-medium text-lg inline-block"
+                className="font-medium text-lg inline-block hover:underline"
               >
                 {t("Forgot your password")}?
               </Link>

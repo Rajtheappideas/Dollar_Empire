@@ -105,7 +105,6 @@ const ProductListing = () => {
     }
     const Categories = allProducts.map((i) => i.category);
     const uniqueCategories = [...new Set(Categories.flat(Infinity))];
-    console.log(uniqueCategories.includes(title));
     toast.dismiss();
     if (selectedItems.length > 0) {
       dispatch(handleRemoveAllProducts());
@@ -168,6 +167,10 @@ const ProductListing = () => {
         if (byPrice.length === 0) {
           setProducts([]);
           setMessage("Product Not Found, Try with different price.");
+        } else {
+          setProducts(byPrice);
+          setMessage("");
+          handleFilterProductsByPrice(byPrice);
         }
       } else if (title.toLocaleLowerCase().includes("above")) {
         // over by price
@@ -226,10 +229,9 @@ const ProductListing = () => {
       setProducts(productsByCategories);
       setMessage("");
       handleFilterProductsByPrice(productsByCategories);
-      console.log(productsByCategories);
       if (productsByCategories.length === 0) {
         setProducts([]);
-        setMessage("No items found, please try a different filter");
+        handleFilterProductsByPrice(productsByCategories);
       }
       if (activeSubcategory !== "") {
         const findProducts = productsByCategories.filter((c) =>
@@ -291,6 +293,7 @@ const ProductListing = () => {
         setMessage("");
         return setProducts(byPrice);
       } else {
+        setProducts([]);
         setMessage("No items found, please try a different filter");
       }
     } else if (activePrice.includes("$0.80 - $0.99")) {
@@ -306,6 +309,7 @@ const ProductListing = () => {
         setMessage("");
         return setProducts(byPrice);
       } else {
+        setProducts([]);
         setMessage("No items found, please try a different filter");
       }
     } else if (activePrice.includes("$1.00 - $1.49")) {
@@ -321,6 +325,7 @@ const ProductListing = () => {
         setMessage("");
         return setProducts(byPrice);
       } else {
+        setProducts([]);
         setMessage("No items found, please try a different filter");
       }
     } else if (activePrice.includes("$1.50 - $1.99")) {
@@ -336,6 +341,7 @@ const ProductListing = () => {
         setMessage("");
         return setProducts(byPrice);
       } else {
+        setProducts([]);
         setMessage("No items found, please try a different filter");
       }
     } else if (activePrice.toLocaleLowerCase().includes("above")) {
@@ -347,6 +353,7 @@ const ProductListing = () => {
         setMessage("");
         return setProducts(byPrice);
       } else {
+        setProducts([]);
         setMessage("No items found, please try a different filter");
       }
     } else if (activePrice.includes("High_to_low")) {
@@ -465,6 +472,10 @@ const ProductListing = () => {
                   amount: totalAmountMultipleProducts,
                 })
               );
+              console.log(
+                totalQuantityMultipleProducts,
+                totalAmountMultipleProducts
+              );
               setCountTotalQuantity([]);
               dispatch(handleRemoveAllProducts());
               dispatch(handleRemoveAllTotalQuantityAndTotalAmount());
@@ -487,6 +498,7 @@ const ProductListing = () => {
       dispatch(handleChangeActiveCategory("All Categories"));
       dispatch(handleChangeSearchActiveCategory("All Categories"));
       dispatch(handleChangeProductListingError(""));
+      setActivePrice("Any");
     };
   }, []);
 
@@ -505,10 +517,10 @@ const ProductListing = () => {
     title,
     newArrivals,
     topSellers,
-    activePrice,
     searchProducts,
     activeCategory,
     activeSubcategory,
+    activePrice,
   ]);
 
   // filter by new , old, hightolow ,lowtohigh
@@ -649,10 +661,17 @@ const ProductListing = () => {
                       ></p>
                     </div>
                     <p className="font-medium text-base">
-                      {products.length > 0 ? pageNumber + 1 : 0} of{" "}
+                      {products.length > 0
+                        ? pageNumber * perPageItemView === 0
+                          ? 1
+                          : pageNumber * perPageItemView + 1
+                        : 0}{" "}
+                      to{" "}
                       {products.length < perPageItemView
                         ? products.length
-                        : perPageItemView}{" "}
+                        : perPageItemView * (pageNumber + 1) > products.length
+                        ? products?.length
+                        : perPageItemView * (pageNumber + 1)}{" "}
                       ({products.length} {t("items")})
                     </p>
                   </div>
