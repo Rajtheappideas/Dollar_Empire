@@ -167,10 +167,6 @@ const ProductListing = () => {
         if (byPrice.length === 0) {
           setProducts([]);
           setMessage("Product Not Found, Try with different price.");
-        } else {
-          setProducts(byPrice);
-          setMessage("");
-          handleFilterProductsByPrice(byPrice);
         }
       } else if (title.toLocaleLowerCase().includes("above")) {
         // over by price
@@ -231,7 +227,7 @@ const ProductListing = () => {
       handleFilterProductsByPrice(productsByCategories);
       if (productsByCategories.length === 0) {
         setProducts([]);
-        handleFilterProductsByPrice(productsByCategories);
+        setMessage("No items found, please try a different filter");
       }
       if (activeSubcategory !== "") {
         const findProducts = productsByCategories.filter((c) =>
@@ -472,10 +468,7 @@ const ProductListing = () => {
                   amount: totalAmountMultipleProducts,
                 })
               );
-              console.log(
-                totalQuantityMultipleProducts,
-                totalAmountMultipleProducts
-              );
+
               setCountTotalQuantity([]);
               dispatch(handleRemoveAllProducts());
               dispatch(handleRemoveAllTotalQuantityAndTotalAmount());
@@ -509,7 +502,6 @@ const ProductListing = () => {
       dispatch(handleChangeProductListingError(""));
     }
     setPageNumber(0);
-    console.log("runn");
   }, [
     allProducts,
     allProductLoading,

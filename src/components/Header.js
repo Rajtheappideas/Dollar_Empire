@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from "react";
+import React, { useRef } from "react";
 import { TiArrowBack } from "react-icons/ti";
 import { AiOutlineShoppingCart, AiOutlineUser } from "react-icons/ai";
 import {
@@ -235,27 +235,24 @@ const Header = () => {
   };
 
   const calculateTotalAmount = () => {
-    let value;
-    if (cartItems.length > 0) {
-      value = cartItems.reduce((acc, current) => {
-        if (current?.type === "pk") {
-          return (
-            acc +
-            current?.product?.price *
-              parseInt(current?.quantity) *
-              parseInt(current?.product?.PK)
-          );
-        } else if (current?.type === "ctn") {
-          return (
-            acc +
-            current?.product?.price *
-              parseInt(current?.quantity) *
-              parseInt(current?.product?.CTN)
-          );
-        }
-      }, 0);
-      dispatch(handleChangeTotal(value));
-    }
+    const value = cartItems.reduce((acc, current) => {
+      if (current?.type === "pk") {
+        return (
+          acc +
+          current?.product?.price *
+            parseInt(current?.quantity) *
+            parseInt(current?.product?.PK)
+        );
+      } else if (current?.type === "ctn") {
+        return (
+          acc +
+          current?.product?.price *
+            parseInt(current?.quantity) *
+            parseInt(current?.product?.CTN)
+        );
+      }
+    }, 0);
+    dispatch(handleChangeTotal(value));
     return value;
   };
 
