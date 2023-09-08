@@ -38,10 +38,6 @@ const FilterComponent = ({ setActivePrice, activePrice, title }) => {
     }
   }, [loading, title, subCategories, categories]);
 
-  useEffect(() => {
-    dispatch(handleChangeActiveCategory(title));
-  }, []);
-
   return (
     <div className="w-full select-none border border-BORDERGRAY bg-white">
       <p className="text-xl font-semibold text-left border-b border-BORDERGRAY py-4 px-3">
