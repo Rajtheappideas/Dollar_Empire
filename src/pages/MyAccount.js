@@ -80,9 +80,13 @@ const MyAccount = () => {
                 onClick={() => setActiveComponent("order_history")}
               >
                 {t("Order history")}
-                {activeComponent === "order_history" && (
-                  <span className="h-full w-1 bg-PRIMARY absolute top-0 -left-3"></span>
-                )}
+                <span
+                  className={`h-full w-1 ${
+                    activeComponent === "order_history"
+                      ? "scale-100"
+                      : "scale-0"
+                  } duration-300 transition bg-PRIMARY absolute top-0 -left-3`}
+                />
               </p>
               <p
                 role="button"
@@ -94,9 +98,13 @@ const MyAccount = () => {
                 onClick={() => setActiveComponent("profile")}
               >
                 {t("Profile")}
-                {activeComponent === "profile" && (
-                  <span className="h-full w-1 bg-PRIMARY absolute top-0 -left-3"></span>
-                )}{" "}
+                <span
+                  className={`h-full w-1 ${
+                    activeComponent === "profile"
+                      ? "scale-100"
+                      : "scale-0"
+                  } duration-300 transition bg-PRIMARY absolute top-0 -left-3`}
+                />
               </p>
               <p
                 role="button"
@@ -108,13 +116,17 @@ const MyAccount = () => {
                 onClick={() => setActiveComponent("address")}
               >
                 {t("Address")}
-                {activeComponent === "address" && (
-                  <span className="h-full w-1 bg-PRIMARY absolute top-0 -left-3"></span>
-                )}{" "}
+                <span
+                  className={`h-full w-1 ${
+                    activeComponent === "address"
+                      ? "scale-100"
+                      : "scale-0"
+                  } duration-300 transition bg-PRIMARY absolute top-0 -left-3`}
+                />
               </p>
               <p
                 role="button"
-                className={`md:text-lg text-base relative group ${
+                className={`md:text-lg text-base relative group transition duration-[3000] ${
                   activeComponent === "change_password"
                     ? "font-semibold text-black"
                     : "font-normal text-TEXTGRAY"
@@ -122,9 +134,13 @@ const MyAccount = () => {
                 onClick={() => setActiveComponent("change_password")}
               >
                 {t("Change password")}
-                {activeComponent === "change_password" && (
-                  <span className="h-full w-1 bg-PRIMARY absolute top-0 -left-3"></span>
-                )}{" "}
+                <span
+                  className={`h-full w-1 ${
+                    activeComponent === "change_password"
+                      ? "scale-100"
+                      : "scale-0"
+                  } duration-300 transition bg-PRIMARY absolute top-0 -left-3`}
+                />
               </p>
               <hr />
               <button

@@ -10,8 +10,6 @@ const SingleOrderHistory = ({ setShowSingleOrder }) => {
 
   const { t } = useTranslation();
 
-  console.log(singleOrder);
-
   return (
     <>
       {loading ? (

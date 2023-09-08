@@ -415,7 +415,7 @@ const ProductListing = () => {
       if (response) {
         response
           .then((res) => {
-            if (res.payload.status === "success") {
+            if (res?.payload?.status === "success") {
               toast.success("Products Added to cart.");
               dispatch(
                 handleChangeAddProduct({
@@ -423,7 +423,6 @@ const ProductListing = () => {
                   amount: totalAmountMultipleProducts,
                 })
               );
-
               setCountTotalQuantity([]);
               dispatch(handleRemoveAllProducts());
               dispatch(handleRemoveAllTotalQuantityAndTotalAmount());
