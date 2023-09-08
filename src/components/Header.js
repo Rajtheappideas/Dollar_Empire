@@ -81,7 +81,7 @@ const Header = () => {
       dispatch(handleChangeProductListingError("Please enter a search term"));
       return toast.error("Please enter a search term");
     }
-  
+
     const filteredProducts = allProducts.filter((entry) =>
       Object.values(entry).some((val) => {
         if (typeof val === "string") {
@@ -130,8 +130,8 @@ const Header = () => {
       dispatch(handleChangeSearchActiveCategory("All Categories"));
       navigate(`/product-listing/search`);
       dispatch(handleChangeProductListingError(""));
+      handleChangeSearch(serachKeyword)
       setSerachKeyword("");
-
     }
   };
 
@@ -179,6 +179,7 @@ const Header = () => {
   function onClickOutsideForFirstDropdown() {
     setshowCategoryDropdown(false);
   }
+
   function onClickOutsideForSecondDropdown() {
     setshowSecondCategoryDropDown(false);
   }
@@ -273,10 +274,8 @@ const Header = () => {
   };
 
   // for dispatch serachterm
-  const handleChangeSearch = (e) => {
-    dispatch(
-      handleChangeSearchTitle(e.target.value.toLocaleLowerCase().trim())
-    );
+  const handleChangeSearch = (value) => {
+    dispatch(handleChangeSearchTitle(value.toLocaleLowerCase().trim()));
   };
 
   const optimizedFn = useCallback(debounce(handleChangeSearch), []);
@@ -288,7 +287,7 @@ const Header = () => {
       return true;
     } else {
       setSerachKeyword(e.target.value.toLocaleLowerCase().trim());
-      optimizedFn(e);
+      optimizedFn(e.target.value);
     }
   };
 
