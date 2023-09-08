@@ -36,7 +36,7 @@ const ShoppingCart = ({ summaryFixed }) => {
   } = useSelector((state) => state.cart);
   const { token } = useSelector((state) => state.Auth);
   const { productListingPageLink } = useSelector((state) => state.globalStates);
-  const { minOrderAmount } = useSelector((state) => state.products);
+  const { minOrderAmount } = useSelector((state) => state.getContent);
 
   const dispatch = useDispatch();
 
