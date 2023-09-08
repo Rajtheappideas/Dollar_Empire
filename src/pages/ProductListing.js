@@ -454,9 +454,6 @@ const ProductListing = () => {
   // filter func. call
   useEffect(() => {
     handleFilterProducts();
-    if (productListingError !== "") {
-      dispatch(handleChangeProductListingError(""));
-    }
     setPageNumber(0);
   }, [
     allProducts,
@@ -512,9 +509,9 @@ const ProductListing = () => {
         <div className="absolute z-30 inset-0 bg-black bg-opacity-20 backdrop-blur-sm max-w-[100%] h-full" />
       )}
 
-      <section className="bg-BACKGROUNDGRAY lg:pb-20 lg:py-0 py-10">
+      <section className="bg-BACKGROUNDGRAY lg:pb-20 lg:py-0 py-5">
         <div className="container mx-auto space_for_div space-y-5 w-full bg-BACKGROUNDGRAY">
-          <div className="w-full flex items-center justify-between">
+          <div className="w-full flex md:flex-row flex-col md:items-center items-start md:justify-between gap-3">
             {/* title */}
             <h1 className="block font-semibold md:text-4xl text-2xl text-left capitalize">
               {title.includes("search")
@@ -534,7 +531,7 @@ const ProductListing = () => {
                 : title}
             </h1>
             {productListingError !== "" && (
-              <span className="text-red-500 font-semibold text-xl">
+              <span className="text-red-500 font-semibold xl:line-clamp-3 line-clamp-4 md:text-xl text-sm break-words xl:max-w-[40%] xl:min-w-[40%] md:max-w-[60%] md:min-w-[60%] max-w-full min-w-full">
                 {productListingError}
               </span>
             )}

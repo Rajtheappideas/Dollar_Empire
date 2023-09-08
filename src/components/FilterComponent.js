@@ -116,7 +116,7 @@ const FilterComponent = ({ setActivePrice, activePrice, title }) => {
           />
         </p>
         {isOpenPrice && (
-          <ul className="pl-3 text-lg font-normal text-gray-400 capitalize space-y-1">
+          <ul className="pl-3 md:text-lg text-sm font-normal text-gray-400 capitalize space-y-1">
             <li
               className={`text-BLACK font-semibold flex items-center gap-x-2`}
               onClick={() => setActivePrice("Any")}

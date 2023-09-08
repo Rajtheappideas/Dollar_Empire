@@ -38,11 +38,8 @@ const Header = () => {
   const [serachKeyword, setSerachKeyword] = useState("");
 
   const { user, userLanguage } = useSelector((state) => state.Auth);
-  const {
-    activeSubcategory,
-    activeCategory,
-    searchActiveCategory,
-  } = useSelector((state) => state.globalStates);
+  const { activeSubcategory, activeCategory, searchActiveCategory } =
+    useSelector((state) => state.globalStates);
   const { cartItems } = useSelector((state) => state.cart);
   const { allProducts } = useSelector((state) => state.products);
   const { categories, loading, subCategories, minOrderAmount, filters } =
@@ -84,6 +81,7 @@ const Header = () => {
       dispatch(handleChangeProductListingError("Please enter a search term"));
       return toast.error("Please enter a search term");
     }
+  
     const filteredProducts = allProducts.filter((entry) =>
       Object.values(entry).some((val) => {
         if (typeof val === "string") {
@@ -99,7 +97,6 @@ const Header = () => {
       })
     );
     if (filteredProducts.length === 0) {
-      toast.remove();
       dispatch(
         handleChangeProductListingError(
           `No results found: "${serachKeyword}" in ${
@@ -123,6 +120,7 @@ const Header = () => {
             fontWeight: "normal",
             backgroundColor: "black",
             color: "white",
+            width: "fit-content",
           },
         }
       );
@@ -131,6 +129,9 @@ const Header = () => {
       dispatch(handleChangeActiveCategory("All Categories"));
       dispatch(handleChangeSearchActiveCategory("All Categories"));
       navigate(`/product-listing/search`);
+      dispatch(handleChangeProductListingError(""));
+      setSerachKeyword("");
+
     }
   };
 
@@ -258,7 +259,7 @@ const Header = () => {
   const totalQty = useMemo(calculateTotalQuantity, [cartItems]);
   const totalAmount = useMemo(calculateTotalAmount, [cartItems]);
 
-  // for search typing
+  // for search typing debouce
   const debounce = (func) => {
     let timer;
     return function (...args) {
@@ -279,6 +280,17 @@ const Header = () => {
   };
 
   const optimizedFn = useCallback(debounce(handleChangeSearch), []);
+
+  const handleChangeKeyword = (e) => {
+    if (e.target.value.length > 200) {
+      toast.remove();
+      toast.error("maximum 200 character allowed.");
+      return true;
+    } else {
+      setSerachKeyword(e.target.value.toLocaleLowerCase().trim());
+      optimizedFn(e);
+    }
+  };
 
   return (
     <div className="h-auto w-auto">
@@ -403,9 +415,9 @@ const Header = () => {
             <div ref={dropDownRef} className="relative z-0 w-fit">
               <p
                 onClick={() => setshowCategoryDropdown(true)}
-                className="cursor-pointer hover:border-[3px] w-full rounded-lg border-dotted p-2 border-black flex items-center justify-between flex-row text-black font-normal "
+                className="cursor-pointer hover:border-[3px] w-full transition rounded-lg border-dotted md:p-2 p-1 border-black flex items-center justify-between flex-row text-black font-normal "
               >
-                <span className="text-base whitespace-nowrap w-fit">
+                <span className="md:text-base text-sm whitespace-nowrap w-fit">
                   {searchActiveCategory}
                 </span>
                 <BsChevronDown className="md:min-h-[1rem] md:min-w-[1rem] mx-1" />
@@ -632,12 +644,11 @@ const Header = () => {
               <input
                 ref={searchRef}
                 type="text"
-                className="rounded-tr-lg z-0 rounded-br-lg outline-none w-full text-black pr-10"
+                className="rounded-tr-lg z-0 rounded-br-lg outline-none w-full text-black pr-10 md:text-base text-sm"
                 placeholder={t("search_products").concat("...")}
                 value={serachKeyword}
                 onChange={(e) => {
-                  setSerachKeyword(e.target.value.toLocaleLowerCase().trim());
-                  optimizedFn(e);
+                  handleChangeKeyword(e);
                 }}
               />
               <button type="submit">
