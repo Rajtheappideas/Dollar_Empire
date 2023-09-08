@@ -208,6 +208,8 @@ const initialState = {
   specialOrders: null,
   contact: null,
   DefaultAddresLoading: false,
+  minOrderAmount: null,
+  filters: [],
 };
 
 const GetContentSlice = createSlice({
@@ -325,6 +327,8 @@ const GetContentSlice = createSlice({
         state.error = null;
         state.banners = payload?.banners;
         state.featured = payload?.featured;
+        state.minOrderAmount = payload?.minOrderAmount;
+        state.filters = payload?.filter;
       }
     });
     builder.addCase(handleGetBanners.rejected, (state, { error }) => {

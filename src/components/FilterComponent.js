@@ -15,7 +15,7 @@ const FilterComponent = ({ setActivePrice, activePrice, title }) => {
   const [isOpenPrice, setIsOpenPrice] = useState(true);
   const [isCategoryThere, setIsCategoryThere] = useState(false);
 
-  const { subCategories, loading, categories } = useSelector(
+  const { subCategories, loading, categories, filters } = useSelector(
     (state) => state.getContent
   );
   const { activeCategory, activeSubcategory } = useSelector(
@@ -127,102 +127,126 @@ const FilterComponent = ({ setActivePrice, activePrice, title }) => {
                 value={activePrice}
                 className="min-h-[20px] min-w-[20px] cursor-pointer"
                 defaultChecked
-                id="any"
+                id="Any"
               />
-              <label htmlFor="any" className="cursor-pointer">
+              <label htmlFor="Any" className="cursor-pointer">
                 {t("Any")}
               </label>
             </li>
-            <li
-              className={`text-BLACK font-semibold flex items-center gap-x-2`}
-              onClick={() => setActivePrice("Below $0.49")}
-            >
-              <input
-                name="price"
-                type="radio"
-                value={activePrice}
-                className="h-5 w-5 cursor-pointer"
-                id="below $0.49"
-              />
-              <label htmlFor="below $0.49" className="cursor-pointer">
-                {t("Below")} $0.49
-              </label>
-            </li>
-            <li
-              className={`text-BLACK font-semibold flex items-center gap-x-2`}
-              onClick={() => setActivePrice("$0.50 - $0.79")}
-            >
-              <input
-                name="price"
-                type="radio"
-                value={activePrice}
-                className="h-5 w-5 cursor-pointer"
-                id="$0.50 - $0.79"
-              />
-              <label htmlFor="$0.50 - $0.79" className="cursor-pointer">
-                $0.50 - $0.79
-              </label>
-            </li>
-            <li
-              className={`text-BLACK font-semibold flex items-center gap-x-2`}
-              onClick={() => setActivePrice("$0.80 - $0.99")}
-            >
-              <input
-                name="price"
-                type="radio"
-                value={activePrice}
-                className="h-5 w-5 cursor-pointer"
-                id="$0.80 - $0.99"
-              />
-              <label htmlFor="$0.80 - $0.99" className="cursor-pointer">
-                $0.80 - $0.99
-              </label>
-            </li>
-            <li
-              className={`text-BLACK font-semibold flex items-center gap-x-2`}
-              onClick={() => setActivePrice("$1.00 - $1.49")}
-            >
-              <input
-                name="price"
-                type="radio"
-                value={activePrice}
-                className="h-5 w-5 cursor-pointer"
-                id="$1.00 - $1.49"
-              />
-              <label htmlFor="$1.00 - $1.49" className="cursor-pointer">
-                $1.00 - $1.49
-              </label>
-            </li>
-            <li
-              className={`text-BLACK font-semibold flex items-center gap-x-2`}
-              onClick={() => setActivePrice("$1.50 - $1.99")}
-            >
-              <input
-                name="price"
-                type="radio"
-                value={activePrice}
-                className="h-5 w-5 cursor-pointer"
-                id="$1.50 - $1.99"
-              />
-              <label htmlFor="$1.50 - $1.99" className="cursor-pointer">
-                $1.50 - $1.99
-              </label>
-            </li>
-            <li
-              className={`text-BLACK font-semibold flex items-center gap-x-2`}
-              onClick={() => setActivePrice("$2.00 And Above")}
-            >
-              <input
-                name="price"
-                type="radio"
-                value={activePrice}
-                className="h-5 w-5 cursor-pointer"
-                id="$2.00 above"
-              />
-              <label htmlFor="$2.00 above" className="cursor-pointer">
-                $2.00 And {t("Above")}
-              </label>
-            </li>
+            {filters.length > 0 ? (
+              filters.map((filter, index) => (
+                <li
+                  key={index}
+                  className={`text-BLACK font-semibold flex items-center gap-x-2`}
+                  onClick={() => setActivePrice(filter)}
+                >
+                  <input
+                    name="price"
+                    type="radio"
+                    value={activePrice}
+                    className="h-5 w-5 cursor-pointer"
+                    id={filter}
+                  />
+                  <label htmlFor={filter} className="cursor-pointer">
+                    {filter}
+                  </label>
+                </li>
+              ))
+            ) : (
+              <>
+                <li
+                  className={`text-BLACK font-semibold flex items-center gap-x-2`}
+                  onClick={() => setActivePrice("Below $0.49")}
+                >
+                  <input
+                    name="price"
+                    type="radio"
+                    value={activePrice}
+                    className="h-5 w-5 cursor-pointer"
+                    id="below $0.49"
+                  />
+                  <label htmlFor="below $0.49" className="cursor-pointer">
+                    {t("Below")} $0.49
+                  </label>
+                </li>
+                <li
+                  className={`text-BLACK font-semibold flex items-center gap-x-2`}
+                  onClick={() => setActivePrice("$0.50 - $0.79")}
+                >
+                  <input
+                    name="price"
+                    type="radio"
+                    value={activePrice}
+                    className="h-5 w-5 cursor-pointer"
+                    id="$0.50 - $0.79"
+                  />
+                  <label htmlFor="$0.50 - $0.79" className="cursor-pointer">
+                    $0.50 - $0.79
+                  </label>
+                </li>
+                <li
+                  className={`text-BLACK font-semibold flex items-center gap-x-2`}
+                  onClick={() => setActivePrice("$0.80 - $0.99")}
+                >
+                  <input
+                    name="price"
+                    type="radio"
+                    value={activePrice}
+                    className="h-5 w-5 cursor-pointer"
+                    id="$0.80 - $0.99"
+                  />
+                  <label htmlFor="$0.80 - $0.99" className="cursor-pointer">
+                    $0.80 - $0.99
+                  </label>
+                </li>
+                <li
+                  className={`text-BLACK font-semibold flex items-center gap-x-2`}
+                  onClick={() => setActivePrice("$1.00 - $1.49")}
+                >
+                  <input
+                    name="price"
+                    type="radio"
+                    value={activePrice}
+                    className="h-5 w-5 cursor-pointer"
+                    id="$1.00 - $1.49"
+                  />
+                  <label htmlFor="$1.00 - $1.49" className="cursor-pointer">
+                    $1.00 - $1.49
+                  </label>
+                </li>
+                <li
+                  className={`text-BLACK font-semibold flex items-center gap-x-2`}
+                  onClick={() => setActivePrice("$1.50 - $1.99")}
+                >
+                  <input
+                    name="price"
+                    type="radio"
+                    value={activePrice}
+                    className="h-5 w-5 cursor-pointer"
+                    id="$1.50 - $1.99"
+                  />
+                  <label htmlFor="$1.50 - $1.99" className="cursor-pointer">
+                    $1.50 - $1.99
+                  </label>
+                </li>
+                <li
+                  className={`text-BLACK font-semibold flex items-center gap-x-2`}
+                  onClick={() => setActivePrice("$2.00 And Above")}
+                >
+                  <input
+                    name="price"
+                    type="radio"
+                    value={activePrice}
+                    className="h-5 w-5 cursor-pointer"
+                    id="$2.00 above"
+                  />
+                  <label htmlFor="$2.00 above" className="cursor-pointer">
+                    $2.00 And {t("Above")}
+                  </label>
+                </li>
+              </>
+            )}
+
             <li
               className={`text-BLACK font-semibold flex items-center gap-x-2`}
               onClick={() => setActivePrice("Low_to_high")}
@@ -232,9 +256,9 @@ const FilterComponent = ({ setActivePrice, activePrice, title }) => {
                 type="radio"
                 value={activePrice}
                 className="h-5 w-5 cursor-pointer"
-                id="lowtohigh"
+                id="Low_to_high"
               />
-              <label htmlFor="lowtohigh" className="cursor-pointer">
+              <label htmlFor="Low_to_high" className="cursor-pointer">
                 {t("Low to high")}
               </label>
             </li>
@@ -247,9 +271,9 @@ const FilterComponent = ({ setActivePrice, activePrice, title }) => {
                 type="radio"
                 value={activePrice}
                 className="h-5 w-5 cursor-pointer"
-                id="hightolow"
+                id="High_to_low"
               />
-              <label htmlFor="hightolow" className="cursor-pointer">
+              <label htmlFor="High_to_low" className="cursor-pointer">
                 {t("High to low")}
               </label>
             </li>

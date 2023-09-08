@@ -132,9 +132,7 @@ const initialState = {
   allProducts: [],
   newArrivals: [],
   topSellers: [],
-  minOrderAmount: null,
   singleProduct: null,
-  filters: [],
   newArrivalProductLoading: false,
   topSellerProductLoading: false,
 };
@@ -215,8 +213,6 @@ const ProductSlice = createSlice({
       } else {
         state.error = null;
         state.allProducts = payload?.products;
-        state.minOrderAmount = payload?.minOrderAmount;
-        state.filters = payload?.filter;
       }
     });
     builder.addCase(handleGetAllProducts.rejected, (state, { error }) => {

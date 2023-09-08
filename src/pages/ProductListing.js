@@ -18,6 +18,7 @@ import { useEffect } from "react";
 import { toast } from "react-hot-toast";
 import {
   handleChangeActiveCategory,
+  handleChangeActiveSubcategory,
   handleChangePagePerView,
   handleChangeProductListingError,
   handleChangeProductListingPageLink,
@@ -262,6 +263,13 @@ const ProductListing = () => {
 
   // filters on price
   const handleFilterProductsByPrice = (filterproducts) => {
+    const notIncluded =
+      activePrice.toLocaleLowerCase().includes("any") ||
+      activePrice.toLocaleLowerCase().includes("below") ||
+      activePrice.toLocaleLowerCase().includes("above") ||
+      activePrice.toLocaleLowerCase().includes("high_to_low") ||
+      activePrice.toLocaleLowerCase().includes("low_to_high");
+
     if (activePrice.includes("Any")) {
       toast.dismiss();
       return setProducts(filterproducts);
@@ -276,57 +284,8 @@ const ProductListing = () => {
       } else {
         setMessage("No items found, please try a different filter");
       }
-    } else if (activePrice.includes("$0.50 - $0.79")) {
+    } else if (!notIncluded) {
       toast.dismiss();
-
-      const price = activePrice.split("-");
-      const byPrice = filterproducts.filter(
-        (i) =>
-          i.price >= price[0].replace("$", "") &&
-          i.price <= price[1].replace("$", "")
-      );
-      if (byPrice.length > 0) {
-        setMessage("");
-        return setProducts(byPrice);
-      } else {
-        setProducts([]);
-        setMessage("No items found, please try a different filter");
-      }
-    } else if (activePrice.includes("$0.80 - $0.99")) {
-      toast.dismiss();
-
-      const price = activePrice.split("-");
-      const byPrice = filterproducts.filter(
-        (i) =>
-          i.price >= price[0].replace("$", "") &&
-          i.price <= price[1].replace("$", "")
-      );
-      if (byPrice.length > 0) {
-        setMessage("");
-        return setProducts(byPrice);
-      } else {
-        setProducts([]);
-        setMessage("No items found, please try a different filter");
-      }
-    } else if (activePrice.includes("$1.00 - $1.49")) {
-      toast.dismiss();
-
-      const price = activePrice.split("-");
-      const byPrice = filterproducts.filter(
-        (i) =>
-          i.price >= price[0].replace("$", "") &&
-          i.price <= price[1].replace("$", "")
-      );
-      if (byPrice.length > 0) {
-        setMessage("");
-        return setProducts(byPrice);
-      } else {
-        setProducts([]);
-        setMessage("No items found, please try a different filter");
-      }
-    } else if (activePrice.includes("$1.50 - $1.99")) {
-      toast.dismiss();
-
       const price = activePrice.split("-");
       const byPrice = filterproducts.filter(
         (i) =>
@@ -491,6 +450,7 @@ const ProductListing = () => {
       dispatch(handleChangeActiveCategory("All Categories"));
       dispatch(handleChangeSearchActiveCategory("All Categories"));
       dispatch(handleChangeProductListingError(""));
+      dispatch(handleChangeActiveSubcategory(""));
       setActivePrice("Any");
     };
   }, []);

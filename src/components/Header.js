@@ -44,15 +44,11 @@ const Header = () => {
     activeCategory,
     searchActiveCategory,
   } = useSelector((state) => state.globalStates);
-  const { totalQuantity, grandTotal, cartItems } = useSelector(
-    (state) => state.cart
-  );
-  const { allProducts, minOrderAmount } = useSelector(
-    (state) => state.products
-  );
-  const { categories, loading, subCategories } = useSelector(
-    (state) => state.getContent
-  );
+  const { cartItems } = useSelector((state) => state.cart);
+  const { allProducts } = useSelector((state) => state.products);
+  const { categories, loading, subCategories, minOrderAmount, filters } =
+    useSelector((state) => state.getContent);
+
   const { t } = useTranslation();
 
   const searchRef = useRef(null);
@@ -916,41 +912,62 @@ const Header = () => {
               >
                 <Link to={`/product-listing/all-products`}>{t("any")}</Link>
               </li>
-              <li
-                className={`cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
-              >
-                <Link to={`/product-listing/Below $0.49`}>Below $0.49</Link>
-              </li>
-              <li
-                className={`cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
-              >
-                <Link to={`/product-listing/$0.50 - $0.79`}>$0.50 - $0.79</Link>
-              </li>
-              <li
-                className={`cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
-              >
-                <Link to={`/product-listing/$0.80 - $0.99`}>$0.80 - $0.99</Link>
-              </li>
-              <li
-                className={`cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
-              >
-                <Link to={`/product-listing/$1.00 - $1.49`}>$1.00 - $1.49</Link>
-              </li>
-              <li
-                className={`cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
-              >
-                <Link to={`/product-listing/$1.50 - $1.99`}>$1.50 - $1.99</Link>
-              </li>
-              <li
-                className={`cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
-              >
-                <Link
-                  to={`/product-listing/$2.00 And Above
+              {filters.length > 0 ? (
+                filters.map((filter, index) => (
+                  <li
+                    key={index}
+                    className={`cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
+                  >
+                    <Link to={`/product-listing/${filter}`}>{filter}</Link>
+                  </li>
+                ))
+              ) : (
+                <>
+                  <li
+                    className={`cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
+                  >
+                    <Link to={`/product-listing/Below $0.49`}>Below $0.49</Link>
+                  </li>
+                  <li
+                    className={`cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
+                  >
+                    <Link to={`/product-listing/$0.50 - $0.79`}>
+                      $0.50 - $0.79
+                    </Link>
+                  </li>
+                  <li
+                    className={`cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
+                  >
+                    <Link to={`/product-listing/$0.80 - $0.99`}>
+                      $0.80 - $0.99
+                    </Link>
+                  </li>
+                  <li
+                    className={`cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
+                  >
+                    <Link to={`/product-listing/$1.00 - $1.49`}>
+                      $1.00 - $1.49
+                    </Link>
+                  </li>
+                  <li
+                    className={`cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
+                  >
+                    <Link to={`/product-listing/$1.50 - $1.99`}>
+                      $1.50 - $1.99
+                    </Link>
+                  </li>
+                  <li
+                    className={`cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
+                  >
+                    <Link
+                      to={`/product-listing/$2.00 And Above
 `}
-                >
-                  $2.00 And {t("Above")}
-                </Link>
-              </li>
+                    >
+                      $2.00 And {t("Above")}
+                    </Link>
+                  </li>
+                </>
+              )}
               <li
                 className={`cursor-pointer hover:font-bold text-BLACK font-semibold flex items-center gap-x-2`}
               >
