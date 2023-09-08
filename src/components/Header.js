@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import { TiArrowBack } from "react-icons/ti";
 import { AiOutlineShoppingCart, AiOutlineUser } from "react-icons/ai";
 import {
@@ -18,7 +18,6 @@ import {
   handleChangeProductListingError,
   handleChangeSearchActiveCategory,
   handleChangeSearchProducts,
-  handleChangeSearchTerm,
   handleChangeSearchTitle,
 } from "../redux/GlobalStates";
 import { useTranslation } from "react-i18next";
@@ -36,10 +35,10 @@ const Header = () => {
   const [showSecondCategoryDropDown, setshowSecondCategoryDropDown] =
     useState(false);
   const [dynamicTop, setDynamicTop] = useState(1);
+  const [serachKeyword, setSerachKeyword] = useState("");
 
   const { user, userLanguage } = useSelector((state) => state.Auth);
   const {
-    searchTerm,
     activeSubcategory,
     activeCategory,
     searchActiveCategory,
@@ -79,8 +78,8 @@ const Header = () => {
   const handleSearchProducts = (e) => {
     dispatch(handleChangeProductListingError(""));
     e.preventDefault();
-    toast.dismiss();
-    if (searchTerm === "") {
+    if (serachKeyword === "") {
+      toast.remove();
       searchRef.current.focus();
       dispatch(handleChangeProductListingError("Please enter a search term"));
       return toast.error("Please enter a search term");
@@ -89,30 +88,35 @@ const Header = () => {
       Object.values(entry).some((val) => {
         if (typeof val === "string") {
           if (searchActiveCategory === "All Categories") {
-            return val.toLocaleLowerCase().includes(searchTerm);
+            return val.toLocaleLowerCase().includes(serachKeyword);
           } else {
             return (
               entry?.category.includes(searchActiveCategory) &&
-              val.toLocaleLowerCase().includes(searchTerm)
+              val.toLocaleLowerCase().includes(serachKeyword)
             );
           }
         }
       })
     );
     if (filteredProducts.length === 0) {
+      toast.remove();
       dispatch(
         handleChangeProductListingError(
-          `No results found: "${searchTerm}" in ${searchActiveCategory ?? ""} .`
+          `No results found: "${serachKeyword}" in ${
+            searchActiveCategory ?? ""
+          } .`
         )
       );
       dispatch(handleChangeActiveCategory("All Categories"));
       dispatch(handleChangeSearchActiveCategory("All Categories"));
-      dispatch(handleChangeSearchTerm(""));
       dispatch(handleChangeSearchTitle(""));
       dispatch(handleChangeSearchProducts([]));
+      setSerachKeyword("");
       navigate(`/product-listing/all-products`);
       return toast.error(
-        `No results found: "${searchTerm}" in ${searchActiveCategory ?? ""} .`,
+        `No results found: "${serachKeyword}" in ${
+          searchActiveCategory ?? ""
+        } .`,
         {
           style: {
             fontSize: "14px",
@@ -126,7 +130,6 @@ const Header = () => {
       dispatch(handleChangeSearchProducts(filteredProducts));
       dispatch(handleChangeActiveCategory("All Categories"));
       dispatch(handleChangeSearchActiveCategory("All Categories"));
-      dispatch(handleChangeSearchTerm(""));
       navigate(`/product-listing/search`);
     }
   };
@@ -254,6 +257,28 @@ const Header = () => {
 
   const totalQty = useMemo(calculateTotalQuantity, [cartItems]);
   const totalAmount = useMemo(calculateTotalAmount, [cartItems]);
+
+  // for search typing
+  const debounce = (func) => {
+    let timer;
+    return function (...args) {
+      const context = this;
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        timer = null;
+        func.apply(context, args);
+      }, 500);
+    };
+  };
+
+  // for dispatch serachterm
+  const handleChangeSearch = (e) => {
+    dispatch(
+      handleChangeSearchTitle(e.target.value.toLocaleLowerCase().trim())
+    );
+  };
+
+  const optimizedFn = useCallback(debounce(handleChangeSearch), []);
 
   return (
     <div className="h-auto w-auto">
@@ -609,18 +634,10 @@ const Header = () => {
                 type="text"
                 className="rounded-tr-lg z-0 rounded-br-lg outline-none w-full text-black pr-10"
                 placeholder={t("search_products").concat("...")}
-                value={searchTerm}
+                value={serachKeyword}
                 onChange={(e) => {
-                  dispatch(
-                    handleChangeSearchTerm(
-                      e.target.value.toLocaleLowerCase().trim()
-                    )
-                  );
-                  dispatch(
-                    handleChangeSearchTitle(
-                      e.target.value.toLocaleLowerCase().trim()
-                    )
-                  );
+                  setSerachKeyword(e.target.value.toLocaleLowerCase().trim());
+                  optimizedFn(e);
                 }}
               />
               <button type="submit">

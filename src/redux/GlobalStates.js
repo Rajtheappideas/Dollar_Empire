@@ -8,7 +8,6 @@ const initialState = {
   activeEnlargeImageFrom: "",
   singleProductEnlargeImageId: "",
   searchProducts: [],
-  searchTerm: "",
   searchTitle: "",
   activeComponentForCart: "Shopping Cart",
   singleProductId: null,
@@ -96,9 +95,7 @@ const GlobalStates = createSlice({
     handleChangeSearchProducts: (state, { payload }) => {
       state.searchProducts = payload;
     },
-    handleChangeSearchTerm: (state, { payload }) => {
-      state.searchTerm = payload;
-    },
+
     handleChangeSearchTitle: (state, { payload }) => {
       state.searchTitle = payload;
     },
@@ -131,7 +128,6 @@ export const {
   handleChangeEnlargeImageFrom,
   handleChangeSingleProductEnlargeImageId,
   handleChangeSearchProducts,
-  handleChangeSearchTerm,
   handleChangeActiveSubcategory,
   handleChangeActiveCategory,
   handleChangeSearchTitle,

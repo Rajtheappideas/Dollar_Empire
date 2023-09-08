@@ -104,9 +104,9 @@ const ProductListing = () => {
     ) {
       return true;
     }
+    toast.dismiss();
     const Categories = allProducts.map((i) => i.category);
     const uniqueCategories = [...new Set(Categories.flat(Infinity))];
-    toast.dismiss();
     if (selectedItems.length > 0) {
       dispatch(handleRemoveAllProducts());
       dispatch(handleRemoveAllTotalQuantityAndTotalAmount());
@@ -257,12 +257,12 @@ const ProductListing = () => {
       setMessage("Unable to load products, please refresh the page");
     } else {
       setProducts(allProducts);
-      console.log("from else");
     }
   };
 
   // filters on price
   const handleFilterProductsByPrice = (filterproducts) => {
+    toast.dismiss();
     const notIncluded =
       activePrice.toLocaleLowerCase().includes("any") ||
       activePrice.toLocaleLowerCase().includes("below") ||
@@ -271,10 +271,8 @@ const ProductListing = () => {
       activePrice.toLocaleLowerCase().includes("low_to_high");
 
     if (activePrice.includes("Any")) {
-      toast.dismiss();
       return setProducts(filterproducts);
     } else if (activePrice.toLocaleLowerCase().includes("below")) {
-      toast.dismiss();
       const byPrice = filterproducts.filter(
         (i) => parseFloat(i.price) <= parseFloat(activePrice.split("$")[1])
       );
@@ -285,7 +283,6 @@ const ProductListing = () => {
         setMessage("No items found, please try a different filter");
       }
     } else if (!notIncluded) {
-      toast.dismiss();
       const price = activePrice.split("-");
       const byPrice = filterproducts.filter(
         (i) =>
@@ -300,7 +297,6 @@ const ProductListing = () => {
         setMessage("No items found, please try a different filter");
       }
     } else if (activePrice.toLocaleLowerCase().includes("above")) {
-      toast.dismiss();
       const byPrice = filterproducts.filter(
         (i) => parseFloat(i.price) >= parseFloat(activePrice.split("$")[1])
       );
