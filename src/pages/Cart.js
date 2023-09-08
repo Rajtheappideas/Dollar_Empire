@@ -48,7 +48,6 @@ const Cart = () => {
     dispatch(handleGetAddresses({ token }));
     dispatch(handleChangeShippingMethod("pickup"));
     dispatch(handleChangeActiveComponent("Shopping Cart"));
-
     return () => {
       AbortControllerRef.current !== null && AbortControllerRef.current.abort();
     };

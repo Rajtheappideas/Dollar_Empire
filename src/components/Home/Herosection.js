@@ -56,7 +56,12 @@ const Herosection = () => {
           </Swiper>
           <div className="grid place-items-start justify-items-start lg:grid-cols-4 sm:grid-cols-2 w-full md:gap-3 gap-2">
             {featured.map((img, i) => (
-              <Link key={i} to={img?.link} className="w-full">
+              <Link
+                key={i}
+                to={img?.link}
+                className="w-full"
+                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              >
                 <img
                   src={BaseUrl.concat(img.image)}
                   alt={img?.imageAlt}

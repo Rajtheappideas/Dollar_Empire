@@ -35,6 +35,7 @@ import {
   handleRegisterUser,
 } from "./redux/AuthSlice";
 import ScrollToTop from "./components/ScrollToTop";
+import { OrderAllTabsEventListener } from "./redux/OrderSlice";
 
 const Home = lazy(() => import("./pages/Home"));
 const PrivayPolicy = lazy(() => import("./pages/PrivayPolicy"));
@@ -57,13 +58,13 @@ function App() {
   );
 
   const { token, user } = useSelector((state) => state.Auth);
-  const { cartItems } = useSelector((state) => state.cart);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(loginAllTabsEventListener());
     dispatch(logoutAllTabsEventListener());
+    dispatch(OrderAllTabsEventListener());
     dispatch(handleGetCategory());
     dispatch(handleGetSubCategory());
     dispatch(handleGetNewArrivals({ token }));

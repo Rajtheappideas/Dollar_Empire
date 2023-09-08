@@ -135,17 +135,27 @@ const initialState = {
   singleProduct: null,
   newArrivalProductLoading: false,
   topSellerProductLoading: false,
+  singleProductId: null,
 };
 
 const ProductSlice = createSlice({
   name: "products",
   initialState,
   reducers: {
-    handleFindSingleProduct: (state, { payload }) => {
-      const findSingleProduct = state.allProducts.find(
-        (product) => product?._id === payload
+    handleClearSingleProduct: (state) => {
+      state.singleProduct = null;
+    },
+    handleChangeAddToFavorite: (state, { payload }) => {
+      const findarr = state.allProducts.map((pro) =>
+        pro?._id === payload ? { ...pro, isFavourite: true } : pro
       );
-      state.singleProduct = findSingleProduct;
+      if (findarr) state.allProducts = findarr;
+    },
+    handleChangeRemoveFromFavorite: (state, { payload }) => {
+      const findarr = state.allProducts.map((pro) =>
+        pro?._id === payload ? { ...pro, isFavourite: false } : pro
+      );
+      if (findarr) state.allProducts = findarr;
     },
   },
   extraReducers: (builder) => {
@@ -248,6 +258,10 @@ const ProductSlice = createSlice({
   },
 });
 
-export const { handleFindSingleProduct } = ProductSlice.actions;
+export const {
+  handleClearSingleProduct,
+  handleChangeAddToFavorite,
+  handleChangeRemoveFromFavorite,
+} = ProductSlice.actions;
 
 export default ProductSlice.reducer;

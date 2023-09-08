@@ -149,7 +149,6 @@ const AuthSlice = createSlice({
       state.user = null;
       window.localStorage.removeItem("user");
       window.localStorage.removeItem("token");
-      window.localStorage.removeItem("orderId");
       window.location.href = window.location.origin.concat("/sign-in");
       toast.success("Logout Successfully.", { duration: 3000 });
       state.loading = false;

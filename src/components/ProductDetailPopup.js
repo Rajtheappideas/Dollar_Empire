@@ -42,6 +42,11 @@ import {
 import { useTranslation } from "react-i18next";
 import ReactModal from "react-modal";
 import { useCallback } from "react";
+import {
+  handleChangeAddToFavorite,
+  handleChangeRemoveFromFavorite,
+  handleClearSingleProduct,
+} from "../redux/ProductSlice";
 
 const ProductDetailPopup = ({}) => {
   const [thumbsSwiper, setThumbsSwiper] = useState();
@@ -54,7 +59,7 @@ const ProductDetailPopup = ({}) => {
   const [addProductToCartLoading, setAddProductToCartLoading] = useState(false);
   const [pkCount, setPkCount] = useState(null);
   const [ctnCount, setCtnCount] = useState(null);
-  const [isFavourite, setIsFavourite] = useState(false);
+  const [isFavorite, setIsFavourite] = useState(false);
   const [changeTo, setChangeTo] = useState(false);
   const [changingLoading, setChangingLoading] = useState(false);
   const [alreadyInCartPkCount, setAlreadyInCartPkCount] = useState(null);
@@ -68,7 +73,7 @@ const ProductDetailPopup = ({}) => {
   const { showProductDetailsPopup, showEnlargeImage, activeEnlargeImageId } =
     useSelector((state) => state.globalStates);
 
-  const { singleProduct, singleProductLoading } = useSelector(
+  const { singleProduct, singleProductLoading, allProducts } = useSelector(
     (state) => state.products
   );
   const { cart, cartItems, loading } = useSelector((state) => state.cart);
@@ -93,12 +98,14 @@ const ProductDetailPopup = ({}) => {
     if (response) {
       response
         .then((res) => {
-          setIsFavourite(!isFavourite);
-          toast.success(res.payload.message);
+          if (res?.payload?.status === "success") {
+            setIsFavourite(!isFavorite);
+            toast.success(res?.payload?.message);
+            dispatch(handleChangeAddToFavorite(singleProduct?._id));
+          }
           setFavouriteLoading(false);
         })
         .catch((err) => {
-          toast.error(err.payload.message);
           setFavouriteLoading(false);
         });
     }
@@ -112,12 +119,14 @@ const ProductDetailPopup = ({}) => {
     if (response) {
       response
         .then((res) => {
-          setIsFavourite(!isFavourite);
-          toast.success(res.payload.message);
+          if (res?.payload?.status === "success") {
+            setIsFavourite(!isFavorite);
+            toast.success(res?.payload?.message);
+            dispatch(handleChangeRemoveFromFavorite(singleProduct?._id));
+          }
           setFavouriteLoading(false);
         })
         .catch((err) => {
-          toast.error(err.payload.message);
           setFavouriteLoading(false);
         });
     }
@@ -766,6 +775,12 @@ const ProductDetailPopup = ({}) => {
     dispatch(closeEnlargeImagePopup());
   }
 
+  useEffect(() => {
+    return () => {
+      dispatch(handleClearSingleProduct());
+    };
+  }, []);
+
   // const findCheckDigit = (keyWoCD) => {
   //   /* Check that input string conveys number of digits that correspond to a given GS1 key */
   //   if (
@@ -1298,7 +1313,7 @@ const ProductDetailPopup = ({}) => {
                 </Link>
                 {favouriteLoading ? (
                   "..."
-                ) : isFavourite ? (
+                ) : isFavorite ? (
                   <AiFillHeart
                     className="w-10 h-10 text-DARKRED"
                     role="button"

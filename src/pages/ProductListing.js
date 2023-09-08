@@ -54,7 +54,9 @@ const ProductListing = () => {
     topSellerProductLoading,
   } = useSelector((state) => state.products);
 
-  const { token, user } = useSelector((state) => state.Auth);
+  const { token } = useSelector((state) => state.Auth);
+  const { loading: favLoading } = useSelector((state) => state.favourite);
+
   const {
     multipleLoading,
     loading,
@@ -223,6 +225,7 @@ const ProductListing = () => {
       const productsByCategories = allProducts.filter((i) =>
         i.category.includes(title)
       );
+      dispatch(handleChangeActiveCategory(title));
       setProducts(productsByCategories);
       setMessage("");
       handleFilterProductsByPrice(productsByCategories);
@@ -465,6 +468,7 @@ const ProductListing = () => {
     activeCategory,
     activeSubcategory,
     activePrice,
+    favLoading,
   ]);
 
   // filter by new , old, hightolow ,lowtohigh
@@ -500,6 +504,11 @@ const ProductListing = () => {
   useEffect(() => {
     setActivePrice("Any");
   }, [title]);
+
+  console.log(
+    allProducts.filter((pro) => pro.isFavourite),
+    products.filter((pro) => pro?.isFavourite)
+  );
 
   return (
     <>

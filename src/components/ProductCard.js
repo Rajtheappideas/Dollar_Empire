@@ -45,7 +45,10 @@ import {
 } from "../redux/CartSlice";
 import "react-loading-skeleton/dist/skeleton.css";
 import { MagnifyingGlassPlusIcon } from "@heroicons/react/24/outline";
-import { handleFindSingleProduct } from "../redux/ProductSlice";
+import {
+  handleChangeSingleProductId,
+  handleGetProductById,
+} from "../redux/ProductSlice";
 import { motion } from "framer-motion";
 import { handleLogoutReducer } from "../redux/AuthSlice";
 
@@ -737,7 +740,7 @@ const ProductCard = ({
 
   const handleOpenPopup = () => {
     dispatch(showPopup());
-    dispatch(handleFindSingleProduct(product?._id));
+    dispatch(handleGetProductById({ id: product?._id, token }));
   };
 
   // outside click close pop image

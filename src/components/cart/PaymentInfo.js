@@ -3,6 +3,8 @@ import CardDetails from "./CardDetails";
 import { useDispatch, useSelector } from "react-redux";
 import { handleChangeActiveComponent } from "../../redux/GlobalStates";
 import {
+  OrderAllTabsEventListener,
+  OrderCreated,
   handleChangeOrderId,
   handleChangePaymentOption,
   handleCreateOrder,
@@ -59,6 +61,7 @@ const PaymentInfo = ({ summaryFixed }) => {
           if (res.payload.status === "success") {
             dispatch(handleChangeActiveComponent("Success"));
             dispatch(handleClearCart());
+            dispatch(OrderCreated());
             toast.success("Order Submitted successfully.");
             window.scrollTo({ top: 0, behavior: "smooth" });
           } else {
@@ -130,7 +133,6 @@ const PaymentInfo = ({ summaryFixed }) => {
                     <span className="font-semibold md:text-xl block">
                       {t("Pay by Credit card")}
                     </span>
-                  
                   </p>
                 </label>
               </div>

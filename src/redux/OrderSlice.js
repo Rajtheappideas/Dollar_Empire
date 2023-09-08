@@ -1,6 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { GetUrl, PostUrl } from "../BaseUrl";
 import { toast } from "react-hot-toast";
+import { BroadcastChannel } from "broadcast-channel";
+
+const orderChannel = new BroadcastChannel("handleCreateOrder");
 
 export const handleGetOrders = createAsyncThunk(
   "orders/handleGetOrders",
@@ -155,6 +158,18 @@ const OrderSlice = createSlice({
   name: "orders",
   initialState,
   reducers: {
+    OrderCreated: () => {
+      orderChannel.postMessage("Order created");
+      orderChannel.onmessage = (event) => {
+        orderChannel.close();
+      };
+    },
+    OrderAllTabsEventListener: () => {
+      orderChannel.onmessage = (event) => {
+        orderChannel.close();
+        window.location.reload()
+      };
+    },
     handleChangeShippingAddress: (state, { payload }) => {
       state.shippingAddress = payload;
     },
@@ -304,6 +319,8 @@ export const {
   handleChangeShippingAddress,
   handleChangeOrderId,
   handleFindSingleOrder,
+  OrderCreated,
+  OrderAllTabsEventListener,
 } = OrderSlice.actions;
 
 export default OrderSlice.reducer;

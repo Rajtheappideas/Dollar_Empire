@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import { Country, State, City } from "country-state-city";
 import valid from "card-validator";
 import {
+  OrderCreated,
   handleCreateOrUpdateCard,
   handleCreateOrder,
   handleGetCard,
@@ -223,6 +224,7 @@ const CardDetails = ({ summaryFixed, additionalNotes }) => {
                   toast.success("Order Submitted successfully.");
                   dispatch(handleChangeActiveComponent("Success"));
                   dispatch(handleClearCart());
+                  dispatch(OrderCreated());
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 } else {
                   setConfirmOrderLoading(false);
