@@ -43,8 +43,6 @@ import { useTranslation } from "react-i18next";
 import ReactModal from "react-modal";
 import { useCallback } from "react";
 import {
-  handleChangeAddToFavorite,
-  handleChangeRemoveFromFavorite,
   handleClearSingleProduct,
 } from "../redux/ProductSlice";
 
@@ -101,7 +99,6 @@ const ProductDetailPopup = ({}) => {
           if (res?.payload?.status === "success") {
             setIsFavourite(!isFavorite);
             toast.success(res?.payload?.message);
-            dispatch(handleChangeAddToFavorite(singleProduct?._id));
           }
           setFavouriteLoading(false);
         })
@@ -122,7 +119,6 @@ const ProductDetailPopup = ({}) => {
           if (res?.payload?.status === "success") {
             setIsFavourite(!isFavorite);
             toast.success(res?.payload?.message);
-            dispatch(handleChangeRemoveFromFavorite(singleProduct?._id));
           }
           setFavouriteLoading(false);
         })

@@ -145,18 +145,6 @@ const ProductSlice = createSlice({
     handleClearSingleProduct: (state) => {
       state.singleProduct = null;
     },
-    handleChangeAddToFavorite: (state, { payload }) => {
-      const findarr = state.allProducts.map((pro) =>
-        pro?._id === payload ? { ...pro, isFavourite: true } : pro
-      );
-      if (findarr) state.allProducts = findarr;
-    },
-    handleChangeRemoveFromFavorite: (state, { payload }) => {
-      const findarr = state.allProducts.map((pro) =>
-        pro?._id === payload ? { ...pro, isFavourite: false } : pro
-      );
-      if (findarr) state.allProducts = findarr;
-    },
   },
   extraReducers: (builder) => {
     // get new arrivals
@@ -260,8 +248,6 @@ const ProductSlice = createSlice({
 
 export const {
   handleClearSingleProduct,
-  handleChangeAddToFavorite,
-  handleChangeRemoveFromFavorite,
 } = ProductSlice.actions;
 
 export default ProductSlice.reducer;

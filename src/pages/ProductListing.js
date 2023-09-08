@@ -55,7 +55,6 @@ const ProductListing = () => {
   } = useSelector((state) => state.products);
 
   const { token } = useSelector((state) => state.Auth);
-  const { loading: favLoading } = useSelector((state) => state.favourite);
 
   const {
     multipleLoading,
@@ -468,7 +467,6 @@ const ProductListing = () => {
     activeCategory,
     activeSubcategory,
     activePrice,
-    favLoading,
   ]);
 
   // filter by new , old, hightolow ,lowtohigh
@@ -504,11 +502,6 @@ const ProductListing = () => {
   useEffect(() => {
     setActivePrice("Any");
   }, [title]);
-
-  console.log(
-    allProducts.filter((pro) => pro.isFavourite),
-    products.filter((pro) => pro?.isFavourite)
-  );
 
   return (
     <>
