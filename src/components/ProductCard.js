@@ -900,8 +900,7 @@ const ProductCard = ({
               className="xl:w-48 md:h-60 md:w-1/2 w-full h-40 pb-10 cursor-pointer xl:object-fill object-contain object-center"
               title={product?.name}
               onClick={() => {
-                dispatch(showPopup());
-                dispatch(handleSetSingelProductId(product?._id));
+                handleOpenPopup()
               }}
               loading="lazy"
             />
