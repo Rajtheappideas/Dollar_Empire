@@ -139,7 +139,7 @@ const ShoppingCart = ({ summaryFixed }) => {
   return (
     <div className="relative w-full flex xl:flex-row flex-col items-start justify-start gap-4 pb-10 max-h-fit">
       {/* table */}
-      <div className="xl:w-9/12 w-full  overflow-x-scroll scrollbar">
+      <div className="xl:w-9/12 w-full  overflow-x-scroll scrollbar lg:order-1 order-2">
         {/* for deskt & tablet */}
         <table className="w-full xl:inline-block hidden">
           <thead className="bg-PRIMARY text-white p-2 w-full">
@@ -357,7 +357,7 @@ const ShoppingCart = ({ summaryFixed }) => {
           </tbody>
         </table>
         {/* for mobile */}
-        <table className="w-full xl:hidden overflow-hidden">
+        <table className="w-full xl:hidden overflow-hidden ">
           <tbody>
             {loading && !updateLoading ? (
               <tr>
@@ -588,7 +588,7 @@ const ShoppingCart = ({ summaryFixed }) => {
       </div>
       {/* summary */}
       <div
-        className={`xl:w-3/12 md:w-1/2 w-full space-y-3 bg-BACKGROUNDGRAY text-BLACK p-3 border border-gray-300 ml-auto ${
+        className={`lg:order-2 order-1 xl:w-3/12 lg:w-1/2 w-full space-y-3 bg-BACKGROUNDGRAY text-BLACK p-3 border border-gray-300 ml-auto ${
           summaryFixed ? "xl:sticky top-2 right-10" : "static"
         }`}
       >

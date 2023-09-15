@@ -130,8 +130,9 @@ const Header = () => {
       dispatch(handleChangeSearchActiveCategory("All Categories"));
       navigate(`/product-listing/search`);
       dispatch(handleChangeProductListingError(""));
-      handleChangeSearch(serachKeyword)
+      handleChangeSearch(serachKeyword);
       setSerachKeyword("");
+      searchRef.current.blur();
     }
   };
 

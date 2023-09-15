@@ -15,12 +15,14 @@ const ScrollToTop = () => {
   return (
     <div
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-      className={`fixed z-10 transition ease-in-out active:scale-90 duration-100 bottom-5 md:right-5 right-3 font-semibold md:leading-[48px] leading-10 bg-black text-white text-center md:w-40 w-32 md:h-12 h-10 rounded-lg ${
+      className={`fixed z-10 transition ease-in-out active:scale-90 duration-100 bottom-5 md:right-5 right-3 font-semibold bg-black text-white text-center px-3 py-2 min-w-[10rem] w-auto rounded-lg ${
         showButton ? "scale-100" : "scale-0"
       }`}
       role="button"
     >
-      Go To Top
+      {window.location.href.includes("cart")
+        ? "Go to Top to Checkout"
+        : "Go To Top"}
     </div>
   );
 };

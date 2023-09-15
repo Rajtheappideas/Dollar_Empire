@@ -120,7 +120,7 @@ const Checkout = ({ summaryFixed }) => {
       )}
 
       {/* left side div */}
-      <div className="xl:w-9/12 w-full md:space-y-3 space-y-2">
+      <div className="xl:w-9/12 w-full md:space-y-3 space-y-2 order-2">
         <p className="bg-PRIMARY text-white p-4 w-full text-left font-semibold tracking-wide">
           {t("Shipping Method")}
         </p>
@@ -247,9 +247,9 @@ const Checkout = ({ summaryFixed }) => {
       </div>
       {/* summary */}
       <div
-        className={`${
+        className={`order-1 ${
           summaryFixed ? "xl:sticky top-2 right-10" : "static"
-        } xl:w-3/12 lg:w-1/3 md:w-1/2 w-full space-y-3 bg-BACKGROUNDGRAY text-BLACK p-3 border border-gray-300 ml-auto`}
+        } xl:w-3/12 lg:w-1/3 w-full space-y-3 bg-BACKGROUNDGRAY text-BLACK p-3 border border-gray-300 ml-auto`}
       >
         <p className="font-semibold text-xl">{t("Order Summary")}</p>
         <hr className="w-full" />
