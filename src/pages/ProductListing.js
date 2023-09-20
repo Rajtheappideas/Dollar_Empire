@@ -20,6 +20,7 @@ import {
   handleChangeActiveCategory,
   handleChangeActiveSubcategory,
   handleChangePagePerView,
+  handleChangePrice,
   handleChangeProductListingError,
   handleChangeProductListingPageLink,
   handleChangeSearchActiveCategory,
@@ -97,6 +98,7 @@ const ProductListing = () => {
   };
 
   const handleChangeActivePrice = (value) => {
+    dispatch(handleChangePrice(value));
     setActivePrice(value);
   };
 
@@ -471,6 +473,7 @@ const ProductListing = () => {
       dispatch(handleChangeSearchActiveCategory("All Categories"));
       dispatch(handleChangeProductListingError(""));
       dispatch(handleChangeActiveSubcategory(""));
+      dispatch(handleChangePrice("Any"));
       setActivePrice("Any");
     };
   }, []);

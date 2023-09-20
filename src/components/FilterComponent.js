@@ -18,7 +18,7 @@ const FilterComponent = ({ handleChangeActivePrice, activePrice, title }) => {
   const { subCategories, loading, categories, filters } = useSelector(
     (state) => state.getContent
   );
-  const { activeCategory, activeSubcategory } = useSelector(
+  const { activeCategory, activeSubcategory, aprice } = useSelector(
     (state) => state.globalStates
   );
 
@@ -37,6 +37,8 @@ const FilterComponent = ({ handleChangeActivePrice, activePrice, title }) => {
       setIsCategoryThere(true);
     }
   }, [loading, title, subCategories, categories]);
+
+  console.log(activePrice);
 
   return (
     <div className="w-full select-none border border-BORDERGRAY bg-white">
@@ -125,7 +127,7 @@ const FilterComponent = ({ handleChangeActivePrice, activePrice, title }) => {
               <input
                 name="price"
                 type="radio"
-                checked={activePrice === "Any"}
+                checked={aprice === "Any"}
                 className="min-h-[20px] min-w-[20px] cursor-pointer"
                 id="Any"
               />
@@ -147,7 +149,7 @@ const FilterComponent = ({ handleChangeActivePrice, activePrice, title }) => {
                   <input
                     name="price"
                     type="radio"
-                    checked={activePrice === filter}
+                    checked={aprice === filter}
                     className="h-5 w-5 cursor-pointer"
                     id={filter}
                     onChange={(e) => handleChangeActivePrice(e.target.id)}
@@ -265,7 +267,7 @@ const FilterComponent = ({ handleChangeActivePrice, activePrice, title }) => {
               <input
                 name="price"
                 type="radio"
-                checked={activePrice === "Low_to_high"}
+                checked={aprice === "Low_to_high"}
                 className="h-5 w-5 cursor-pointer"
                 id="Low_to_high"
               />
@@ -285,7 +287,7 @@ const FilterComponent = ({ handleChangeActivePrice, activePrice, title }) => {
               <input
                 name="price"
                 type="radio"
-                checked={activePrice === "High_to_low"}
+                checked={aprice === "High_to_low"}
                 className="h-5 w-5 cursor-pointer"
                 id="High_to_low"
                 onChange={(e) => handleChangeActivePrice(e.target.id)}

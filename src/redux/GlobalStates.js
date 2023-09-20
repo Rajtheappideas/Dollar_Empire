@@ -21,6 +21,7 @@ const initialState = {
   searchActiveCategory: "All Categories",
   activeCategory: "All Categories",
   productListingError: "",
+  aprice: "Any",
 };
 const logoutChannel = new BroadcastChannel("handleLogout");
 const loginChannel = new BroadcastChannel("handleSuccess");
@@ -42,7 +43,9 @@ const GlobalStates = createSlice({
     handleChangeProductListingError: (state, { payload }) => {
       state.productListingError = payload;
     },
-
+    handleChangePrice: (state, { payload }) => {
+      state.aprice = payload;
+    },
     handleSuccess: () => {
       loginChannel.postMessage("");
       loginChannel.onmessage = (event) => {
@@ -134,6 +137,7 @@ export const {
   handleChangeSearchTitle,
   handleChangeProductListingError,
   handleChangeSearchActiveCategory,
+  handleChangePrice,
 } = GlobalStates.actions;
 
 export default GlobalStates.reducer;

@@ -543,7 +543,6 @@ const Header = () => {
                       {/* L to H for category */}
                       <Link
                         onClick={() => {
-                          setshowCategoryDropdown(false);
                           dispatch(
                             handleChangeActiveSubcategory("low_to_high")
                           );
@@ -552,6 +551,7 @@ const Header = () => {
                               searchActiveCategoryForHover
                             )
                           );
+                          setshowCategoryDropdown(false);
                         }}
                         to={`/product-listing/${searchActiveCategoryForHover}`}
                       >
@@ -562,7 +562,6 @@ const Header = () => {
                       {/*  H to L for category */}
                       <Link
                         onClick={() => {
-                          setshowCategoryDropdown(false);
                           dispatch(
                             handleChangeActiveSubcategory("high_to_low")
                           );
@@ -571,6 +570,7 @@ const Header = () => {
                               searchActiveCategoryForHover
                             )
                           );
+                          setshowCategoryDropdown(false);
                         }}
                         to={`/product-listing/${searchActiveCategoryForHover}`}
                       >
