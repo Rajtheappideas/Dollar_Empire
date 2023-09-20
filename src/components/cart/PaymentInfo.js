@@ -86,7 +86,7 @@ const PaymentInfo = ({ summaryFixed }) => {
         />
       ) : (
         <div className="w-full flex xl:flex-row flex-col items-start justify-start gap-4 pb-10">
-          <div className="xl:w-9/12 w-full space-y-3 lg:order-1 order-2">
+          <div className="xl:w-9/12 w-full space-y-3 xl:order-1 order-2">
             <p className="bg-PRIMARY text-white p-4 w-full text-left font-semibold tracking-wide">
               {t("Method")}
             </p>
@@ -152,7 +152,7 @@ const PaymentInfo = ({ summaryFixed }) => {
           </div>
           {/* summary */}
           <div
-            className={`lg:order-2 order-1 xl:w-3/12 lg:w-1/3  w-full space-y-3 bg-BACKGROUNDGRAY text-BLACK p-3 border border-gray-300 ml-auto ${
+            className={`xl:order-2 order-1 xl:w-3/12 lg:w-1/2 w-full space-y-3 bg-BACKGROUNDGRAY text-BLACK p-3 border border-gray-300 ml-auto ${
               summaryFixed ? "xl:sticky top-2 right-10" : "static"
             }`}
           >

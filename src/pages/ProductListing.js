@@ -96,6 +96,10 @@ const ProductListing = () => {
       .scrollIntoView({ behavior: "smooth" });
   };
 
+  const handleChangeActivePrice = (value) => {
+    setActivePrice(value);
+  };
+
   // filter products
   const handleFilterProducts = () => {
     if (
@@ -233,15 +237,34 @@ const ProductListing = () => {
         setMessage("No items found, please try a different filter");
       }
       if (activeSubcategory !== "") {
-        const findProducts = productsByCategories.filter((c) =>
-          c?.subcategory.includes(activeSubcategory)
-        );
-        setProducts(findProducts);
-        setMessage("");
-        handleFilterProductsByPrice(findProducts);
-        if (findProducts.length === 0) {
-          setProducts([]);
-          setMessage("No items found, please try a different filter");
+        // for low to high from dropdown selection for single category
+        if (activeSubcategory === "low_to_high") {
+          const lowToHigh = productsByCategories.slice().sort((a, b) => {
+            return parseFloat(a.price) - parseFloat(b.price);
+          });
+          handleChangeActivePrice("Low_to_high");
+          setProducts(lowToHigh);
+        }
+        // for high to low from dropdown selection for single category
+        else if (activeSubcategory === "high_to_low") {
+          const hightToLow = productsByCategories.slice().sort((a, b) => {
+            return parseFloat(b.price) - parseFloat(a.price);
+          });
+          handleChangeActivePrice("High_to_low");
+          setProducts(hightToLow);
+        }
+        // only for sub categories
+        else {
+          const findProducts = productsByCategories.filter((c) =>
+            c?.subcategory.includes(activeSubcategory)
+          );
+          setProducts(findProducts);
+          setMessage("");
+          handleFilterProductsByPrice(findProducts);
+          if (findProducts.length === 0) {
+            setProducts([]);
+            setMessage("No items found, please try a different filter");
+          }
         }
       }
     } else if (title.includes("search")) {
@@ -542,9 +565,9 @@ const ProductListing = () => {
             {/* filter */}
             <section className="lg:w-[20%] w-full">
               <FilterComponent
-                setActivePrice={setActivePrice}
                 activePrice={activePrice}
                 title={title}
+                handleChangeActivePrice={handleChangeActivePrice}
               />
             </section>
             {/* products listing*/}

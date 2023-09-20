@@ -287,10 +287,12 @@ const Header = () => {
       toast.error("maximum 200 character allowed.");
       return true;
     } else {
-      setSerachKeyword(e.target.value.toLocaleLowerCase().trim());
+      setSerachKeyword(e.target.value.toLocaleLowerCase());
       optimizedFn(e.target.value);
     }
   };
+
+  console.log(activeCategoryForHover);
 
   return (
     <div className="h-auto w-auto">
@@ -492,52 +494,6 @@ const Header = () => {
                               }}
                               className="inline-block ml-auto h-5 w-5 text-gray-400 bg-gray-100"
                             />
-                            {/* side dropdown */}
-                            {/* <div className="text-left submenu2 space-y-2 p-3 absolute top-1 left-full z-30 bg-white md:min-w-[10rem] min-w-[3rem] ">
-                          <span className="font-semibold text-black text-xl">
-                            {activeCategoryForHover}
-                          </span>
-
-                          {subCategoryProducts?.subcategories !== undefined &&
-                            subCategoryProducts?.subcategories.map((item) => (
-                              <Link
-                                key={item?._id}
-                                to={`/product-listing/${category.name}`}
-                                state={{
-                                  title: category.name,
-                                  price: null,
-                                  searchQuery: "",
-                                }}
-                                onClick={() => {
-                                  dispatch(
-                                    handleChangeActiveSubcategory(item?.name)
-                                  );
-                                }}
-                              >
-                                <span
-                                  className={`font-normal md:whitespace-nowrap block hover:font-semibold ${
-                                    activeSubcategory === item?.name &&
-                                    "bg-gray-200"
-                                  } `}
-                                >
-                                  {item.name} ({item?.productCount})
-                                </span>
-                              </Link>
-                            ))}
-
-                          <Link to={`/product-listing/low-to-high`}>
-                            {" "}
-                            <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                              {t("View all")} ({t("Low to high")})
-                            </span>
-                          </Link>
-                          <Link to={`/product-listing/high-to-low`}>
-                            {" "}
-                            <span className="font-normal whitespace-nowrap block hover:font-semibold">
-                              {t("View all")} ({t("High to low")})
-                            </span>
-                          </Link>
-                        </div> */}
                           </div>
                         ))}
                       </>
@@ -565,7 +521,6 @@ const Header = () => {
                               dispatch(
                                 handleChangeActiveSubcategory(item?.name)
                               );
-
                               dispatch(
                                 handleChangeSearchActiveCategory(
                                   searchActiveCategoryForHover
@@ -585,21 +540,39 @@ const Header = () => {
                           </Link>
                         ))}
 
+                      {/* L to H for category */}
                       <Link
                         onClick={() => {
                           setshowCategoryDropdown(false);
+                          dispatch(
+                            handleChangeActiveSubcategory("low_to_high")
+                          );
+                          dispatch(
+                            handleChangeActiveCategory(
+                              searchActiveCategoryForHover
+                            )
+                          );
                         }}
-                        to={`/product-listing/low-to-high`}
+                        to={`/product-listing/${searchActiveCategoryForHover}`}
                       >
                         <span className="font-normal mb-1 text-black whitespace-nowrap block hover:font-semibold">
                           {t("View all")} ({t("Low to high")})
                         </span>
                       </Link>
+                      {/*  H to L for category */}
                       <Link
                         onClick={() => {
                           setshowCategoryDropdown(false);
+                          dispatch(
+                            handleChangeActiveSubcategory("high_to_low")
+                          );
+                          dispatch(
+                            handleChangeActiveCategory(
+                              searchActiveCategoryForHover
+                            )
+                          );
                         }}
-                        to={`/product-listing/high-to-low`}
+                        to={`/product-listing/${searchActiveCategoryForHover}`}
                       >
                         <span className="font-normal mb-1 text-black whitespace-nowrap block hover:font-semibold">
                           {t("View all")} ({t("High to low")})
@@ -804,76 +777,58 @@ const Header = () => {
                   </span>
                   {subCategoryProducts?.subcategories !== undefined &&
                     subCategoryProducts?.subcategories.map((item) => (
-                      <Link
-                        key={item?._id}
-                        to={`/product-listing/${activeCategoryForHover}`}
-                        state={{
-                          title: activeCategoryForHover,
-                          price: null,
-                          searchQuery: "",
-                        }}
-                        onClick={() => {
-                          dispatch(handleChangeActiveSubcategory(item?.name));
-                          dispatch(
-                            handleChangeActiveCategory(activeCategoryForHover)
-                          );
-                          setshowSecondCategoryDropDown(false);
-                        }}
-                      >
-                        <span
-                          className={`font-normal text-black mb-1 md:whitespace-nowrap block hover:font-semibold ${
-                            activeSubcategory === item?.name && "bg-gray-200"
-                          } `}
+                      <>
+                        <Link
+                          key={item?._id}
+                          to={`/product-listing/${activeCategoryForHover}`}
+                          state={{
+                            title: activeCategoryForHover,
+                            price: null,
+                            searchQuery: "",
+                          }}
+                          onClick={() => {
+                            dispatch(handleChangeActiveSubcategory(item?.name));
+                            dispatch(
+                              handleChangeActiveCategory(activeCategoryForHover)
+                            );
+                            setshowSecondCategoryDropDown(false);
+                          }}
                         >
-                          {item.name} ({item?.productCount})
-                        </span>
-                      </Link>
+                          <span
+                            className={`font-normal text-black mb-1 md:whitespace-nowrap block hover:font-semibold ${
+                              activeSubcategory === item?.name && "bg-gray-200"
+                            } `}
+                          >
+                            {item.name} ({item?.productCount})
+                          </span>
+                        </Link>
+                      </>
                     ))}
-                  {/* 
-                  {subCategoryProducts?.subcategories !== undefined &&
-                    subCategoryProducts?.subcategories.map((item) => (
-                      <Link
-                        key={item?._id}
-                        to={`/product-listing/${activeCategoryForHover}`}
-                        state={{
-                          title: activeCategoryForHover,
-                          price: null,
-                          searchQuery: "",
-                        }}
-                        onClick={() => {
-                          dispatch(handleChangeActiveSubcategory(item?.name));
-                          setshowSecondCategoryDropDown(false);
-
-                          dispatch(
-                            handleChangeActiveCategory(activeCategoryForHover)
-                          );
-                        }}
-                      >
-                        <span
-                          className={`font-normal text-black mb-1 md:whitespace-nowrap block hover:font-semibold ${
-                            activeSubcategory === item?.name && "bg-gray-200"
-                          } `}
-                        >
-                          {item.name} ({item?.productCount})
-                        </span>
-                      </Link>
-                    ))} */}
-
+                  {/* L to H for category */}
                   <Link
                     onClick={() => {
                       setshowSecondCategoryDropDown(false);
+                      dispatch(handleChangeActiveSubcategory("low_to_high"));
+                      dispatch(
+                        handleChangeActiveCategory(activeCategoryForHover)
+                      );
                     }}
-                    to={`/product-listing/low-to-high`}
+                    to={`/product-listing/${activeCategoryForHover}`}
                   >
                     <span className="font-normal mb-1 text-black whitespace-nowrap block hover:font-semibold">
                       {t("View all")} ({t("Low to high")})
                     </span>
                   </Link>
+                  {/*  H to L for category */}
                   <Link
                     onClick={() => {
                       setshowSecondCategoryDropDown(false);
+                      dispatch(handleChangeActiveSubcategory("high_to_low"));
+                      dispatch(
+                        handleChangeActiveCategory(activeCategoryForHover)
+                      );
                     }}
-                    to={`/product-listing/high-to-low`}
+                    to={`/product-listing/${activeCategoryForHover}`}
                   >
                     <span className="font-normal mb-1 text-black whitespace-nowrap block hover:font-semibold">
                       {t("View all")} ({t("High to low")})
@@ -891,7 +846,6 @@ const Header = () => {
                     to={`/product-listing/low-to-high`}
                   >
                     View all (Low to high)
-                    {/* View all (Low to high) */}
                   </Link>
                 </div>
                 {/* high to low */}

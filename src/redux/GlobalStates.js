@@ -42,6 +42,7 @@ const GlobalStates = createSlice({
     handleChangeProductListingError: (state, { payload }) => {
       state.productListingError = payload;
     },
+
     handleSuccess: () => {
       loginChannel.postMessage("");
       loginChannel.onmessage = (event) => {

@@ -61,32 +61,15 @@ const Signup = () => {
         /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
         "only contain Latin letters."
       ),
-    location: yup
-      .string()
-      .required("address is required")
-      .matches(/^[0-9A-Za-z\s\-]+$/g, "That doesn't look Address")
-      .trim("The contact name cannot include leading and trailing spaces"),
+    location: yup.string().required("address is required"),
     postalCode: yup
       .string()
-      .typeError("That doesn't look like a postal code")
+      .typeError("postalcode is required")
       .required("postalcode is required")
-      .max(
-        country === "United States" ? 5 : 6,
-        country === "United States"
-          ? "Pincode should be 5 characters"
-          : "Pincode should be 6 characters"
-      )
-      .min(
-        country === "United States" ? 5 : 6,
-        country === "United States"
-          ? "Pincode should be 5 characters"
-          : "Pincode should be 6 characters"
-      )
-      .matches(/^[0-9A-Za-z\s\-]+$/g, "That doesn't look like a postal code"),
+      .matches(/^[0-9]{5}(?:-[0-9]{4})?$/, "Enter valid postal code"),
     city: yup
       .string()
       .required("city is required")
-      .trim("The contact name cannot include leading and trailing spaces")
       .matches(
         /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
         "only contain Latin letters."
@@ -94,22 +77,14 @@ const Signup = () => {
     state: yup
       .string()
       .required("state is required")
-      .trim("The contact name cannot include leading and trailing spaces"),
-    companyName: yup
-      .string()
-      .required("companyName is required")
-      .trim("The contact name cannot include leading and trailing spaces")
       .matches(
         /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
         "only contain Latin letters."
       ),
-    country: yup
-      .string()
-      .required("country is required")
-      .trim("The contact name cannot include leading and trailing spaces"),
+    companyName: yup.string().required("companyName is required"),
+    country: yup.string().required("country is required"),
     password: yup
       .string()
-      .trim("The contact name cannot include leading and trailing spaces")
       .required("password is required")
       .min(6, "Must Contain 6 Characters"),
     confirmPassword: yup
@@ -389,12 +364,10 @@ const Signup = () => {
                   {t("Postal code")}*
                 </label>
                 <input
-                  type="number"
+                  type="text"
                   className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
                   placeholder={t("Postal code")}
                   name="postalCode"
-                  maxLength={6}
-                  minLength={5}
                   {...getFieldProps("postalCode")}
                 />
                 <ErrorMessage name="postalCode" component={TextError} />
@@ -496,7 +469,8 @@ const Signup = () => {
                 />
                 <label htmlFor="check_box">
                   <span>
-                  By clicking here, I state that I have read and understood the terms and conditions.
+                    By clicking here, I state that I have read and understood
+                    the terms and conditions.
                   </span>
                 </label>
               </p>

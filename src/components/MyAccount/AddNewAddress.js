@@ -55,51 +55,28 @@ const AddNewAddress = ({ setShowNewAddress }) => {
         /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
         "only contain Latin letters."
       ),
-    location: yup
-      .string()
-      .required("location is required")
-      .matches(/^[0-9A-Za-z\s\-\,]+$/g, "That doesn't look address")
-      .trim("The contact name cannot include leading and trailing spaces"),
+    location: yup.string().required("address is required"),
     postalCode: yup
       .string()
-      .typeError("That doesn't look like a postal code")
+      .typeError("postalcode is required")
       .required("postalcode is required")
-      .max(
-        country === "United States" ? 5 : 6,
-        country === "United States"
-          ? "Postal code should be 5 characters"
-          : "Postal code should be 6 characters"
-      )
-      .min(
-        country === "United States" ? 5 : 6,
-        country === "United States"
-          ? "Postal code should be 5 characters"
-          : "Postal code should be 6 characters"
-      )
-      .matches(/^[0-9A-Za-z\s\-]+$/g, "That doesn't look like a postal code"),
+      .matches(/^[0-9]{5}(?:-[0-9]{4})?$/, "Enter valid postal code"),
     city: yup
       .string()
       .required("city is required")
-      .trim("The contact name cannot include leading and trailing spaces").matches(
+      .matches(
         /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
         "only contain Latin letters."
       ),
     state: yup
       .string()
       .required("state is required")
-      .trim("The contact name cannot include leading and trailing spaces"),
-    companyName: yup
-      .string()
-      .required("companyName is required")
-      .trim("The contact name cannot include leading and trailing spaces")
       .matches(
         /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
         "only contain Latin letters."
       ),
-    country: yup
-      .string()
-      .required("country is required")
-      .trim("The contact name cannot include leading and trailing spaces"),
+    companyName: yup.string().required("companyName is required"),
+    country: yup.string().required("country is required"),
     phone: yup
       .string()
       .required("A phone number is required")
@@ -362,9 +339,7 @@ const AddNewAddress = ({ setShowNewAddress }) => {
               {t("PostalCode")}*
             </label>
             <input
-              type="number"
-              maxLength={values.country === "United States" ? 5 : 6}
-              minLength={5}
+              type="text"
               className="bg-LIGHTGRAY outline-none w-full text-black placeholder:text-gray-400 rounded-md p-3"
               placeholder={t("PostalCode")}
               name="postalCode"

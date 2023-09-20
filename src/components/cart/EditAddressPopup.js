@@ -63,32 +63,15 @@ const EditAddressPopup = ({ setShowPopup, addressId, showPopup }) => {
         /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
         "only contain Latin letters."
       ),
-    location: yup
-      .string()
-      .required("location is required")
-      .matches(/^[0-9A-Za-z\s\-\,]+$/g, "That doesn't look address")
-      .trim("The contact name cannot include leading and trailing spaces"),
+    location: yup.string().required("address is required"),
     postalCode: yup
       .string()
-      .typeError("That doesn't look like a postal code")
+      .typeError("postalcode is required")
       .required("postalcode is required")
-      .max(
-        country === "United States" ? 5 : 6,
-        country === "United States"
-          ? "Pincode should be 5 characters"
-          : "Pincode should be 6 characters"
-      )
-      .min(
-        country === "United States" ? 5 : 6,
-        country === "United States"
-          ? "Pincode should be 5 characters"
-          : "Pincode should be 6 characters"
-      )
-      .matches(/^[0-9A-Za-z\s\-]+$/g, "That doesn't look like a postal code"),
+      .matches(/^[0-9]{5}(?:-[0-9]{4})?$/, "Enter valid postal code"),
     city: yup
       .string()
       .required("city is required")
-      .trim("The contact name cannot include leading and trailing spaces")
       .matches(
         /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
         "only contain Latin letters."
@@ -96,23 +79,14 @@ const EditAddressPopup = ({ setShowPopup, addressId, showPopup }) => {
     state: yup
       .string()
       .required("state is required")
-      .trim("The contact name cannot include leading and trailing spaces")
       .matches(
         /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
         "only contain Latin letters."
       ),
-    companyName: yup
-      .string()
-      .required("companyName is required")
-      .trim("The contact name cannot include leading and trailing spaces")
-      .matches(
-        /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
-        "only contain Latin letters."
-      ),
+    companyName: yup.string().required("companyName is required"),
     country: yup
       .string()
       .required("country is required")
-      .trim("The contact name cannot include leading and trailing spaces")
       .matches(
         /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
         "only contain Latin letters."
@@ -339,7 +313,7 @@ const EditAddressPopup = ({ setShowPopup, addressId, showPopup }) => {
             </>
             {/* city */}
             <div className="flex md:flex-row flex-col items-start w-full gap-3 md:gap-4">
-            <div className="md:w-1/2 w-full">
+              <div className="md:w-1/2 w-full">
                 <label className="text-black font-medium block text-left text-lg">
                   {t("City")}*
                 </label>
@@ -370,12 +344,10 @@ const EditAddressPopup = ({ setShowPopup, addressId, showPopup }) => {
                   {t("Postal code")}*
                 </label>
                 <input
-                  type="number"
+                  type="text"
                   className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
                   placeholder={t("Postal code")}
                   name="postalCode"
-                  maxLength={6}
-                  minLength={5}
                   {...getFieldProps("postalCode")}
                 />
                 <ErrorMessage name="postalCode" component={TextError} />
