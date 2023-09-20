@@ -292,8 +292,6 @@ const Header = () => {
     }
   };
 
-  console.log(activeCategoryForHover);
-
   return (
     <div className="h-auto w-auto">
       {(showCategoryDropdown || showSecondCategoryDropDown) && (

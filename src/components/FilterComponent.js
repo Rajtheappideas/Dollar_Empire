@@ -38,8 +38,6 @@ const FilterComponent = ({ handleChangeActivePrice, activePrice, title }) => {
     }
   }, [loading, title, subCategories, categories]);
 
-  console.log(activePrice);
-
   return (
     <div className="w-full select-none border border-BORDERGRAY bg-white">
       <p className="text-xl font-semibold text-left border-b border-BORDERGRAY py-4 px-3">
