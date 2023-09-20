@@ -8,7 +8,10 @@ import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { handleLoginUser } from "../redux/AuthSlice";
 import { useEffect } from "react";
-import { handleSuccess, loginAllTabsEventListener } from "../redux/GlobalStates";
+import {
+  handleSuccess,
+  loginAllTabsEventListener,
+} from "../redux/GlobalStates";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
@@ -44,20 +47,19 @@ const Signin = () => {
           email: values.email,
           password: values.password,
           signal: AbortControllerRef,
-        })
+        }),
       );
 
       if (response) {
         response.then((res) => {
-          if (res.payload.status === "success") {
+          if (res?.payload?.status === "success") {
             dispatch(handleSuccess());
             navigate("/");
             setErrorMessage("");
             window.scrollTo({ top: 0, behavior: "smooth" });
             return toast.success("Sign In successfully.", { duration: 3000 });
           } else {
-            // toast.error(res.payload.message);
-            setErrorMessage(res.payload.message);
+            setErrorMessage(res?.payload?.message);
           }
         });
       }

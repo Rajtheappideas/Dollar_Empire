@@ -1,13 +1,15 @@
 import axios from "axios";
 
-export default axios.defaults.baseURL = "https://admin.familymaidllc.com";
+// export default axios.defaults.baseURL = "https://admin.familymaidllc.com";
+export default axios.defaults.baseURL = "https://admin.dollarempirellc.com";
 // export default axios.defaults.baseURL = "https://dollarempire.onrender.com";
 
 const token = JSON.parse(window.localStorage.getItem("token"));
 
 export const PostUrl = axios.create({
   // baseURL: "https://dollarempire.onrender.com/api",
-  baseURL: "https://admin.familymaidllc.com/api",
+  baseURL: "https://admin.dollarempirellc.com/api",
+  // baseURL: "https://admin.familymaidllc.com/api",
   method: "post",
   headers: {
     "Accept-Language": JSON.parse(window.localStorage.getItem("user_lang")),
@@ -16,7 +18,7 @@ export const PostUrl = axios.create({
 });
 
 export const GetUrl = axios.create({
-  baseURL: "https://admin.familymaidllc.com/api",
+  baseURL: "https://admin.dollarempirellc.com/api",
   // baseURL: "https://dollarempire.onrender.com/api",
   method: "get",
   headers: {
