@@ -87,7 +87,7 @@ const ProductListing = () => {
   const pageVisited = pageNumber * productsPerPage;
   const displayProdcuts = products.slice(
     pageVisited,
-    productsPerPage + pageVisited
+    productsPerPage + pageVisited,
   );
   const pageCount = Math.ceil(products.length / productsPerPage);
   const changePage = ({ selected }) => {
@@ -95,6 +95,7 @@ const ProductListing = () => {
     window.document
       .getElementById("product_listing")
       .scrollIntoView({ behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleChangeActivePrice = (value) => {
@@ -152,7 +153,7 @@ const ProductListing = () => {
         const byPrice = allProducts.filter(
           (i) =>
             i.price >= price[0].replace("$", "") &&
-            i.price <= price[1].replace("$", "")
+            i.price <= price[1].replace("$", ""),
         );
 
         setProducts(byPrice);
@@ -166,7 +167,7 @@ const ProductListing = () => {
         // over by price
         const price = title.split("$");
         const byPrice = allProducts.filter(
-          (i) => parseFloat(i.price) < parseFloat(price[1])
+          (i) => parseFloat(i.price) < parseFloat(price[1]),
         );
         setProducts(byPrice);
         setMessage("");
@@ -180,7 +181,7 @@ const ProductListing = () => {
         // over by price
         const price = title.split("$");
         const byPrice = allProducts.filter(
-          (i) => parseFloat(i.price) >= parseFloat(price[1])
+          (i) => parseFloat(i.price) >= parseFloat(price[1]),
         );
 
         setProducts(byPrice);
@@ -228,7 +229,7 @@ const ProductListing = () => {
     } else if (uniqueCategories.includes(title) && !allProductLoading) {
       // by category
       const productsByCategories = allProducts.filter((i) =>
-        i.category.includes(title)
+        i.category.includes(title),
       );
       dispatch(handleChangeActiveCategory(title));
       setProducts(productsByCategories);
@@ -258,7 +259,7 @@ const ProductListing = () => {
         // only for sub categories
         else {
           const findProducts = productsByCategories.filter((c) =>
-            c?.subcategory.includes(activeSubcategory)
+            c?.subcategory.includes(activeSubcategory),
           );
           setProducts(findProducts);
           setMessage("");
@@ -301,7 +302,7 @@ const ProductListing = () => {
       return setProducts(filterproducts);
     } else if (activePrice.toLocaleLowerCase().includes("below")) {
       const byPrice = filterproducts.filter(
-        (i) => parseFloat(i.price) <= parseFloat(activePrice.split("$")[1])
+        (i) => parseFloat(i.price) <= parseFloat(activePrice.split("$")[1]),
       );
       if (byPrice.length > 0) {
         setMessage("");
@@ -314,7 +315,7 @@ const ProductListing = () => {
       const byPrice = filterproducts.filter(
         (i) =>
           i.price >= price[0].replace("$", "") &&
-          i.price <= price[1].replace("$", "")
+          i.price <= price[1].replace("$", ""),
       );
       if (byPrice.length > 0) {
         setMessage("");
@@ -325,7 +326,7 @@ const ProductListing = () => {
       }
     } else if (activePrice.toLocaleLowerCase().includes("above")) {
       const byPrice = filterproducts.filter(
-        (i) => parseFloat(i.price) >= parseFloat(activePrice.split("$")[1])
+        (i) => parseFloat(i.price) >= parseFloat(activePrice.split("$")[1]),
       );
       if (byPrice.length > 0) {
         setMessage("");
@@ -357,7 +358,7 @@ const ProductListing = () => {
     itemType,
     pkCount,
     ctnCount,
-    amount
+    amount,
   ) => {
     if (pkQuantity !== "" || ctnQuantity !== "") {
       const item = {};
@@ -382,10 +383,10 @@ const ProductListing = () => {
         arr.flat(1).reduce((acc, cur) => {
           acc[cur.id] = cur;
           return acc;
-        }, {})
+        }, {}),
       );
       dispatch(
-        handleAddMultipleProducts(result.filter((i) => i.quantity !== 0))
+        handleAddMultipleProducts(result.filter((i) => i.quantity !== 0)),
       );
       // for count total quanitty
       const countTotalQuantityOfProducts = [
@@ -399,7 +400,7 @@ const ProductListing = () => {
         arr2.flat(1).reduce((acc, cur) => {
           acc[cur.id] = cur;
           return acc;
-        }, {})
+        }, {}),
       );
 
       const filteredQuantityAndAmount = result2.filter((i) => i.quantity !== 0);
@@ -414,7 +415,7 @@ const ProductListing = () => {
         handlechangeTotalQuantityAndAmountOfmultipleProducts({
           totalQuantity,
           totalAmount,
-        })
+        }),
       );
       setCountTotalQuantity(result2.filter((i) => i.quantity !== 0));
     }
@@ -427,8 +428,8 @@ const ProductListing = () => {
       toast.dismiss();
       dispatch(
         handleChangeProductListingError(
-          "No quantity found. Please add at least one item"
-        )
+          "No quantity found. Please add at least one item",
+        ),
       );
       return toast.error("No quantity found. Please add at least one item");
     } else {
@@ -437,7 +438,7 @@ const ProductListing = () => {
           token,
           signal: AbortControllerRef,
           products: selectedItems,
-        })
+        }),
       );
       if (response) {
         response
@@ -448,7 +449,7 @@ const ProductListing = () => {
                 handleChangeAddProduct({
                   quantity: totalQuantityMultipleProducts,
                   amount: totalAmountMultipleProducts,
-                })
+                }),
               );
               setCountTotalQuantity([]);
               dispatch(handleRemoveAllProducts());
@@ -520,7 +521,7 @@ const ProductListing = () => {
       handleChangeProductListingPageLink({
         link: window.location.href,
         pagination: pageNumber,
-      })
+      }),
     );
   }, [title, pageNumber]);
 
