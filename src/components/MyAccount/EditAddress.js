@@ -17,6 +17,7 @@ import { handleGetAddresses } from "../../redux/GetContentSlice";
 import { useState } from "react";
 import { Country, State, City } from "country-state-city";
 import { useTranslation } from "react-i18next";
+import validator from "validator";
 
 const EditAddress = ({ setShowEditAddres, addressId }) => {
   const [selectedData, setSelectedData] = useState({
@@ -31,7 +32,7 @@ const EditAddress = ({ setShowEditAddres, addressId }) => {
   const { token } = useSelector((state) => state.Auth);
 
   const findEditAddress = addressList.find(
-    (address) => address?._id == addressId
+    (address) => address?._id == addressId,
   );
   const dispatch = useDispatch();
 
@@ -41,47 +42,53 @@ const EditAddress = ({ setShowEditAddres, addressId }) => {
 
   const editAddressSchema = yup.object().shape({
     fname: yup
-    .string()
-    .trim("The contact name cannot include leading and trailing spaces")
-    .required("firstname is required")
-    .min(3, "too short")
-    .max(30, "too long")
-    .matches(
-      /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
-      "only contain Latin letters."
-    ),
-  lname: yup
-    .string()
-    .trim("The contact name cannot include leading and trailing spaces")
-    .required("lastname is required")
-    .min(2, "too short")
-    .max(30, "too long")
-    .matches(
-      /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
-      "only contain Latin letters."
-    ),
-  location: yup.string().required("location is required"),
-  postalCode: yup
-    .string()
-    .typeError("That doesn't look like a postal code")
-    .required("postalcode is required")
-    .matches(/^[0-9]{5}(?:-[0-9]{4})?$/, "Enter valid postal code"),
-  city: yup
-    .string()
-    .required("city is required")
-    .matches(
-      /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
-      "only contain Latin letters."
-    ),
-  state: yup.string().required("state is required"),
-  companyName: yup.string().required("companyName is required"),
-  country: yup
-    .string()
-    .required("country is required"),
-  phone: yup
-    .string()
-    .required("A phone number is required")
-    .trim("The contact name cannot include leading and trailing spaces"),
+      .string()
+      .trim("The contact name cannot include leading and trailing spaces")
+      .required("firstname is required")
+      .min(2, "too short")
+      .max(30, "too long")
+      .matches(
+        /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
+        "only contain Latin letters.",
+      ),
+    lname: yup
+      .string()
+      .trim("The contact name cannot include leading and trailing spaces")
+      .required("lastname is required")
+      .min(2, "too short")
+      .max(30, "too long")
+      .matches(
+        /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
+        "only contain Latin letters.",
+      ),
+    location: yup.string().required("location is required"),
+    postalCode: yup
+      .string()
+      .typeError("That doesn't look like a postal code")
+      .when("country", {
+        is: "United States",
+        then: () => yup.string().required("postalcode is required"),
+      }),
+    city: yup
+      .string()
+      .when("country", {
+        is: "United States",
+        then: () => yup.string().required("city is required"),
+      })
+      .matches(
+        /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
+        "only contain Latin letters.",
+      ),
+    state: yup.string().when("country", {
+      is: "United States",
+      then: () => yup.string().required("state is required"),
+    }),
+    companyName: yup.string().required("companyName is required"),
+    country: yup.string().required("country is required"),
+    phone: yup
+      .string()
+      .required("A phone number is required")
+      .trim("The contact name cannot include leading and trailing spaces"),
   });
 
   const formik = useFormik({
@@ -99,10 +106,7 @@ const EditAddress = ({ setShowEditAddres, addressId }) => {
     validationSchema: editAddressSchema,
     enableReinitialize: true,
     onSubmit: (values) => {
-      if (
-        isPossiblePhoneNumber(values.phone) &&
-        isValidPhoneNumber(values.phone)
-      ) {
+      if (validator.isMobilePhone(values.phone)) {
         const response = dispatch(
           handlePostEditAddress({
             fname: values.fname,
@@ -117,7 +121,7 @@ const EditAddress = ({ setShowEditAddres, addressId }) => {
             signal: AbortControllerRef,
             token,
             id: addressId,
-          })
+          }),
         );
         if (response) {
           response.then((res) => {
@@ -136,6 +140,7 @@ const EditAddress = ({ setShowEditAddres, addressId }) => {
           });
         }
       } else {
+        toast.remove();
         toast.error("Phone number is invalid");
       }
     },
@@ -156,12 +161,12 @@ const EditAddress = ({ setShowEditAddres, addressId }) => {
   useEffect(() => {
     const country = Country.getAllCountries().find(
       (country) =>
-        country.name.toLocaleLowerCase() === values.country.toLocaleLowerCase()
+        country.name.toLocaleLowerCase() === values.country.toLocaleLowerCase(),
     );
-    setCountry(country?.name);
-    const states = State.getStatesOfCountry(country?.isoCode);
+    // setCountry(country?.name);
+    // const states = State.getStatesOfCountry(country?.isoCode);
 
-    setSelectedData({ ...selectedData, state: states });
+    // setSelectedData({ ...selectedData, state: states });
   }, [values.country, values.state, values.city]);
 
   return (
@@ -250,7 +255,7 @@ const EditAddress = ({ setShowEditAddres, addressId }) => {
           <label className="text-black font-medium block text-left text-lg">
             {t("State")}*
           </label>
-          <select
+          {/* <select
             className=" outline-none bg-LIGHTGRAY lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
             name="state"
             {...getFieldProps("state")}
@@ -262,7 +267,14 @@ const EditAddress = ({ setShowEditAddres, addressId }) => {
                   {state?.name}
                 </option>
               ))}
-          </select>
+          </select> */}
+          <input
+            type="text"
+            className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
+            placeholder={t("State")}
+            name="state"
+            {...getFieldProps("state")}
+          />
           <ErrorMessage name="state" component={TextError} />
         </>
         {/* city */}

@@ -94,15 +94,15 @@ const Header = () => {
             );
           }
         }
-      })
+      }),
     );
     if (filteredProducts.length === 0) {
       dispatch(
         handleChangeProductListingError(
           `No results found: "${serachKeyword}" in ${
             searchActiveCategory ?? ""
-          } .`
-        )
+          } .`,
+        ),
       );
       dispatch(handleChangeActiveCategory("All Categories"));
       dispatch(handleChangeSearchActiveCategory("All Categories"));
@@ -122,7 +122,7 @@ const Header = () => {
             color: "white",
             width: "fit-content",
           },
-        }
+        },
       );
     } else {
       dispatch(handleChangeSearchProducts(filteredProducts));
@@ -445,7 +445,9 @@ const Header = () => {
                         <Link
                           onClick={() => {
                             dispatch(
-                              handleChangeSearchActiveCategory("All Categories")
+                              handleChangeSearchActiveCategory(
+                                "All Categories",
+                              ),
                             );
                             setshowCategoryDropdown(false);
                           }}
@@ -478,8 +480,8 @@ const Header = () => {
                                 dispatch(handleChangeActiveSubcategory(""));
                                 dispatch(
                                   handleChangeSearchActiveCategory(
-                                    category?.name
-                                  )
+                                    category?.name,
+                                  ),
                                 );
                                 setshowCategoryDropdown(false);
                               }}
@@ -517,12 +519,12 @@ const Header = () => {
                             }}
                             onClick={() => {
                               dispatch(
-                                handleChangeActiveSubcategory(item?.name)
+                                handleChangeActiveSubcategory(item?.name),
                               );
                               dispatch(
                                 handleChangeSearchActiveCategory(
-                                  searchActiveCategoryForHover
-                                )
+                                  searchActiveCategoryForHover,
+                                ),
                               );
                               setshowCategoryDropdown(false);
                             }}
@@ -542,12 +544,12 @@ const Header = () => {
                       <Link
                         onClick={() => {
                           dispatch(
-                            handleChangeActiveSubcategory("low_to_high")
+                            handleChangeActiveSubcategory("low_to_high"),
                           );
                           dispatch(
                             handleChangeActiveCategory(
-                              searchActiveCategoryForHover
-                            )
+                              searchActiveCategoryForHover,
+                            ),
                           );
                           setshowCategoryDropdown(false);
                         }}
@@ -561,12 +563,12 @@ const Header = () => {
                       <Link
                         onClick={() => {
                           dispatch(
-                            handleChangeActiveSubcategory("high_to_low")
+                            handleChangeActiveSubcategory("high_to_low"),
                           );
                           dispatch(
                             handleChangeActiveCategory(
-                              searchActiveCategoryForHover
-                            )
+                              searchActiveCategoryForHover,
+                            ),
                           );
                           setshowCategoryDropdown(false);
                         }}
@@ -747,7 +749,7 @@ const Header = () => {
                           onClick={() => {
                             dispatch(handleChangeActiveSubcategory(""));
                             dispatch(
-                              handleChangeActiveCategory(category?.name)
+                              handleChangeActiveCategory(category?.name),
                             );
                             setshowSecondCategoryDropDown(false);
                           }}
@@ -787,7 +789,9 @@ const Header = () => {
                           onClick={() => {
                             dispatch(handleChangeActiveSubcategory(item?.name));
                             dispatch(
-                              handleChangeActiveCategory(activeCategoryForHover)
+                              handleChangeActiveCategory(
+                                activeCategoryForHover,
+                              ),
                             );
                             setshowSecondCategoryDropDown(false);
                           }}
@@ -808,7 +812,7 @@ const Header = () => {
                       setshowSecondCategoryDropDown(false);
                       dispatch(handleChangeActiveSubcategory("low_to_high"));
                       dispatch(
-                        handleChangeActiveCategory(activeCategoryForHover)
+                        handleChangeActiveCategory(activeCategoryForHover),
                       );
                     }}
                     to={`/product-listing/${activeCategoryForHover}`}
@@ -823,7 +827,7 @@ const Header = () => {
                       setshowSecondCategoryDropDown(false);
                       dispatch(handleChangeActiveSubcategory("high_to_low"));
                       dispatch(
-                        handleChangeActiveCategory(activeCategoryForHover)
+                        handleChangeActiveCategory(activeCategoryForHover),
                       );
                     }}
                     to={`/product-listing/${activeCategoryForHover}`}

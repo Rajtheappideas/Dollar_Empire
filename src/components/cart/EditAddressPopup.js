@@ -19,6 +19,7 @@ import { Country, State, City } from "country-state-city";
 import { useTranslation } from "react-i18next";
 import { handleChangeShippingAddress } from "../../redux/OrderSlice";
 import ReactModal from "react-modal";
+import validator from "validator";
 
 const EditAddressPopup = ({ setShowPopup, addressId, showPopup }) => {
   const [selectedData, setSelectedData] = useState({
@@ -33,7 +34,7 @@ const EditAddressPopup = ({ setShowPopup, addressId, showPopup }) => {
   const { token } = useSelector((state) => state.Auth);
 
   const findEditAddress = addressList.find(
-    (address) => address?._id == addressId
+    (address) => address?._id == addressId,
   );
   const dispatch = useDispatch();
 
@@ -47,11 +48,11 @@ const EditAddressPopup = ({ setShowPopup, addressId, showPopup }) => {
       .string()
       .trim("The contact name cannot include leading and trailing spaces")
       .required("firstname is required")
-      .min(3, "too short")
+      .min(2, "too short")
       .max(30, "too long")
       .matches(
         /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
-        "only contain Latin letters."
+        "only contain Latin letters.",
       ),
     lname: yup
       .string()
@@ -61,27 +62,35 @@ const EditAddressPopup = ({ setShowPopup, addressId, showPopup }) => {
       .max(30, "too long")
       .matches(
         /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
-        "only contain Latin letters."
+        "only contain Latin letters.",
       ),
     location: yup.string().required("address is required"),
     postalCode: yup
       .string()
       .typeError("postalcode is required")
-      .required("postalcode is required")
-      .matches(/^[0-9]{5}(?:-[0-9]{4})?$/, "Enter valid postal code"),
+      .when("country", {
+        is: "United States",
+        then: () => yup.string().required("postalcode is required"),
+      }),
     city: yup
       .string()
-      .required("city is required")
+      .when("country", {
+        is: "United States",
+        then: () => yup.string().required("city is required"),
+      })
       .matches(
         /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
-        "only contain Latin letters."
+        "only contain Latin letters.",
       ),
     state: yup
       .string()
-      .required("state is required")
+      .when("country", {
+        is: "United States",
+        then: () => yup.string().required("state is required"),
+      })
       .matches(
         /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
-        "only contain Latin letters."
+        "only contain Latin letters.",
       ),
     companyName: yup.string().required("companyName is required"),
     country: yup
@@ -89,7 +98,7 @@ const EditAddressPopup = ({ setShowPopup, addressId, showPopup }) => {
       .required("country is required")
       .matches(
         /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
-        "only contain Latin letters."
+        "only contain Latin letters.",
       ),
     phone: yup
       .string()
@@ -112,10 +121,7 @@ const EditAddressPopup = ({ setShowPopup, addressId, showPopup }) => {
     validationSchema: EditaddressSchema,
     enableReinitialize: true,
     onSubmit: (values) => {
-      if (
-        isPossiblePhoneNumber(values.phone) &&
-        isValidPhoneNumber(values.phone)
-      ) {
+      if (validator.isMobilePhone(values.phone)) {
         const response = dispatch(
           handlePostEditAddress({
             fname: values.fname,
@@ -130,7 +136,7 @@ const EditAddressPopup = ({ setShowPopup, addressId, showPopup }) => {
             signal: AbortControllerRef,
             token,
             id: addressId,
-          })
+          }),
         );
         if (response) {
           response.then((res) => {
@@ -151,6 +157,7 @@ const EditAddressPopup = ({ setShowPopup, addressId, showPopup }) => {
           });
         }
       } else {
+        toast.remove();
         toast.error("Phone number is invalid!!!");
       }
     },
@@ -171,11 +178,11 @@ const EditAddressPopup = ({ setShowPopup, addressId, showPopup }) => {
   useEffect(() => {
     const country = Country.getAllCountries().find(
       (country) =>
-        country.name.toLocaleLowerCase() === values.country.toLocaleLowerCase()
+        country.name.toLocaleLowerCase() === values.country.toLocaleLowerCase(),
     );
     setCountry(country?.name);
-    const states = State.getStatesOfCountry(country.isoCode);
-    setSelectedData({ ...selectedData, state: states });
+    // const states = State.getStatesOfCountry(country.isoCode);
+    // setSelectedData({ ...selectedData, state: states });
   }, [values.country, values.state, values.city]);
 
   // outside click for pop up
@@ -296,7 +303,7 @@ const EditAddressPopup = ({ setShowPopup, addressId, showPopup }) => {
               <label className="text-black font-medium block text-left text-lg">
                 {t("State")}*
               </label>
-              <select
+              {/* <select
                 className=" outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
                 name="state"
                 {...getFieldProps("state")}
@@ -308,7 +315,14 @@ const EditAddressPopup = ({ setShowPopup, addressId, showPopup }) => {
                       {state?.name}
                     </option>
                   ))}
-              </select>
+              </select> */}
+              <input
+                type="text"
+                className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
+                placeholder={t("State")}
+                name="state"
+                {...getFieldProps("state")}
+              />
               <ErrorMessage name="state" component={TextError} />
             </>
             {/* city */}

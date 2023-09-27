@@ -38,10 +38,10 @@ const CardDetails = ({ summaryFixed, additionalNotes }) => {
 
   const { token, user } = useSelector((state) => state.Auth);
   const { grandTotal, subTotal, shipphingMethod, freightCharges } = useSelector(
-    (state) => state.cart
+    (state) => state.cart,
   );
   const { cardDetails, loading, paymentOption, shippingAddress } = useSelector(
-    (state) => state.orders
+    (state) => state.orders,
   );
   const dispatch = useDispatch();
 
@@ -56,11 +56,11 @@ const CardDetails = ({ summaryFixed, additionalNotes }) => {
       .string()
       .trim("The contact name cannot include leading and trailing spaces")
       .required("firstname is required")
-      .min(3, "too short")
+      .min(2, "too short")
       .max(40, "too long")
       .matches(
         /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
-        "only contain Latin letters."
+        "only contain Latin letters.",
       ),
     street: yup
       .string()
@@ -70,34 +70,30 @@ const CardDetails = ({ summaryFixed, additionalNotes }) => {
     postalCode: yup
       .string()
       .typeError("That doesn't look like a postal code")
-      .required("postalcode is required")
-      .max(
-        country === "United States" ? 5 : 6,
-        country === "United States"
-          ? "Pincode should be 5 characters"
-          : "Pincode should be 6 characters"
-      )
-      .min(
-        country === "United States" ? 5 : 6,
-        country === "United States"
-          ? "Pincode should be 5 characters"
-          : "Pincode should be 6 characters"
-      )
-      .matches(/^[0-9A-Za-z\s\-]+$/g, "That doesn't look like a postal code"),
+      .when("country", {
+        is: "United States",
+        then: () => yup.string().required("postal code is required"),
+      }),
     city: yup
       .string()
-      .required("city is required")
+      .when("country", {
+        is: "United States",
+        then: () => yup.string().required("city is required"),
+      })
       .trim("The contact name cannot include leading and trailing spaces")
       .matches(
         /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
-        "only contain Latin letters."
+        "only contain Latin letters.",
       ),
     state: yup
       .string()
-      .required("state is required")
+      .when("country", {
+        is: "United States",
+        then: () => yup.string().required("state is required"),
+      })
       .matches(
         /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
-        "only contain Latin letters."
+        "only contain Latin letters.",
       )
       .typeError("State contain only string And it's required"),
     country: yup
@@ -105,7 +101,7 @@ const CardDetails = ({ summaryFixed, additionalNotes }) => {
       .required("country is required")
       .matches(
         /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
-        "only contain Latin letters."
+        "only contain Latin letters.",
       ),
     expiry: yup
       .string()
@@ -117,15 +113,15 @@ const CardDetails = ({ summaryFixed, additionalNotes }) => {
           valid.expirationDate(
             `${moment(values.expiry).year().toString()}-${(
               moment(values.expiry).month() + 1
-            ).toString()}`
-          ).isValid
+            ).toString()}`,
+          ).isValid,
       ),
     cardNumber: yup
       .number()
       .test(
         "test-number",
         "Credit Card number is invalid",
-        (value) => valid.number(value).isValid
+        (value) => valid.number(value).isValid,
       )
       .required("Card number is required"),
     cvv: yup
@@ -187,7 +183,7 @@ const CardDetails = ({ summaryFixed, additionalNotes }) => {
           postalCode: values.postalCode,
           signal: AbortControllerRef,
           token,
-        })
+        }),
       );
       if (response) {
         response
@@ -211,7 +207,7 @@ const CardDetails = ({ summaryFixed, additionalNotes }) => {
                 shippingAddress: shippingAddress?._id,
                 paymentMethod: paymentOption,
                 additionalNotes,
-              })
+              }),
             );
             if (response) {
               response.then((res) => {
@@ -251,12 +247,12 @@ const CardDetails = ({ summaryFixed, additionalNotes }) => {
   // for country , state , city selection
   useEffect(() => {
     const country = Country.getAllCountries().find(
-      (country) => country.name === values.country
+      (country) => country.name === values.country,
     );
     setCountry(country?.name);
-    const states = State.getStatesOfCountry(country?.isoCode);
+    // const states = State.getStatesOfCountry(country?.isoCode);
 
-    setSelectedData({ ...selectedData, state: states.map((s) => s.name) });
+    // setSelectedData({ ...selectedData, state: states.map((s) => s.name) });
   }, [values.country]);
 
   const aTenYearFromNow = new Date();
@@ -322,7 +318,7 @@ const CardDetails = ({ summaryFixed, additionalNotes }) => {
                   {t("State")}*
                 </label>
 
-                <select
+                {/* <select
                   className="bg-LIGHTGRAY xl:w-1/2 w-full text-black placeholder:text-gray-400 rounded-md p-3"
                   name="state"
                   {...getFieldProps("state")}
@@ -335,7 +331,14 @@ const CardDetails = ({ summaryFixed, additionalNotes }) => {
                         {state}
                       </option>
                     ))}
-                </select>
+                </select> */}
+                <input
+                  type="text"
+                  className="outline-none bg-LIGHTGRAY xl:w-1/2 w-full text-black placeholder:text-gray-400 rounded-md p-3"
+                  placeholder={t("State")}
+                  name="state"
+                  {...getFieldProps("state")}
+                />
 
                 <ErrorMessage name="state" component={TextError} />
               </>

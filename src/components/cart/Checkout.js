@@ -45,7 +45,7 @@ const Checkout = ({ summaryFixed }) => {
           state: shippingAddress?.state,
           total: subTotal,
           signal: AbortControllerRef,
-        })
+        }),
       );
       if (response) {
         response.then((res) => {
@@ -67,7 +67,7 @@ const Checkout = ({ summaryFixed }) => {
             id: shippingAddress?._id,
             token,
             signal: AbortControllerRef,
-          })
+          }),
         );
       }
     }
@@ -189,18 +189,23 @@ const Checkout = ({ summaryFixed }) => {
               key={address?._id}
               className={`${
                 shippingAddress?._id === address?._id && "bg-gray-200"
-              } cursor-pointer relative w-full border border-gray-300 rounded-md md:p-5 p-2 font-normal text-left md:space-y-3 space-y-1 text-[#282828]`}
-              onClick={() => {
-                dispatch(handleChangeShippingAddress(address));
-              }}
+              } relative w-full border border-gray-300 rounded-md md:p-5 p-2 font-normal text-left md:space-y-3 space-y-1 text-[#282828]`}
             >
-              <p className="font-semibold text-xl">{address?.fname}</p>
-              <p>{address?.companyName}</p>
-              <p className="w-4/12">
-                {address?.location}, {address?.city}, {address?.state}{" "}
-                {address?.postalCode} {address?.country}
-              </p>
-              <p>{address?.phone}</p>
+              <div
+                onClick={() => {
+                  dispatch(handleChangeShippingAddress(address));
+                }}
+                className="cursor-pointer md:space-y-3 space-y-1"
+              >
+                <p className="font-semibold text-xl">{address?.fname}</p>
+                <p>{address?.companyName}</p>
+                <p className="w-4/12">
+                  {address?.location}, {address?.city}, {address?.state}{" "}
+                  {address?.postalCode} {address?.country}
+                </p>
+                <p>{address?.phone}</p>
+              </div>
+
               <p
                 role="button"
                 onClick={() => {

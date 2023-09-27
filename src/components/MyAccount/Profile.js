@@ -36,16 +36,22 @@ const Profile = () => {
             <span className="font-normal capitalize">{user?.companyName}</span>
           </p>
           <p className="flex items-center w-full text-lg">
-            <span className="font-bold md:w-60 w-40">{t("Street Address")}:</span>{" "}
+            <span className="font-bold md:w-60 w-40">
+              {t("Street Address")}:
+            </span>{" "}
             <span className="font-normal capitalize">{user?.location}</span>
           </p>
           <p className="flex items-center w-full text-lg">
             <span className="font-bold md:w-60 w-40">{t("City")}:</span>{" "}
-            <span className="font-normal capitalize">{user?.city}</span>
+            <span className="font-normal capitalize">
+              {user?.city ? user?.city : "-"}
+            </span>
           </p>
           <p className="flex items-center w-full text-lg">
             <span className="font-bold md:w-60 w-40">{t("State")}:</span>{" "}
-            <span className="font-normal capitalize">{user?.state}</span>
+            <span className="font-normal capitalize">
+              {user?.state ? user?.state : "-"}
+            </span>
           </p>
           <p className="flex items-center w-full text-lg">
             <span className="font-bold md:w-60 w-40">{t("Country")}:</span>{" "}

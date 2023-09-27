@@ -21,6 +21,7 @@ import { handleGetAddresses } from "../../redux/GetContentSlice";
 import { Country, State, City } from "country-state-city";
 import { useTranslation } from "react-i18next";
 import ReactModal from "react-modal";
+import validator from "validator";
 
 const AddNewAddress = ({
   setShowAddnewaddressPopup,
@@ -48,11 +49,11 @@ const AddNewAddress = ({
       .string()
       .trim("The contact name cannot include leading and trailing spaces")
       .required("firstname is required")
-      .min(3, "too short")
+      .min(2, "too short")
       .max(30, "too long")
       .matches(
         /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
-        "only contain Latin letters."
+        "only contain Latin letters.",
       ),
     lname: yup
       .string()
@@ -62,26 +63,32 @@ const AddNewAddress = ({
       .max(30, "too long")
       .matches(
         /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
-        "only contain Latin letters."
+        "only contain Latin letters.",
       ),
     location: yup.string().required("location is required"),
     postalCode: yup
       .string()
       .typeError("That doesn't look like a postal code")
-      .required("postalcode is required")
-      .matches(/^[0-9]{5}(?:-[0-9]{4})?$/, "Enter valid postal code"),
+      .when("country", {
+        is: "United States",
+        then: () => yup.string().required("postalcode is required"),
+      }),
     city: yup
       .string()
-      .required("city is required")
+      .when("country", {
+        is: "United States",
+        then: () => yup.string().required("city is required"),
+      })
       .matches(
         /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s]*)$/g,
-        "only contain Latin letters."
+        "only contain Latin letters.",
       ),
-    state: yup.string().required("state is required"),
+    state: yup.string().when("country", {
+      is: "United States",
+      then: () => yup.string().required("state is required"),
+    }),
     companyName: yup.string().required("companyName is required"),
-    country: yup
-      .string()
-      .required("country is required"),
+    country: yup.string().required("country is required"),
     phone: yup
       .string()
       .required("A phone number is required")
@@ -102,10 +109,7 @@ const AddNewAddress = ({
     },
     validationSchema: addNewAddressSchema,
     onSubmit: (values) => {
-      if (
-        isPossiblePhoneNumber(values.phone) &&
-        isValidPhoneNumber(values.phone)
-      ) {
+      if (validator.isMobilePhone(values.phone)) {
         const response = dispatch(
           handlePostNewAddress({
             fname: values.fname,
@@ -119,7 +123,7 @@ const AddNewAddress = ({
             location: values.location,
             signal: AbortControllerRef,
             token,
-          })
+          }),
         );
         if (response) {
           response.then((res) => {
@@ -137,6 +141,7 @@ const AddNewAddress = ({
           });
         }
       } else {
+        toast.remove();
         toast.error("Phone number is invalid!!!");
       }
     },
@@ -157,12 +162,12 @@ const AddNewAddress = ({
   useEffect(() => {
     if (values.country !== "") {
       const country = Country.getAllCountries().find(
-        (country) => country.name === values.country
+        (country) => country.name === values.country,
       );
       setCountry(country?.name);
-      const states = State.getStatesOfCountry(country?.isoCode);
+      // const states = State.getStatesOfCountry(country?.isoCode);
 
-      setSelectedData({ ...selectedData, state: states });
+      // setSelectedData({ ...selectedData, state: states });
     }
   }, [values.country, values.state, values.city]);
 
@@ -287,7 +292,7 @@ const AddNewAddress = ({
               <label className="text-black font-medium block text-left text-lg">
                 {t("State")}*
               </label>
-              <select
+              {/* <select
                 className=" outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
                 name="state"
                 {...getFieldProps("state")}
@@ -299,7 +304,13 @@ const AddNewAddress = ({
                       {state?.name}
                     </option>
                   ))}
-              </select>
+              </select> */}
+              <input
+                className=" outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
+                name="state"
+                {...getFieldProps("state")}
+                placeholder="State"
+              />
               <ErrorMessage name="state" component={TextError} />
             </>
             {/* city */}
