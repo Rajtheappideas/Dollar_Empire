@@ -537,7 +537,7 @@ const ProductListing = () => {
         <div className="absolute z-30 inset-0 bg-black bg-opacity-20 backdrop-blur-sm max-w-[100%] h-full" />
       )}
 
-      <section className="bg-BACKGROUNDGRAY lg:pb-20 lg:py-0 py-5">
+      <section className="bg-BACKGROUNDGRAY lg:pb-20 lg:py-0 py-5 ">
         <div className="container mx-auto space_for_div space-y-5 w-full bg-BACKGROUNDGRAY">
           <div className="w-full flex md:flex-row flex-col md:items-center items-start md:justify-between gap-3">
             {/* title */}
@@ -734,7 +734,7 @@ const ProductListing = () => {
                     : selectedView === "grid3"
                     ? "xl:grid-cols-3 md:grid-cols-2 md:gap-5 gap-1"
                     : "grid-cols-1 gap-y-5"
-                } items-start`}
+                } items-start section-to-print`}
               >
                 {allProductLoading ? (
                   <SkeletonTheme

@@ -86,7 +86,12 @@ const Header = () => {
       Object.values(entry).some((val) => {
         if (typeof val === "string") {
           if (searchActiveCategory === "All Categories") {
-            return val.toLocaleLowerCase().includes(serachKeyword);
+            const keyWords = serachKeyword.split(" ");
+            for (let i = 0; i < keyWords.length; i++) {
+              return val.toLocaleLowerCase().includes(keyWords[i]);
+              // console.log(keyWords[i]);
+            }
+            // return val.toLocaleLowerCase().includes(keyWords);
           } else {
             return (
               entry?.category.includes(searchActiveCategory) &&
