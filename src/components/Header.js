@@ -88,15 +88,28 @@ const Header = () => {
           if (searchActiveCategory === "All Categories") {
             const keyWords = serachKeyword.split(" ");
             for (let i = 0; i < keyWords.length; i++) {
-              return val.toLocaleLowerCase().includes(keyWords[i]);
-              // console.log(keyWords[i]);
+              return (
+                val.toLocaleLowerCase().startsWith(keyWords[i]) ||
+                val.toLocaleLowerCase().endsWith(keyWords[i]) ||
+                val.toLocaleLowerCase().includes(keyWords[i]) ||
+                val.toLocaleLowerCase().includes(serachKeyword)
+              );
             }
-            // return val.toLocaleLowerCase().includes(keyWords);
           } else {
-            return (
-              entry?.category.includes(searchActiveCategory) &&
-              val.toLocaleLowerCase().includes(serachKeyword)
-            );
+            const keyWords = serachKeyword.split(" ");
+            for (let i = 0; i < keyWords.length; i++) {
+              return (
+                entry?.category.includes(searchActiveCategory) &&
+                (val.toLocaleLowerCase().startsWith(keyWords[i]) ||
+                  val.toLocaleLowerCase().endsWith(keyWords[i]) ||
+                  val.toLocaleLowerCase().includes(keyWords[i]) ||
+                  val.toLocaleLowerCase().includes(serachKeyword))
+              );
+            }
+            // return (
+            //   entry?.category.includes(searchActiveCategory) &&
+            //   val.toLocaleLowerCase().includes(serachKeyword)
+            // );
           }
         }
       }),
