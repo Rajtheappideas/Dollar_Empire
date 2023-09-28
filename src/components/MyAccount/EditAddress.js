@@ -106,7 +106,10 @@ const EditAddress = ({ setShowEditAddres, addressId }) => {
     validationSchema: editAddressSchema,
     enableReinitialize: true,
     onSubmit: (values) => {
-      if (validator.isMobilePhone(values.phone)) {
+      if (
+        isPossiblePhoneNumber(values.phone) &&
+        isValidPhoneNumber(values.phone)
+      ) {
         const response = dispatch(
           handlePostEditAddress({
             fname: values.fname,
@@ -250,6 +253,39 @@ const EditAddress = ({ setShowEditAddres, addressId }) => {
             component={TextError}
           />
         </>
+        {/* location */}
+        <>
+          <label className="text-black font-medium block text-left text-lg">
+            {t("Street Address")}*
+          </label>
+          <input
+            type="text"
+            className="bg-LIGHTGRAY outline-none lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
+            name="location"
+            placeholder={t("Street Address")}
+            {...getFieldProps("location")}
+          />
+          <ErrorMessage
+            name="location"
+            className="block"
+            component={TextError}
+          />
+        </>
+        {/* city */}
+        <>
+          <label className="text-black font-medium block text-left text-lg">
+            {t("City")}*
+          </label>
+          <input
+            type="text"
+            className="outline-none bg-LIGHTGRAY lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
+            placeholder={t("City")}
+            name="city"
+            {...getFieldProps("city")}
+          />
+
+          <ErrorMessage name="city" component={TextError} />
+        </>
         {/* state */}
         <>
           <label className="text-black font-medium block text-left text-lg">
@@ -270,57 +306,12 @@ const EditAddress = ({ setShowEditAddres, addressId }) => {
           </select> */}
           <input
             type="text"
-            className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
+            className="outline-none bg-LIGHTGRAY lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
             placeholder={t("State")}
             name="state"
             {...getFieldProps("state")}
           />
           <ErrorMessage name="state" component={TextError} />
-        </>
-        {/* city */}
-        <>
-          <label className="text-black font-medium block text-left text-lg">
-            {t("City")}*
-          </label>
-          <input
-            type="text"
-            className="outline-none bg-LIGHTGRAY lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
-            placeholder={t("City")}
-            name="city"
-            {...getFieldProps("city")}
-          />
-          {/* <select
-            className=" outline-none bg-LIGHTGRAY lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
-            name="city"
-            {...getFieldProps("city")}
-          >
-            <option label={values?.city}>{values?.city}</option>
-            {selectedData?.city.length > 0 &&
-              selectedData.city.map((city) => (
-                <option key={city.name} value={city.name}>
-                  {city?.name}
-                </option>
-              ))}
-          </select> */}
-          <ErrorMessage name="city" component={TextError} />
-        </>
-        {/* location */}
-        <>
-          <label className="text-black font-medium block text-left text-lg">
-            {t("Street Address")}*
-          </label>
-          <input
-            type="text"
-            className="bg-LIGHTGRAY outline-none lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
-            name="location"
-            placeholder={t("Street Address")}
-            {...getFieldProps("location")}
-          />
-          <ErrorMessage
-            name="location"
-            className="block"
-            component={TextError}
-          />
         </>
 
         {/* phone, postal code */}

@@ -106,7 +106,10 @@ const AddNewAddress = ({ setShowNewAddress }) => {
     },
     validationSchema: addNewAddressSchema,
     onSubmit: (values) => {
-      if (validator.isMobilePhone(values.phone)) {
+      if (
+        isPossiblePhoneNumber(values.phone) &&
+        isValidPhoneNumber(values.phone)
+      ) {
         const response = dispatch(
           handlePostNewAddress({
             fname: values.fname,
@@ -218,24 +221,6 @@ const AddNewAddress = ({ setShowNewAddress }) => {
             component={TextError}
           />
         </>
-        {/* location */}
-        <>
-          <label className="text-black font-medium block text-left text-lg">
-            {t("Street Address")}*
-          </label>
-          <input
-            type="text"
-            className="bg-LIGHTGRAY outline-none lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
-            name="location"
-            placeholder={t("Street Address")}
-            {...getFieldProps("location")}
-          />
-          <ErrorMessage
-            name="location"
-            className="block"
-            component={TextError}
-          />
-        </>
         {/* Country */}
         <>
           <label className="text-black font-medium block text-left text-lg">
@@ -263,8 +248,41 @@ const AddNewAddress = ({ setShowNewAddress }) => {
             component={TextError}
           />
         </>
+        {/* location */}
+        <>
+          <label className="text-black font-medium block text-left text-lg">
+            {t("Street Address")}*
+          </label>
+          <input
+            type="text"
+            className="bg-LIGHTGRAY outline-none lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
+            name="location"
+            placeholder={t("Street Address")}
+            {...getFieldProps("location")}
+          />
+          <ErrorMessage
+            name="location"
+            className="block"
+            component={TextError}
+          />
+        </>
+
         {/* city */}
         <div className="flex items-start w-full gap-x-3">
+          <div className="lg:w-2/5 w-1/2 space-y-2">
+            <label className="text-black font-medium block text-left text-lg">
+              {t("City")}*
+            </label>
+
+            <input
+              type="text"
+              className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
+              placeholder={t("City")}
+              name="city"
+              {...getFieldProps("city")}
+            />
+            <ErrorMessage name="city" className="block" component={TextError} />
+          </div>
           <div className="lg:w-2/5 w-1/2 space-y-2">
             <label className="text-black font-medium block text-left text-lg">
               {t("State")}*
@@ -290,32 +308,6 @@ const AddNewAddress = ({ setShowNewAddress }) => {
               {...getFieldProps("state")}
             />
             <ErrorMessage name="state" component={TextError} />
-          </div>
-          <div className="lg:w-2/5 w-1/2 space-y-2">
-            <label className="text-black font-medium block text-left text-lg">
-              {t("City")}*
-            </label>
-            {/* <select
-              className=" outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-              name="city"
-              {...getFieldProps("city")}
-            >
-              <option label="Select city"></option>
-              {selectedData?.city.length > 0 &&
-                selectedData.city.map((city) => (
-                  <option key={city.name} value={city.name}>
-                    {city?.name}
-                  </option>
-                ))}
-            </select> */}
-            <input
-              type="text"
-              className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-              placeholder={t("City")}
-              name="city"
-              {...getFieldProps("city")}
-            />
-            <ErrorMessage name="city" className="block" component={TextError} />
           </div>
         </div>
 

@@ -124,7 +124,10 @@ const Signup = () => {
     },
     validationSchema: SignupSchema,
     onSubmit: (values) => {
-      if (validator.isMobilePhone(values.phone)) {
+      if (
+        isPossiblePhoneNumber(values.phone) &&
+        isValidPhoneNumber(values.phone)
+      ) {
         const response = dispatch(
           handleRegisterUser({
             fname: values.fname,
@@ -325,16 +328,32 @@ const Signup = () => {
             {/* states */}
             <>
               <label className="text-black font-medium block text-left text-lg">
-                {t("State")}*
+                {t("City")}*
               </label>
               <input
                 type="text"
                 className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                placeholder={t("State")}
-                name="state"
-                {...getFieldProps("state")}
+                placeholder={t("City")}
+                name="city"
+                {...getFieldProps("city")}
               />
-              {/* <select
+
+              <ErrorMessage name="city" component={TextError} />
+            </>
+            {/* city & postal code */}
+            <div className="flex items-start w-full gap-x-3">
+              <div className="w-1/2">
+                <label className="text-black font-medium block text-left text-lg">
+                  {t("State")}*
+                </label>
+                <input
+                  type="text"
+                  className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
+                  placeholder={t("State")}
+                  name="state"
+                  {...getFieldProps("state")}
+                />
+                {/* <select
                 className=" outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
                 name="state"
                 {...getFieldProps("state")}
@@ -348,23 +367,7 @@ const Signup = () => {
                   ))}
               </select> */}
 
-              <ErrorMessage name="state" component={TextError} />
-            </>
-            {/* city & postal code */}
-            <div className="flex items-start w-full gap-x-3">
-              <div className="w-1/2">
-                <label className="text-black font-medium block text-left text-lg">
-                  {t("City")}*
-                </label>
-                <input
-                  type="text"
-                  className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                  placeholder={t("City")}
-                  name="city"
-                  {...getFieldProps("city")}
-                />
-
-                <ErrorMessage name="city" component={TextError} />
+                <ErrorMessage name="state" component={TextError} />
               </div>
               <div className="w-1/2">
                 <label className="text-black font-medium block text-left text-lg">

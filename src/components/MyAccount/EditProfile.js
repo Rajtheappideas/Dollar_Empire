@@ -110,7 +110,10 @@ const EditProfile = ({ setShowEditProfile }) => {
     enableReinitialize: true,
 
     onSubmit: (values) => {
-      if (validator.isMobilePhone(values.phone)) {
+      if (
+        isPossiblePhoneNumber(values.phone) &&
+        isValidPhoneNumber(values.phone)
+      ) {
         const response = dispatch(
           handleEditProfile({
             fname: values.fname,

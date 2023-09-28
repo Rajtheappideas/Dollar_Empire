@@ -121,7 +121,10 @@ const EditAddressPopup = ({ setShowPopup, addressId, showPopup }) => {
     validationSchema: EditaddressSchema,
     enableReinitialize: true,
     onSubmit: (values) => {
-      if (validator.isMobilePhone(values.phone)) {
+      if (
+        isPossiblePhoneNumber(values.phone) &&
+        isValidPhoneNumber(values.phone)
+      ) {
         const response = dispatch(
           handlePostEditAddress({
             fname: values.fname,
@@ -298,12 +301,42 @@ const EditAddressPopup = ({ setShowPopup, addressId, showPopup }) => {
 
               <ErrorMessage name="country" component={TextError} />
             </>
-            {/* state */}
+            {/* location */}
             <>
               <label className="text-black font-medium block text-left text-lg">
-                {t("State")}*
+                {t("Street Address")}*
               </label>
-              {/* <select
+              <input
+                type="text"
+                className="bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
+                placeholder={t("Street Address")}
+                name="location"
+                {...getFieldProps("location")}
+              />
+              <ErrorMessage name="location" component={TextError} />
+            </>
+            {/* city */}
+            <>
+              <label className="text-black font-medium block text-left text-lg">
+                {t("City")}*
+              </label>
+              <input
+                type="text"
+                className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
+                placeholder={t("City")}
+                name="city"
+                {...getFieldProps("city")}
+              />
+
+              <ErrorMessage name="city" component={TextError} />
+            </>
+            {/* state */}
+            <div className="flex md:flex-row flex-col items-start w-full gap-3 md:gap-4">
+              <div className="md:w-1/2 w-full">
+                <label className="text-black font-medium block text-left text-lg">
+                  {t("State")}*
+                </label>
+                {/* <select
                 className=" outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
                 name="state"
                 {...getFieldProps("state")}
@@ -316,42 +349,14 @@ const EditAddressPopup = ({ setShowPopup, addressId, showPopup }) => {
                     </option>
                   ))}
               </select> */}
-              <input
-                type="text"
-                className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                placeholder={t("State")}
-                name="state"
-                {...getFieldProps("state")}
-              />
-              <ErrorMessage name="state" component={TextError} />
-            </>
-            {/* city */}
-            <div className="flex md:flex-row flex-col items-start w-full gap-3 md:gap-4">
-              <div className="md:w-1/2 w-full">
-                <label className="text-black font-medium block text-left text-lg">
-                  {t("City")}*
-                </label>
                 <input
                   type="text"
                   className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                  placeholder={t("City")}
-                  name="city"
-                  {...getFieldProps("city")}
+                  placeholder={t("State")}
+                  name="state"
+                  {...getFieldProps("state")}
                 />
-                {/* <select
-                  className=" outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                  name="city"
-                  {...getFieldProps("city")}
-                >
-                  <option label={values?.city}>{values?.city}</option>
-                  {selectedData?.city.length > 0 &&
-                    selectedData.city.map((city) => (
-                      <option key={city.name} value={city.name}>
-                        {city?.name}
-                      </option>
-                    ))}
-                </select> */}
-                <ErrorMessage name="city" component={TextError} />
+                <ErrorMessage name="state" component={TextError} />
               </div>
               <div className="md:w-1/2 w-full">
                 <label className="text-black font-medium block text-left text-lg">
@@ -367,20 +372,6 @@ const EditAddressPopup = ({ setShowPopup, addressId, showPopup }) => {
                 <ErrorMessage name="postalCode" component={TextError} />
               </div>
             </div>
-            {/* location */}
-            <>
-              <label className="text-black font-medium block text-left text-lg">
-                {t("Street Address")}*
-              </label>
-              <input
-                type="text"
-                className="bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                placeholder={t("Street Address")}
-                name="location"
-                {...getFieldProps("location")}
-              />
-              <ErrorMessage name="location" component={TextError} />
-            </>
             {/* phone */}
             <div className="w-full">
               <label className="text-black font-medium block text-left text-lg">
