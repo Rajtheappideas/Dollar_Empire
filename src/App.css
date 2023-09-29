@@ -47,6 +47,7 @@
     @page {
       size: A4 landscape;
       margin: 10mm;
+      background-color: #ffffff !important;
     }
     body * {
       visibility: hidden;
@@ -54,11 +55,13 @@
     .section-to-print,
     .section-to-print * {
       visibility: visible;
+      background-color: #ffffff !important;
     }
     .section-to-print {
       position: absolute;
       left: 0;
       top: 0;
+      background-color: #ffffff !important;
     }
   }
 
