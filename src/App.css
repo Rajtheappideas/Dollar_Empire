@@ -51,6 +51,7 @@
     }
     body * {
       visibility: hidden;
+      background-color: #ffffff !important;
     }
     .section-to-print,
     .section-to-print * {
