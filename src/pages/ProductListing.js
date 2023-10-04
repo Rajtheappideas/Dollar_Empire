@@ -24,6 +24,7 @@ import {
   handleChangeProductListingError,
   handleChangeProductListingPageLink,
   handleChangeSearchActiveCategory,
+  closeEnlargeImagePopup,
 } from "../redux/GlobalStates";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import {

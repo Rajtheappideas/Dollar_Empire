@@ -88,7 +88,7 @@ const ProductCard = ({
   } = useSelector((state) => state.globalStates);
 
   const { loading, cartItems, cart, selectedItems, success } = useSelector(
-    (state) => state.cart
+    (state) => state.cart,
   );
   const AbortControllerRef = useRef(null);
   const popImageRef = useRef(null);
@@ -102,7 +102,7 @@ const ProductCard = ({
   const handleAddtoFavourties = (id) => {
     setFavouriteLoading(true);
     const response = dispatch(
-      handleAddProductToFavourites({ token, id, signal: AbortControllerRef })
+      handleAddProductToFavourites({ token, id, signal: AbortControllerRef }),
     );
     if (response) {
       response
@@ -139,7 +139,7 @@ const ProductCard = ({
         token,
         id,
         signal: AbortControllerRef,
-      })
+      }),
     );
     if (response) {
       response
@@ -180,7 +180,7 @@ const ProductCard = ({
       setPkCount(null);
       setCtnCount(null);
       return toast.error(
-        "Minimum Quantity should be more than 0 And enter a valid value."
+        "Minimum Quantity should be more than 0 And enter a valid value.",
       );
     } else if (selectedItemType === "pk" && ctnItemQuantity > 0) {
       toast.remove();
@@ -212,7 +212,7 @@ const ProductCard = ({
         signal: AbortControllerRef,
         type: selectedItemType,
         quantity: selectedItemType === "pk" ? pkCount : ctnCount,
-      })
+      }),
     );
     if (response) {
       response
@@ -224,7 +224,7 @@ const ProductCard = ({
               handleRemoveFromTotalQuantityAndAmountOfmultipleProducts({
                 quantity,
                 amount,
-              })
+              }),
             );
             dispatch(handleRemoveOneProductFromSelected(product?._id));
             setCtnItemQuantity("");
@@ -373,7 +373,7 @@ const ProductCard = ({
         selectedItemType === "pk" ? pkitemsQuantity : ctnItemQuantity,
         selectedItemType === "pk"
           ? pkitemsQuantity * product?.price
-          : ctnItemQuantity * product?.price
+          : ctnItemQuantity * product?.price,
       );
     } else if (
       changeTo &&
@@ -386,7 +386,7 @@ const ProductCard = ({
             token,
             id: product?._id,
             signal: AbortControllerRef,
-          })
+          }),
         );
         setChangingLoading(true);
         if (response) {
@@ -394,7 +394,7 @@ const ProductCard = ({
             .then((res) => {
               if (res.payload.status === "success") {
                 toast.success(
-                  `${findInCart?.product?.name} removed from cart.`
+                  `${findInCart?.product?.name} removed from cart.`,
                 );
                 dispatch(handleRemoveItemFromCart(findInCart?.product?._id));
                 setAlreadyInCartPkCount(null);
@@ -424,7 +424,7 @@ const ProductCard = ({
               findInCart?.type === "pk"
                 ? alreadyInCartPkCount
                 : alreadyInCartCtnCount,
-          })
+          }),
         );
         setChangingLoading(true);
 
@@ -433,7 +433,7 @@ const ProductCard = ({
             .then((res) => {
               if (res.payload.status === "success") {
                 toast.success(
-                  `${findInCart?.product?.name}'s quantity updated.`
+                  `${findInCart?.product?.name}'s quantity updated.`,
                 );
                 dispatch(
                   handleUpdateTotalQuantityAndAmount({
@@ -442,7 +442,7 @@ const ProductCard = ({
                         ? alreadyInCartPkCount
                         : alreadyInCartCtnCount,
                     id: findInCart?.product?._id,
-                  })
+                  }),
                 );
                 setChangingLoading(false);
                 setChangeTo(false);
@@ -491,7 +491,7 @@ const ProductCard = ({
     ) {
       setPkCount(parseFloat(e.target.value.replace(/^0+/, "")));
       setpkItemsQuantity(
-        parseFloat(e.target.value.replace(/^0+/, "") * product?.PK)
+        parseFloat(e.target.value.replace(/^0+/, "") * product?.PK),
       );
     }
     if (
@@ -502,7 +502,7 @@ const ProductCard = ({
       setChangeTo(true);
       setAlreadyInCartPkCount(parseFloat(e.target.value.replace(/^0+/, "")));
       setAlreadyInCartPkItems(
-        parseFloat(e.target.value.replace(/^0+/, "") * product?.PK)
+        parseFloat(e.target.value.replace(/^0+/, "") * product?.PK),
       );
     }
   };
@@ -541,7 +541,7 @@ const ProductCard = ({
       setChangeTo(true);
       setAlreadyInCartCtnCount(parseFloat(e.target.value.replace(/^0+/, "")));
       setAlreadyInCartCtnItems(
-        parseFloat(e.target.value.replace(/^0+/, "") * product?.CTN)
+        parseFloat(e.target.value.replace(/^0+/, "") * product?.CTN),
       );
     }
   };
@@ -557,7 +557,7 @@ const ProductCard = ({
           handleMinusPkQuantity(
             parseFloat(product?.PK),
             parseFloat(pkCount !== null && pkCount - 1),
-            product?._id
+            product?._id,
           );
         } else {
           if (pkCount !== null && pkCount.toString().length >= 6) {
@@ -568,7 +568,7 @@ const ProductCard = ({
           handlePlusPkQuantity(
             parseFloat(product?.PK),
             parseFloat(pkCount === null ? 1 : pkCount + 1),
-            product?._id
+            product?._id,
           );
         }
       } else if (
@@ -590,22 +590,22 @@ const ProductCard = ({
             if (alreadyInCartPkCount !== null) {
               setAlreadyInCartPkCount(parseFloat(alreadyInCartPkCount) - 1);
               setAlreadyInCartPkItems(
-                parseFloat(product?.PK) * parseFloat(alreadyInCartPkCount - 1)
+                parseFloat(product?.PK) * parseFloat(alreadyInCartPkCount - 1),
               );
               handleChangeAddedItemInCart(
                 null,
                 "pk",
-                parseFloat(alreadyInCartPkCount) - 1
+                parseFloat(alreadyInCartPkCount) - 1,
               );
             } else {
               setAlreadyInCartPkCount(parseFloat(findInCart?.quantity) - 1);
               setAlreadyInCartCtnItems(
-                parseFloat(product?.PK) * parseFloat(findInCart?.quantity - 1)
+                parseFloat(product?.PK) * parseFloat(findInCart?.quantity - 1),
               );
               handleChangeAddedItemInCart(
                 null,
                 "pk",
-                parseFloat(findInCart?.quantity) - 1
+                parseFloat(findInCart?.quantity) - 1,
               );
             }
           } else {
@@ -620,22 +620,22 @@ const ProductCard = ({
             if (alreadyInCartCtnCount !== null) {
               setAlreadyInCartPkCount(parseFloat(alreadyInCartPkCount) + 1);
               setAlreadyInCartPkItems(
-                parseFloat(product?.PK) * parseFloat(alreadyInCartPkCount + 1)
+                parseFloat(product?.PK) * parseFloat(alreadyInCartPkCount + 1),
               );
               handleChangeAddedItemInCart(
                 null,
                 "pk",
-                parseFloat(alreadyInCartPkCount) + 1
+                parseFloat(alreadyInCartPkCount) + 1,
               );
             } else {
               setAlreadyInCartPkCount(parseFloat(findInCart?.quantity) + 1);
               setAlreadyInCartPkItems(
-                parseFloat(product?.PK) * parseFloat(findInCart?.quantity + 1)
+                parseFloat(product?.PK) * parseFloat(findInCart?.quantity + 1),
               );
               handleChangeAddedItemInCart(
                 null,
                 "pk",
-                parseFloat(findInCart?.quantity) + 1
+                parseFloat(findInCart?.quantity) + 1,
               );
             }
           }
@@ -651,7 +651,7 @@ const ProductCard = ({
           handleMinusCTNQuantity(
             parseFloat(product?.CTN),
             parseFloat(ctnCount !== null && ctnCount - 1),
-            product?._id
+            product?._id,
           );
         } else {
           if (ctnCount !== null && ctnCount.toString().length >= 6) {
@@ -662,7 +662,7 @@ const ProductCard = ({
           handlePlusCTNQuantity(
             parseFloat(product?.CTN),
             parseFloat(ctnCount === null ? 1 : ctnCount + 1),
-            product?._id
+            product?._id,
           );
         }
       } else if (
@@ -684,22 +684,23 @@ const ProductCard = ({
             if (alreadyInCartCtnCount !== null) {
               setAlreadyInCartCtnCount(parseFloat(alreadyInCartCtnCount) - 1);
               setAlreadyInCartCtnItems(
-                parseFloat(product?.CTN) * parseFloat(alreadyInCartCtnCount - 1)
+                parseFloat(product?.CTN) *
+                  parseFloat(alreadyInCartCtnCount - 1),
               );
               handleChangeAddedItemInCart(
                 null,
                 "ctn",
-                parseFloat(alreadyInCartCtnCount) - 1
+                parseFloat(alreadyInCartCtnCount) - 1,
               );
             } else {
               setAlreadyInCartCtnCount(parseFloat(findInCart?.quantity) - 1);
               setAlreadyInCartCtnItems(
-                parseFloat(product?.CTN) * parseFloat(findInCart?.quantity - 1)
+                parseFloat(product?.CTN) * parseFloat(findInCart?.quantity - 1),
               );
               handleChangeAddedItemInCart(
                 null,
                 "ctn",
-                parseFloat(findInCart?.quantity) - 1
+                parseFloat(findInCart?.quantity) - 1,
               );
             }
           } else {
@@ -714,22 +715,23 @@ const ProductCard = ({
             if (alreadyInCartCtnCount !== null) {
               setAlreadyInCartCtnCount(parseFloat(alreadyInCartCtnCount) + 1);
               setAlreadyInCartCtnItems(
-                parseFloat(product?.CTN) * parseFloat(alreadyInCartCtnCount + 1)
+                parseFloat(product?.CTN) *
+                  parseFloat(alreadyInCartCtnCount + 1),
               );
               handleChangeAddedItemInCart(
                 null,
                 "ctn",
-                parseFloat(alreadyInCartCtnCount) + 1
+                parseFloat(alreadyInCartCtnCount) + 1,
               );
             } else {
               setAlreadyInCartCtnCount(parseFloat(findInCart?.quantity) + 1);
               setAlreadyInCartCtnItems(
-                parseFloat(product?.CTN) * parseFloat(findInCart?.quantity + 1)
+                parseFloat(product?.CTN) * parseFloat(findInCart?.quantity + 1),
               );
               handleChangeAddedItemInCart(
                 null,
                 "ctn",
-                parseFloat(findInCart?.quantity) + 1
+                parseFloat(findInCart?.quantity) + 1,
               );
             }
           }
@@ -764,7 +766,7 @@ const ProductCard = ({
   useEffect(() => {
     if (cart !== null && cartItems.length > 0 && !changingLoading) {
       const findItemInCart = cartItems.find(
-        (i) => i.product?._id === product?._id
+        (i) => i.product?._id === product?._id,
       );
       if (findItemInCart !== undefined) {
         setFindInCart(findItemInCart);
@@ -774,12 +776,12 @@ const ProductCard = ({
         setCtnItemQuantity("");
         if (findItemInCart?.type === "pk") {
           setAlreadyInCartPkItems(
-            findItemInCart?.quantity * findItemInCart?.product?.PK
+            findItemInCart?.quantity * findItemInCart?.product?.PK,
           );
           setAlreadyInCartPkCount(findItemInCart?.quantity);
         } else {
           setAlreadyInCartCtnItems(
-            findItemInCart?.quantity * findItemInCart?.product?.CTN
+            findItemInCart?.quantity * findItemInCart?.product?.CTN,
           );
           setAlreadyInCartCtnCount(findItemInCart?.quantity);
         }
@@ -809,7 +811,7 @@ const ProductCard = ({
         selectedItemType,
         pkCount,
         ctnCount,
-        product?.price
+        product?.price,
       );
     }
   }, [
@@ -900,7 +902,7 @@ const ProductCard = ({
               className="xl:w-48 md:h-60 md:w-1/2 w-full h-40 pb-10 cursor-pointer xl:object-fill object-contain object-center"
               title={product?.name}
               onClick={() => {
-                handleOpenPopup()
+                handleOpenPopup();
               }}
               loading="lazy"
             />

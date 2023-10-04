@@ -14,17 +14,20 @@ import ProductSlice from "./ProductSlice";
 const persistConfigForGlobalStates = {
   key: "globalStates",
   storage,
-};
-const persistConfigForCart = {
-  key: "cart",
-  storage,
+  blacklist: [
+    "showEnlargeImage",
+    "activeEnlargeImageId",
+    "activeEnlargeImageFrom",
+    "showProductDetailsPopup",
+    "singleProductEnlargeImageId",
+    "singleProductId",
+  ],
 };
 
 const persisteGlobalStates = persistReducer(
   persistConfigForGlobalStates,
-  GlobalStates
+  GlobalStates,
 );
-const persisteCart = persistReducer(persistConfigForCart, CartSlice);
 
 export const store = configureStore({
   reducer: {
@@ -34,7 +37,6 @@ export const store = configureStore({
     getContent: GetContentSlice,
     features: FeatureSlice,
     orders: OrderSlice,
-    // cart: persisteCart,
     cart: CartSlice,
     favourite: FavouriteSlice,
     products: ProductSlice,
