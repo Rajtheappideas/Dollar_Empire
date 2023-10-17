@@ -166,10 +166,10 @@ const EditAddress = ({ setShowEditAddres, addressId }) => {
       (country) =>
         country.name.toLocaleLowerCase() === values.country.toLocaleLowerCase(),
     );
-    // setCountry(country?.name);
-    // const states = State.getStatesOfCountry(country?.isoCode);
+    setCountry(country?.name);
+    const states = State.getStatesOfCountry("US");
 
-    // setSelectedData({ ...selectedData, state: states });
+    setSelectedData({ ...selectedData, state: states });
   }, [values.country, values.state, values.city]);
 
   return (
@@ -291,26 +291,29 @@ const EditAddress = ({ setShowEditAddres, addressId }) => {
           <label className="text-black font-medium block text-left text-lg">
             {t("State")}*
           </label>
-          {/* <select
-            className=" outline-none bg-LIGHTGRAY lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
-            name="state"
-            {...getFieldProps("state")}
-          >
-            <option label={values?.state}>{values?.state}</option>
-            {selectedData?.state.length > 0 &&
-              selectedData.state.map((state) => (
-                <option key={state.name} value={state.name}>
-                  {state?.name}
-                </option>
-              ))}
-          </select> */}
-          <input
-            type="text"
-            className="outline-none bg-LIGHTGRAY lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
-            placeholder={t("State")}
-            name="state"
-            {...getFieldProps("state")}
-          />
+          {values.country === "United States" ? (
+            <select
+              className=" outline-none bg-LIGHTGRAY lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
+              name="state"
+              {...getFieldProps("state")}
+            >
+              <option label={values?.state}>{values?.state}</option>
+              {selectedData?.state.length > 0 &&
+                selectedData.state.map((state) => (
+                  <option key={state.name} value={state.name}>
+                    {state?.name}
+                  </option>
+                ))}
+            </select>
+          ) : (
+            <input
+              type="text"
+              className="outline-none bg-LIGHTGRAY lg:w-[82%] w-full text-black placeholder:text-gray-400 rounded-md p-3"
+              placeholder={t("State")}
+              name="state"
+              {...getFieldProps("state")}
+            />
+          )}
           <ErrorMessage name="state" component={TextError} />
         </>
 

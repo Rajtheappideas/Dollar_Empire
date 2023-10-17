@@ -197,12 +197,11 @@ const Signup = () => {
         (country) => country.name === values.country,
       );
       setCountry(country?.name);
-      // const states = State.getStatesOfCountry(country?.isoCode);
+      const states = State.getStatesOfCountry("US");
 
-      // setSelectedData({ ...selectedData, state: states });
-      // const state = states.find((state) => state.name === values.state);
+      setSelectedData({ ...selectedData, state: states });
     }
-  }, [values.country, values.state, values.city]);
+  }, [values.country, values.state]);
 
   return (
     <>
@@ -346,26 +345,29 @@ const Signup = () => {
                 <label className="text-black font-medium block text-left text-lg">
                   {t("State")}*
                 </label>
-                <input
-                  type="text"
-                  className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                  placeholder={t("State")}
-                  name="state"
-                  {...getFieldProps("state")}
-                />
-                {/* <select
-                className=" outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
-                name="state"
-                {...getFieldProps("state")}
-              >
-                <option label="Select state"></option>
-                {selectedData?.state.length > 0 &&
-                  selectedData.state.map((state) => (
-                    <option key={state.name} value={state.name}>
-                      {state?.name}
-                    </option>
-                  ))}
-              </select> */}
+                {values.country === "United States" ? (
+                  <select
+                    className=" outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
+                    name="state"
+                    {...getFieldProps("state")}
+                  >
+                    <option label="Select state"></option>
+                    {selectedData?.state.length > 0 &&
+                      selectedData.state.map((state) => (
+                        <option key={state.name} value={state.name}>
+                          {state?.name}
+                        </option>
+                      ))}
+                  </select>
+                ) : (
+                  <input
+                    type="text"
+                    className="outline-none bg-LIGHTGRAY w-full text-black placeholder:text-gray-400 rounded-md p-3"
+                    placeholder={t("State")}
+                    name="state"
+                    {...getFieldProps("state")}
+                  />
+                )}
 
                 <ErrorMessage name="state" component={TextError} />
               </div>
