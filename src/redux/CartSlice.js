@@ -15,7 +15,7 @@ export const handleGetCart = createAsyncThunk(
         return rejectWithValue(err?.response?.data);
       });
     return response;
-  }
+  },
 );
 
 export const handleAddProductToCart = createAsyncThunk(
@@ -42,7 +42,7 @@ export const handleAddProductToCart = createAsyncThunk(
         return rejectWithValue(err?.response?.data);
       });
     return response;
-  }
+  },
 );
 
 export const handleAddMultipleProductToCart = createAsyncThunk(
@@ -68,7 +68,7 @@ export const handleAddMultipleProductToCart = createAsyncThunk(
         return rejectWithValue(err?.response?.data);
       });
     return response;
-  }
+  },
 );
 
 export const handleRemoveProductToCart = createAsyncThunk(
@@ -92,7 +92,7 @@ export const handleRemoveProductToCart = createAsyncThunk(
         return rejectWithValue(err?.response?.data);
       });
     return response;
-  }
+  },
 );
 
 export const handleGetFreightCharges = createAsyncThunk(
@@ -115,7 +115,7 @@ export const handleGetFreightCharges = createAsyncThunk(
         return rejectWithValue(err?.response?.data);
       });
     return response;
-  }
+  },
 );
 
 const initialState = {
@@ -172,7 +172,7 @@ const CartSlice = createSlice({
       state.cartItems = state.cartItems.map((product) =>
         product?.product?._id === id
           ? { ...product, quantity: parseFloat(quantity) }
-          : product
+          : product,
       );
     },
 
@@ -186,10 +186,10 @@ const CartSlice = createSlice({
         state.totalQuantity =
           parseFloat(state.totalQuantity) - parseFloat(payload?.quantity);
         state.grandTotal = parseFloat(
-          parseFloat(state.grandTotal) - parseFloat(payload?.amount)
+          parseFloat(state.grandTotal) - parseFloat(payload?.amount),
         ).toFixed(2);
         state.subTotal = parseFloat(
-          parseFloat(state.subTotal) - parseFloat(payload?.amount)
+          parseFloat(state.subTotal) - parseFloat(payload?.amount),
         ).toFixed(2);
       }
     },
@@ -208,14 +208,14 @@ const CartSlice = createSlice({
 
     handleRemoveOneProductFromSelected: (state, { payload }) => {
       const filterArr = state.selectedItems.filter(
-        (item) => item?.id !== payload
+        (item) => item?.id !== payload,
       );
       state.selectedItems = filterArr;
     },
 
     handleRemoveItemFromCart: (state, { payload }) => {
       const filterArr = state.cartItems.filter(
-        (item) => item?.product?._id !== payload
+        (item) => item?.product?._id !== payload,
       );
       state.cartItems = filterArr;
     },
@@ -226,7 +226,7 @@ const CartSlice = createSlice({
 
     handlechangeTotalQuantityAndAmountOfmultipleProducts: (
       state,
-      { payload }
+      { payload },
     ) => {
       state.totalQuantityMultipleProducts = parseInt(payload?.totalQuantity);
       state.totalAmountMultipleProducts = parseInt(payload?.totalAmount);
@@ -234,7 +234,7 @@ const CartSlice = createSlice({
 
     handleRemoveFromTotalQuantityAndAmountOfmultipleProducts: (
       state,
-      { payload }
+      { payload },
     ) => {
       state.totalQuantityMultipleProducts =
         state.totalQuantityMultipleProducts - parseInt(payload?.quantity);
@@ -317,7 +317,7 @@ const CartSlice = createSlice({
           state.cart = payload?.cart;
           state.cartItems = payload?.cart?.items;
         }
-      }
+      },
     );
     builder.addCase(
       handleAddMultipleProductToCart.rejected,
@@ -325,7 +325,7 @@ const CartSlice = createSlice({
         state.multipleLoading = false;
         state.success = false;
         state.error = error;
-      }
+      },
     );
     // handle remove product to cart
     builder.addCase(handleRemoveProductToCart.pending, (state) => {
@@ -346,7 +346,7 @@ const CartSlice = createSlice({
           state.cart = payload;
           state.cartItems = payload?.cart?.items;
         }
-      }
+      },
     );
     builder.addCase(handleRemoveProductToCart.rejected, (state, { error }) => {
       state.loading = false;

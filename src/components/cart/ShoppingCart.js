@@ -2,13 +2,17 @@ import React, { useEffect, useRef, useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { handleChangeActiveComponent } from "../../redux/GlobalStates";
+import {
+  handleChangeActiveComponent,
+  handleLogout,
+} from "../../redux/GlobalStates";
 import BaseUrl from "../../BaseUrl";
 import {
   calculateTotalAmount,
   calculateTotalQuantity,
   handleAddProductToCart,
   handleDecreaseQuantityAndAmount,
+  handleGetCart,
   handleRemoveItemFromCart,
   handleRemoveOneProductFromSelected,
   handleRemoveProductToCart,
@@ -17,6 +21,7 @@ import {
 import { toast } from "react-hot-toast";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useTranslation } from "react-i18next";
+import { handleLogoutReducer } from "../../redux/AuthSlice";
 
 const ShoppingCart = ({ summaryFixed }) => {
   const [showChangeField, setShowChangeField] = useState(false);
@@ -47,7 +52,7 @@ const ShoppingCart = ({ summaryFixed }) => {
   const handleRemoveFromCart = (id, quantity, amount) => {
     setDeleteLoading(true);
     const response = dispatch(
-      handleRemoveProductToCart({ token, id, signal: AbortControllerRef })
+      handleRemoveProductToCart({ token, id, signal: AbortControllerRef }),
     );
     if (response) {
       response
@@ -69,7 +74,7 @@ const ShoppingCart = ({ summaryFixed }) => {
     toast.dismiss();
     if (productQuantity === quantity) {
       return toast.error(
-        "Quantity should be increased or decreased, not be same"
+        "Quantity should be increased or decreased, not be same",
       );
     } else if (productQuantity === "") {
       toast.error("Value not be empty");
@@ -90,7 +95,7 @@ const ShoppingCart = ({ summaryFixed }) => {
         signal: AbortControllerRef,
         type: type,
         quantity: productQuantity,
-      })
+      }),
     );
     if (response) {
       response
@@ -102,7 +107,7 @@ const ShoppingCart = ({ summaryFixed }) => {
                 quantity: productQuantity > 0 ? productQuantity : 0,
                 amount,
                 id,
-              })
+              }),
             );
             setProductId(null);
           }
@@ -239,7 +244,7 @@ const ShoppingCart = ({ summaryFixed }) => {
                               item?.product?.name,
                               item.type,
                               item?.product?.price * productQuantity,
-                              item?.quantity
+                              item?.quantity,
                             );
                           }}
                         >
@@ -278,7 +283,7 @@ const ShoppingCart = ({ summaryFixed }) => {
                                 item?.product?.name,
                                 item.type,
                                 item?.product?.price * productQuantity,
-                                item?.quantity
+                                item?.quantity,
                               )
                             }
                           >
@@ -338,14 +343,14 @@ const ShoppingCart = ({ summaryFixed }) => {
                                 item?.quantity * item?.product?.PK,
                                 item?.product?.price *
                                   item?.quantity *
-                                  item?.product?.PK
+                                  item?.product?.PK,
                               )
                             : handleRemoveFromCart(
                                 item?.product?._id,
                                 item?.quantity * item?.product?.CTN,
                                 item?.product?.price *
                                   item?.quantity *
-                                  item?.product?.CTN
+                                  item?.product?.CTN,
                               );
                         }}
                       />
@@ -460,7 +465,7 @@ const ShoppingCart = ({ summaryFixed }) => {
                                 item?.product?.name,
                                 item.type,
                                 item?.product?.price * productQuantity,
-                                item?.quantity
+                                item?.quantity,
                               );
                             }}
                           >
@@ -494,7 +499,7 @@ const ShoppingCart = ({ summaryFixed }) => {
                                   item?.product?.name,
                                   item.type,
                                   item?.product?.price * productQuantity,
-                                  item?.quantity
+                                  item?.quantity,
                                 )
                               }
                             >
@@ -565,14 +570,14 @@ const ShoppingCart = ({ summaryFixed }) => {
                                   item?.quantity * item?.product?.PK,
                                   item?.product?.price *
                                     item?.quantity *
-                                    item?.product?.PK
+                                    item?.product?.PK,
                                 )
                               : handleRemoveFromCart(
                                   item?.product?._id,
                                   item?.quantity * item?.product?.CTN,
                                   item?.product?.price *
                                     item?.quantity *
-                                    item?.product?.CTN
+                                    item?.product?.CTN,
                                 );
                           }}
                         />
@@ -608,10 +613,10 @@ const ShoppingCart = ({ summaryFixed }) => {
             {freightChargeLoading
               ? "wait..."
               : shipphingMethod === "pickup"
-              ? "$ 0.00"
-              : freightCharges !== null
-              ? ` $ ${parseFloat(freightCharges).toFixed(2)}`
-              : "$ 0.00"}
+                ? "$ 0.00"
+                : freightCharges !== null
+                  ? ` $ ${parseFloat(freightCharges).toFixed(2)}`
+                  : "$ 0.00"}
           </span>{" "}
         </p>
         <hr className="w-full" />
