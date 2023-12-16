@@ -8,20 +8,15 @@ import {
 } from "../../redux/GlobalStates";
 import BaseUrl from "../../BaseUrl";
 import {
-  calculateTotalAmount,
-  calculateTotalQuantity,
   handleAddProductToCart,
   handleDecreaseQuantityAndAmount,
-  handleGetCart,
   handleRemoveItemFromCart,
-  handleRemoveOneProductFromSelected,
   handleRemoveProductToCart,
   handleUpdateTotalQuantityAndAmount,
 } from "../../redux/CartSlice";
 import { toast } from "react-hot-toast";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useTranslation } from "react-i18next";
-import { handleLogoutReducer } from "../../redux/AuthSlice";
 
 const ShoppingCart = ({ summaryFixed }) => {
   const [showChangeField, setShowChangeField] = useState(false);

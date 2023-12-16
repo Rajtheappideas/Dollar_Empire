@@ -23,7 +23,7 @@ import {
   handleGetContactUsDetails,
   handleGetSubCategory,
 } from "./redux/GetContentSlice";
-import { handleGetCart } from "./redux/CartSlice";
+// import { handleGetCart } from "./redux/CartSlice";
 import {
   handleGetAllProducts,
   handleGetNewArrivals,
@@ -109,24 +109,24 @@ function App() {
     }
   }, []);
 
-  useEffect(() => {
-    if (user !== null) {
-      const response = dispatch(handleGetCart({ token }));
-      if (response) {
-        response.then((res) => {
-          if (
-            res.payload?.status === "fail" &&
-            res.payload?.message === "Please login first."
-          ) {
-            dispatch(handleLogoutReducer());
-            dispatch(handleLogout());
-          } else if (res.payload?.status === "fail") {
-            toast.error(res.payload?.message);
-          }
-        });
-      }
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (user !== null) {
+  //     // const response = dispatch(handleGetCart({ token }));
+  //     // if (response) {
+  //     //   response.then((res) => {
+  //     //     if (
+  //     //       res.payload?.status === "fail" &&
+  //     //       res.payload?.message === "Please login first."
+  //     //     ) {
+  //     //       dispatch(handleLogoutReducer());
+  //     //       dispatch(handleLogout());
+  //     //     } else if (res.payload?.status === "fail") {
+  //     //       toast.error(res.payload?.message);
+  //     //     }
+  //     //   });
+  //     // }
+  //   }
+  // }, [user]);
 
   return (
     <BrowserRouter>
