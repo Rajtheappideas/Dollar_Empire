@@ -941,7 +941,7 @@ const ProductDetailPopup = ({}) => {
                       <img
                         src={BaseUrl.concat(image)}
                         alt=""
-                        className="w-14 h-14 cursor-pointer border p-1 border-gray-200 rounded-lg object-contain object-center"
+                        className="w-14 h-14 cursor-pointer border p-1 border-gray-400 rounded-lg object-contain object-center"
                         onClick={() => {
                           dispatch(showEnlargeImagePopup());
                           handleShowEnlargeImage(i);
@@ -952,7 +952,7 @@ const ProductDetailPopup = ({}) => {
                     {singleProduct?.videos.map((video, index) => (
                       <IoIosPlayCircle
                         key={index}
-                        className="w-14 h-14 text-PRIMARY cursor-pointer border p-2 border-gray-200 rounded-lg object-contain object-center"
+                        className="w-14 h-14 text-PRIMARY cursor-pointer border p-2 border-gray-400 rounded-lg object-contain object-center"
                         onClick={() => {
                           dispatch(showEnlargeImagePopup());
                           handleShowEnlargeImage(index);
