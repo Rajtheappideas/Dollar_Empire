@@ -531,6 +531,8 @@ const ProductListing = () => {
     setActivePrice("Any");
   }, [title]);
 
+  // console.log(newArrivals);
+
   return (
     <>
       <Helmet title={`${title} | Dollar Empire`} />
@@ -762,6 +764,7 @@ const ProductListing = () => {
                       product={product}
                       selectedView={selectedView}
                       handleAddSelectedItem={handleAddSelectedItem}
+                      from="product_listing"
                     />
                   ))
                 ) : (

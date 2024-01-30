@@ -42,9 +42,9 @@ import {
 import { useTranslation } from "react-i18next";
 import ReactModal from "react-modal";
 import { useCallback } from "react";
-import {
-  handleClearSingleProduct,
-} from "../redux/ProductSlice";
+import { handleClearSingleProduct } from "../redux/ProductSlice";
+import { IoIosPlayCircle } from "react-icons/io";
+import ReactPlayer from "react-player";
 
 const ProductDetailPopup = ({}) => {
   const [thumbsSwiper, setThumbsSwiper] = useState();
@@ -65,6 +65,7 @@ const ProductDetailPopup = ({}) => {
   const [alreadyInCartPkItems, setAlreadyInCartPkItems] = useState("");
   const [alreadyInCartCtnItems, setAlreadyInCartCtnItems] = useState("");
   const [activeEnlargeImage, setActiveEnlargeImage] = useState(0);
+  const [typeOfenlarge, setTypeOfenlarge] = useState("");
 
   const { user, token } = useSelector((state) => state.Auth);
 
@@ -944,12 +945,25 @@ const ProductDetailPopup = ({}) => {
                         onClick={() => {
                           dispatch(showEnlargeImagePopup());
                           handleShowEnlargeImage(i);
+                          setTypeOfenlarge("image");
+                        }}
+                      />
+                    ))}
+                    {singleProduct?.videos.map((video, index) => (
+                      <IoIosPlayCircle
+                        key={index}
+                        className="w-14 h-14 text-PRIMARY cursor-pointer border p-2 border-gray-200 rounded-lg object-contain object-center"
+                        onClick={() => {
+                          dispatch(showEnlargeImagePopup());
+                          handleShowEnlargeImage(index);
+                          setTypeOfenlarge("video");
                         }}
                       />
                     ))}
                   </div>
                 )}
             </div>
+            {/* show enlarge */}
             {activeEnlargeImageId === singleProduct?._id &&
               showEnlargeImage && (
                 <div
@@ -961,17 +975,35 @@ const ProductDetailPopup = ({}) => {
                     onClick={() => {
                       dispatch(closeEnlargeImagePopup());
                     }}
-                    className="absolute top-1 right-2 w-7 h-7 text-white z-50 bg-black/20"
+                    className="absolute top-1 right-2 w-7 h-7 text-white  z-50 bg-black/20"
                   />
-                  <img
-                    src={BaseUrl.concat(
-                      singleProduct?.images[activeEnlargeImage]
-                    )}
-                    alt={singleProduct?.name}
-                    className="h-full w-full rounded-none object-contain object-center absolute top-0 p-2"
-                    title={singleProduct?.name}
-                    loading="lazy"
-                  />
+                  {typeOfenlarge === "video" ? (
+                    <ReactPlayer
+                      url={singleProduct?.videos[activeEnlargeImage]}
+                      style={{
+                        maxWidth: "100%",
+                        minWidth: "100%",
+                        maxHeight: "100%",
+                        minHeight: "100%",
+                        position: "absolute",
+                        inset: 0,
+                        padding: "0.3rem 0.3rem 0.3rem 0.3rem",
+                        zIndex:0
+                      }}
+                      controls
+                      playing
+                    />
+                  ) : (
+                    <img
+                      src={BaseUrl.concat(
+                        singleProduct?.images[activeEnlargeImage]
+                      )}
+                      alt={singleProduct?.name}
+                      className="h-full w-full rounded-none object-contain object-center absolute top-0 p-2"
+                      title={singleProduct?.name}
+                      loading="lazy"
+                    />
+                  )}
                 </div>
               )}
           </div>

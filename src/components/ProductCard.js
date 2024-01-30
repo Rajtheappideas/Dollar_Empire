@@ -49,8 +49,10 @@ import {
   handleChangeSingleProductId,
   handleGetProductById,
 } from "../redux/ProductSlice";
-import { motion } from "framer-motion";
+import { motion, transform } from "framer-motion";
 import { handleLogoutReducer } from "../redux/AuthSlice";
+import ReactPlayer from "react-player";
+import { IoIosPlayCircle } from "react-icons/io";
 
 const ProductCard = ({
   product,
@@ -75,10 +77,13 @@ const ProductCard = ({
   const [alreadyInCartCtnCount, setAlreadyInCartCtnCount] = useState(null);
   const [alreadyInCartPkItems, setAlreadyInCartPkItems] = useState("");
   const [alreadyInCartCtnItems, setAlreadyInCartCtnItems] = useState("");
+  const [typeOfenlarge, setTypeOfenlarge] = useState("");
 
   const { user, token } = useSelector((state) => state.Auth);
 
-  const { allProductLoading } = useSelector((state) => state.products);
+  const { allProductLoading, newArrivals } = useSelector(
+    (state) => state.products
+  );
   const {
     showProductDetailsPopup,
     showEnlargeImage,
@@ -88,7 +93,7 @@ const ProductCard = ({
   } = useSelector((state) => state.globalStates);
 
   const { loading, cartItems, cart, selectedItems, success } = useSelector(
-    (state) => state.cart,
+    (state) => state.cart
   );
   const AbortControllerRef = useRef(null);
   const popImageRef = useRef(null);
@@ -102,7 +107,7 @@ const ProductCard = ({
   const handleAddtoFavourties = (id) => {
     setFavouriteLoading(true);
     const response = dispatch(
-      handleAddProductToFavourites({ token, id, signal: AbortControllerRef }),
+      handleAddProductToFavourites({ token, id, signal: AbortControllerRef })
     );
     if (response) {
       response
@@ -139,7 +144,7 @@ const ProductCard = ({
         token,
         id,
         signal: AbortControllerRef,
-      }),
+      })
     );
     if (response) {
       response
@@ -180,7 +185,7 @@ const ProductCard = ({
       setPkCount(null);
       setCtnCount(null);
       return toast.error(
-        "Minimum Quantity should be more than 0 And enter a valid value.",
+        "Minimum Quantity should be more than 0 And enter a valid value."
       );
     } else if (selectedItemType === "pk" && ctnItemQuantity > 0) {
       toast.remove();
@@ -212,7 +217,7 @@ const ProductCard = ({
         signal: AbortControllerRef,
         type: selectedItemType,
         quantity: selectedItemType === "pk" ? pkCount : ctnCount,
-      }),
+      })
     );
     if (response) {
       response
@@ -224,7 +229,7 @@ const ProductCard = ({
               handleRemoveFromTotalQuantityAndAmountOfmultipleProducts({
                 quantity,
                 amount,
-              }),
+              })
             );
             dispatch(handleRemoveOneProductFromSelected(product?._id));
             setCtnItemQuantity("");
@@ -373,7 +378,7 @@ const ProductCard = ({
         selectedItemType === "pk" ? pkitemsQuantity : ctnItemQuantity,
         selectedItemType === "pk"
           ? pkitemsQuantity * product?.price
-          : ctnItemQuantity * product?.price,
+          : ctnItemQuantity * product?.price
       );
     } else if (
       changeTo &&
@@ -386,7 +391,7 @@ const ProductCard = ({
             token,
             id: product?._id,
             signal: AbortControllerRef,
-          }),
+          })
         );
         setChangingLoading(true);
         if (response) {
@@ -394,7 +399,7 @@ const ProductCard = ({
             .then((res) => {
               if (res.payload.status === "success") {
                 toast.success(
-                  `${findInCart?.product?.name} removed from cart.`,
+                  `${findInCart?.product?.name} removed from cart.`
                 );
                 dispatch(handleRemoveItemFromCart(findInCart?.product?._id));
                 setAlreadyInCartPkCount(null);
@@ -424,7 +429,7 @@ const ProductCard = ({
               findInCart?.type === "pk"
                 ? alreadyInCartPkCount
                 : alreadyInCartCtnCount,
-          }),
+          })
         );
         setChangingLoading(true);
 
@@ -433,7 +438,7 @@ const ProductCard = ({
             .then((res) => {
               if (res.payload.status === "success") {
                 toast.success(
-                  `${findInCart?.product?.name}'s quantity updated.`,
+                  `${findInCart?.product?.name}'s quantity updated.`
                 );
                 dispatch(
                   handleUpdateTotalQuantityAndAmount({
@@ -442,7 +447,7 @@ const ProductCard = ({
                         ? alreadyInCartPkCount
                         : alreadyInCartCtnCount,
                     id: findInCart?.product?._id,
-                  }),
+                  })
                 );
                 setChangingLoading(false);
                 setChangeTo(false);
@@ -491,7 +496,7 @@ const ProductCard = ({
     ) {
       setPkCount(parseFloat(e.target.value.replace(/^0+/, "")));
       setpkItemsQuantity(
-        parseFloat(e.target.value.replace(/^0+/, "") * product?.PK),
+        parseFloat(e.target.value.replace(/^0+/, "") * product?.PK)
       );
     }
     if (
@@ -502,7 +507,7 @@ const ProductCard = ({
       setChangeTo(true);
       setAlreadyInCartPkCount(parseFloat(e.target.value.replace(/^0+/, "")));
       setAlreadyInCartPkItems(
-        parseFloat(e.target.value.replace(/^0+/, "") * product?.PK),
+        parseFloat(e.target.value.replace(/^0+/, "") * product?.PK)
       );
     }
   };
@@ -541,7 +546,7 @@ const ProductCard = ({
       setChangeTo(true);
       setAlreadyInCartCtnCount(parseFloat(e.target.value.replace(/^0+/, "")));
       setAlreadyInCartCtnItems(
-        parseFloat(e.target.value.replace(/^0+/, "") * product?.CTN),
+        parseFloat(e.target.value.replace(/^0+/, "") * product?.CTN)
       );
     }
   };
@@ -557,7 +562,7 @@ const ProductCard = ({
           handleMinusPkQuantity(
             parseFloat(product?.PK),
             parseFloat(pkCount !== null && pkCount - 1),
-            product?._id,
+            product?._id
           );
         } else {
           if (pkCount !== null && pkCount.toString().length >= 6) {
@@ -568,7 +573,7 @@ const ProductCard = ({
           handlePlusPkQuantity(
             parseFloat(product?.PK),
             parseFloat(pkCount === null ? 1 : pkCount + 1),
-            product?._id,
+            product?._id
           );
         }
       } else if (
@@ -590,22 +595,22 @@ const ProductCard = ({
             if (alreadyInCartPkCount !== null) {
               setAlreadyInCartPkCount(parseFloat(alreadyInCartPkCount) - 1);
               setAlreadyInCartPkItems(
-                parseFloat(product?.PK) * parseFloat(alreadyInCartPkCount - 1),
+                parseFloat(product?.PK) * parseFloat(alreadyInCartPkCount - 1)
               );
               handleChangeAddedItemInCart(
                 null,
                 "pk",
-                parseFloat(alreadyInCartPkCount) - 1,
+                parseFloat(alreadyInCartPkCount) - 1
               );
             } else {
               setAlreadyInCartPkCount(parseFloat(findInCart?.quantity) - 1);
               setAlreadyInCartCtnItems(
-                parseFloat(product?.PK) * parseFloat(findInCart?.quantity - 1),
+                parseFloat(product?.PK) * parseFloat(findInCart?.quantity - 1)
               );
               handleChangeAddedItemInCart(
                 null,
                 "pk",
-                parseFloat(findInCart?.quantity) - 1,
+                parseFloat(findInCart?.quantity) - 1
               );
             }
           } else {
@@ -620,22 +625,22 @@ const ProductCard = ({
             if (alreadyInCartCtnCount !== null) {
               setAlreadyInCartPkCount(parseFloat(alreadyInCartPkCount) + 1);
               setAlreadyInCartPkItems(
-                parseFloat(product?.PK) * parseFloat(alreadyInCartPkCount + 1),
+                parseFloat(product?.PK) * parseFloat(alreadyInCartPkCount + 1)
               );
               handleChangeAddedItemInCart(
                 null,
                 "pk",
-                parseFloat(alreadyInCartPkCount) + 1,
+                parseFloat(alreadyInCartPkCount) + 1
               );
             } else {
               setAlreadyInCartPkCount(parseFloat(findInCart?.quantity) + 1);
               setAlreadyInCartPkItems(
-                parseFloat(product?.PK) * parseFloat(findInCart?.quantity + 1),
+                parseFloat(product?.PK) * parseFloat(findInCart?.quantity + 1)
               );
               handleChangeAddedItemInCart(
                 null,
                 "pk",
-                parseFloat(findInCart?.quantity) + 1,
+                parseFloat(findInCart?.quantity) + 1
               );
             }
           }
@@ -651,7 +656,7 @@ const ProductCard = ({
           handleMinusCTNQuantity(
             parseFloat(product?.CTN),
             parseFloat(ctnCount !== null && ctnCount - 1),
-            product?._id,
+            product?._id
           );
         } else {
           if (ctnCount !== null && ctnCount.toString().length >= 6) {
@@ -662,7 +667,7 @@ const ProductCard = ({
           handlePlusCTNQuantity(
             parseFloat(product?.CTN),
             parseFloat(ctnCount === null ? 1 : ctnCount + 1),
-            product?._id,
+            product?._id
           );
         }
       } else if (
@@ -684,23 +689,22 @@ const ProductCard = ({
             if (alreadyInCartCtnCount !== null) {
               setAlreadyInCartCtnCount(parseFloat(alreadyInCartCtnCount) - 1);
               setAlreadyInCartCtnItems(
-                parseFloat(product?.CTN) *
-                  parseFloat(alreadyInCartCtnCount - 1),
+                parseFloat(product?.CTN) * parseFloat(alreadyInCartCtnCount - 1)
               );
               handleChangeAddedItemInCart(
                 null,
                 "ctn",
-                parseFloat(alreadyInCartCtnCount) - 1,
+                parseFloat(alreadyInCartCtnCount) - 1
               );
             } else {
               setAlreadyInCartCtnCount(parseFloat(findInCart?.quantity) - 1);
               setAlreadyInCartCtnItems(
-                parseFloat(product?.CTN) * parseFloat(findInCart?.quantity - 1),
+                parseFloat(product?.CTN) * parseFloat(findInCart?.quantity - 1)
               );
               handleChangeAddedItemInCart(
                 null,
                 "ctn",
-                parseFloat(findInCart?.quantity) - 1,
+                parseFloat(findInCart?.quantity) - 1
               );
             }
           } else {
@@ -715,23 +719,22 @@ const ProductCard = ({
             if (alreadyInCartCtnCount !== null) {
               setAlreadyInCartCtnCount(parseFloat(alreadyInCartCtnCount) + 1);
               setAlreadyInCartCtnItems(
-                parseFloat(product?.CTN) *
-                  parseFloat(alreadyInCartCtnCount + 1),
+                parseFloat(product?.CTN) * parseFloat(alreadyInCartCtnCount + 1)
               );
               handleChangeAddedItemInCart(
                 null,
                 "ctn",
-                parseFloat(alreadyInCartCtnCount) + 1,
+                parseFloat(alreadyInCartCtnCount) + 1
               );
             } else {
               setAlreadyInCartCtnCount(parseFloat(findInCart?.quantity) + 1);
               setAlreadyInCartCtnItems(
-                parseFloat(product?.CTN) * parseFloat(findInCart?.quantity + 1),
+                parseFloat(product?.CTN) * parseFloat(findInCart?.quantity + 1)
               );
               handleChangeAddedItemInCart(
                 null,
                 "ctn",
-                parseFloat(findInCart?.quantity) + 1,
+                parseFloat(findInCart?.quantity) + 1
               );
             }
           }
@@ -766,7 +769,7 @@ const ProductCard = ({
   useEffect(() => {
     if (cart !== null && cartItems.length > 0 && !changingLoading) {
       const findItemInCart = cartItems.find(
-        (i) => i.product?._id === product?._id,
+        (i) => i.product?._id === product?._id
       );
       if (findItemInCart !== undefined) {
         setFindInCart(findItemInCart);
@@ -776,12 +779,12 @@ const ProductCard = ({
         setCtnItemQuantity("");
         if (findItemInCart?.type === "pk") {
           setAlreadyInCartPkItems(
-            findItemInCart?.quantity * findItemInCart?.product?.PK,
+            findItemInCart?.quantity * findItemInCart?.product?.PK
           );
           setAlreadyInCartPkCount(findItemInCart?.quantity);
         } else {
           setAlreadyInCartCtnItems(
-            findItemInCart?.quantity * findItemInCart?.product?.CTN,
+            findItemInCart?.quantity * findItemInCart?.product?.CTN
           );
           setAlreadyInCartCtnCount(findItemInCart?.quantity);
         }
@@ -811,7 +814,7 @@ const ProductCard = ({
         selectedItemType,
         pkCount,
         ctnCount,
-        product?.price,
+        product?.price
       );
     }
   }, [
@@ -906,7 +909,7 @@ const ProductCard = ({
               }}
               loading="lazy"
             />
-            <p className="flex items-center gap-x-1 absolute md:bottom-0 bottom-[220px] left-9">
+            <div className="flex flex-wrap items-center gap-1 absolute md:bottom-0 bottom-[220px] left-9">
               {product?.images.map((image, index) => (
                 <img
                   key={index}
@@ -915,10 +918,22 @@ const ProductCard = ({
                   onClick={() => {
                     dispatch(showEnlargeImagePopup());
                     handleShowSingleProductEnlargeImage(index);
+                    setTypeOfenlarge("image");
                   }}
                 />
               ))}
-            </p>
+              {product?.videos.map((video, index) => (
+                <IoIosPlayCircle
+                  key={index}
+                  className="h-10 w-10 border-2 text-PRIMARY border-PRIMARY p-1 rounded-lg cursor-pointer"
+                  onClick={() => {
+                    dispatch(showEnlargeImagePopup());
+                    handleShowSingleProductEnlargeImage(index);
+                    setTypeOfenlarge("video");
+                  }}
+                />
+              ))}
+            </div>
             <MagnifyingGlassPlusIcon
               role="button"
               onClick={() => {
@@ -940,13 +955,30 @@ const ProductCard = ({
                     }}
                     className="absolute top-1 right-2 w-7 h-7 text-white z-50 bg-black/20"
                   />
-                  <img
-                    src={BaseUrl.concat(product?.images[activeEnlargeImage])}
-                    alt={product?.name}
-                    className="w-full h-full rounded-none object-contain object-center absolute top-0 p-2"
-                    title={product?.name}
-                    loading="lazy"
-                  />
+                  {typeOfenlarge === "video" ? (
+                    <ReactPlayer
+                      url={product?.videos[activeEnlargeImage]}
+                      style={{
+                        maxWidth: "100%",
+                        minWidth: "100%",
+                        maxHeight: "100%",
+                        minHeight: "100%",
+                        position: "absolute",
+                        inset: 0,
+                        padding: "0.3rem 0.3rem 0.3rem 0.3rem",
+                      }}
+                      controls
+                      playing
+                    />
+                  ) : (
+                    <img
+                      src={BaseUrl.concat(product?.images[activeEnlargeImage])}
+                      alt={product?.name}
+                      className="w-full h-full rounded-none object-contain object-center absolute top-0 p-2"
+                      title={product?.name}
+                      loading="lazy"
+                    />
+                  )}
                 </div>
               )}
             {/* details */}
@@ -1333,7 +1365,7 @@ const ProductCard = ({
               {t("top_seller")}
             </p>
           )}
-          {/* product img */}
+          {/* product img enlarge*/}
           <div
             className={`relative ${
               showEnlargeImage && product?._id === activeEnlargeImageId
@@ -1373,18 +1405,35 @@ const ProductCard = ({
                     }}
                     className="absolute top-1 right-2 w-7 h-7 text-white z-50 bg-black/20"
                   />
-                  <img
-                    src={BaseUrl.concat(product?.images[activeEnlargeImage])}
-                    alt={product?.name}
-                    className="h-full w-full rounded-none object-contain object-center absolute top-0 p-2"
-                    title={product?.name}
-                    loading="lazy"
-                  />
+                  {typeOfenlarge === "video" ? (
+                    <ReactPlayer
+                      url={product?.videos[activeEnlargeImage]}
+                      style={{
+                        maxWidth: "100%",
+                        minWidth: "100%",
+                        maxHeight: "100%",
+                        minHeight: "100%",
+                        position: "absolute",
+                        inset: 0,
+                        padding: "0.3rem 0.3rem 0.3rem 0.3rem",
+                      }}
+                      controls
+                      playing
+                    />
+                  ) : (
+                    <img
+                      src={BaseUrl.concat(product?.images[activeEnlargeImage])}
+                      alt={product?.name}
+                      className="h-full w-full rounded-none object-contain object-center absolute top-0 p-2"
+                      title={product?.name}
+                      loading="lazy"
+                    />
+                  )}
                 </div>
               )}
           </div>
           {/* mulitple images */}
-          <p className="flex items-center gap-x-1 h-10">
+          <div className="flex flex-wrap items-center gap-1 h-10">
             {product?.images.map((image, index) => (
               <img
                 key={index}
@@ -1393,10 +1442,23 @@ const ProductCard = ({
                 onClick={() => {
                   dispatch(showEnlargeImagePopup());
                   handleShowEnlargeImage(index);
+                  setTypeOfenlarge("image");
                 }}
               />
             ))}
-          </p>
+
+            {product?.videos.map((video, index) => (
+              <IoIosPlayCircle
+                key={index}
+                className="h-10 w-10 border-2 text-PRIMARY border-PRIMARY p-1 rounded-lg cursor-pointer"
+                onClick={() => {
+                  dispatch(showEnlargeImagePopup());
+                  handleShowEnlargeImage(index);
+                  setTypeOfenlarge("video");
+                }}
+              />
+            ))}
+          </div>
           <p className="text-PRIMARY font-semibold">
             ITEM NO.{product?.number}
           </p>
