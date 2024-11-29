@@ -31,7 +31,9 @@ import { useTranslation } from "react-i18next";
 import BaseUrl from "../BaseUrl";
 import {
   handleAddProductToFavourites,
+  handleGetUserFavourites,
   handleRemoveProductToFavourites,
+  updateFavouriteStatus,
 } from "../redux/FavouriteSlice";
 import { toast } from "react-hot-toast";
 import {
@@ -69,7 +71,7 @@ const ProductCard = ({
   const [findInCart, setFindInCart] = useState(null);
   const [pkCount, setPkCount] = useState(null);
   const [ctnCount, setCtnCount] = useState(null);
-  const [isFavourite, setisFavourite] = useState(false);
+  // const [isFavourite, setisFavourite] = useState(false);
   const [activeEnlargeImage, setActiveEnlargeImage] = useState(0);
   const [changeTo, setChangeTo] = useState(false);
   const [changingLoading, setChangingLoading] = useState(false);
@@ -80,6 +82,9 @@ const ProductCard = ({
   const [typeOfenlarge, setTypeOfenlarge] = useState("");
 
   const { user, token } = useSelector((state) => state.Auth);
+
+  const favourites = useSelector((state) => state.favourite.favourites);
+  const isFavourite = favourites.some((fav) => fav._id === product._id);
 
   const { allProductLoading, newArrivals } = useSelector(
     (state) => state.products
@@ -104,73 +109,105 @@ const ProductCard = ({
 
   const { t } = useTranslation();
 
-  const handleAddtoFavourties = (id) => {
+  // const handleAddtoFavourties = (id) => {
+  //   setFavouriteLoading(true);
+  //   const response = dispatch(
+  //     handleAddProductToFavourites({ token, id, signal: AbortControllerRef })
+  //   );
+  //   if (response) {
+  //     response
+  //       .then((res) => {
+  //         if (res.payload.status === "success") {
+  //           setisFavourite(!isFavourite);
+  //           toast.success(`${product?.name} Added to favorites.`);
+  //         } else if (res.payload.status === "fail") {
+  //           toast.error(res.payload.message);
+  //         }
+  //         if (
+  //           res.payload?.status === "fail" &&
+  //           (res.payload?.message === "Please login first." ||
+  //             res.payload?.message === "Please provide authentication token.")
+  //         ) {
+  //           dispatch(handleLogoutReducer());
+  //           dispatch(handleLogout());
+  //         } else if (res.payload?.status === "fail") {
+  //           toast.error(res.payload?.message);
+  //         }
+  //         setFavouriteLoading(false);
+  //       })
+  //       .catch((err) => {
+  //         toast.error(err.payload.message);
+  //         setFavouriteLoading(false);
+  //       });
+  //   }
+  // };
+
+  // const handleRemoveFromFavourties = (id) => {
+  //   setFavouriteLoading(true);
+  //   const response = dispatch(
+  //     handleRemoveProductToFavourites({
+  //       token,
+  //       id,
+  //       signal: AbortControllerRef,
+  //     })
+  //   );
+  //   if (response) {
+  //     response
+  //       .then((res) => {
+  //         if (res.payload.status === "success") {
+  //           setisFavourite(!isFavourite);
+  //           toast.success(`${product?.name} Removed from favorites.`);
+  //         } else {
+  //           toast.error(res.payload.message);
+  //         }
+  //         if (
+  //           res.payload?.status === "fail" &&
+  //           (res.payload?.message === "Please login first." ||
+  //             res.payload?.message === "Please provide authentication token.")
+  //         ) {
+  //           dispatch(handleLogoutReducer());
+  //           dispatch(handleLogout());
+  //         } else if (res.payload?.status === "fail") {
+  //           toast.error(res.payload?.message);
+  //         }
+  //         setFavouriteLoading(false);
+  //       })
+  //       .catch((err) => {
+  //         toast.error(err.payload.message);
+  //         setFavouriteLoading(false);
+  //       });
+  //   }
+  // };
+
+  const handleAddtoFavourites = (id) => {
     setFavouriteLoading(true);
     const response = dispatch(
       handleAddProductToFavourites({ token, id, signal: AbortControllerRef })
     );
     if (response) {
-      response
-        .then((res) => {
-          if (res.payload.status === "success") {
-            setisFavourite(!isFavourite);
-            toast.success(`${product?.name} Added to favorites.`);
-          } else if (res.payload.status === "fail") {
-            toast.error(res.payload.message);
-          }
-          if (
-            res.payload?.status === "fail" &&
-            (res.payload?.message === "Please login first." ||
-              res.payload?.message === "Please provide authentication token.")
-          ) {
-            dispatch(handleLogoutReducer());
-            dispatch(handleLogout());
-          } else if (res.payload?.status === "fail") {
-            toast.error(res.payload?.message);
-          }
-          setFavouriteLoading(false);
-        })
-        .catch((err) => {
-          toast.error(err.payload.message);
-          setFavouriteLoading(false);
-        });
+      response.then((res) => {
+        if (res.payload.status === "success") {
+          dispatch(updateFavouriteStatus({ id, isFavourite: true }));
+          toast.success(`${product?.name} Added to favorites.`);
+        }
+        setFavouriteLoading(false);
+      });
     }
   };
 
-  const handleRemoveFromFavourties = (id) => {
+  const handleRemoveFromFavourites = (id) => {
     setFavouriteLoading(true);
     const response = dispatch(
-      handleRemoveProductToFavourites({
-        token,
-        id,
-        signal: AbortControllerRef,
-      })
+      handleRemoveProductToFavourites({ token, id, signal: AbortControllerRef })
     );
     if (response) {
-      response
-        .then((res) => {
-          if (res.payload.status === "success") {
-            setisFavourite(!isFavourite);
-            toast.success(`${product?.name} Removed from favorites.`);
-          } else {
-            toast.error(res.payload.message);
-          }
-          if (
-            res.payload?.status === "fail" &&
-            (res.payload?.message === "Please login first." ||
-              res.payload?.message === "Please provide authentication token.")
-          ) {
-            dispatch(handleLogoutReducer());
-            dispatch(handleLogout());
-          } else if (res.payload?.status === "fail") {
-            toast.error(res.payload?.message);
-          }
-          setFavouriteLoading(false);
-        })
-        .catch((err) => {
-          toast.error(err.payload.message);
-          setFavouriteLoading(false);
-        });
+      response.then((res) => {
+        if (res.payload.status === "success") {
+          dispatch(updateFavouriteStatus({ id, isFavourite: false }));
+          toast.success(`${product?.name} Removed from favorites.`);
+        }
+        setFavouriteLoading(false);
+      });
     }
   };
 
@@ -800,9 +837,12 @@ const ProductCard = ({
   ]);
 
   // set product to favourite item
+  // useEffect(() => {
+  //   setisFavourite(product?.isFavourite);
+  // }, [allProductLoading]);
   useEffect(() => {
-    setisFavourite(product?.isFavourite);
-  }, [allProductLoading]);
+    dispatch(handleGetUserFavourites({ token }));
+  }, [dispatch, token]);
 
   // add multiple items to cart handler
   useEffect(() => {
@@ -885,7 +925,7 @@ const ProductCard = ({
           )}
           {/* top seller label */}
           {title === "top-sellers" && (
-            <p className="bg-PRIMARY text-white h-8 w-40 leading-8 align-middle text-center text-sm rounded-tl-lg absolute z-20 top-0 left-0">
+            <p className="absolute top-0 left-0 z-20 w-40 h-8 text-sm leading-8 text-center text-white align-middle rounded-tl-lg bg-PRIMARY">
               {t("Top Seller")}
             </p>
           )}
@@ -902,7 +942,7 @@ const ProductCard = ({
             <img
               src={BaseUrl.concat(product?.images[0])}
               alt={product?.name}
-              className="xl:w-48 md:h-60 md:w-1/2 w-full h-40 pb-10 cursor-pointer xl:object-fill object-contain object-center"
+              className="object-contain object-center w-full h-40 pb-10 cursor-pointer xl:w-48 md:h-60 md:w-1/2 xl:object-fill"
               title={product?.name}
               onClick={() => {
                 handleOpenPopup();
@@ -914,7 +954,7 @@ const ProductCard = ({
                 <img
                   key={index}
                   src={BaseUrl.concat(image)}
-                  className="h-10 w-10 border-2 border-PRIMARY p-2 rounded-lg cursor-pointer"
+                  className="w-10 h-10 p-2 border-2 rounded-lg cursor-pointer border-PRIMARY"
                   onClick={() => {
                     dispatch(showEnlargeImagePopup());
                     handleShowSingleProductEnlargeImage(index);
@@ -925,7 +965,7 @@ const ProductCard = ({
               {product?.videos.map((video, index) => (
                 <IoIosPlayCircle
                   key={index}
-                  className="h-10 w-10 border-2 text-PRIMARY border-PRIMARY p-1 rounded-lg cursor-pointer"
+                  className="w-10 h-10 p-1 border-2 rounded-lg cursor-pointer text-PRIMARY border-PRIMARY"
                   onClick={() => {
                     dispatch(showEnlargeImagePopup());
                     handleShowSingleProductEnlargeImage(index);
@@ -940,7 +980,7 @@ const ProductCard = ({
                 dispatch(showEnlargeImagePopup());
                 handleShowEnlargeImage();
               }}
-              className="h-6 w-6 bg-white/40 absolute left-0 md:bottom-0 bottom-56 text-PRIMARY"
+              className="absolute left-0 w-6 h-6 bg-white/40 md:bottom-0 bottom-56 text-PRIMARY"
             />
             {singleProductEnlargeImageId === product?._id &&
               showEnlargeImage && (
@@ -953,7 +993,7 @@ const ProductCard = ({
                     onClick={() => {
                       dispatch(closeEnlargeImagePopup());
                     }}
-                    className="absolute top-1 right-2 w-7 h-7 text-white z-50 bg-black/20"
+                    className="absolute z-50 text-white top-1 right-2 w-7 h-7 bg-black/20"
                   />
                   {typeOfenlarge === "video" ? (
                     <ReactPlayer
@@ -974,7 +1014,7 @@ const ProductCard = ({
                     <img
                       src={BaseUrl.concat(product?.images[activeEnlargeImage])}
                       alt={product?.name}
-                      className="w-full h-full rounded-none object-contain object-center absolute top-0 p-2"
+                      className="absolute top-0 object-contain object-center w-full h-full p-2 rounded-none"
                       title={product?.name}
                       loading="lazy"
                     />
@@ -983,24 +1023,24 @@ const ProductCard = ({
               )}
             {/* details */}
             {user === null ? (
-              <div className="space-y-1 font-medium text-black w-full">
-                <p className="text-PRIMARY font-semibold">
+              <div className="w-full space-y-1 font-medium text-black">
+                <p className="font-semibold text-PRIMARY">
                   {t("ITEM NO")}.{product?.number}
                 </p>
                 <p
-                  className="font-bold tracking-normal py-1"
+                  className="py-1 font-bold tracking-normal"
                   title={product?.name}
                 >
                   {product?.name}
                 </p>
-                <p className="font-normal tracking-normal pt-1">
+                <p className="pt-1 font-normal tracking-normal">
                   {product?.shortDesc}
                 </p>
                 <p className="w-7/12">
                   <Link to="/sign-in" className="w-full">
                     <button
                       type="button"
-                      className="bg-DARKRED text-white text-center w-full p-2 rounded-lg"
+                      className="w-full p-2 text-center text-white rounded-lg bg-DARKRED"
                     >
                       {t("login_to_order")}
                     </button>
@@ -1008,12 +1048,12 @@ const ProductCard = ({
                 </p>
               </div>
             ) : (
-              <ul className="space-y-1 font-medium text-black w-full">
-                <li className="text-PRIMARY font-semibold">
+              <ul className="w-full space-y-1 font-medium text-black">
+                <li className="font-semibold text-PRIMARY">
                   {t("ITEM NO")}.{product?.number}
                 </li>
                 <li
-                  className="font-bold tracking-normal pt-1"
+                  className="pt-1 font-bold tracking-normal"
                   title={product?.name}
                 >
                   {product?.name}
@@ -1021,19 +1061,19 @@ const ProductCard = ({
                 <li className="font-normal tracking-normal">
                   {product?.shortDesc}
                 </li>
-                <li className="text-BLACK md:text-sm text-base">
+                <li className="text-base text-BLACK md:text-sm">
                   {product?.package}
                 </li>
-                <li className="text-BLACK md:text-sm text-base">
+                <li className="text-base text-BLACK md:text-sm">
                   PK {t("volume")} : {product?.PKVolume} cu ft{" "}
                 </li>
-                <li className="text-BLACK md:text-sm text-base">
+                <li className="text-base text-BLACK md:text-sm">
                   CTN {t("volume")} : {product?.CTNVolume} cu ft{" "}
                 </li>
-                <li className="text-BLACK md:text-sm text-base">
+                <li className="text-base text-BLACK md:text-sm">
                   PK weight : {product?.PKWeight} Lbs{" "}
                 </li>
-                <li className="text-BLACK md:text-sm text-base">
+                <li className="text-base text-BLACK md:text-sm">
                   CTN weight : {product?.CTNWeight} Lbs{" "}
                 </li>
               </ul>
@@ -1041,7 +1081,7 @@ const ProductCard = ({
           </div>
           {/* right side */}
           {user !== null && (
-            <div className="h-auto xl:w-auto w-full space-y-3 xl:text-right text-left">
+            <div className="w-full h-auto space-y-3 text-left xl:w-auto xl:text-right">
               <p className="font-bold">
                 {product?.PK} PC / PK,
                 {product?.CTN} PC / CTN{" "}
@@ -1052,7 +1092,7 @@ const ProductCard = ({
                 /PK, ${(product?.price * product?.CTN).toFixed(2)}/CTN
               </p>
               {/* new pk */}
-              <div className="flex xl:w-11/12 w-full items-center gap-x-2 relative z-0 ml-auto">
+              <div className="relative z-0 flex items-center w-full ml-auto xl:w-11/12 gap-x-2">
                 <input
                   name={
                     from === "TopSellers"
@@ -1075,10 +1115,10 @@ const ProductCard = ({
                     findInCart?.product?._id === product?._id
                   }
                 />{" "}
-                <span className="font-semibold text-sm whitespace-nowrap pr-2">
+                <span className="pr-2 text-sm font-semibold whitespace-nowrap">
                   PK
                 </span>
-                <div className="w-full relative z-0">
+                <div className="relative z-0 w-full">
                   <span
                     className={`absolute text-left top-1/2 w-fit sm:text-sm text-xs ${
                       pkitemsQuantity === "" && alreadyInCartPkItems === ""
@@ -1113,7 +1153,7 @@ const ProductCard = ({
                       findInCart?.type === "ctn"
                     }
                   />
-                  <span className="font-semibold text-BLACK text-xs absolute top-1/2 -translate-y-1/2 md:right-12 right-10">
+                  <span className="absolute text-xs font-semibold -translate-y-1/2 text-BLACK top-1/2 md:right-12 right-10">
                     PK
                   </span>
                   <button
@@ -1145,7 +1185,7 @@ const ProductCard = ({
                 </div>
               </div>
               {/* new ctn */}
-              <div className="flex xl:w-11/12 w-full items-center gap-x-2 relative z-0 ml-auto">
+              <div className="relative z-0 flex items-center w-full ml-auto xl:w-11/12 gap-x-2">
                 <input
                   name={
                     from === "TopSellers"
@@ -1167,10 +1207,10 @@ const ProductCard = ({
                     findInCart?.product._id === product?._id
                   }
                 />{" "}
-                <span className="font-semibold text-sm whitespace-nowrap">
+                <span className="text-sm font-semibold whitespace-nowrap">
                   CTN
                 </span>
-                <div className="w-full relative z-0">
+                <div className="relative z-0 w-full">
                   <span
                     className={`absolute text-left top-1/2 w-fit sm:text-sm text-xs ${
                       ctnItemQuantity === "" && alreadyInCartCtnItems === ""
@@ -1205,7 +1245,7 @@ const ProductCard = ({
                       findInCart?.type === "pk"
                     }
                   />
-                  <span className="font-semibold text-BLACK text-xs absolute top-1/2 -translate-y-1/2 md:right-11 right-9">
+                  <span className="absolute text-xs font-semibold -translate-y-1/2 text-BLACK top-1/2 md:right-11 right-9">
                     CTN
                   </span>
                   <button
@@ -1232,7 +1272,7 @@ const ProductCard = ({
                       handleOnClickFieldForBoth("plus", "ctn");
                     }}
                   >
-                    <AiOutlinePlus className="h-4 w-4 mx-auto" />
+                    <AiOutlinePlus className="w-4 h-4 mx-auto" />
                   </button>
                 </div>
               </div>
@@ -1315,13 +1355,13 @@ const ProductCard = ({
                       ) : (
                         <>
                           {t("add_to_cart")}
-                          <AiOutlineShoppingCart className="w-6 h-6 ml-1 inline-block" />
+                          <AiOutlineShoppingCart className="inline-block w-6 h-6 ml-1" />
                         </>
                       )}
                     </button>
                   )}
                 </Link>
-                {favouriteLoading ? (
+                {/* {favouriteLoading ? (
                   "..."
                 ) : isFavourite ? (
                   <AiFillHeart
@@ -1334,6 +1374,21 @@ const ProductCard = ({
                     className="w-10 h-10 text-DARKRED"
                     role="button"
                     onClick={() => handleAddtoFavourties(product?._id)}
+                  />
+                )} */}
+                {favouriteLoading ? (
+                  "..."
+                ) : isFavourite ? (
+                  <AiFillHeart
+                    className="w-10 h-10 text-DARKRED"
+                    role="button"
+                    onClick={() => handleRemoveFromFavourites(product._id)}
+                  />
+                ) : (
+                  <AiOutlineHeart
+                    className="w-10 h-10 text-DARKRED"
+                    role="button"
+                    onClick={() => handleAddtoFavourites(product._id)}
                   />
                 )}
               </p>
@@ -1361,7 +1416,7 @@ const ProductCard = ({
             <div className="absolute z-30 inset-0 bg-black bg-opacity-20 backdrop-blur-sm max-w-[100%] h-full" />
           )}
           {title === "top-sellers" && (
-            <p className="bg-PRIMARY text-white h-8 w-40 leading-8 align-middle text-center text-sm rounded-tl-lg absolute top-0 left-0">
+            <p className="absolute top-0 left-0 w-40 h-8 text-sm leading-8 text-center text-white align-middle rounded-tl-lg bg-PRIMARY">
               {t("top_seller")}
             </p>
           )}
@@ -1376,7 +1431,7 @@ const ProductCard = ({
             <img
               src={BaseUrl.concat(product?.images[0])}
               alt={product?.name}
-              className="lg:h-64 md:h-40 relative z-50 h-32 cursor-pointer w-fit mx-auto object-contain object-center"
+              className="relative z-50 object-contain object-center h-32 mx-auto cursor-pointer lg:h-64 md:h-40 w-fit"
               title={product?.name}
               onClick={() => {
                 handleOpenPopup();
@@ -1389,7 +1444,7 @@ const ProductCard = ({
                 dispatch(showEnlargeImagePopup());
                 handleShowEnlargeImage();
               }}
-              className="h-6 w-6 bg-white/40 absolute z-50 bottom-0 md:right-0 right-2 text-PRIMARY"
+              className="absolute bottom-0 z-50 w-6 h-6 bg-white/40 md:right-0 right-2 text-PRIMARY"
             />
             {activeEnlargeImageId === product?._id &&
               activeEnlargeImageFrom === from &&
@@ -1403,7 +1458,7 @@ const ProductCard = ({
                     onClick={() => {
                       dispatch(closeEnlargeImagePopup());
                     }}
-                    className="absolute top-1 right-2 w-7 h-7 text-white z-50 bg-black/20"
+                    className="absolute z-50 text-white top-1 right-2 w-7 h-7 bg-black/20"
                   />
                   {typeOfenlarge === "video" ? (
                     <ReactPlayer
@@ -1424,7 +1479,7 @@ const ProductCard = ({
                     <img
                       src={BaseUrl.concat(product?.images[activeEnlargeImage])}
                       alt={product?.name}
-                      className="h-full w-full rounded-none object-contain object-center absolute top-0 p-2"
+                      className="absolute top-0 object-contain object-center w-full h-full p-2 rounded-none"
                       title={product?.name}
                       loading="lazy"
                     />
@@ -1433,12 +1488,12 @@ const ProductCard = ({
               )}
           </div>
           {/* mulitple images */}
-          <div className="flex flex-wrap items-center gap-1 h-10">
+          <div className="flex flex-wrap items-center h-10 gap-1">
             {product?.images.map((image, index) => (
               <img
                 key={index}
                 src={BaseUrl.concat(image)}
-                className="h-10 w-10 border-2 border-PRIMARY p-1 rounded-lg cursor-pointer"
+                className="w-10 h-10 p-1 border-2 rounded-lg cursor-pointer border-PRIMARY"
                 onClick={() => {
                   dispatch(showEnlargeImagePopup());
                   handleShowEnlargeImage(index);
@@ -1450,7 +1505,7 @@ const ProductCard = ({
             {product?.videos.map((video, index) => (
               <IoIosPlayCircle
                 key={index}
-                className="h-10 w-10 border-2 text-PRIMARY border-PRIMARY p-1 rounded-lg cursor-pointer"
+                className="w-10 h-10 p-1 border-2 rounded-lg cursor-pointer text-PRIMARY border-PRIMARY"
                 onClick={() => {
                   dispatch(showEnlargeImagePopup());
                   handleShowEnlargeImage(index);
@@ -1459,7 +1514,7 @@ const ProductCard = ({
               />
             ))}
           </div>
-          <p className="text-PRIMARY font-semibold">
+          <p className="font-semibold text-PRIMARY">
             ITEM NO.{product?.number}
           </p>
           <p
@@ -1468,7 +1523,7 @@ const ProductCard = ({
           >
             {product?.name}
           </p>
-          <p className="tracking-normal text-sm font-bold">
+          <p className="text-sm font-bold tracking-normal">
             {`${product?.PK} PC / PK | ${product?.CTN} PC / CTN`}
           </p>
           {user !== null ? (
@@ -1483,22 +1538,22 @@ const ProductCard = ({
                   <li className="text-BLACK sm:text-sm md:text-lg">
                     {product?.package}
                   </li>
-                  <li className="text-BLACK md:text-sm text-base">
+                  <li className="text-base text-BLACK md:text-sm">
                     PK volume : {product?.PKVolume} cu ft{" "}
                   </li>
-                  <li className="text-BLACK md:text-sm text-base">
+                  <li className="text-base text-BLACK md:text-sm">
                     CTN volume : {product?.CTNVolume} cu ft{" "}
                   </li>
-                  <li className="text-BLACK md:text-sm text-base">
+                  <li className="text-base text-BLACK md:text-sm">
                     PK weight : {product?.PKWeight} Lbs{" "}
                   </li>
-                  <li className="text-BLACK md:text-sm text-base">
+                  <li className="text-base text-BLACK md:text-sm">
                     CTN weight : {product?.CTNWeight} Lbs{" "}
                   </li>
                 </ul>
               )}
               {/* pk */}
-              <div className="flex w-full h-full items-center md:gap-x-1 gap-x-2 relative z-0">
+              <div className="relative z-0 flex items-center w-full h-full md:gap-x-1 gap-x-2">
                 <input
                   name={
                     from === "TopSellers"
@@ -1570,7 +1625,7 @@ const ProductCard = ({
                       findInCart?.type === "ctn"
                     }
                   />
-                  <span className="font-semibold text-BLACK text-xs absolute top-1/2 -translate-y-1/2 lg:right-9 md:right-8 right-10">
+                  <span className="absolute text-xs font-semibold -translate-y-1/2 text-BLACK top-1/2 lg:right-9 md:right-8 right-10">
                     PK
                   </span>
                 </div>
@@ -1587,7 +1642,7 @@ const ProductCard = ({
                     handleOnClickFieldForBoth("minus", "pk");
                   }}
                 >
-                  <AiOutlineMinus className="h-5 w-5 mx-auto" />
+                  <AiOutlineMinus className="w-5 h-5 mx-auto" />
                 </button>
                 {/* plus pk btn */}
                 <button
@@ -1601,7 +1656,7 @@ const ProductCard = ({
                     handleOnClickFieldForBoth("plus", "pk");
                   }}
                 >
-                  <AiOutlinePlus className="h-4 w-4 mx-auto" />
+                  <AiOutlinePlus className="w-4 h-4 mx-auto" />
                 </button>
               </div>
               {/* ctn */}
@@ -1632,7 +1687,7 @@ const ProductCard = ({
                     findInCart?.product?._id === product?._id
                   }
                 />
-                <span className="font-semibold text-xs whitespace-nowrap">
+                <span className="text-xs font-semibold whitespace-nowrap">
                   CTN
                 </span>
                 <div className="relative w-full">
@@ -1674,7 +1729,7 @@ const ProductCard = ({
                       findInCart?.type === "pk"
                     }
                   />
-                  <span className="font-semibold text-BLACK text-xs absolute top-1/2 -translate-y-1/2 lg:right-9 md:right-8 right-10">
+                  <span className="absolute text-xs font-semibold -translate-y-1/2 text-BLACK top-1/2 lg:right-9 md:right-8 right-10">
                     CTN
                   </span>
                 </div>
@@ -1710,7 +1765,7 @@ const ProductCard = ({
                     handleOnClickFieldForBoth("plus", "ctn");
                   }}
                 >
-                  <AiOutlinePlus className="h-4 w-4 mx-auto" />
+                  <AiOutlinePlus className="w-4 h-4 mx-auto" />
                 </button>
               </div>
               {/* add to cart btn */}
@@ -1791,13 +1846,13 @@ const ProductCard = ({
                       ) : (
                         <>
                           {t("add_to_cart")}
-                          <AiOutlineShoppingCart className="w-6 h-6 ml-1 inline-block" />
+                          <AiOutlineShoppingCart className="inline-block w-6 h-6 ml-1" />
                         </>
                       )}
                     </button>
                   )}
                 </Link>
-                {favouriteLoading ? (
+                {/* {favouriteLoading ? (
                   "..."
                 ) : isFavourite ? (
                   <AiFillHeart
@@ -1813,6 +1868,21 @@ const ProductCard = ({
                     role="button"
                     onClick={() => handleAddtoFavourties(product?._id, from)}
                   />
+                )} */}
+                {favouriteLoading ? (
+                  "..."
+                ) : isFavourite ? (
+                  <AiFillHeart
+                    className="w-10 h-10 text-DARKRED"
+                    role="button"
+                    onClick={() => handleRemoveFromFavourites(product._id)}
+                  />
+                ) : (
+                  <AiOutlineHeart
+                    className="w-10 h-10 text-DARKRED"
+                    role="button"
+                    onClick={() => handleAddtoFavourites(product._id)}
+                  />
                 )}
               </p>
             </Fragment>
@@ -1820,7 +1890,7 @@ const ProductCard = ({
             <Link to="/sign-in" className="mt-2">
               <button
                 type="button"
-                className="bg-DARKRED text-white text-center w-full mt-3 p-2 rounded-lg"
+                className="w-full p-2 mt-3 text-center text-white rounded-lg bg-DARKRED"
               >
                 {t("login_to_order")}
               </button>

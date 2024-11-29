@@ -75,7 +75,14 @@ const initialState = {
 const FavouriteSlice = createSlice({
   name: "favourite",
   initialState,
-  reducers: {},
+  reducers: {
+    updateFavouriteStatus(state, { payload }) {
+      const { id, isFavourite } = payload;
+      state.favourites = state.favourites.map((product) =>
+        product._id === id ? { ...product, isFavourite } : product
+      );
+    },
+  },
   extraReducers: (builder) => {
     // get users favourites
     builder.addCase(handleGetUserFavourites.pending, (state) => {
@@ -142,6 +149,6 @@ const FavouriteSlice = createSlice({
   },
 });
 
-export const {} = FavouriteSlice.actions;
+export const { updateFavouriteStatus } = FavouriteSlice.actions;
 
 export default FavouriteSlice.reducer;
